@@ -1,5 +1,7 @@
 import "./ServiceUnavailable.scss";
 import { ErrorPage } from "../components/error/ErrorPage";
+import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
+import { CustomExternalLink } from "../components/links/CustomExternalLink";
 
 export const ServiceUnavailable = () => {
   return (
@@ -8,7 +10,13 @@ export const ServiceUnavailable = () => {
         errorTitle="Service Currently Unavailable"
         msgNode={
           <div className="service-unavailable-page__msg--top">
-            Please visit <a href="www.onroute.bc.gov.ca">www.onroute.bc.gov.ca</a>
+            Please visit
+            <CustomExternalLink
+              className="unexpected-error-msg__link"
+              href={ONROUTE_WEBPAGE_LINKS.HOME}
+            >
+              www.onroutebc.gov.bc.ca
+            </CustomExternalLink>
           </div>
         }
         imgSrc="/Error_Service_Unavailable_Graphic.svg"
