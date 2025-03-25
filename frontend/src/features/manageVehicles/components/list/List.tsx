@@ -135,9 +135,6 @@ export const List = memo(
     const { mutateAsync: deleteTrailers, isError: deleteTrailersFailed } =
       useDeleteTrailersMutation();
 
-    const colTypeCodes = columns.filter(
-      (item) => item.accessorKey === `${vehicleType}TypeCode`,
-    );
     const newColumns = columns.filter(
       (item) => item.accessorKey !== `${vehicleType}TypeCode`,
     );
@@ -168,20 +165,6 @@ export const List = memo(
         };
       });
     }, [vehiclesData, transformVehicleCode]);
-
-    if (colTypeCodes?.length === 1) {
-      const colTypeCode = colTypeCodes?.at(0);
-      if (colTypeCode) {
-        // eslint-disable-next-line react/display-name
-        colTypeCode.Cell = ({ cell }) => {
-          return <div>{transformVehicleCode(cell.getValue<string>())}</div>;
-        };
-
-        const colDate = newColumns?.pop();
-        newColumns.push(colTypeCode);
-        if (colDate) newColumns.push(colDate);
-      }
-    }
 
     const onClickTrashIcon = useCallback(() => {
       setIsDeleteDialogOpen(() => true);
