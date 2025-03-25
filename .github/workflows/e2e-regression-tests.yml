@@ -75,7 +75,7 @@ jobs:
           - 'bceid-new-term-oversize-check-price.cy.js'
           - 'bceid-profile.cy.js'
           - 'idir-amend-term-oversize.cy.js'
-          # - 'idir-void-term-oversize.cy.js'
+          - 'idir-void-term-oversize.cy.js'
           - 'idir-general.cy.js'
           - 'idir-global-search.cy.js'
           - 'idir-settings.cy.js'
