@@ -450,7 +450,7 @@ export class UsersService {
         company.accountSource === AccountSource.TpsAccount &&
         !company?.companyUsers?.length
       ) {
-        userContextDto.migratedClient =
+        userContextDto.unclaimedClient =
           await this.companyService.mapCompanyEntityToCompanyDto(company);
       } else if (company) {
         const companyMetadata =
@@ -513,8 +513,8 @@ export class UsersService {
       null,
       null,
     );
-    //Auto invite for TPS migrated client for second user onward.
-    if (!userContextDto.migratedClient) {
+    //Auto invite for TPS unclaimed client for second user onward.
+    if (!userContextDto.unclaimedClient) {
       pendingUsers.push(
         ...(await this.pendingUsersService.findPendingUsersDto(
           null,
