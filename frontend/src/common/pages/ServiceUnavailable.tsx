@@ -1,6 +1,6 @@
 import "./ServiceUnavailable.scss";
 import { ErrorPage } from "../components/error/ErrorPage";
-import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
+import { ONROUTE_WEBPAGE_LINKS, onRouteBCUrl } from "../../routes/constants";
 import { CustomExternalLink } from "../components/links/CustomExternalLink";
 
 export const ServiceUnavailable = () => {
@@ -15,7 +15,7 @@ export const ServiceUnavailable = () => {
               className="unexpected-error-msg__link"
               href={ONROUTE_WEBPAGE_LINKS.HOME}
             >
-              {ONROUTE_WEBPAGE_LINKS.HOME}
+              {onRouteBCUrl}
             </CustomExternalLink>
           </div>
         }

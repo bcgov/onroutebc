@@ -207,6 +207,9 @@ export const SETTINGS_ROUTES = {
   MANAGE: SETTINGS_BASE,
 };
 
+//URL
+export const onRouteBCUrl = "www.onroutebc.gov.bc.ca";
+
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {
   HOME: "https://onroutebc.gov.bc.ca",
