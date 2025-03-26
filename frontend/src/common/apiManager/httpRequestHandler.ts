@@ -27,6 +27,22 @@ axios.interceptors.request.use(
   },
 );
 
+// Response interceptor to handle errors globally
+axios.interceptors.response.use(
+  (response) => response, // Return response if successful
+  (error) => {
+    if (!error.response || error.response.status === 503) {
+      console.error("CORS or 503 Error:", error);
+      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
+        window.location.href = "/service-unavailable";
+      }
+    } else {
+      console.log("Error Details:", error)
+      return Promise.reject(error); // Reject other errors
+    }
+  },
+);
+
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
 // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
