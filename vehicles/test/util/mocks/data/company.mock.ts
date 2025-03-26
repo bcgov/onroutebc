@@ -86,6 +86,7 @@ export const updateRedCompanyDtoMock: UpdateCompanyDto = {
 export const readRedCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.RED_COMPANY_ID,
   companyGUID: constants.RED_COMPANY_GUID,
+  directory: constants.RED_COMPANY_DIRECOTRY,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
@@ -174,6 +175,7 @@ export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
 export const readBlueCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.BLUE_COMPANY_ID,
   companyGUID: constants.BLUE_COMPANY_GUID,
+  directory: constants.BLUE_COMPANY_DIRECOTRY,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
