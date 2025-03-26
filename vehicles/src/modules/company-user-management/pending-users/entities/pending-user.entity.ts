@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { ClientUserRole } from '../../../../common/enum/user-role.enum';
-import { Nullable } from '../../../../common/types/common';
 
 @Entity({ name: 'ORBC_PENDING_USER' })
 export class PendingUser extends Base {
@@ -53,12 +52,12 @@ export class PendingUser extends Base {
    */
   @AutoMap()
   @Column({ length: 50, name: 'FIRST_NAME', nullable: true })
-  firstName?: Nullable<string>;
+  firstName?: string;
 
   /**
    * Last name of the invited person.
    */
   @AutoMap()
   @Column({ length: 50, name: 'LAST_NAME', nullable: true })
-  lastName?: Nullable<string>;
+  lastName?: string;
 }
