@@ -185,31 +185,3 @@ describe('Login Test for OnRouteBC', () => {
 
   });
 });
-
-function findRowAndClick(real_permit_number, wait_time) {
-  cy.get('tr') // Get all rows on the current page
-    .then(($rows) => {
-      // Check if any row matches the criteria
-      const matchingRow = [...$rows].find((row) =>
-        Cypress.$(row).find('td').first().text().includes(real_permit_number)
-      );
-
-      if (matchingRow) {
-        // If a matching row is found, click the button inside it
-        cy.wrap(matchingRow)
-          .scrollIntoView()
-          .find('.css-15mydm5')
-          .click({ force: true }); 
-      } else {
-        // If no matching row is found, check if a "Next Page" button exists
-        cy.get('button.css-wpmsjn') // "Next Page" button selector
-          .last()
-          .should('be.visible') // Ensure the button is visible
-          .click({ force: true }) // Click the "Next Page" button
-          .wait(wait_time); // Wait for the next page to load
-
-        // Recursively call the function to search on the next page
-        findRowAndClick(real_permit_number, wait_time);
-      }
-    });
-}
