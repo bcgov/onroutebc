@@ -385,6 +385,28 @@ export class CompanyService {
   }
 
   /**
+   * The findOneCompanyWithAssociatedUsers() method returns the Company entity
+   * corresponding to the specified companyId. It retrieves the entity from the
+   * database using the Repository, including relations to companyUsers,
+   * mailingAddress, and primaryContact, and returns it.
+   *
+   * @param companyId The ID of the company to fetch.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneCompanyWithAssociatedUsers(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        companyUsers: true,
+        mailingAddress: { province: { country: true } },
+        primaryContact: { province: { country: true } },
+      },
+    });
+  }
+
+  /**
    * The findCompanyMetadataByUserGuid() method returns a list of ReadCompanyMetadataDto objects corresponding to the given
    * user GUID. It performs a custom SQL query to the database to retrieve company user entities based on the user GUID
    * and an optional list of user status codes. After obtaining the company user entities, it maps them to
