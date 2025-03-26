@@ -31,24 +31,17 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (!error.response) {
-      //CORS error
-      console.error("CORS Error:", error);
-      if (window.location.pathname !== "/service-unavailable") {  //Preventing infinite loop
+    if (!error.response || error.response.status === 503) {
+      console.error("CORS or 503 Error:", error);
+      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
         window.location.href = "/service-unavailable";
       }
-    } else if (error.response.status === 503) {
-      //503 Service Unavailable
-      console.error("503 Error:", error.response);
-      if (window.location.pathname !== "/service-unavailable") {  //Preventing infinite loop
-        window.location.href = "/service-unavailable";
-      }
+    } else {
+      console.log("Error Details:", error)
+      return Promise.reject(error); // Reject other errors
     }
-    return Promise.reject(error);
-  }
+  },
 );
-
-
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}

@@ -15,7 +15,7 @@ export const ServiceUnavailable = () => {
               className="unexpected-error-msg__link"
               href={ONROUTE_WEBPAGE_LINKS.HOME}
             >
-              www.onroutebc.gov.bc.ca
+              {ONROUTE_WEBPAGE_LINKS.HOME}
             </CustomExternalLink>
           </div>
         }
