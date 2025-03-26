@@ -121,6 +121,7 @@ export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   email: constants.RED_COMPANY_EMAIL,
   isSuspended: constants.RED_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 /**
@@ -196,6 +197,7 @@ export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   email: constants.BLUE_COMPANY_EMAIL,
   isSuspended: constants.BLUE_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 export const COMPANY_LIST: Company[] = [
