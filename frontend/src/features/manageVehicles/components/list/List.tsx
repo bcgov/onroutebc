@@ -135,34 +135,36 @@ export const List = memo(
     const { mutateAsync: deleteTrailers, isError: deleteTrailersFailed } =
       useDeleteTrailersMutation();
 
-    const colTypeCodes = columns.filter(
-      (item) => item.accessorKey === `${vehicleType}TypeCode`,
-    );
     const newColumns = columns.filter(
       (item) => item.accessorKey !== `${vehicleType}TypeCode`,
     );
 
-    const transformVehicleCode = (code: string) => {
-      const vehicleSubtypesForCode =
-        vehicleType === VEHICLE_TYPES.POWER_UNIT
-          ? powerUnitSubTypes.filter((value) => value.typeCode === code)
-          : trailerSubTypes.filter((value) => value.typeCode === code);
-      return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
-    };
+    const transformVehicleCode = useCallback(
+      (code: string) => {
+        const vehicleSubtypesForCode =
+          vehicleType === VEHICLE_TYPES.POWER_UNIT
+            ? powerUnitSubTypes.filter((value) => value.typeCode === code)
+            : trailerSubTypes.filter((value) => value.typeCode === code);
+        return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
+      },
+      [vehicleType, powerUnitSubTypes, trailerSubTypes],
+    );
 
-    if (colTypeCodes?.length === 1) {
-      const colTypeCode = colTypeCodes?.at(0);
-      if (colTypeCode) {
-        // eslint-disable-next-line react/display-name
-        colTypeCode.Cell = ({ cell }) => {
-          return <div>{transformVehicleCode(cell.getValue<string>())}</div>;
+    const transformedVehiclesData = useMemo(() => {
+      return vehiclesData?.map((vehicle) => {
+        const isPowerUnit = "powerUnitTypeCode" in vehicle;
+        const isTrailer = "trailerTypeCode" in vehicle;
+
+        return {
+          ...vehicle,
+          vehicleSubType: isPowerUnit
+            ? transformVehicleCode(vehicle.powerUnitTypeCode) // Use transformed code for PowerUnit
+            : isTrailer
+              ? transformVehicleCode(vehicle.trailerTypeCode) // Use transformed code for Trailer
+              : undefined, // Default case if neither PowerUnit nor Trailer
         };
-
-        const colDate = newColumns?.pop();
-        newColumns.push(colTypeCode);
-        if (colDate) newColumns.push(colDate);
-      }
-    }
+      });
+    }, [vehiclesData, transformVehicleCode]);
 
     const onClickTrashIcon = useCallback(() => {
       setIsDeleteDialogOpen(() => true);
@@ -239,7 +241,7 @@ export const List = memo(
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: getDefaultRequiredVal([], vehiclesData),
+      data: getDefaultRequiredVal([], transformedVehiclesData),
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,

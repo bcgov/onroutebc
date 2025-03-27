@@ -28,7 +28,7 @@ export class ReadPendingUserDto extends CreatePendingUserDto {
     description: 'The first name of the contact.',
     required: false,
   })
-  firstName: string;
+  firstName?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -36,7 +36,7 @@ export class ReadPendingUserDto extends CreatePendingUserDto {
     description: 'The last name of the contact.',
     required: false,
   })
-  lastName: string;
+  lastName?: string;
 
   @AutoMap()
   @ApiProperty({
