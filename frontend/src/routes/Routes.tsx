@@ -36,6 +36,7 @@ import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
 import { StaffDashboard } from "../features/idir/StaffDashboard";
 import { BFCTDashboard } from "../features/bridgeFormulaCalculationTool/BFCTDashboard";
 import { ClaimProfileUnauthorized } from "../common/pages/ClaimProfileUnauthorized";
+import { ServiceUnavailable } from "../common/pages/ServiceUnavailable";
 // import { ReviewApplicationInQueue } from "../features/queue/pages/ReviewApplicationInQueue";
 
 export const AppRoutes = () => {
@@ -63,6 +64,10 @@ export const AppRoutes = () => {
       <Route
         path={routes.ERROR_ROUTES.ISSUANCE}
         element={<IssuanceErrorPage />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.SERVICE}
+        element={<ServiceUnavailable />}
       />
       <Route
         path={routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE}
