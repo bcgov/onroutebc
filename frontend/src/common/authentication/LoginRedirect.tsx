@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
-import { BCeIDUserContextType, IDIRUserContextType } from "./types";
+import { BCeIDUserContextType, DIRECTORY, IDIRUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 import { Optional } from "../types/common";
@@ -23,6 +23,7 @@ import { usePermissionMatrix } from "./PermissionMatrix";
 
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,
+  businessGuidFromUserToken: string,
 ): string | undefined => {
   const {
     associatedCompanies,
@@ -42,9 +43,44 @@ const navigateBCeID = (
 
   // If the user does not exist
   if (!user?.userGUID) {
-    // The user is in pending companies => Redirect them to User Info Page.
-    // i.e., The user has been invited.
+    // The user has been invited to a company.
+    // Invited user gets the highest priority.
     if (pendingCompanies?.length > 0) {
+      // If there is no business GUID in the user token, then the user is
+      // a basic bceid user.
+      // A basic bceid user cannot be a user of a company whose directory is BBCEID.
+      // This is an attempt to cross mix basic and business bceid users which is not allowed.
+      if (
+        pendingCompanies[0].directory === DIRECTORY.BBCEID &&
+        !businessGuidFromUserToken
+      ) {
+        // TODO Error page to include message asking user to contact PPC.
+        return ERROR_ROUTES.UNAUTHORIZED;
+      }
+
+      // If the user is a business bceid user, they can only be invited to a
+      // company whose directory is BBCEID.
+      // A business bceid user cannot be a user of a company whose directory is not BBCEID.
+      // This is an attempt to cross mix basic and business bceid users which is not allowed.
+      if (
+        pendingCompanies[0].directory !== DIRECTORY.BBCEID &&
+        businessGuidFromUserToken
+      ) {
+        // TODO Error page to include message asking user to contact PPC.
+        return ERROR_ROUTES.UNAUTHORIZED;
+      }
+      
+      // If the invited user's business GUID from the token does not match the company's guid,
+      // then the user is unauthorized.
+      // A business bceid user whose buisness guid does not match the company guid in the invite
+      // cannot be a user of the inviting company.
+      if (pendingCompanies[0].companyGUID !== businessGuidFromUserToken) {
+        // TODO Error page to include message asking user to contact PPC.
+        return ERROR_ROUTES.UNAUTHORIZED;
+      }
+
+      // If the execution reaches here, this is a valid invite situation.
+      // Redirect the user to the welcome page for user info wizard.
       return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
     }
     // The user and company do not exist (not a migrated client)
@@ -139,7 +175,10 @@ export const LoginRedirect = () => {
       } else {
         const userContextData: Optional<BCeIDUserContextType> =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
-        const to = navigateBCeID(userContextData as BCeIDUserContextType);
+        const to = navigateBCeID(
+          userContextData as BCeIDUserContextType,
+          userFromToken?.profile?.bceid_business_guid as string,
+        );
         navigate(to ?? ERROR_ROUTES.UNEXPECTED);
       }
     }
