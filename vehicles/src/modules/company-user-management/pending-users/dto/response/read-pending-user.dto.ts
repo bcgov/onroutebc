@@ -24,6 +24,22 @@ export class ReadPendingUserDto extends CreatePendingUserDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'Adam',
+    description: 'The first name of the contact.',
+    required: false,
+  })
+  firstName?: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'Smith',
+    description: 'The last name of the contact.',
+    required: false,
+  })
+  lastName?: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Created Date and Time',
   })
   createdDateTime: string;
