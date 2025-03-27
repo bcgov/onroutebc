@@ -277,9 +277,14 @@ describe('UsersService', () => {
         readRedCompanyMetadataDtoMock,
       );
 
-      companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
+      companyServiceMock.findCompanyMetadata.mockResolvedValue(
+        readRedCompanyMetadataDtoMock,
+      );
+
+      companyServiceMock.findOneCompanyWithAssociatedUsers.mockResolvedValue(
         redCompanyEntityMock,
       );
+
       const retUserContext = await service.findORBCUser(
         redCompanyPendingUserJWTMock,
       );
