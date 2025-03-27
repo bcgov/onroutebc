@@ -44,7 +44,7 @@ export type VerifiedClient = PartialCompanyProfile & CompanyMetadata;
 export type BCeIDUserContextType = {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedClient: VerifiedClient;
+  unclaimedClient: VerifiedClient;
   user?: {
     userRole?: string;
     statusCode?: string;

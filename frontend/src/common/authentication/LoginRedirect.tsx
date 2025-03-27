@@ -24,8 +24,12 @@ import { usePermissionMatrix } from "./PermissionMatrix";
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,
 ): string | undefined => {
-  const { associatedCompanies, pendingCompanies, migratedClient, user } =
-    userContextData;
+  const {
+    associatedCompanies,
+    pendingCompanies,
+    unclaimedClient: migratedClient,
+    user,
+  } = userContextData;
 
   const isAssociatedSuspended = getDefaultRequiredVal(
     [],

@@ -54,7 +54,7 @@ export const IDIRCompanySearchResults = memo(
       setCompanyId,
       setCompanyLegalName,
       setOnRouteBCClientNumber,
-      setMigratedClient,
+      setUnclaimedClient: setMigratedClient,
       setIsCompanySuspended,
     } = useContext(OnRouteBCContext);
 

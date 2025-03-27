@@ -97,7 +97,7 @@ export const useUserContext = (
     setIsCompanySuspended,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedClient,
+    setUnclaimedClient,
     setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
 
@@ -125,7 +125,7 @@ export const useUserContext = (
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
-      const { user, associatedCompanies, pendingCompanies, migratedClient } =
+      const { user, associatedCompanies, pendingCompanies, unclaimedClient } =
         userContextResponseBody as BCeIDUserContextType;
 
       /**
@@ -184,8 +184,8 @@ export const useUserContext = (
       /**
        * The user has been migrated.
        */
-      if (migratedClient?.clientNumber) {
-        setMigratedClient?.(() => migratedClient);
+      if (unclaimedClient?.clientNumber) {
+        setUnclaimedClient?.(() => unclaimedClient);
       }
 
       /**

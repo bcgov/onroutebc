@@ -129,8 +129,10 @@ const ChallengeOption = ({
  */
 export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext, migratedClient } =
-    useContext(OnRouteBCContext);
+  const {
+    companyLegalName: companyNameFromContext,
+    unclaimedClient: migratedClient,
+  } = useContext(OnRouteBCContext);
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
