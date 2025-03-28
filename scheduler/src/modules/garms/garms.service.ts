@@ -79,7 +79,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        //await this.uploadFile(fileName,fileName,remoteFilePath,recordLength,);
+        await this.uploadFile(fileName,fileName,remoteFilePath,recordLength,);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -312,7 +312,10 @@ export class GarmsService {
     const user = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     const host = process.env.GARMS_HOST;
+    const asciiFileName = fileName+'ascii';
+
     const sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
+    const iconvCommand = `iconv -f ISO8859-1 -t IBM-037 ${fileName} >> ${asciiFileName}`;
     const ftpCommands = `
     user ${user} ${password}
     ascii
@@ -320,11 +323,14 @@ export class GarmsService {
     SITE LRECL=${recordLength}
     SITE WRAP
     SITE RECFM=FB
-    put ${fileName} '${remoteFilePath}'
+    put ${asciiFileName} ${remoteFilePath}
     QUIT
     `;
-    const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v bcsc01d.gov.bc.ca"`;
+
+    const fullCommand = `${sshCommand} "${iconvCommand} && echo \\"${ftpCommands}\\" | ftp -n -v ${host}"`;
     this.executeCommand(fullCommand);
+    const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
+    this.executeCommand(deleteFilesCommand);
   }
 
   private  executeCommand(command: string) {
