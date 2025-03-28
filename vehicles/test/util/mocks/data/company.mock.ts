@@ -86,6 +86,7 @@ export const updateRedCompanyDtoMock: UpdateCompanyDto = {
 export const readRedCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.RED_COMPANY_ID,
   companyGUID: constants.RED_COMPANY_GUID,
+  directory: constants.RED_COMPANY_DIRECOTRY,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
@@ -121,6 +122,7 @@ export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   email: constants.RED_COMPANY_EMAIL,
   isSuspended: constants.RED_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 /**
@@ -173,6 +175,7 @@ export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
 export const readBlueCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.BLUE_COMPANY_ID,
   companyGUID: constants.BLUE_COMPANY_GUID,
+  directory: constants.BLUE_COMPANY_DIRECOTRY,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
@@ -196,6 +199,7 @@ export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   email: constants.BLUE_COMPANY_EMAIL,
   isSuspended: constants.BLUE_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 export const COMPANY_LIST: Company[] = [
