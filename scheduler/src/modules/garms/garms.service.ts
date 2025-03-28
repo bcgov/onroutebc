@@ -79,7 +79,12 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.uploadFile(Buffer.from(fileName, 'ascii'), fileName, remoteFilePath, recordLength);
+        await this.uploadFile(
+          Buffer.from(fileName, 'ascii'),
+          fileName,
+          remoteFilePath,
+          recordLength,
+        );
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -290,16 +295,21 @@ export class GarmsService {
     return permitTypeServiceCodes;
   }
 
-  async uploadFile(fileData: Buffer, fileName: string, remoteFilePath: string, recordLength: number) {
+  async uploadFile(
+    fileData: Buffer,
+    fileName: string,
+    remoteFilePath: string,
+    recordLength: number,
+  ) {
     try {
       await uploadToGarms(fileData, fileName, this.logger);
-      this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+       this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
     } catch (err) {
       console.error('Error uploading file:', err);
     }
   }
 
-  private executeSSHAndFTP(
+   executeSSHAndFTP(
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
@@ -324,15 +334,16 @@ export class GarmsService {
     this.executeCommand(fullCommand);
   }
 
-  private executeCommand(command: string) {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`Error: ${error.message}`);
-      }
-      if (stderr) {
-        console.log(`Stderr: ${stderr}`);
-      }
-      console.log(stdout);
-    });
+  private  executeCommand(command: string) {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`Error: ${error.message}`);
+        }
+        if (stderr) {
+          console.log(`Stderr: ${stderr}`);
+        }
+        console.log(stdout);
+      });
+    
   }
 }
