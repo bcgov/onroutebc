@@ -15,8 +15,8 @@ export class FileTransferController {
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
       const recordLength = GARMS_CASH_FILE_LRECL;
       const result = await this.fileTransferService.uploadFile(
-        '/tmp/GARMS_CASH',
-        'test',
+        '/tmp/',
+        'GARMS_CASH',
         remoteFilePath,
         recordLength
       );

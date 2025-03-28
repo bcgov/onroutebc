@@ -24,7 +24,7 @@ import { Cache } from 'cache-manager';
 import { getFromCache } from '../../common/helper/cache.helper';
 import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
 import { CacheKey } from '../../common/enum/cache-key.enum';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import { uploadToGarms } from '../../common/helper/sftp.helper';
 
 @Injectable()
@@ -300,13 +300,13 @@ export class GarmsService {
   ) {
     try {
       await uploadToGarms(filePath, fileName, this.logger);
-       this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+     this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
     } catch (err) {
       console.error('Error uploading file:', err);
     }
   }
 
-   executeSSHAndFTP(
+    executeSSHAndFTP(
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
@@ -325,7 +325,7 @@ export class GarmsService {
     SITE LRECL=${recordLength}
     SITE WRAP
     SITE RECFM=FB
-    put ${asciiFileName} ${remoteFilePath}
+    put ${asciiFileName} '${remoteFilePath}'
     QUIT
     `;
     const changeTypeCommand = `${sshCommand} "${iconvCommand}"`;
@@ -336,15 +336,15 @@ export class GarmsService {
     this.executeCommand(deleteFilesCommand);
   }
 
-  private  executeCommand(command: string) {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`Error: ${error.message}`);
-        }
-        if (stderr) {
-          console.log(`Stderr: ${stderr}`);
-        }
-        console.log(stdout);
-      });
+  private executeCommand(command: string) {
+    try {
+      const result = execSync(command, { encoding: 'utf-8' });
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.error(`Execution Error: ${error.message}`);
+      throw error;
+    }
   }
+
 }
