@@ -43,7 +43,8 @@ export const createGarmsCashFile = (
 ) => {
   const fileName = '/tmp/GARMS_CASH_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
-    flags: 'a',
+    flags: 'a', // 'a' means append mode
+    encoding: 'ascii', // Explicitly sets the encoding to ASCII
   });
   try {
     let count = 0;
@@ -130,10 +131,14 @@ export const createGarmsCashFileHeader = (
   gch.totalDebitCardAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.DEBIT),
   );
-  gch.totalVisaAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA) + getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT));
-  gch.totalMasterCardAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) + getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT));
+  gch.totalVisaAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.VISA) +
+      getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT),
+  );
+  gch.totalMasterCardAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) +
+      getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT),
+  );
   gch.totalAmexAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.AMEX),
   );

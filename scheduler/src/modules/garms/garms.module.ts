@@ -6,6 +6,7 @@ import { Receipt } from '../common/entities/receipt.entity';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
 import { PermitType } from '../common/entities/permit-type.entity';
+import { FileTransferController } from './garms.controller';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { PermitType } from '../common/entities/permit-type.entity';
     ]),
   ],
   providers: [GarmsService],
+  controllers: [FileTransferController],
 })
 export class GarmsModule {}

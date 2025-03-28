@@ -1,5 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -25,6 +24,8 @@ import { Cache } from 'cache-manager';
 import { getFromCache } from '../../common/helper/cache.helper';
 import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { exec } from 'child_process';
+import { uploadToGarms } from '../../common/helper/sftp.helper';
 
 @Injectable()
 export class GarmsService {
@@ -78,7 +79,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.upload(fileName, recordLength, remoteFilePath);
+        await this.uploadFile(Buffer.from(fileName, 'ascii'), fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -288,36 +289,50 @@ export class GarmsService {
     });
     return permitTypeServiceCodes;
   }
-  /**
-   * upload file to GARMS mainframe.
-   * @param fileName
-   * @param recordLength
-   * @param remoteFilePath
-   */
-  async upload(fileName: string, recordLength: number, remoteFilePath: string) {
-    const username = process.env.GARMS_USER;
-    const password = process.env.GARMS_PWD;
-    if (username && password) {
-      const localFilePath = fileName; // Unique temp file name
-      const options: FTPS.FTPOptions = {
-        host: process.env.GARMS_HOST,
-        username: process.env.GARMS_USER,
-        password: process.env.GARMS_PWD,
-        // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
-        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
-      };
-      const ftps: FTPS = new FTPS(options);
-      // Wrap the FTPS command inside a Promise
-      const uploadPromise = new Promise(() => {
-        this.logger.log('sending file to garms', localFilePath);
-        // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-        const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-        ftps.raw(ftpCommand).exec(console.log);
-      });
-      // Wait for the upload to complete before proceeding
-      await uploadPromise;
-    } else {
-      this.logger.log('Unable to get username and password for ftp server');
+
+  async uploadFile(fileData: Buffer, fileName: string, remoteFilePath: string, recordLength: number) {
+    try {
+      await uploadToGarms(fileData, fileName, this.logger);
+      this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+    } catch (err) {
+      console.error('Error uploading file:', err);
     }
+  }
+
+  private executeSSHAndFTP(
+    fileName: string,
+    remoteFilePath: string,
+    recordLength: number,
+  ) {
+    const user = process.env.GARMS_USER;
+    const password = process.env.GARMS_PWD;
+    const host = process.env.GARMS_HOST;
+    console.log(user, password, host, remoteFilePath, recordLength);
+    const sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
+    const ftpCommands = `
+    user ${user} ${password}
+    ascii
+    SITE BLKSIZE=0
+    SITE LRECL=${recordLength}
+    SITE WRAP
+    SITE RECFM=FB
+    put ${fileName} '${remoteFilePath}'
+    QUIT
+    `;
+    const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v bcsc01d.gov.bc.ca"`;
+    console.log('full command ', fullCommand);
+    this.executeCommand(fullCommand);
+  }
+
+  private executeCommand(command: string) {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`Error: ${error.message}`);
+      }
+      if (stderr) {
+        console.log(`Stderr: ${stderr}`);
+      }
+      console.log(stdout);
+    });
   }
 }
