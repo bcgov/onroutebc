@@ -339,10 +339,10 @@ export class GarmsService {
   private executeCommand(command: string) {
     try {
       const result = execSync(command, { encoding: 'utf-8' });
-      console.log(result);
+      this.logger.log(result);
       return result;
     } catch (error) {
-      console.error(`Execution Error: ${error.message}`);
+      this.logger.error(`Execution Error: ${error.message}`);
       throw error;
     }
   }
