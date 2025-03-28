@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';
 import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
-import { Nullable } from '../../../../common/types/common';
 
 export class ReadSpecialAuthDto {
   @AutoMap()
@@ -33,7 +32,7 @@ export class ReadSpecialAuthDto {
     return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
   })
   @IsOptional()
-  isLcvAllowed?: Nullable<boolean>;
+  isLcvAllowed?: boolean;
 
   @AutoMap()
   @ApiProperty({
@@ -43,5 +42,5 @@ export class ReadSpecialAuthDto {
     required: false,
   })
   @IsOptional()
-  noFeeType?: Nullable<NoFeeType>;
+  noFeeType?: NoFeeType;
 }
