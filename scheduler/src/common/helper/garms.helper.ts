@@ -39,9 +39,9 @@ export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
+  filePath: string,
   logger: Logger,
 ) => {
-  const filePath='/tmp/'
   const fileName = 'GARMS_CASH';
   const logStream: fs.WriteStream = fs.createWriteStream(filePath+fileName, {
     flags: 'a', // 'a' means append mode

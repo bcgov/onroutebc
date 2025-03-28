@@ -45,6 +45,7 @@ export class GarmsService {
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
+    const filePath='/tmp/';
     const garmsCashFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
@@ -72,6 +73,7 @@ export class GarmsService {
           transactions,
           garmsExtractType,
           permitServiceCodes,
+          filePath,
           this.logger,
         );
 
@@ -79,7 +81,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.uploadFile(fileName,fileName,remoteFilePath,recordLength,);
+        await this.uploadFile(filePath,fileName,remoteFilePath,recordLength,);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
