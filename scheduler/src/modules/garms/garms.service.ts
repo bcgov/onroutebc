@@ -291,13 +291,13 @@ export class GarmsService {
   }
 
   async uploadFile(
-    fileData: string,
+    filePath: string,
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
   ) {
     try {
-      await uploadToGarms(fileData, fileName, this.logger);
+      await uploadToGarms(filePath, fileName, this.logger);
        this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
     } catch (err) {
       console.error('Error uploading file:', err);
