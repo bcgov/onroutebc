@@ -77,28 +77,26 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
-import { CommonService } from '../../common/common.service';
+import { PolicyService } from '../../common/policy.service';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   constructor(
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
     @InjectRepository(Transaction)
-    private transactionRepository: Repository<Transaction>,
+    private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(Receipt)
-    private receiptRepository: Repository<Receipt>,
+    private readonly receiptRepository: Repository<Receipt>,
     @InjectRepository(PaymentMethodType)
-    private paymentMethodTypeRepository: Repository<PaymentMethodType>,
+    private readonly paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
-    private paymentCardTypeRepository: Repository<PaymentCardType>,
-    @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
+    private readonly paymentCardTypeRepository: Repository<PaymentCardType>,
     private readonly specialAuthService: SpecialAuthService,
+    private readonly policyService: PolicyService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-    private readonly commonService: CommonService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -353,10 +351,12 @@ export class PaymentService {
         }
         if (isPolicyEngineEnabled) {
           const validationResults =
-            await this.commonService.validateWithPolicyEngine(application);
-          if (validationResults?.violations?.length > 0) {
-            throw new BadRequestException(
-              'Application data does not meet policy engine requirements.',
+            await this.policyService.validateWithPolicyEngine(application);
+
+          if (validationResults?.violations?.length) {
+            throw throwUnprocessableEntityException(
+              'POLICY_VALIDATION_FAILURE',
+              { applicationId: application.permitId, ...validationResults },
             );
           }
         }
@@ -475,10 +475,8 @@ export class PaymentService {
         )
       ) {
         const receiptNumber = await this.generateReceiptNumber();
-        //const receipt = new Receipt();
         let receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
-        //receipt.transaction = createdTransaction;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
         receipt.createdUserDirectory = currentUser.orbcUserDirectory;
@@ -487,7 +485,6 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-        // await queryRunner.manager.save(receipt);
         receipt = await queryRunner.manager.save(receipt);
 
         await queryRunner.manager.update(
@@ -743,10 +740,7 @@ export class PaymentService {
 
       if (updateTransactionTemp.pgApproved === 1) {
         const receiptNumber = await this.generateReceiptNumber();
-        //const receipt = new Receipt();
         let receipt = new Receipt();
-        receipt.receiptNumber = receiptNumber;
-        //receipt.transaction = updatedTransaction;
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
@@ -756,7 +750,6 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-        //await queryRunner.manager.save(receipt);
         receipt = await queryRunner.manager.save(receipt);
 
         await queryRunner.manager.update(

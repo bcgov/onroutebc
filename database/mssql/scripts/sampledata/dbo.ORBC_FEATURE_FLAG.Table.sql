@@ -64,7 +64,7 @@ VALUES
   (
     '3',
     'VALIDATE-WITH-POLICY-ENGINE',
-    'DISABLED',
+    'ENABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
