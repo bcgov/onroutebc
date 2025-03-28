@@ -328,8 +328,9 @@ export class GarmsService {
     put ${asciiFileName} ${remoteFilePath}
     QUIT
     `;
-
-    const fullCommand = `${sshCommand} "${iconvCommand} && echo \\"${ftpCommands}\\" | ftp -n -v ${host}"`;
+    const changeTypeCommand = `${sshCommand} "${iconvCommand}"`;
+    this.executeCommand(changeTypeCommand)
+    const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v ${host}"`;
     this.executeCommand(fullCommand);
     const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
     this.executeCommand(deleteFilesCommand);
