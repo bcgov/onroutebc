@@ -64,7 +64,7 @@ export const uploadToCFS = async (
 };
 
 export const uploadToGarms = async (
-  fileData: Buffer,
+  fileData: string,
   fileName: string,
   logger: Logger,
 ) => {
@@ -81,7 +81,7 @@ export const uploadToGarms = async (
     logger.error(error);
   }
   try {
-    const res = await sftp.put(fileData, fileName);
+    const res = await sftp.put(fileData, fileName,{writeStreamOptions: {encoding: 'ascii'}});
     logger.log(`Successfully sent file ${fileName} via SFTP.`);
     return res;
   } catch (error) {

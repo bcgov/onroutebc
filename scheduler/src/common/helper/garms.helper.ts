@@ -41,7 +41,7 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const fileName = '/tmp/GARMS_CASH_' + Date.now();
+  const fileName = '/tmp/GARMS_CASH';
   const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
     flags: 'a', // 'a' means append mode
     encoding: 'ascii', // Explicitly sets the encoding to ASCII

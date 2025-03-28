@@ -79,12 +79,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.uploadFile(
-          Buffer.from(fileName, 'ascii'),
-          fileName,
-          remoteFilePath,
-          recordLength,
-        );
+        //await this.uploadFile(fileName,fileName,remoteFilePath,recordLength,);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -296,7 +291,7 @@ export class GarmsService {
   }
 
   async uploadFile(
-    fileData: Buffer,
+    fileData: string,
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
@@ -317,7 +312,6 @@ export class GarmsService {
     const user = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     const host = process.env.GARMS_HOST;
-    console.log(user, password, host, remoteFilePath, recordLength);
     const sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
     const ftpCommands = `
     user ${user} ${password}
@@ -330,7 +324,6 @@ export class GarmsService {
     QUIT
     `;
     const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v bcsc01d.gov.bc.ca"`;
-    console.log('full command ', fullCommand);
     this.executeCommand(fullCommand);
   }
 
@@ -344,6 +337,5 @@ export class GarmsService {
         }
         console.log(stdout);
       });
-    
   }
 }

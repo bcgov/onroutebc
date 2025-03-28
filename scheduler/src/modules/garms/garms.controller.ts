@@ -12,15 +12,24 @@ export class FileTransferController {
   @Get('sftp')
   async transferFile() {
     try {
-      const data = 'Test Date';
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
       const recordLength = GARMS_CASH_FILE_LRECL;
       const result = await this.fileTransferService.uploadFile(
-        Buffer.from(data, 'ascii'),
+        '/tmp/GARMS_CASH',
         'test',
         remoteFilePath,
         recordLength
       );
+      return { message: result };
+    } catch (error) {
+      return { message: 'Error during file transfer', error: error.message };
+    }
+  }
+
+  @Get('create-cah-file')
+  async createCashFile() {
+    try {
+      const result = await this.fileTransferService.processCashTransactions();
       return { message: result };
     } catch (error) {
       return { message: 'Error during file transfer', error: error.message };
