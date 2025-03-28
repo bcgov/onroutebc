@@ -45,7 +45,7 @@ export class GarmsService {
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
-    const filePath='/tmp/';
+    const filePath = '/tmp/';
     const garmsCashFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
@@ -81,7 +81,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.uploadFile(filePath,fileName,remoteFilePath,recordLength,);
+        await this.uploadFile(filePath, fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -300,13 +300,13 @@ export class GarmsService {
   ) {
     try {
       await uploadToGarms(filePath, fileName, this.logger);
-     this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+      this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
     } catch (err) {
       console.error('Error uploading file:', err);
     }
   }
 
-    executeSSHAndFTP(
+  executeSSHAndFTP(
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
@@ -314,7 +314,7 @@ export class GarmsService {
     const user = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     const host = process.env.GARMS_HOST;
-    const asciiFileName = fileName+'ascii';
+    const asciiFileName = fileName + 'ascii';
 
     const sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
     const iconvCommand = `iconv -f ISO8859-1 -t IBM-037 ${fileName} >> ${asciiFileName}`;
@@ -329,7 +329,7 @@ export class GarmsService {
     QUIT
     `;
     const changeTypeCommand = `${sshCommand} "${iconvCommand}"`;
-    this.executeCommand(changeTypeCommand)
+    this.executeCommand(changeTypeCommand);
     const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v ${host}"`;
     this.executeCommand(fullCommand);
     const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
@@ -346,5 +346,4 @@ export class GarmsService {
       throw error;
     }
   }
-
 }

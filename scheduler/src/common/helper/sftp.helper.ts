@@ -81,7 +81,9 @@ export const uploadToGarms = async (
     logger.error(error);
   }
   try {
-    const res = await sftp.put(filePath+fileName, fileName,{writeStreamOptions: {encoding: 'ascii'}});
+    const res = await sftp.put(filePath + fileName, fileName, {
+      writeStreamOptions: { encoding: 'ascii' },
+    });
     logger.log(`Successfully sent file ${fileName} via SFTP.`);
     return res;
   } catch (error) {

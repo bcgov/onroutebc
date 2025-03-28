@@ -18,7 +18,7 @@ export class FileTransferController {
         '/tmp/',
         'GARMS_CASH',
         remoteFilePath,
-        recordLength
+        recordLength,
       );
       return { message: result };
     } catch (error) {
