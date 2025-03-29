@@ -38,8 +38,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import {
   calculatePermitAmount,
-  permitFee,
-  validAmount,
+  validateAmountReceived,
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
@@ -71,13 +70,15 @@ import {
   isCVClient,
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
-import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
 import { PolicyService } from '../../common/policy.service';
+import { ValidationResult, ValidationResults } from 'onroute-policy-engine/.';
+import { SpecialAuth } from '../../special-auth/entities/special-auth.entity';
+import { Nullable } from '../../../common/types/common';
 
 @Injectable()
 export class PaymentService {
@@ -331,6 +332,8 @@ export class PaymentService {
           relations: { permitData: true },
         },
       );
+
+      let totalTransactionAmount = 0;
       for (const application of existingApplications) {
         if (
           !(
@@ -345,28 +348,46 @@ export class PaymentService {
         const permitData = JSON.parse(
           application.permitData.permitData,
         ) as PermitData;
+
+        const permitHistory = await this.findPermitHistory(
+          application.originalPermitId,
+          queryRunner,
+          application?.company?.companyId,
+        );
+
+        const specialAuth = await this.specialAuthService.findOne(
+          application?.company?.companyId,
+        );
+
         // If application includes LoAs then validate Loa data.
         if (permitData.loas) {
           await isValidLoa(application, queryRunner, this.classMapper);
         }
-        if (isPolicyEngineEnabled) {
-          const validationResults =
-            await this.policyService.validateWithPolicyEngine(application);
 
-          if (validationResults?.violations?.length) {
-            throw throwUnprocessableEntityException(
-              'POLICY_VALIDATION_FAILURE',
-              { applicationId: application.permitId, ...validationResults },
-            );
-          }
+        const applicationFromDto =
+          createTransactionDto?.applicationDetails?.find(
+            (app) => app.applicationId === application.permitId,
+          );
+
+        const validationResults = await this.validateApplicationAndPayment({
+          amountReceived: applicationFromDto?.transactionAmount,
+          transactionType: createTransactionDto.transactionTypeId,
+          application,
+          currentUser,
+          permitHistory,
+          specialAuth,
+        });
+
+        if (validationResults?.violations?.length) {
+          throw throwUnprocessableEntityException('POLICY_VALIDATION_FAILURE', {
+            applicationId: application.permitId,
+            ...validationResults,
+          });
         }
+
+        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
       }
-      const totalTransactionAmount = await this.validateApplicationAndPayment(
-        createTransactionDto,
-        existingApplications,
-        currentUser,
-        queryRunner,
-      );
+
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -545,49 +566,85 @@ export class PaymentService {
    * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
    * or if there's a transaction type and amount mismatch in case of refunds.
    */
-  private async validateApplicationAndPayment(
-    createTransactionDto: CreateTransactionDto,
-    applications: Permit[],
-    currentUser: IUserJWT,
-    queryRunner: QueryRunner,
-  ) {
-    let totalTransactionAmountCalculated = 0;
-    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
-    // Calculate and add amount for each requested application, as per the available backend data.
-    for (const application of applications) {
-      //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-        throw new UnprocessableEntityException(
-          `Atleast one of the application has invalid startDate or expiryDate.`,
-        );
-      }
-      totalTransactionAmountCalculated += await this.permitFeeCalculator(
-        application,
-        queryRunner,
-      );
+  private async validateApplicationAndPayment({
+    application,
+    transactionType,
+    amountReceived,
+    currentUser,
+    permitHistory,
+    specialAuth,
+  }: {
+    application: Permit;
+    transactionType: TransactionType;
+    amountReceived: number;
+    currentUser?: IUserJWT;
+    permitHistory?: Nullable<PermitHistoryDto[]>;
+    specialAuth?: Nullable<SpecialAuth>;
+  }): Promise<ValidationResults> {
+    const validationResults = await this.policyService.validateWithPolicyEngine(
+      application,
+      specialAuth,
+    );
+
+    if (!validationResults?.cost?.length) {
+      const cost: ValidationResult = {
+        type: 'cost',
+        code: 'cost-value',
+        message: 'Calculated permit cost',
+        cost: 0,
+      };
+
+      validationResults.cost?.push(cost);
     }
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
+
+    if (application.permitStatus === ApplicationStatus.REVOKED) {
+      validationResults.cost.at(0).cost = 0;
+      return validationResults;
+    }
+
+    const existingPermitAmount = calculatePermitAmount(permitHistory);
+
+    if (application.permitStatus === ApplicationStatus.VOIDED) {
+      validationResults.cost.at(0).cost = -existingPermitAmount;
+      return validationResults;
+    }
+
+    // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
     if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
+      (specialAuth?.noFeeType && application.revision === 0) ||
+      (application.revision > 0 && existingPermitAmount === 0)
+    ) {
+      validationResults.cost.at(0).cost = 0;
+      return validationResults;
+    }
+    if (existingPermitAmount > 0) {
+      validationResults.cost.at(0).cost -= existingPermitAmount;
+    } else {
+      validationResults.cost.at(0).cost += existingPermitAmount;
+    }
+
+    if (
+      !validateAmountReceived(
+        validationResults?.cost?.at(0)?.cost,
+        amountReceived,
+        transactionType,
       )
     ) {
       this.logger.error(
-        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmountCalculated}`,
+        `Transaction amount mismatch. Received amount is ${amountReceived}. Calculated amount is ${validationResults?.cost.at(0).cost}`,
       );
 
-      throw new BadRequestException('Transaction amount mismatch.');
+      const cost: ValidationResult = {
+        type: 'violation',
+        code: 'cost-validation-error',
+        message: 'Transaction amount mismatch',
+        cost: validationResults?.cost?.at(0)?.cost,
+      };
+
+      validationResults?.cost?.push(cost);
     }
-    return totalTransactionAmount;
+
+    return validationResults;
   }
 
   @LogAsyncMethodExecution()
@@ -839,39 +896,6 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
-  }
-
-  /**
-   * Calculates the permit fee based on the application status, historical payments, and current permit data.
-   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
-   * Otherwise, it calculates the fee based on existing payments and current permit data.
-   *
-   * @param application - The Permit application for which to calculate the fee.
-   * @param queryRunner - An optional QueryRunner for database transactions.
-   * @returns {Promise<number>} - The calculated permit fee or refund amount.
-   */
-  @LogAsyncMethodExecution()
-  async permitFeeCalculator(
-    application: Permit,
-    queryRunner?: QueryRunner,
-  ): Promise<number> {
-    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
-    const companyId = application.company.companyId;
-
-    const permitPaymentHistory = await this.findPermitHistory(
-      application.originalPermitId,
-      queryRunner,
-      companyId,
-    );
-    const isNoFee = await this.specialAuthService.findNoFee(companyId);
-    const oldAmount =
-      permitPaymentHistory.length > 0
-        ? calculatePermitAmount(permitPaymentHistory)
-        : undefined;
-    if (application.permitStatus === ApplicationStatus.VOIDED)
-      return -oldAmount;
-    const fee = permitFee(application, isNoFee, oldAmount);
-    return fee;
   }
 
   /**

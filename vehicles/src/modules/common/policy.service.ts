@@ -8,7 +8,6 @@ import { AxiosError } from 'axios';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { Permit } from '../permit-application-payment/permit/entities/permit.entity';
 import { Policy, ValidationResults } from 'onroute-policy-engine';
-import { ReadPolicyConfigDto } from '../policy/dto/response/read-policy-config.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { HttpService } from '@nestjs/axios';
@@ -22,6 +21,7 @@ import { ExceptionDto } from '../../common/exception/exception.dto';
 import { SpecialAuth } from '../special-auth/entities/special-auth.entity';
 import { Nullable } from '../../common/types/common';
 import { SpecialAuthorizations } from 'onroute-policy-engine/types';
+import { PolicyConfiguration } from '../../common/interface/policy-configuration-report.interface';
 
 @Injectable()
 export class PolicyService {
@@ -54,7 +54,7 @@ export class PolicyService {
     permitApplication: Permit,
     specialAuth?: Nullable<SpecialAuth>,
   ): Promise<ValidationResults> {
-    let activePolicyDefintion: ReadPolicyConfigDto =
+    let activePolicyDefintion: PolicyConfiguration =
       await this.cacheManager.get(CacheKey.POLICY_CONFIGURATIONS);
     if (!activePolicyDefintion) {
       const policyDefinitions = await this.getActivePolicyDefinitions(
@@ -93,6 +93,13 @@ export class PolicyService {
       convertToPolicyApplication(permitApplication),
     );
 
+    if (!validationResults) {
+      this.logger.error('Policy Engine Validation Failure');
+      throw new InternalServerErrorException(
+        'Policy Engine Validation Failure',
+      );
+    }
+
     return validationResults;
   }
 
@@ -101,7 +108,7 @@ export class PolicyService {
     httpService: HttpService,
     cacheManager: Cache,
     cls: ClsService,
-  ): Promise<ReadPolicyConfigDto> {
+  ): Promise<PolicyConfiguration> {
     const token = await getAccessToken(
       GovCommonServices.ORBC_SERVICE_ACCOUNT,
       httpService,
@@ -115,7 +122,7 @@ export class PolicyService {
     baseUrl.searchParams.set('isCurrent', 'true');
 
     try {
-      const response = await httpService.axiosRef.get<ReadPolicyConfigDto[]>(
+      const response = await httpService.axiosRef.get<PolicyConfiguration[]>(
         baseUrl?.toString(),
         {
           headers: {
