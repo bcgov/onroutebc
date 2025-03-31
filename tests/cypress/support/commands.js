@@ -1,25 +1,44 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add('userLoginBceid', () => {
+    const wait_time = Cypress.env('wait_time');
+    const username = Cypress.env('bceid_username');
+    const password = Cypress.env('bceid_password');
+    // Step 1: Visit the base URL
+    cy.visit('/');
+
+    // Step 2: Find and click the login button by its idir
+    cy.get('#login-bceid').click();
+    cy.wait(wait_time);
+
+    // Step 3: Enter credentials
+    cy.get('#user').type(username); 
+    cy.get('#password').type(password);
+    cy.wait(wait_time);
+
+    // Step 4: Submit the login form
+    cy.get('[name="btnSubmit"]').click();
+    cy.wait(wait_time);
+
+  });
+
+  Cypress.Commands.add('userLoginIdir', () => {
+    const wait_time = Cypress.env('wait_time');
+    const username = Cypress.env('idir_username');
+    const password = Cypress.env('idir_password');
+    // Step 1: Visit the base URL
+    cy.visit('/');
+
+    // Step 2: Find and click the login button by its idir
+    cy.get('#login-idir').click();
+    cy.wait(wait_time);
+
+    // Step 3: Enter credentials
+    cy.get('#user').type(username); 
+    cy.get('#password').type(password);
+    cy.wait(wait_time);
+
+    // Step 4: Submit the login form
+    cy.get('[name="btnSubmit"]').click();
+    cy.wait(wait_time);
+
+  });
+  
