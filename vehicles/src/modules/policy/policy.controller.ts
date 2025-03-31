@@ -5,6 +5,7 @@ import {
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -12,7 +13,7 @@ import { ExceptionDto } from '../../common/exception/exception.dto';
 import { ApplicationIdIdPathParamDto } from '../permit-application-payment/application/dto/request/pathParam/applicationId.path-params.dto';
 import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
-import { ValidationResults } from 'onroute-policy-engine/.';
+import { ValidationResults } from 'onroute-policy-engine';
 
 @ApiBearerAuth()
 @ApiTags('Policy Validation')
@@ -45,10 +46,10 @@ export class PolicyController {
     type: ExceptionDto,
   })
   //TODO - Issue with import of Valdiation Result
-  // @ApiOkResponse({
-  //   description: 'The policy engine validation results.',
-  //   type: ValidationResults,
-  // })
+  @ApiOkResponse({
+    description: 'The policy engine validation results.',
+    type: ValidationResults,
+  })
   @Get(':applicationId')
   @Permissions({
     allowedBCeIDRoles: [

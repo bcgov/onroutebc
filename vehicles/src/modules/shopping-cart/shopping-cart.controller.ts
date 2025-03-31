@@ -28,8 +28,8 @@ import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetApplicationInCartQueryParams } from './dto/request/queryParam/getApplicationsInCart.query-param.dto';
 import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
-import { ReadPEShoppingCartDto } from './dto/response/read-pe-shopping-cart.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
+import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -102,7 +102,7 @@ export class ShoppingCartController {
   })
   @ApiOkResponse({
     description: 'The items in the cart.',
-    type: Array<ReadPEShoppingCartDto>,
+    type: Array<ReadShoppingCartDto>,
   })
   @Get()
   @Permissions({
@@ -120,7 +120,7 @@ export class ShoppingCartController {
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
     @Query() { allApplications }: GetApplicationInCartQueryParams,
-  ): Promise<ReadPEShoppingCartDto[]> {
+  ): Promise<ReadShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,

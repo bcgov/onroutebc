@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ValidationResults } from 'onroute-policy-engine/.';
+import { ValidationResults } from 'onroute-policy-engine';
 
 export class ReadPolicyValidationDto extends ValidationResults {
   @AutoMap()

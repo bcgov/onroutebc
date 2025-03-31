@@ -20,7 +20,6 @@ import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { isPermitTypeEligibleForQueue } from '../../common/helper/permit-application.helper';
 import { PolicyService } from '../policy/policy.service';
-import { ReadPEShoppingCartDto } from './dto/response/read-pe-shopping-cart.dto';
 
 @Injectable()
 export class ShoppingCartService {
@@ -113,9 +112,9 @@ export class ShoppingCartService {
     currentUser: IUserJWT,
     companyId: number,
     allApplications?: boolean,
-  ): Promise<ReadPEShoppingCartDto[]> {
+  ): Promise<ReadShoppingCartDto[]> {
     const { userGUID, orbcUserRole } = currentUser;
-    const readPEShoppingCartDto: ReadPEShoppingCartDto[] = [];
+    const readShoppingCartDto: ReadShoppingCartDto[] = [];
     const applications = await this.getSelectShoppingCartQB(companyId, {
       userGUID,
       orbcUserRole: orbcUserRole,
@@ -131,25 +130,23 @@ export class ShoppingCartService {
           companyId,
         });
 
-      const readShoppingCartDto = await this.classMapper.mapAsync(
-        application,
-        Application,
-        ReadShoppingCartDto,
-        {
-          extraArgs: () => ({
-            currentUserRole: orbcUserRole,
-            companyId,
-          }),
-        },
+      readShoppingCartDto.push(
+        await this.classMapper.mapAsync(
+          application,
+          Application,
+          ReadShoppingCartDto,
+          {
+            extraArgs: () => ({
+              currentUserRole: orbcUserRole,
+              companyId,
+              validationResults,
+            }),
+          },
+        ),
       );
-
-      readPEShoppingCartDto.push({
-        validationResults: validationResults,
-        ...readShoppingCartDto,
-      } as ReadPEShoppingCartDto);
     }
 
-    return readPEShoppingCartDto;
+    return readShoppingCartDto;
   }
 
   /**

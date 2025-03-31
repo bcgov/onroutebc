@@ -6,7 +6,7 @@ import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { VehicleType } from '../enum/vehicle-type.enum';
-import { ValidationResult } from 'onroute-policy-engine/.';
+import { ValidationResult } from 'onroute-policy-engine';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);

@@ -2,7 +2,7 @@ import { TransactionType } from '../enum/transaction-type.enum';
 import { PermitHistoryDto } from 'src/modules/permit-application-payment/permit/dto/response/permit-history.dto';
 import { NotAcceptableException } from '@nestjs/common';
 import * as dayjs from 'dayjs';
-import { ValidationResult } from 'onroute-policy-engine/.';
+import { ValidationResult } from 'onroute-policy-engine';
 
 export const leapYear = (
   duration: number,
