@@ -15,6 +15,7 @@ export const GARMS_CASH_FILE_LOCATION = '.GA4701.WS.BATCH(+1)';
 export const GARMS_CREDIT_FILE_LOCATION = '.GA4702.WSCREDIT.INPUT(+1)';
 export const GARMS_CASH_FILE_LRECL = 140;
 export const GARMS_CREDIT_FILE_LRECL = 182;
+export const GARMS_LOCAL_FILE_PATH = '/tmp/';
 // Constants group
 export const GARMS_CONFIG = {
   agentNumber: AGENT_NUMBER,
