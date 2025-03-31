@@ -19,6 +19,7 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
+import NotificationBanner from "./components/NotificationBanner";
 
 const getEnv = () => {
   const env =
@@ -156,6 +157,17 @@ export const Header = () => {
 
   return (
     <div className="header">
+      <NotificationBanner
+        title="Important Notice"
+        message={
+          <div>
+            onRouteBC is undergoing scheduled maintenance on [Date] from [Start
+            Time] to [End Time]. During this period, you may experience
+            temporary disruptions. We apologize for any inconvenience and
+            appreciate your understanding.
+          </div>
+        }
+      />
       <header
         className={`header__main header__main--${getEnv()}`}
         data-testid="header-background"
