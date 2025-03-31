@@ -3,6 +3,7 @@ import {
   DETAIL_REC_TYPE,
   GARMS_CASH_FILLER,
   GARMS_DATE_FORMAT,
+  GARMS_LOCAL_FILE_PATH,
   HEADER_REC_TYPE,
   INV_QTY,
   INV_UNITS,
@@ -41,10 +42,14 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const fileName = '/tmp/GARMS_CASH_' + Date.now();
-  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
-    flags: 'a',
-  });
+  const fileName = 'GARMS_CASH';
+  const logStream: fs.WriteStream = fs.createWriteStream(
+    GARMS_LOCAL_FILE_PATH + fileName,
+    {
+      flags: 'a', // 'a' means append mode
+      encoding: 'ascii', // Explicitly sets the encoding to ASCII
+    },
+  );
   try {
     let count = 0;
     const groupedTransactionsByDate: DateTransaction[] =
@@ -130,10 +135,14 @@ export const createGarmsCashFileHeader = (
   gch.totalDebitCardAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.DEBIT),
   );
-  gch.totalVisaAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA) + getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT));
-  gch.totalMasterCardAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) + getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT));
+  gch.totalVisaAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.VISA) +
+      getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT),
+  );
+  gch.totalMasterCardAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) +
+      getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT),
+  );
   gch.totalAmexAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.AMEX),
   );
