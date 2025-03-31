@@ -81,7 +81,7 @@ export const uploadToGarms = async (fileName: string, logger: Logger) => {
   } catch (error) {
     logger.error(`Cannot connect to ${process.env.GARMS_HOST} via SFTP.`);
     logger.error(error);
-    new InternalServerErrorException(
+    throw new InternalServerErrorException(
       `Cannot connect to ${process.env.GARMS_HOST} via SFTP.`,
     );
   }
