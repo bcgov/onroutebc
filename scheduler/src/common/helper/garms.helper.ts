@@ -1,7 +1,9 @@
 import {
   AGENT_NUMBER,
+  CREDIT_AGENT_NUMBER,
   DETAIL_REC_TYPE,
   GARMS_CASH_FILLER,
+  GARMS_CREDIT_FILLER,
   GARMS_DATE_FORMAT,
   GARMS_LOCAL_FILE_PATH,
   HEADER_REC_TYPE,
@@ -25,6 +27,12 @@ import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
 import * as fs from 'fs';
+import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto';
+import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
+import { PermitApprovalSource } from '../enum/permit-approval-source.enum';
+import {
+  ApplicationStatus,
+} from 'src/modules/common/enum/application-status.enum';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -42,7 +50,7 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const fileName = 'GARMS_CASH';
+  const fileName = 'GARMS_CASH' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
     {
@@ -125,31 +133,38 @@ export const createGarmsCashFileHeader = (
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
   gch.recCount = formatNumber(seqNumber, 6);
-  gch.revAmount = formatAmount(getSum(paymentTypeAmounts));
+  gch.revAmount = formatAmount(getSum(paymentTypeAmounts), 10);
   gch.totalCashAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.CASH),
+    10,
   );
   gch.totalChequeAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE),
+    10,
   );
   gch.totalDebitCardAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.DEBIT),
+    10,
   );
   gch.totalVisaAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.VISA) +
       getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT),
+    10,
   );
   gch.totalMasterCardAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) +
       getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT),
+    10,
   );
   gch.totalAmexAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.AMEX),
+    10,
   );
   gch.totalUSAmount = US_AMOUNT;
   gch.totalUSExchangeAmount = US_EXC_AMOUNT;
   gch.totalGAAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.GA),
+    10,
   );
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
@@ -185,6 +200,7 @@ export const createGarmsCashFileDetails = (
     gcd.invUnits = INV_UNITS;
     gcd.revAmount = formatAmount(
       parseFloat(permitTypeAmounts.get(key).toFixed(2)),
+      10,
     );
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
@@ -194,6 +210,127 @@ export const createGarmsCashFileDetails = (
     if (lastHeader && lastDetailLine) logStream.end(detail);
     else logStream.write(detail + '\n');
   }
+};
+
+export const createGarmsCreditFile = (
+  transactions: Transaction[],
+  garmsExtractType: GarmsExtractType,
+  permitServiceCodes: Map<string, number>,
+  logger: Logger,
+) => {
+  const fileName = 'GARMS_CREDIT' + Date.now();
+  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
+    flags: 'a',
+  });
+  try {
+    let serviceCount = 0;
+    let totalAmount = 0;
+    const date = new Date();
+    const groupedTransactionsByDate: DateTransaction[] =
+      groupTransactionsByDate(transactions);
+    if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
+      for (const transactionByDate of groupedTransactionsByDate) {
+        const transactions = transactionByDate.transactions as Transaction[];
+        transactions.forEach((transaction) => {
+          serviceCount += 1;
+          transaction.permitTransactions.forEach((permitTransaction) => {
+            totalAmount += getPaymentAmount(permitTransaction, transaction);
+            console.log(permitTransaction);
+            console.log(serviceCount, totalAmount);
+            createGarmsCreditFileDetails(
+              date,
+              transactionByDate.date,
+              permitTransaction,
+              transaction,
+              permitServiceCodes,
+              logStream,
+            );
+            //get total money for header
+          });
+        });
+      }
+      createGarmsCreditFileHeader(serviceCount, date, totalAmount, logStream);
+      return fileName;
+    }
+  } catch (err) {
+    logger.error(err);
+    throw new InternalServerErrorException(
+      `Garms ${garmsExtractType} File Creation Failed`,
+    );
+  }
+};
+
+export const createGarmsCreditFileHeader = (
+  serviceCount: number,
+  extractDate: Date,
+  total: number,
+  logStream: fs.WriteStream,
+) => {
+  const gch = new GarmsCreditHeader();
+  gch.recType = HEADER_REC_TYPE;
+  gch.agentNumber = CREDIT_AGENT_NUMBER;
+  gch.extractDate = convertUtcToPt(extractDate, GARMS_DATE_FORMAT);
+  gch.extractTime = convertUtcToPt(extractDate, 'HHmmss');
+  gch.invQuantity = INV_QTY;
+  gch.transactionCount = formatNumber(serviceCount, 4);
+  gch.servicecount = formatNumber(serviceCount, 5);
+  gch.revAmount = formatAmount(total, 10);
+  gch.f1 = GARMS_CREDIT_FILLER;
+  const header = Object.values(gch).join('');
+  logStream.write(header + '\n');
+};
+
+export const createGarmsCreditFileDetails = (
+  extractDate: Date,
+  date: string,
+  permitTransaction: PermitTransaction,
+  transaction: Transaction,
+  permitServiceCodes: Map<string, number>,
+  logStream: fs.WriteStream,
+) => {
+  const gcd = new GarmsCreditDetails();
+  gcd.recType = DETAIL_REC_TYPE;
+  gcd.agentNumber = CREDIT_AGENT_NUMBER;
+  gcd.extractDate = convertUtcToPt(extractDate, GARMS_DATE_FORMAT);
+  gcd.subAgentNumer = AGENT_NUMBER;
+  gcd.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
+  gcd.serviceCode = formatNumber(
+    permitServiceCodes.get(permitTransaction.permit.permitType),
+    4,
+  );
+  gcd.serviceQuantity = formatNumber(1, 5);
+  gcd.plateNumber = formatString(permitTransaction.permit.permitData.plate, 25);
+  const approvalSource =
+    permitTransaction.permit.permitApprovalSource === PermitApprovalSource.PPC
+      ? PermitApprovalSource.PPC
+      : 'WEB';
+
+  const revisionStatus =
+    permitTransaction.permit.revision > 0
+      ? permitTransaction.permit.permitStatus === ApplicationStatus.VOIDED
+        ? formatString('VOID', 8)
+        : formatString('CHANGE', 8)
+      : 'ORIGINAL';
+  gcd.permitApplicationSource = formatString(
+    `${approvalSource}${revisionStatus}`,
+    25,
+  );
+  gcd.permitDate = formatString(
+    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYYYMMDD'),
+    35,
+  );
+  gcd.invUnits = INV_QTY;
+  gcd.revAmount = formatAmount(
+    getPaymentAmount(permitTransaction, transaction),
+    9,
+  );
+  gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
+  gcd.serNoTo = SER_NO_TO;
+  gcd.wsAccount = 'WS1234';
+  gcd.voidInd = VOID_IND;
+  gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
+  const detail = Object.values(gcd).join('');
+  logStream.write(detail + '\n');
 };
 
 /**
@@ -384,10 +521,10 @@ export const updateMapServiceCode = (
  * @param amount The numeric value to be formatted.
  * @returns A string representation of the formatted amount.
  */
-export const formatAmount = (amount: number) => {
-  if (amount > 0) return amount.toFixed(2).padStart(10, '0') + ' ';
+export const formatAmount = (amount: number, length: number) => {
+  if (amount > 0) return amount.toFixed(2).padStart(length, '0') + ' ';
   else if (amount === 0) return '0000000.00 ';
-  else return Math.abs(amount).toFixed(2).padStart(10, '0') + '-';
+  else return Math.abs(amount).toFixed(2).padStart(length, '0') + '-';
 };
 
 /**
@@ -398,8 +535,12 @@ export const formatAmount = (amount: number) => {
  * @param length The desired length of the resulting string.
  * @returns A string representation of the number, padded with leading zeros to the specified length.
  */
-export const formatNumber = (value: number, length: number) => {
+export const formatNumber = (value: number | string, length: number) => {
   return value.toString().padStart(length, '0');
+};
+
+export const formatString = (value: string | number, length: number) => {
+  return value.toString().padEnd(length, ' ');
 };
 
 /**
