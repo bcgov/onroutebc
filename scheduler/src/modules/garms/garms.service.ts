@@ -300,13 +300,14 @@ export class GarmsService {
   ) {
     try {
       await uploadToGarms(filePath, fileName, this.logger);
-      this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+      this.executeSSHAndFTP(filePath, fileName, remoteFilePath, recordLength);
     } catch (err) {
       console.error('Error uploading file:', err);
     }
   }
 
   executeSSHAndFTP(
+    filePath: string,
     fileName: string,
     remoteFilePath: string,
     recordLength: number,
@@ -315,8 +316,14 @@ export class GarmsService {
     const password = process.env.GARMS_PWD;
     const host = process.env.GARMS_HOST;
     const asciiFileName = fileName + 'ascii';
-
-    const sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
+    const garmEnv = process.env.GARMS_ENV;
+    let sshCommand;
+    if (garmEnv === 'GARMP') {
+      sshCommand = `sshpass -p ${password} ssh -o "StrictHostKeyChecking no" ${user}@${host}`;
+    } else {
+      // disabling verbose for prod as it displays password
+      sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
+    }
     const iconvCommand = `iconv -f ISO8859-1 -t IBM-037 ${fileName} >> ${asciiFileName}`;
     const ftpCommands = `
     user ${user} ${password}
@@ -334,6 +341,8 @@ export class GarmsService {
     this.executeCommand(fullCommand);
     const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
     this.executeCommand(deleteFilesCommand);
+    const deleteLocalFileCommand = `rm ${filePath}${fileName}`;
+    this.executeCommand(deleteLocalFileCommand);
   }
 
   private executeCommand(command: string) {
