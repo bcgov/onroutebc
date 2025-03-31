@@ -17,8 +17,8 @@ export class SpecialAuthService {
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(SpecialAuth)
-    private specialAuthRepository: Repository<SpecialAuth>,
-    private dataSource: DataSource,
+    private readonly specialAuthRepository: Repository<SpecialAuth>,
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
