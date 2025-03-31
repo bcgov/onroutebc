@@ -19,6 +19,8 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { isPermitTypeEligibleForQueue } from '../../common/helper/permit-application.helper';
+import { PolicyService } from '../policy/policy.service';
+import { ReadPEShoppingCartDto } from './dto/response/read-pe-shopping-cart.dto';
 
 @Injectable()
 export class ShoppingCartService {
@@ -27,6 +29,7 @@ export class ShoppingCartService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
+    private readonly policyService: PolicyService,
   ) {}
 
   /**
@@ -110,8 +113,9 @@ export class ShoppingCartService {
     currentUser: IUserJWT,
     companyId: number,
     allApplications?: boolean,
-  ): Promise<ReadShoppingCartDto[]> {
+  ): Promise<ReadPEShoppingCartDto[]> {
     const { userGUID, orbcUserRole } = currentUser;
+    const readPEShoppingCartDto: ReadPEShoppingCartDto[] = [];
     const applications = await this.getSelectShoppingCartQB(companyId, {
       userGUID,
       orbcUserRole: orbcUserRole,
@@ -120,17 +124,32 @@ export class ShoppingCartService {
       .orderBy({ 'application.updatedDateTime': 'DESC' })
       .getMany();
 
-    return await this.classMapper.mapArrayAsync(
-      applications,
-      Application,
-      ReadShoppingCartDto,
-      {
-        extraArgs: () => ({
-          currentUserRole: orbcUserRole,
+    for (const application of applications) {
+      const validationResults =
+        await this.policyService.validateApplicationAndCalculateCost({
+          application,
           companyId,
-        }),
-      },
-    );
+        });
+
+      const readShoppingCartDto = await this.classMapper.mapAsync(
+        application,
+        Application,
+        ReadShoppingCartDto,
+        {
+          extraArgs: () => ({
+            currentUserRole: orbcUserRole,
+            companyId,
+          }),
+        },
+      );
+
+      readPEShoppingCartDto.push({
+        validationResults: validationResults,
+        ...readShoppingCartDto,
+      } as ReadPEShoppingCartDto);
+    }
+
+    return readPEShoppingCartDto;
   }
 
   /**

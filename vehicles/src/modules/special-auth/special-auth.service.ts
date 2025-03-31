@@ -3,13 +3,14 @@ import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { SpecialAuth } from './entities/special-auth.entity';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { Nullable } from '../../common/types/common';
 import { NoFeeType } from '../../common/enum/no-fee-type.enum';
+import { getQueryRunner } from '../../common/helper/database.helper';
 
 export class SpecialAuthService {
   private readonly logger = new Logger(SpecialAuthService.name);
@@ -17,6 +18,7 @@ export class SpecialAuthService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(SpecialAuth)
     private specialAuthRepository: Repository<SpecialAuth>,
+    private dataSource: DataSource,
   ) {}
 
   /**
@@ -40,6 +42,51 @@ export class SpecialAuthService {
     });
 
     return specialAuthEntity;
+  }
+
+  /**
+   * Finds a special authorization by company ID using a query runner.
+   *
+   * This method retrieves a special authorization entity from the database based on the provided company ID.
+   * It uses the provided query runner for transaction management, allowing for control over commit and rollback operations.
+   *
+   * @param companyId - The ID of the company for which to find the special authorization.
+   * @param queryRunner - An optional `QueryRunner` instance for transaction management.
+   *
+   * @returns {Promise<SpecialAuth>} A Promise that resolves to a `SpecialAuth` object representing the special authorization details.
+   *
+   * @throws Will throw an error if the special authorization cannot be found or if a database operation fails.
+   */
+  @LogAsyncMethodExecution()
+  async findOneWithQueryRunner(
+    companyId: number,
+    queryRunner?: Nullable<QueryRunner>,
+  ): Promise<SpecialAuth> {
+    let localQueryRunner = true;
+    ({ localQueryRunner, queryRunner } = await getQueryRunner({
+      queryRunner,
+      dataSource: this.dataSource,
+    }));
+    try {
+      const specialAuthEntity = await queryRunner.manager
+        .createQueryBuilder()
+        .select('specialAuth')
+        .from(SpecialAuth, 'specialAuth')
+        .leftJoinAndSelect('specialAuth.company', 'company')
+        .where('company.companyId = :companyId', { companyId: companyId })
+        .getOne();
+      return specialAuthEntity;
+    } catch (error) {
+      if (localQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
+      this.logger.error(error);
+      throw error;
+    } finally {
+      if (localQueryRunner) {
+        await queryRunner.release();
+      }
+    }
   }
 
   /**

@@ -10,7 +10,6 @@ import { CommonService } from './common.service';
 import { HttpModule } from '@nestjs/axios';
 import { DopsService } from './dops.service';
 import { CFSCreditAccountService } from './cfsCreditAccountService';
-import { PolicyService } from './policy.service';
 
 @Global()
 @Module({
@@ -23,7 +22,6 @@ import { PolicyService } from './policy.service';
     ContactProfile,
     CommonService,
     DopsService,
-    PolicyService,
     CFSCreditAccountService,
   ],
   exports: [
@@ -32,7 +30,6 @@ import { PolicyService } from './policy.service';
     ContactProfile,
     CommonService,
     DopsService,
-    PolicyService,
     CFSCreditAccountService,
   ],
 })

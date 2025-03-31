@@ -23,13 +23,13 @@ import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
-import { CompanyIdPathParamDto } from './dto/request/pathParam/companyId.path-param.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
-import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetApplicationInCartQueryParams } from './dto/request/queryParam/getApplicationsInCart.query-param.dto';
 import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
+import { ReadPEShoppingCartDto } from './dto/response/read-pe-shopping-cart.dto';
+import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -102,7 +102,7 @@ export class ShoppingCartController {
   })
   @ApiOkResponse({
     description: 'The items in the cart.',
-    type: Array<ReadShoppingCartDto>,
+    type: Array<ReadPEShoppingCartDto>,
   })
   @Get()
   @Permissions({
@@ -120,7 +120,7 @@ export class ShoppingCartController {
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
     @Query() { allApplications }: GetApplicationInCartQueryParams,
-  ): Promise<ReadShoppingCartDto[]> {
+  ): Promise<ReadPEShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,
