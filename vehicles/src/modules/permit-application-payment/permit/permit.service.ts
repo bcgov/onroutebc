@@ -57,6 +57,7 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { NotificationType } from '../../../common/enum/notification-type.enum';
 import { validateEmailList } from '../../../common/helper/notification.helper';
+import { convertUtcToPt } from '../../../common/helper/date-time.helper';
 
 @Injectable()
 export class PermitService {
@@ -287,7 +288,7 @@ export class PermitService {
                 (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
               ),
               activeStatus: PermitStatus.ISSUED,
-              expiryDate: new Date(),
+              expiryDate: convertUtcToPt(new Date(), 'YYYY-MM-DD'),
             },
           );
         }),
@@ -302,7 +303,7 @@ export class PermitService {
             '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
             {
               activeStatus: PermitStatus.ISSUED,
-              expiryDate: new Date(),
+              expiryDate: convertUtcToPt(new Date(), 'YYYY-MM-DD'),
             },
           );
         }),
