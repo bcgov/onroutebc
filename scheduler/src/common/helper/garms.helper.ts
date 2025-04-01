@@ -229,25 +229,26 @@ export const createGarmsCreditFile = (
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
+      let details = '';
       for (const transactionByDate of groupedTransactionsByDate) {
         const transactions = transactionByDate.transactions as Transaction[];
         transactions.forEach((transaction) => {
           serviceCount += 1;
           transaction.permitTransactions.forEach((permitTransaction) => {
             totalAmount += getPaymentAmount(permitTransaction, transaction);
-            createGarmsCreditFileDetails(
+            const detail = createGarmsCreditFileDetails(
               date,
               transactionByDate.date,
               permitTransaction,
               transaction,
               permitServiceCodes,
-              logStream,
             );
-            //get total money for header
+            details = details+ detail
           });
         });
       }
       createGarmsCreditFileHeader(serviceCount, date, totalAmount, logStream);
+      logStream.write(details);
       return fileName;
     }
   } catch (err) {
@@ -284,7 +285,6 @@ export const createGarmsCreditFileDetails = (
   permitTransaction: PermitTransaction,
   transaction: Transaction,
   permitServiceCodes: Map<string, number>,
-  logStream: fs.WriteStream,
 ) => {
   const gcd = new GarmsCreditDetails();
   gcd.recType = DETAIL_REC_TYPE;
@@ -310,7 +310,7 @@ export const createGarmsCreditFileDetails = (
         : formatString('CHANGE', 8)
       : 'ORIGINAL';
   gcd.permitApplicationSource = formatString(
-    `${approvalSource}${revisionStatus}`,
+    `${approvalSource}-${revisionStatus}`,
     25,
   );
   gcd.permitDate = formatString(
@@ -328,7 +328,7 @@ export const createGarmsCreditFileDetails = (
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
-  logStream.write(detail + '\n');
+  return  detail + '\n';
 };
 
 /**
