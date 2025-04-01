@@ -219,7 +219,7 @@ export const createGarmsCreditFile = (
   logger: Logger,
 ) => {
   const fileName = 'GARMS_CREDIT' + Date.now();
-  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
+  const logStream: fs.WriteStream = fs.createWriteStream(GARMS_LOCAL_FILE_PATH + fileName, {
     flags: 'a',
   });
   try {
@@ -235,8 +235,6 @@ export const createGarmsCreditFile = (
           serviceCount += 1;
           transaction.permitTransactions.forEach((permitTransaction) => {
             totalAmount += getPaymentAmount(permitTransaction, transaction);
-            console.log(permitTransaction);
-            console.log(serviceCount, totalAmount);
             createGarmsCreditFileDetails(
               date,
               transactionByDate.date,
