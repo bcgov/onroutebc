@@ -61,7 +61,6 @@ jobs:
       params: |
         --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
         --set-string global.env.release_num='${{ needs.vars.outputs.release-num }}' \
-        --set-string global.env.onroutebc_version='${{ needs.vars.outputs.release-num }}' \
         
   promote-images-uat:
     name: Promote Images - Uat

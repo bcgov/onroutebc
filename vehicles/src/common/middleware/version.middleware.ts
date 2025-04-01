@@ -11,12 +11,12 @@ export class VersionMatchMiddleware implements NestMiddleware {
     // process.env.NODE_ENV === 'production'
     if (
       !headers['x-onroutebc-version'] ||
-      headers['x-onroutebc-version'] !== process.env.ONROUTEBC_VERSION
+      headers['x-onroutebc-version'] !== process.env.RELEASE_NUM
     ) {
       console.log('Throwing 406');
       console.log('----------------------------------');
       throwNotAcceptableException(
-        'Version Mismatch: Expected version: ' + process.env.ONROUTEBC_VERSION,
+        'Version Mismatch: Expected version: ' + process.env.RELEASE_NUM,
       );
     } else {
       next();

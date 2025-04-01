@@ -48,7 +48,6 @@ frontend:
             "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
             "VITE_PR_NUM":"$PR_NUM",
             "VITE_RELEASE_NUM":"$RELEASE_NUM",
-            "VITE_ONROUTEBC_VERSION":"$RELEASE_NUM",
             "VITE_BC_GEOCODER_CLIENT_ID":"$BC_GEOCODER_CLIENT_ID",
             "VITE_BC_GEOCODER_API_KEY":"$BC_GEOCODER_API_KEY",
             "VITE_BC_GEOCODER_API_URL":"$BC_GEOCODER_API_URL",
@@ -78,8 +77,6 @@ frontend:
           - name: PR_NUM
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: "{{ .Values.global.env.release_num | toString }}"
-          - name: ONROUTEBC_VERSION
             value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: http
@@ -220,8 +217,6 @@ vehicles:
           - name: PR_NUM
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: "{{ .Values.global.env.release_num | toString }}"
-          - name: ONROUTEBC_VERSION
             value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: vehicles-api
@@ -367,8 +362,6 @@ dops:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
-          - name: ONROUTEBC_VERSION
-            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -506,8 +499,6 @@ scheduler:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
-          - name: ONROUTEBC_VERSION
-            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: scheduler
           containerPort: 5050
@@ -618,8 +609,6 @@ policy:
           - name: PR_NUM
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: "{{ .Values.global.env.release_num | toString }}"
-          - name: ONROUTEBC_VERSION
             value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: policy-api
