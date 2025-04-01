@@ -618,10 +618,6 @@ export class ApplicationService {
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = convertUtcToPt(new Date(), 'YYYY-MM-DD');
-      console.log('currentDate',currentDate);
-      console.log('permitData?.startDate',permitData?.startDate);
-      console.log(`differenceBetween(permitData?.startDate, currentDate, 'days')`,differenceBetween(permitData?.startDate, currentDate, 'days'));
-
       if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
       } else if (existingCase.assignedUser !== currentUser.userName) {
