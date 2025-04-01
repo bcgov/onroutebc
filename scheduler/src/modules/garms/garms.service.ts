@@ -95,15 +95,6 @@ export class GarmsService {
 
   @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCreditTransactions() {
-    const garmsCashFeatureFlag = (await getFromCache(
-      this.cacheManager,
-      CacheKey.FEATURE_FLAG_TYPE,
-      'GARMS_CREDIT_CRON_JOB',
-    )) as FeatureFlagValue;
-    if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
-      this.logger.log('GARMS_CREDIT_CRON_JOB is DISABLED');
-      return false;
-    }
     const garmsExtractType = GarmsExtractType.CREDIT;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
