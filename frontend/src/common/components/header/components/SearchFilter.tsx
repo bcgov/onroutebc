@@ -156,7 +156,7 @@ export const SearchFilter = ({
 
   const onSubmit = (data: FieldValues) => {
     const searchFields = Object.entries(data)
-      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`) //If value contains special characters (like &, ?, =, !), they should be URL-encoded using encodeURIComponent(value).
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join("&");
 
     if (data?.searchString?.trim()?.length < 1) return;
