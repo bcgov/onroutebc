@@ -2,19 +2,19 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { throwNotAcceptableException } from '../helper/exception.helper';
 
+/**
+ * Middleware to check the version of the API.
+ * @throws NotAcceptableException if the version in the request header does not match the expected version.
+ */
 @Injectable()
 export class VersionMatchMiddleware implements NestMiddleware {
   use(request: Request, _response: Response, next: NextFunction): void {
     const { headers } = request;
-    console.log('----------------------------------');
-    console.log('Version Middleware');
-    // process.env.NODE_ENV === 'production'
     if (
-      !headers['x-onroutebc-version'] ||
-      headers['x-onroutebc-version'] !== process.env.RELEASE_NUM
+      process.env.NODE_ENV === 'production' &&
+      (!headers['x-onroutebc-version'] ||
+        headers['x-onroutebc-version'] !== process.env.RELEASE_NUM)
     ) {
-      console.log('Throwing 406');
-      console.log('----------------------------------');
       throwNotAcceptableException(
         'Version Mismatch: Expected version: ' + process.env.RELEASE_NUM,
       );
