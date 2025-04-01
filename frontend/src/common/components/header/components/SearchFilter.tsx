@@ -156,7 +156,7 @@ export const SearchFilter = ({
 
   const onSubmit = (data: FieldValues) => {
     const searchFields = Object.entries(data)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join("&");
 
     if (data?.searchString?.trim()?.length < 1) return;
