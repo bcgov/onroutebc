@@ -1091,6 +1091,11 @@ export class ApplicationService {
             'YYYY-MM-DD',
           );
 
+          console.log('currentDate',currentDate);
+          console.log('permitData?.startDate',permitData?.startDate);
+          console.log('permitData?.expiryDate',permitData?.expiryDate);
+          console.log(`differenceBetween(permitData?.startDate, currentDate, 'days')`,(differenceBetween(permitData?.startDate, currentDate, 'days')));
+          console.log(`differenceBetween(permitData?.expiryDate, currentDate, 'days')`, differenceBetween(permitData?.expiryDate, currentDate, 'days'));
           if (
             application.permitStatus === ApplicationStatus.IN_QUEUE &&
             (differenceBetween(permitData?.startDate, currentDate, 'days') >
