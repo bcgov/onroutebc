@@ -89,10 +89,9 @@ export const CompanyInfoGeneralForm = ({
             required: { value: true, message: requiredMessage() },
             validate: {
               validatePostalCode: (postalCode: string) =>
-                (postalCode.length >= 5 &&
-                  postalCode.length <= 7 &&
-                  isPostalCode(postalCode, "any")) ||
-                invalidPostalCode(),
+                isPostalCode(postalCode, "CA") || isPostalCode(postalCode, "US")
+                  ? true
+                  : invalidPostalCode(),
             },
           },
           label: "Postal / Zip Code",
