@@ -381,8 +381,8 @@ export class GarmsService {
     this.executeCommand(fullCommand);
     const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
     this.executeCommand(deleteFilesCommand);
-    const deleteLocalFileCommand = `rm ${GARMS_LOCAL_FILE_PATH}${fileName}`;
-    this.executeCommand(deleteLocalFileCommand);
+    //const deleteLocalFileCommand = `rm ${GARMS_LOCAL_FILE_PATH}${fileName}`;
+    //this.executeCommand(deleteLocalFileCommand);
   }
 
   private executeCommand(command: string) {
