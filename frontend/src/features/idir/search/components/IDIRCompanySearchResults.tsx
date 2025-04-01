@@ -54,7 +54,7 @@ export const IDIRCompanySearchResults = memo(
       setCompanyId,
       setCompanyLegalName,
       setOnRouteBCClientNumber,
-      setUnclaimedClient: setMigratedClient,
+      setUnclaimedClient,
       setIsCompanySuspended,
     } = useContext(OnRouteBCContext);
 
@@ -88,7 +88,7 @@ export const IDIRCompanySearchResults = memo(
         );
         navigate(routes.APPLICATIONS_ROUTES.BASE);
       } else {
-        setMigratedClient?.(() => {
+        setUnclaimedClient?.(() => {
           const {
             migratedClientHash,
             mailingAddress,
@@ -97,6 +97,7 @@ export const IDIRCompanySearchResults = memo(
             phone,
             extension,
             isSuspended,
+            directory,
           } = selectedCompany as VerifiedClient;
 
           return {
@@ -110,6 +111,7 @@ export const IDIRCompanySearchResults = memo(
             extension,
             alternateName,
             isSuspended,
+            directory,
           };
         });
 
