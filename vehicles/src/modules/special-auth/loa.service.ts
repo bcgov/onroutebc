@@ -199,6 +199,10 @@ export class LoaService {
         },
         relations: ['company', 'loaVehicle', 'loaPermitTypes'],
       });
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
+
       readLoaDto = await this.classMapper.mapArrayAsync(
         loaDetails,
         LoaDetail,

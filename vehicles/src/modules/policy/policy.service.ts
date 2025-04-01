@@ -310,6 +310,9 @@ export class PolicyService {
         queryRunner,
       );
 
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
       const existingPermitAmount = calculatePermitAmount(permitHistory);
 
       // Handle voided applications
@@ -341,12 +344,9 @@ export class PolicyService {
       }
       this.logger.error(error);
       throw error; // Rethrow the error after logging
-    } finally {      
-      console.log('GET shopping car localQueryRunner', localQueryRunner);
+    } finally {
       // Release the local query runner after processing
       if (localQueryRunner) {
-        console.log('GET shopping car Query Release');
-        console.log('Release Query In shopping cart GET');
         await queryRunner.release();
       }
     }

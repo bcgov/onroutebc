@@ -75,6 +75,9 @@ export class SpecialAuthService {
         .leftJoinAndSelect('specialAuth.company', 'company')
         .where('company.companyId = :companyId', { companyId: companyId })
         .getOne();
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
       return specialAuthEntity;
     } catch (error) {
       if (localQueryRunner) {
