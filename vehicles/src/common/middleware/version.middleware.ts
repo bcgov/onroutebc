@@ -11,9 +11,8 @@ export class VersionMatchMiddleware implements NestMiddleware {
   use(request: Request, _response: Response, next: NextFunction): void {
     const { headers } = request;
     if (
-      process.env.NODE_ENV === 'production' &&
-      (!headers['x-onroutebc-version'] ||
-        headers['x-onroutebc-version'] !== process.env.RELEASE_NUM)
+      !headers['x-onroutebc-version'] ||
+      headers['x-onroutebc-version'] !== process.env.RELEASE_NUM
     ) {
       throwNotAcceptableException(
         'Version Mismatch: Expected version: ' + process.env.RELEASE_NUM,
