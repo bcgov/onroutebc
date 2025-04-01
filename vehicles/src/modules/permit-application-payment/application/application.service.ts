@@ -617,7 +617,7 @@ export class ApplicationService {
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
-      const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      const currentDate = convertUtcToPt(new Date(), 'YYYY-MM-DD');
       if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
       } else if (existingCase.assignedUser !== currentUser.userName) {
@@ -1087,15 +1087,19 @@ export class ApplicationService {
           const permitData = JSON.parse(
             application?.permitData?.permitData,
           ) as PermitData;
-          const currentDate = dayjs(new Date())?.format(
-            'YYYY-MM-DD',
-          );
+          const currentDate = convertUtcToPt(new Date(), 'YYYY-MM-DD');
 
-          console.log('currentDate',currentDate);
-          console.log('permitData?.startDate',permitData?.startDate);
-          console.log('permitData?.expiryDate',permitData?.expiryDate);
-          console.log(`differenceBetween(permitData?.startDate, currentDate, 'days')`,(differenceBetween(permitData?.startDate, currentDate, 'days')));
-          console.log(`differenceBetween(permitData?.expiryDate, currentDate, 'days')`, differenceBetween(permitData?.expiryDate, currentDate, 'days'));
+          console.log('currentDate', currentDate);
+          console.log('permitData?.startDate', permitData?.startDate);
+          console.log('permitData?.expiryDate', permitData?.expiryDate);
+          console.log(
+            `differenceBetween(permitData?.startDate, currentDate, 'days')`,
+            differenceBetween(permitData?.startDate, currentDate, 'days'),
+          );
+          console.log(
+            `differenceBetween(permitData?.expiryDate, currentDate, 'days')`,
+            differenceBetween(permitData?.expiryDate, currentDate, 'days'),
+          );
           if (
             application.permitStatus === ApplicationStatus.IN_QUEUE &&
             (differenceBetween(permitData?.startDate, currentDate, 'days') >
