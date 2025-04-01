@@ -50,7 +50,7 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const fileName = 'GARMS_CASH' + Date.now();
+  const fileName = 'GARMS_CASH_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
     {
@@ -62,7 +62,7 @@ export const createGarmsCashFile = (
     let count = 0;
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
+    if (groupedTransactionsByDate && groupedTransactionsByDate.length > 0) {
       for (const transactionByDate of groupedTransactionsByDate) {
         count += 1;
         const lastHeader = count === groupedTransactionsByDate.length;
@@ -102,7 +102,6 @@ export const createGarmsCashFile = (
           lastHeader,
         );
       }
-
       return fileName;
     }
   } catch (err) {
@@ -110,6 +109,9 @@ export const createGarmsCashFile = (
     throw new InternalServerErrorException(
       `Garms ${garmsExtractType} File Creation Failed`,
     );
+  }
+  finally{
+    logStream.end();
   }
 };
 
@@ -218,7 +220,7 @@ export const createGarmsCreditFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const fileName = 'GARMS_CREDIT' + Date.now();
+  const fileName = 'GARMS_CREDIT_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(GARMS_LOCAL_FILE_PATH + fileName, {
     flags: 'a',
   });
@@ -228,7 +230,7 @@ export const createGarmsCreditFile = (
     const date = new Date();
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
+    if (groupedTransactionsByDate && groupedTransactionsByDate.length > 0) {
       let details = '';
       for (const transactionByDate of groupedTransactionsByDate) {
         const transactions = transactionByDate.transactions as Transaction[];
@@ -256,6 +258,8 @@ export const createGarmsCreditFile = (
     throw new InternalServerErrorException(
       `Garms ${garmsExtractType} File Creation Failed`,
     );
+  } finally{
+    logStream.end();
   }
 };
 
@@ -291,7 +295,7 @@ export const createGarmsCreditFileDetails = (
   gcd.agentNumber = CREDIT_AGENT_NUMBER;
   gcd.extractDate = convertUtcToPt(extractDate, GARMS_DATE_FORMAT);
   gcd.subAgentNumer = AGENT_NUMBER;
-  gcd.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
+  gcd.wsDate = dateFormat(date, GARMS_DATE_FORMAT);
   gcd.serviceCode = formatNumber(
     permitServiceCodes.get(permitTransaction.permit.permitType),
     4,
@@ -324,7 +328,9 @@ export const createGarmsCreditFileDetails = (
   );
   gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
   gcd.serNoTo = SER_NO_TO;
-  gcd.wsAccount = 'WS1234'; // Need to update the credit account number
+  //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable 
+  //and should always be present once we set up credit account on onRoute
+  gcd.wsAccount = permitTransaction.permit.company.creditAccount.creditAccountNumber?permitTransaction.permit.company.creditAccount.creditAccountNumber: 'WS1234';
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');

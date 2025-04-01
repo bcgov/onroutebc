@@ -1,5 +1,5 @@
 export class GarmsCreditDetails {
-  //Set to 1
+  //Set to 2
   recType: string;
   //Set to 01300
   agentNumber: string;
@@ -8,7 +8,7 @@ export class GarmsCreditDetails {
   //Set to 14035
   subAgentNumer: string;
   //YYYYMMDD date of posting
-  wsdate: string;
+  wsDate: string;
   //Garm service code, length 4 format(9999)
   serviceCode: string;
   //total no. of services for service code, length 5 format(99999)

@@ -297,6 +297,8 @@ export class GarmsService {
       .leftJoinAndSelect('permitTransaction.permit', 'permit');
     if (garmsExtractType === GarmsExtractType.CREDIT) {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
+      qb = qb.leftJoinAndSelect('permit.company','company');
+      qb = qb.leftJoinAndSelect('company.creditAccount','creditaccount');
     }
     const result = await qb
       .andWhere('transaction.transactionApprovedDate >= :fromTimestamp', {
@@ -355,9 +357,8 @@ export class GarmsService {
     const password = process.env.GARMS_PWD;
     const host = process.env.GARMS_HOST;
     const asciiFileName = fileName + 'ascii';
-    const garmEnv = process.env.GARMS_ENV;
     let sshCommand;
-    if (garmEnv === 'GARMP') {
+    if ( process.env.NODE_ENV === 'production') {
       sshCommand = `sshpass -p ${password} ssh -o "StrictHostKeyChecking no" ${user}@${host}`;
     } else {
       // disabling verbose for prod as it displays password

@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   OneToOne,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -13,6 +15,7 @@ import { PermitTransaction } from './permit-transaction.entity';
 import { PermitType } from '../enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { Company } from './company.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -39,12 +42,13 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: '74',
     description:
       'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  companyId: number;
+  @ManyToOne(() => Company, { eager: true, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  company: Company;
 
   @AutoMap()
   @ApiProperty({
