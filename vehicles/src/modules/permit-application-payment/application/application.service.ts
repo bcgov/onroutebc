@@ -1087,7 +1087,7 @@ export class ApplicationService {
           const permitData = JSON.parse(
             application?.permitData?.permitData,
           ) as PermitData;
-          const currentDate = dayjs(new Date().toISOString())?.format(
+          const currentDate = dayjs(new Date())?.format(
             'YYYY-MM-DD',
           );
 
