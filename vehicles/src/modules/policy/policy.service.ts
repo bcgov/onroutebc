@@ -341,9 +341,12 @@ export class PolicyService {
       }
       this.logger.error(error);
       throw error; // Rethrow the error after logging
-    } finally {
+    } finally {      
+      console.log('GET shopping car localQueryRunner', localQueryRunner);
       // Release the local query runner after processing
       if (localQueryRunner) {
+        console.log('GET shopping car Query Release');
+        console.log('Release Query In shopping cart GET');
         await queryRunner.release();
       }
     }
