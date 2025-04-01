@@ -324,7 +324,7 @@ export const createGarmsCreditFileDetails = (
   );
   gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
   gcd.serNoTo = SER_NO_TO;
-  gcd.wsAccount = 'WS1234';
+  gcd.wsAccount = 'WS1234'; // Need to update the credit account number
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
