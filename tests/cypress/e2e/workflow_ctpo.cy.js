@@ -1338,196 +1338,11 @@ describe('Manage Settings', () => {
     cy.wait(wait_time);
   });
 
-  it('Should Add No Fee flag', () => {
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.css-1pog434').type(company_sa);
-    cy.wait(wait_time);
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('a[href="/settings"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-    .first()
-    .click({ force: true })
-    .should('be.checked');
-    cy.wait(wait_time);
-
-  }); 
-
-  it('Should Update No Fee flag', () => {
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.css-1pog434').type(company_sa);
-    cy.wait(wait_time);
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('a[href="/settings"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-    .first()
-    .click({ force: true })
-    .should('be.checked');
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input')
-    .eq(1)    // Selects the second radio button
-    .click({ force: true });
-    cy.wait(wait_time);
-    
-  });
-  
-  it('Should Add LCV flag', () => { 
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.css-1pog434').type(company_sa);
-    cy.wait(wait_time);
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('a[href="/settings"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-    .eq(1)    // Selects the second radio button
-    .click({ force: true })
-    .should('be.checked');
-    cy.wait(wait_time);
-  });
-
-  it('Should Remove LCV flag', () => { 
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.css-1pog434').type(company_sa);
-    cy.wait(wait_time);
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('a[href="/settings"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-    .eq(1)    // Selects the second radio button
-    .click({ force: true })
-    .should('be.checked');
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-    .eq(1)    // Selects the second radio button
-    .click({ force: true })
-    .should('be.checked');
-    cy.wait(wait_time);
-    
-  });
-
-  it('Should Add an LOA', () => {
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.css-1pog434').type(company_sa);
-    cy.wait(wait_time);
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('a[href="/settings"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-    cy.wait(wait_time);
-
-    cy.get('button.add-loa-btn')
-    .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input[type="checkbox"]')
-    .first()
-    .click();
-    cy.wait(wait_time);
-
-    cy.get('div[data-testid="select-vehicleSubtype"]')
-    .click({ force: true });
-    cy.wait(wait_time);
-    
-    cy.get('[data-value="BUSCRUM"]').click();
-    cy.wait(wait_time);
-
-    cy.get('button[data-testid="loa-next-button"]')
-    .click();
-    cy.wait(wait_time);
-
-
-
-    
-  });
-
-  it('Should Edit an LOA', () => {
-    
-  });
-
   it('Should View/download LOA letter PDF', () => {
     
   });
 
   it('Should Access Expired LOAs link', () => {
-    
-  });
-
-  it('Should Remove LOA', () => {
     
   });
 
@@ -1539,31 +1354,7 @@ describe('Manage Settings', () => {
     
   });
 
-  it('Should Manage Credit Account Users - Account Holder', () => {
-    
-  });
-
-  it('Should View Credit Account Details - Account Holder', () => {
-    
-  });
-
-  it('Should View Credit Account tab - Account User', () => {
-    
-  });
-
-  it('Should View Credit Account Users - Account User', () => {
-    
-  });
-
-  it('Should View Credit Account Details - Account User', () => {
-    
-  });
-
   it('Should View Credit Account tab - Non-Holder/user', () => {
-    
-  });
-
-  it('Should Add Credit Account - Non-Holder/user', () => {
     
   });
 
@@ -1603,42 +1394,8 @@ describe('Sticky Side Bar', () => {
 
   });
 
-  it('Should Manage PPC Users Button', () => {
-    // TBD
-  });
-
   it('Should Bridge Calculation Tool', () => {
     // TBD
-  });
-
-});
-
-describe('Manage PPC Users', () => {
-  const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
-  const manage_profiles_url = '/manage-profiles';
-  const update_trailer_url = Cypress.env('update_trailer_url');
-  const manage_vehicle_url = '/manage-vehicles';
-   
-  beforeEach(() => {
-    cy.userLoginIdir();
-  });
-
-  it('Should View Manage PPC Users screen', () => {
-    // TBD  
-  });
-
-  it('Should Update PPC User role', () => {
-    // TBD  
-  });
-
-  it('Should Remove PPC User', () => {
-    // TBD  
-  });
-
-  it('Should Add new PPC User', () => {
-    // TBD  
   });
 
 });
@@ -1689,14 +1446,6 @@ describe('Global Search', () => {
     // TBD
   });
 
-  it('Should Delete Company', () => {
-    // TBD
-  });
-
-  it('Should Merge Company', () => {
-    // TBD
-  });
-
   it('Should Create Company', () => {
     // TBD
   });
@@ -1706,14 +1455,6 @@ describe('Global Search', () => {
   });
 
   it('Should Amend Permit', () => {
-    // TBD
-  });
-
-  it('Should Void Permit', () => {
-    // TBD
-  });
-
-  it('Should Revoke Permit', () => {
     // TBD
   });
 
