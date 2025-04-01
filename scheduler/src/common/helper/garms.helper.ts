@@ -233,8 +233,8 @@ export const createGarmsCreditFile = (
       for (const transactionByDate of groupedTransactionsByDate) {
         const transactions = transactionByDate.transactions as Transaction[];
         transactions.forEach((transaction) => {
-          serviceCount += 1;
           transaction.permitTransactions.forEach((permitTransaction) => {
+            serviceCount += 1;
             totalAmount += getPaymentAmount(permitTransaction, transaction);
             const detail = createGarmsCreditFileDetails(
               date,
