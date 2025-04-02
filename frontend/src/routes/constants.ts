@@ -35,6 +35,8 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
   ISSUANCE: "/issuance-error",
+  CLAIM_PROFILE_ERROR: "/claim-profile-error",
+  SERVICE: "/service-unavailable",
   DOCUMENT_UNAVAILABLE: "/document-unavailable",
 };
 
@@ -205,6 +207,9 @@ const SETTINGS_BASE = "/settings";
 export const SETTINGS_ROUTES = {
   MANAGE: SETTINGS_BASE,
 };
+
+//URL
+export const onRouteBCUrl = "www.onroutebc.gov.bc.ca";
 
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {

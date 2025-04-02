@@ -1,5 +1,6 @@
 import { Tab, Tabs } from "@mui/material";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 import "./TabsList.scss";
 import { TabComponentProps } from "./types/TabComponentProps";
 
@@ -27,6 +28,14 @@ export const TabsList = ({
       variant="scrollable"
       scrollButtons="auto"
       aria-label="scrollable profile tabs"
+      slots={{
+        StartScrollButtonIcon: () => (
+          <FontAwesomeIcon icon={faAngleLeft} className="tabs-list__button" />
+        ),
+        EndScrollButtonIcon: () => (
+          <FontAwesomeIcon icon={faAngleRight} className="tabs-list__button" />
+        ),
+      }}
     >
       {componentList.map(
         (

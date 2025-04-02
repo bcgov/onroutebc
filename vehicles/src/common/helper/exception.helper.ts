@@ -10,6 +10,7 @@ import { BadRequestExceptionDto } from '../exception/badRequestException.dto';
 export const throwUnprocessableEntityException = (
   message: string,
   additionalInfo?: object,
+  errorCode?: string,
 ) => {
   throw new UnprocessableEntityException({
     message: 'Unprocessable Entity',
@@ -17,6 +18,7 @@ export const throwUnprocessableEntityException = (
     error: [
       {
         message: message,
+        errorCode: errorCode,
         additionalInfo: additionalInfo,
       },
     ] as ValidationExceptionDto[],
