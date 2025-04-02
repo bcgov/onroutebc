@@ -165,6 +165,15 @@ export const WelcomePage = React.memo(() => {
          */}
         {/**
          * No challenge Workflow
+         * 
+         * If there is a matching unclaimedClient for the user, we
+         * redirect them to the company profile info wizard
+         * and prepopulate the form with the unclaimedClient data.
+         * 
+         * This covers the scenario where the user is a new BCeID user and
+         * - Unclaimed company was created by staff and user was invited.
+         * - Unclaimed company was migrated from TPS WEB which had users.
+         * - Unclaimed company was migrated from TPS and business guid matches the migrated company guid.
          */}
         {!companyNameFromContext &&
           unclaimedClient?.clientNumber &&
@@ -173,6 +182,8 @@ export const WelcomePage = React.memo(() => {
           )}
         {/**
          * Challenge Workflow
+         * These options are presented if we do not know anything about the user.
+         * i.e., this is a net new BCeID user with no company in the system.
          */}
         {!companyNameFromContext && !unclaimedClient && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
