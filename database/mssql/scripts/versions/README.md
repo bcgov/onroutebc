@@ -254,3 +254,6 @@
   - Updated 3 trailer types to be inactive (IS_ACTIVE=0)
   - Updated 3 power unit types to be inactive (IS_ACTIVE=0)
   - Inserted new policy configuration json with updated permittable vehicles and STOS dimension set
+
+### Version 68:
+- Update MPF permit templates to fix total distance.
