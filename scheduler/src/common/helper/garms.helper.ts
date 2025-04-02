@@ -332,7 +332,7 @@ export const createGarmsCreditFileDetails = (
   //and should always be present once we set up credit account on onRoute
   gcd.wsAccount =
     permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber ??
-    'WS1234';
+    'WS0341';
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
