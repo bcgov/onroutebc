@@ -15,6 +15,13 @@ export class ReadCompanyMetadataDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'The company GUID.',
+    example: '6F9619FF8B86D011B42D00C04FC964FF',
+  })
+  companyGUID: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'The ORBC client number.',
     example: '1234',
   })
