@@ -7,7 +7,6 @@ import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
 import { PermitType } from '../common/entities/permit-type.entity';
 import { PermitData } from '../common/entities/permit-data.entity';
-import { FileTransferController } from './garms.controller';
 import { Company } from '../common/entities/company.entity';
 import { CreditAccount } from '../common/entities/credit-account.entity';
 
@@ -25,6 +24,5 @@ import { CreditAccount } from '../common/entities/credit-account.entity';
     ]),
   ],
   providers: [GarmsService],
-  controllers: [FileTransferController],
 })
 export class GarmsModule {}

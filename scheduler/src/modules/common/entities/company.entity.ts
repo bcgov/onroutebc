@@ -10,7 +10,6 @@ import { Base } from './base.entity';
 import { CreditAccount } from './credit-account.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
   /**
@@ -98,13 +97,13 @@ export class Company extends Base {
   })
   isSuspended: boolean;
 
-    @AutoMap()
-    @ApiProperty({
-      example: '74',
-      description:
-        'Foreign key to the ORBC_CCREDIT_ACCOUNT table, represents the credit account requesting the permit.',
-    })
-    @ManyToOne(() => CreditAccount, { eager: true, cascade: false })
-    @JoinColumn({ name: 'COMPANY_ID' })
-    creditAccount: CreditAccount;
+  @AutoMap()
+  @ApiProperty({
+    example: '74',
+    description:
+      'Foreign key to the ORBC_CCREDIT_ACCOUNT table, represents the credit account requesting the permit.',
+  })
+  @ManyToOne(() => CreditAccount, { eager: true, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  creditAccount: CreditAccount;
 }

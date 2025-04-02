@@ -30,9 +30,7 @@ import * as fs from 'fs';
 import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto';
 import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
 import { PermitApprovalSource } from '../enum/permit-approval-source.enum';
-import {
-  ApplicationStatus,
-} from 'src/modules/common/enum/application-status.enum';
+import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -109,8 +107,7 @@ export const createGarmsCashFile = (
     throw new InternalServerErrorException(
       `Garms ${garmsExtractType} File Creation Failed`,
     );
-  }
-  finally{
+  } finally {
     logStream.end();
   }
 };
@@ -221,9 +218,12 @@ export const createGarmsCreditFile = (
   logger: Logger,
 ) => {
   const fileName = 'GARMS_CREDIT_' + Date.now();
-  const logStream: fs.WriteStream = fs.createWriteStream(GARMS_LOCAL_FILE_PATH + fileName, {
-    flags: 'a',
-  });
+  const logStream: fs.WriteStream = fs.createWriteStream(
+    GARMS_LOCAL_FILE_PATH + fileName,
+    {
+      flags: 'a',
+    },
+  );
   try {
     let serviceCount = 0;
     let totalAmount = 0;
@@ -245,7 +245,7 @@ export const createGarmsCreditFile = (
               transaction,
               permitServiceCodes,
             );
-            details = details+ detail
+            details = details + detail;
           });
         });
       }
@@ -258,7 +258,7 @@ export const createGarmsCreditFile = (
     throw new InternalServerErrorException(
       `Garms ${garmsExtractType} File Creation Failed`,
     );
-  } finally{
+  } finally {
     logStream.end();
   }
 };
@@ -328,13 +328,15 @@ export const createGarmsCreditFileDetails = (
   );
   gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
   gcd.serNoTo = SER_NO_TO;
-  //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable 
+  //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable
   //and should always be present once we set up credit account on onRoute
-  gcd.wsAccount = permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber ?? 'WS1234';;
+  gcd.wsAccount =
+    permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber ??
+    'WS1234';
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
-  return  detail + '\n';
+  return detail + '\n';
 };
 
 /**

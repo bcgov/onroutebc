@@ -297,8 +297,8 @@ export class GarmsService {
       .leftJoinAndSelect('permitTransaction.permit', 'permit');
     if (garmsExtractType === GarmsExtractType.CREDIT) {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
-      qb = qb.leftJoinAndSelect('permit.company','company');
-      qb = qb.leftJoinAndSelect('company.creditAccount','creditaccount');
+      qb = qb.leftJoinAndSelect('permit.company', 'company');
+      qb = qb.leftJoinAndSelect('company.creditAccount', 'creditaccount');
     }
     const result = await qb
       .andWhere('transaction.transactionApprovedDate >= :fromTimestamp', {
@@ -358,7 +358,7 @@ export class GarmsService {
     const host = process.env.GARMS_HOST;
     const asciiFileName = fileName + 'ascii';
     let sshCommand;
-    if ( process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production') {
       sshCommand = `sshpass -p ${password} ssh -o "StrictHostKeyChecking no" ${user}@${host}`;
     } else {
       // disabling verbose for prod as it displays password
@@ -381,8 +381,8 @@ export class GarmsService {
     this.executeCommand(fullCommand);
     const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
     this.executeCommand(deleteFilesCommand);
-    //const deleteLocalFileCommand = `rm ${GARMS_LOCAL_FILE_PATH}${fileName}`;
-    //this.executeCommand(deleteLocalFileCommand);
+    const deleteLocalFileCommand = `rm ${GARMS_LOCAL_FILE_PATH}${fileName}`;
+    this.executeCommand(deleteLocalFileCommand);
   }
 
   private executeCommand(command: string) {

@@ -12,7 +12,13 @@ import { CreditAccount } from '../common/entities/credit-account.entity';
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([TpsPermit, Permit, Company, CreditAccount, Document]),
+    TypeOrmModule.forFeature([
+      TpsPermit,
+      Permit,
+      Company,
+      CreditAccount,
+      Document,
+    ]),
   ],
   providers: [TpsPermitService, S3Service],
   exports: [S3Service, HttpModule],
