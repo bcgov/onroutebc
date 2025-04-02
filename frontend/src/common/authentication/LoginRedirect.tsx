@@ -49,8 +49,13 @@ const navigateBasicBCeID = (
       // If there is no business GUID in the user token, then the user is
       // a basic bceid user.
       // A basic bceid user cannot be a user of a company whose directory is BBCEID.
-      // This is an attempt to cross mix basic and business bceid users which is not allowed.
-      if (pendingCompanies[0].directory === DIRECTORY.BBCEID) {
+      // BBCEID directory represents a company whose users are business bceid users.
+      // Hence, this is an attempt to cross mix basic and business bceid users
+      // which is not allowed.
+      const BASIC_INVITED_TO_BBCEID =
+        pendingCompanies[0].directory === DIRECTORY.BBCEID;
+
+      if (BASIC_INVITED_TO_BBCEID) {
         // TODO Error page to include message asking user to contact PPC.
         return ERROR_ROUTES.UNAUTHORIZED;
       }
@@ -63,18 +68,22 @@ const navigateBasicBCeID = (
     else if (associatedCompanies?.length < 1) {
       // If there is no unclaimedClient, this is a net new user.
       // We give them the option to create a new company or go through the challenge flow.
-      if (!unclaimedClient?.clientNumber) {
-        // Create new company or go through challenge flow.
+      const NO_UNCLAIMED_CLIENT = !unclaimedClient?.clientNumber;
+
+      if (NO_UNCLAIMED_CLIENT) {
+        // Two options: Create new company or go through challenge flow.
         return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
       } else {
-        if (unclaimedClient?.directory === DIRECTORY.BBCEID) {
+        const BASIC_TRYING_TO_CLAIM_BBCEID =
+          unclaimedClient?.directory === DIRECTORY.BBCEID;
+
+        if (BASIC_TRYING_TO_CLAIM_BBCEID) {
           // Basic bceid cannot claim a company whose directory is BBCEID.
           // This covers the scenario where a company was migrated from TPS WEB.
 
           // TODO Error page to include message asking user to contact PPC.
           return ERROR_ROUTES.UNAUTHORIZED;
         }
-
         // There is an unclaimed client corresponding to the user.
 
         // Take the user to company profile wizard with
@@ -130,8 +139,7 @@ const navigateBusinessBCeID = (
   userContextData: BCeIDUserContextType,
   businessGuidFromUserToken: string,
 ): string | undefined => {
-  const { associatedCompanies, pendingCompanies, unclaimedClient, user } =
-    userContextData;
+  const { associatedCompanies, pendingCompanies, user } = userContextData;
 
   const isAssociatedSuspended = getDefaultRequiredVal(
     [],
@@ -157,19 +165,30 @@ const navigateBusinessBCeID = (
       // company whose directory is BBCEID.
       // A business bceid user cannot be a user of a company whose directory is not BBCEID.
       // This is an attempt to cross mix basic and business bceid users which is not allowed.
-      if (pendingCompanies[0].directory !== DIRECTORY.BBCEID) {
-        // TODO Error page to include message asking user to contact PPC.
-        return ERROR_ROUTES.UNAUTHORIZED;
-      }
+      const DIRECTORY_NOT_BBCEID =
+        pendingCompanies[0].directory !== DIRECTORY.BBCEID;
 
       // If the invited user's business GUID from the token does not match the company's guid,
       // then the user is unauthorized.
       // A business bceid user whose buisness guid does not match the company guid in the invite
       // cannot be a user of the inviting company.
-      if (pendingCompanies[0].companyGUID !== businessGuidFromUserToken) {
+      const COMPANYGUID_AND_TOKEN_BUSINESS_GUID_MISMATCH =
+        pendingCompanies[0].companyGUID !== businessGuidFromUserToken;
+
+      if (
+        DIRECTORY_NOT_BBCEID ||
+        COMPANYGUID_AND_TOKEN_BUSINESS_GUID_MISMATCH
+      ) {
         // TODO Error page to include message asking user to contact PPC.
         return ERROR_ROUTES.UNAUTHORIZED;
       }
+
+      /**
+       * associatedCompanies may have a company in spite of pendingCompanies also having a company.
+       * This happens during a TPS migration workflow.
+       * So, associatedCompanies having a company is absolutely irrelevant to the invite scenario.
+       * If pending Companies exist, we only account for that.
+       */
 
       // If the execution reaches here, this is a valid invite situation.
       // Redirect the user to the welcome page for user info wizard.
@@ -177,15 +196,20 @@ const navigateBusinessBCeID = (
     }
     // The user and company do not exist.
     else if (associatedCompanies?.length < 1) {
+      // unclaimedClient represents a matching unclaimed company
+      // corresponding to the user logged in.
+
+      // NO UNCLAIMED CLIENT
       // If there is no unclaimedClient, this is a net new user.
       // We give them the option to create a new company or go through the challenge flow.
-      if (!unclaimedClient?.clientNumber) {
-        return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
-      } else {
-        // The user does not exist but the business guid matches a migrated client.
-        //    => Take them to no challenge workflow.
-        return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
-      }
+
+      // UNCLAIMED CLIENT MATCHES BUSINESS GUID
+      // The user does not exist but the business guid matches an unclaimed client.
+      //    => Take them to no challenge workflow.
+
+      // In either case, the welcome page is the same but the options
+      // presented are different, as noted above.
+      return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
     }
     // The user does not exist but there is one or more associated companies
     // due to business GUID match. This is an error scenario and the user is unauthorized.
@@ -211,110 +235,9 @@ const navigateBusinessBCeID = (
 
   // else if(pendingCompanies?.length) (i.e., user exists and has invites from a company)
   // is not a valid block currently because
-  // one user can only be part of one company currently.
+  // one user can only be part of one company.
   // -----------------------------
 };
-
-// Code archive
-// const navigateBCeID = (
-//   userContextData: BCeIDUserContextType,
-//   businessGuidFromUserToken: string,
-// ): string | undefined => {
-//   const {
-//     associatedCompanies,
-//     pendingCompanies,
-//     unclaimedClient: migratedClient,
-//     user,
-//   } = userContextData;
-
-//   const isAssociatedSuspended = getDefaultRequiredVal(
-//     [],
-//     associatedCompanies,
-//   ).find((company) => Boolean(company.isSuspended));
-
-//   const isPendingSuspended = getDefaultRequiredVal([], pendingCompanies).find(
-//     (company) => Boolean(company.isSuspended),
-//   );
-
-//   // If the user does not exist
-//   if (!user?.userGUID) {
-//     // The user has been invited to a company.
-//     // Invited user gets the highest priority.
-//     if (pendingCompanies?.length > 0) {
-//       // If there is no business GUID in the user token, then the user is
-//       // a basic bceid user.
-//       // A basic bceid user cannot be a user of a company whose directory is BBCEID.
-//       // This is an attempt to cross mix basic and business bceid users which is not allowed.
-//       if (
-//         pendingCompanies[0].directory === DIRECTORY.BBCEID &&
-//         !businessGuidFromUserToken
-//       ) {
-//         // TODO Error page to include message asking user to contact PPC.
-//         return ERROR_ROUTES.UNAUTHORIZED;
-//       }
-
-//       // If the user is a business bceid user, they can only be invited to a
-//       // company whose directory is BBCEID.
-//       // A business bceid user cannot be a user of a company whose directory is not BBCEID.
-//       // This is an attempt to cross mix basic and business bceid users which is not allowed.
-//       if (
-//         pendingCompanies[0].directory !== DIRECTORY.BBCEID &&
-//         businessGuidFromUserToken
-//       ) {
-//         // TODO Error page to include message asking user to contact PPC.
-//         return ERROR_ROUTES.UNAUTHORIZED;
-//       }
-
-//       // If the invited user's business GUID from the token does not match the company's guid,
-//       // then the user is unauthorized.
-//       // A business bceid user whose buisness guid does not match the company guid in the invite
-//       // cannot be a user of the inviting company.
-//       if (pendingCompanies[0].companyGUID !== businessGuidFromUserToken) {
-//         // TODO Error page to include message asking user to contact PPC.
-//         return ERROR_ROUTES.UNAUTHORIZED;
-//       }
-
-//       // If the execution reaches here, this is a valid invite situation.
-//       // Redirect the user to the welcome page for user info wizard.
-//       return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
-//     }
-//     // The user and company do not exist (not a migrated client)
-//     //     => Redirect them to the welcome page with challenge.
-//     else if (associatedCompanies?.length < 1 && !migratedClient?.clientNumber) {
-//       return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
-//     }
-//     // The user does not exist but the business guid matches a migrated client.
-//     //    => Take them to no challenge workflow.
-//     else if (migratedClient?.clientNumber) {
-//       return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
-//     }
-//     // The user does not exist but there is one or more associated companies
-//     // due to business GUID match. This is an error scenario and the user is unauthorized.
-
-//     // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
-//     else {
-//       return ERROR_ROUTES.UNAUTHORIZED;
-//     }
-//   }
-//   // The user exists but either the associated company or pending company is suspended
-//   else if (isAssociatedSuspended || isPendingSuspended) {
-//     return ERROR_ROUTES.SUSPENDED;
-//   }
-//   // The user and company exist
-//   else if (associatedCompanies?.length) {
-//     return APPLICATIONS_ROUTES.BASE;
-//   }
-//   // User exists but company does not exist. This is not a possible scenario.
-//   else if (!associatedCompanies?.length) {
-//     // Error Page
-//     return ERROR_ROUTES.UNAUTHORIZED;
-//   }
-
-//   // else if(pendingCompanies?.length) (i.e., user exists and has invites from a company)
-//   // is not a valid block currently because
-//   // one user can only be part of one company currently.
-//   // -----------------------------
-// };
 
 /*
  * Redirects user to their correct page after loading their
