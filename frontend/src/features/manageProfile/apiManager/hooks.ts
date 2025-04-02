@@ -97,7 +97,7 @@ export const useUserContext = (
     setIsCompanySuspended,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedClient,
+    setUnclaimedClient,
     setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
 
@@ -125,7 +125,7 @@ export const useUserContext = (
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
-      const { user, associatedCompanies, pendingCompanies, migratedClient } =
+      const { user, associatedCompanies, pendingCompanies, unclaimedClient } =
         userContextResponseBody as BCeIDUserContextType;
 
       /**
@@ -165,9 +165,9 @@ export const useUserContext = (
       }
 
       /**
-       * The user has been added to a company.
+       * The user has been invited to a company.
        */
-      if (pendingCompanies.length > 0) {
+      else if (pendingCompanies.length > 0) {
         const { companyId, legalName, isSuspended } = pendingCompanies[0];
 
         setCompanyId?.(() => companyId);
@@ -182,10 +182,10 @@ export const useUserContext = (
       }
 
       /**
-       * The user has been migrated.
+       * The user has been migrated or added to a staff created company.
        */
-      if (migratedClient?.clientNumber) {
-        setMigratedClient?.(() => migratedClient);
+      else if (unclaimedClient?.clientNumber) {
+        setUnclaimedClient?.(() => unclaimedClient);
       }
 
       /**

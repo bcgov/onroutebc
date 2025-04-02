@@ -26,6 +26,7 @@ export const CompanyAndUserInfoSteps = ({
     useFormContext<CreateCompanyRequest>();
 
   const { user } = useAuth();
+  const isBusinessBCeID = Boolean(user?.profile?.bceid_business_name);
 
   const { mutate: createProfile } = useCreateProfileMutation(setClientNumber);
 
@@ -56,15 +57,19 @@ export const CompanyAndUserInfoSteps = ({
 
   return (
     <>
-      <input type="hidden" {...register("legalName")} />
       <div className="create-profile-section create-profile-section--company">
-        <WizardClientBanner
-          legalName={getDefaultRequiredVal(
-            "",
-            user?.profile?.bceid_business_name as string,
-          )}
-        />
-        <CompanyInformationWizardForm />
+        {isBusinessBCeID && (
+          <>
+            <input type="hidden" {...register("legalName")} />
+            <WizardClientBanner
+              legalName={getDefaultRequiredVal(
+                "",
+                user?.profile?.bceid_business_name as string,
+              )}
+            />
+          </>
+        )}
+        <CompanyInformationWizardForm showCompanyName={!isBusinessBCeID} />
       </div>
       <div className="create-profile-section create-profile-section--nav">
         <Stack direction="row" spacing={3}>

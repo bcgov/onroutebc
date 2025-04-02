@@ -2,6 +2,25 @@ import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
 
 /**
+ * The directory enum key-value pairs.
+ */
+export const DIRECTORY = {
+  BBCEID: "BBCEID",
+  BCEID: "BCEID",
+  BCSC: "BCSC",
+  ORBC: "ORBC",
+  IDIR: "IDIR",
+  SERVICE_ACCOUNT: "SA",
+} as const;
+
+/**
+ * The enum type for directory.
+ */
+export type DirectoryType =
+  (typeof DIRECTORY)[keyof typeof DIRECTORY];
+
+
+/**
  * Company Metadata type
  */
 export type CompanyMetadata = {
@@ -12,6 +31,7 @@ export type CompanyMetadata = {
   alternateName?: string;
   isSuspended?: boolean;
   email?: string;
+  directory: DirectoryType;
 };
 
 /**
@@ -44,7 +64,7 @@ export type VerifiedClient = PartialCompanyProfile & CompanyMetadata;
 export type BCeIDUserContextType = {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedClient: VerifiedClient;
+  unclaimedClient: VerifiedClient;
   user?: {
     userRole?: string;
     statusCode?: string;
