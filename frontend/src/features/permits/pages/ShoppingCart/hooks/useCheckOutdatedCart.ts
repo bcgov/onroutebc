@@ -6,13 +6,16 @@ import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { getOutdatedCartItems } from "../../../helpers/cart";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
+/* TODO does this only check for applications that have been removed by another user, e.g. it does not handle applications that have policy validation errors (if not, why is it used in the CartChangedWarningBanner which indicates otherwise) */
 export const useCheckOutdatedCart = (
   companyId: number,
   cartFilterChanged: boolean,
   fetchedCartItems?: CartItem[],
 ) => {
-  const [showEditCartItemDialog, setShowEditCartItemDialog] = useState<boolean>(false);
-  const [showUpdateCartDialog, setShowUpdateCartDialog] = useState<boolean>(false);
+  const [showEditCartItemDialog, setShowEditCartItemDialog] =
+    useState<boolean>(false);
+  const [showUpdateCartDialog, setShowUpdateCartDialog] =
+    useState<boolean>(false);
   const [oldCartItems, setOldCartItems] = useState<CartItem[]>([]);
 
   const {
@@ -20,13 +23,11 @@ export const useCheckOutdatedCart = (
     cartItemData: cartItemToEdit,
     fetchStatusFor,
   } = useFetchCartItemStatus(companyId);
-  
+
   useEffect(() => {
     // Reset old cart items whenever radio button filter is changed
-    setOldCartItems([]); 
-  }, [
-    cartFilterChanged
-  ]);
+    setOldCartItems([]);
+  }, [cartFilterChanged]);
 
   useEffect(() => {
     if (cartItemToEdit) {
@@ -41,7 +42,7 @@ export const useCheckOutdatedCart = (
   const outdatedApplicationNumbers = getOutdatedCartItems(
     oldCartItems,
     getDefaultRequiredVal([], fetchedCartItems),
-  ).map(cartItem => cartItem.applicationNumber);
+  ).map((cartItem) => cartItem.applicationNumber);
 
   return {
     showEditCartItemDialog,

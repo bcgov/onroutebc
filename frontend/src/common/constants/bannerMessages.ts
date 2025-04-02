@@ -47,8 +47,10 @@ export const BANNER_MESSAGES = {
     "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
-  NON_FINANCE_USER:
-    "For Credit Accounts, please contact CVSE Revenue. ",
+  NON_FINANCE_USER: "For Credit Accounts, please contact CVSE Revenue. ",
   CLIENT_NAME_MUST_BE_REGISTERED_OWNER:
     "Client name must be the registered owner (company or individual) of the vehicles being permitted.",
+  KNOW_YOUR_SHOPPING_CART: `The shopping cart is shared between all users authorized in the company profile for this onRouteBC client account. These users can modify (edit, remove and purchase) any item in the cart`,
+  YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED:
+    "The shopping cart contains Application(s) with one or more errors. Those applications must be deselected or removed from the cart to proceed with payment. Common errors include, but are not limited to, start date is in the past or an invalid vehicle.",
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
@@ -49,11 +50,15 @@ import {
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
-import {
-  TOLL_FREE_NUMBER,
-  PPC_EMAIL,
-} from "../../../../common/constants/constants";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
+import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
+import {
+  PPC_EMAIL,
+  TOLL_FREE_NUMBER,
+} from "../../../../common/constants/constants";
+import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -98,6 +103,10 @@ export const ShoppingCartPage = () => {
     refetchCartCount,
   } = useShoppingCart(companyId, enableCartFilter);
 
+  const isApplicationErrors = cartItems?.some(
+    (item) => item.validationResults.violations.length,
+  );
+
   const isFeeZero = isZeroAmount(selectedTotalFee);
   const selectedApplications = cartItemSelection.filter(
     (cartItem) => cartItem.selected,
@@ -116,6 +125,8 @@ export const ShoppingCartPage = () => {
     setShowEditCartItemDialog,
     setShowUpdateCartDialog,
   } = useCheckOutdatedCart(companyId, showAllApplications, cartItems);
+
+  console.log({ cartItems });
 
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
@@ -392,13 +403,40 @@ export const ShoppingCartPage = () => {
   return (
     <div className="shopping-cart-page">
       <Box className="shopping-cart-page__left-container">
-        <div className="shopping-cart-page__info">
-          <p className="info__body">
-            Have questions? Please contact the Provincial Permit Centre.
-            Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
-            <strong>{PPC_EMAIL}</strong>
-          </p>
-        </div>
+        <InfoBcGovBanner
+          className="shopping-cart-page__banner"
+          msg={<strong>Know your shopping cart.</strong>}
+          additionalInfo={
+            <div>
+              <p>{BANNER_MESSAGES.KNOW_YOUR_SHOPPING_CART}</p>
+              Have any questions? Please contact the Provincial Permit Centre.
+              Toll-free: {TOLL_FREE_NUMBER} or Email: {PPC_EMAIL}
+            </div>
+          }
+        />
+
+        {isApplicationErrors && isStaffActingAsCompany && (
+          <WarningBcGovBanner
+            className="shopping-cart-page__banner"
+            msg={
+              <strong>Your shopping cart has invalid application(s).</strong>
+            }
+            additionalInfo={
+              // TODO should we have a different, or even no message here, since the staff user can proceed with payment
+              BANNER_MESSAGES.YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED
+            }
+          />
+        )}
+
+        {isApplicationErrors && !isStaffActingAsCompany && (
+          <ErrorAltBcGovBanner
+            className="shopping-cart-page__banner"
+            msg={<strong>Your shopping cart cannot be completed.</strong>}
+            additionalInfo={
+              BANNER_MESSAGES.YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED
+            }
+          />
+        )}
 
         <ShoppingCart
           outdatedApplicationNumbers={outdatedApplicationNumbers}

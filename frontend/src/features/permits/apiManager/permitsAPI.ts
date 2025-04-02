@@ -97,9 +97,7 @@ export const updateApplication = async (
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPUTRequest(
     APPLICATIONS_API_ROUTES.UPDATE(companyId, applicationId),
-    replaceEmptyValuesWithNull(
-      serializeForUpdateApplication(application),
-    ),
+    replaceEmptyValuesWithNull(serializeForUpdateApplication(application)),
   );
 };
 
@@ -120,11 +118,12 @@ export const getApplications = async (
   }: ApplicationFilters,
   companyId?: Nullable<number>,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  // If the user is staff and not acting as a company, get timeInQueue and claimedBy properties 
+  // If the user is staff and not acting as a company, get timeInQueue and claimedBy properties
   // in addition to the ApplicationListItem response to be used in the ApplicationsInQueueList component
-  const applicationsURL = !getStaffQueue && companyId
-    ? new URL(APPLICATIONS_API_ROUTES.GET_APPLICATIONS(companyId))
-    : new URL(STAFF_APPLICATIONS_API_ROUTES.GET());
+  const applicationsURL =
+    !getStaffQueue && companyId
+      ? new URL(APPLICATIONS_API_ROUTES.GET_APPLICATIONS(companyId))
+      : new URL(STAFF_APPLICATIONS_API_ROUTES.GET());
 
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
@@ -269,7 +268,7 @@ export const deleteApplications = async (
   const requestBody = {
     applications: applicationIds,
   };
-  
+
   return await httpDELETERequest(
     `${APPLICATIONS_API_ROUTES.DELETE(companyId)}`,
     replaceEmptyValuesWithNull(requestBody),

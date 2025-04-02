@@ -15,7 +15,8 @@ export const useShoppingCart = (
   const { refetchCartCount } = useContext(CartContext);
 
   // Cart filter state
-  const [showAllApplications, setShowAllApplications] = useState<boolean>(enableCartFilter);
+  const [showAllApplications, setShowAllApplications] =
+    useState<boolean>(enableCartFilter);
 
   // Interacting with backend for cart
   const removeFromCartMutation = useRemoveFromCart();
@@ -28,11 +29,13 @@ export const useShoppingCart = (
   const policyEngine = usePolicyEngine(specialAuth);
 
   // Cart item state
-  const [cartItemSelection, setCartItemSelection] = useState<SelectableCartItem[]>([]);
+  const [cartItemSelection, setCartItemSelection] = useState<
+    SelectableCartItem[]
+  >([]);
   const cartItemsTotalCount = cartItemSelection.length;
   const selectedTotalFee = cartItemSelection
-    .filter(cartItem => cartItem.selected)
-    .map(cartItem => cartItem.fee)
+    .filter((cartItem) => cartItem.selected)
+    .map((cartItem) => cartItem.fee)
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
 
   useEffect(() => {
@@ -46,22 +49,26 @@ export const useShoppingCart = (
     const updateCartItemSelection = async (itemsInCart: CartItem[]) => {
       const cartSelectionWithFees = await Promise.all(
         itemsInCart.map(async (cartItem) => {
-          const fee = await calculatePermitFee({
-            permitType: cartItem.permitType,
-            permitData: {
-              startDate: cartItem.startDate,
-              permitDuration: cartItem.duration,
-              permittedRoute: {
-                manualRoute: {
-                  totalDistance: cartItem.totalDistance,
-                  highwaySequence: [], // required, but not used for fee calculation
-                  origin: "", // required, but not used for fee calculation
-                  destination: "", // required, but not used for fee calculation
+          /* should we still be calculating the fee here given that we now receive this information as part of our /shopping-cart response?  */
+          const fee = await calculatePermitFee(
+            {
+              permitType: cartItem.permitType,
+              permitData: {
+                startDate: cartItem.startDate,
+                permitDuration: cartItem.duration,
+                permittedRoute: {
+                  manualRoute: {
+                    totalDistance: cartItem.totalDistance,
+                    highwaySequence: [], // required, but not used for fee calculation
+                    origin: "", // required, but not used for fee calculation
+                    destination: "", // required, but not used for fee calculation
+                  },
                 },
+                thirdPartyLiability: cartItem.thirdPartyLiability,
               },
-              thirdPartyLiability: cartItem.thirdPartyLiability,
             },
-          }, policyEngine);
+            policyEngine,
+          );
 
           return {
             ...cartItem,
@@ -79,21 +86,27 @@ export const useShoppingCart = (
     updateCartItemSelection(items);
   }, [cartItems, isNoFeePermitType, policyEngine]);
 
-  const selectedItemsCount = cartItemSelection.filter(cartItem => cartItem.selected).length;
+  const selectedItemsCount = cartItemSelection.filter(
+    (cartItem) => cartItem.selected,
+  ).length;
 
   const toggleSelectAll = () => {
     if (cartItemsTotalCount === 0) return;
 
     if (selectedItemsCount !== cartItemsTotalCount) {
-      setCartItemSelection(cartItemSelection.map(cartItem => ({
-        ...cartItem,
-        selected: cartItem.isSelectable ? true : cartItem.selected,
-      })));
+      setCartItemSelection(
+        cartItemSelection.map((cartItem) => ({
+          ...cartItem,
+          selected: cartItem.isSelectable ? true : cartItem.selected,
+        })),
+      );
     } else {
-      setCartItemSelection(cartItemSelection.map(cartItem => ({
-        ...cartItem,
-        selected: cartItem.isSelectable ? false : cartItem.selected,
-      })));
+      setCartItemSelection(
+        cartItemSelection.map((cartItem) => ({
+          ...cartItem,
+          selected: cartItem.isSelectable ? false : cartItem.selected,
+        })),
+      );
     }
   };
 
@@ -103,20 +116,24 @@ export const useShoppingCart = (
 
   const handleSelectItem = (id: string) => {
     setCartItemSelection(
-      cartItemSelection.map(cartItem => ({
+      cartItemSelection.map((cartItem) => ({
         ...cartItem,
-        selected: cartItem.applicationId === id && cartItem.isSelectable ?
-          true : cartItem.selected,
+        selected:
+          cartItem.applicationId === id && cartItem.isSelectable
+            ? true
+            : cartItem.selected,
       })),
     );
   };
 
   const handleDeselectItem = (id: string) => {
     setCartItemSelection(
-      cartItemSelection.map(cartItem => ({
+      cartItemSelection.map((cartItem) => ({
         ...cartItem,
-        selected: cartItem.applicationId === id && cartItem.isSelectable ?
-          false : cartItem.selected,
+        selected:
+          cartItem.applicationId === id && cartItem.isSelectable
+            ? false
+            : cartItem.selected,
       })),
     );
   };
