@@ -121,7 +121,7 @@ export class GarmsService {
           process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
         const recordLength = GARMS_CREDIT_FILE_LRECL;
         this.logger.log(`Sending credit file ${fileName}`);
-        //await this.uploadFile(fileName, remoteFilePath, recordLength);
+        await this.uploadFile(fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS credit file');
       }
