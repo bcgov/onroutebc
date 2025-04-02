@@ -129,7 +129,7 @@ const ChallengeOption = ({
  */
 export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext, migratedClient } =
+  const { companyLegalName: companyNameFromContext, unclaimedClient } =
     useContext(OnRouteBCContext);
   return (
     <div className="welcome-page">
@@ -167,14 +167,14 @@ export const WelcomePage = React.memo(() => {
          * No challenge Workflow
          */}
         {!companyNameFromContext &&
-          migratedClient?.clientNumber &&
+          unclaimedClient?.clientNumber &&
           isNewCompanyProfile(companyNameFromContext) && (
             <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
           )}
         {/**
          * Challenge Workflow
          */}
-        {!companyNameFromContext && !migratedClient && (
+        {!companyNameFromContext && !unclaimedClient && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
             <div style={{ alignSelf: "center" }}>
               Has this company purchased a commercial vehicle
