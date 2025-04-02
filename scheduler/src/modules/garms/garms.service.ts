@@ -270,7 +270,7 @@ export class GarmsService {
    * @returns
    */
   private async getLatestFile(garmsExtractType: GarmsExtractType) {
-    const latestFile = await this.garmsExtractFileRepository.find({
+    const [latestFile] = await this.garmsExtractFileRepository.find({
       where: { garmsExtractType: garmsExtractType },
       order: { toTimestamp: 'DESC' },
       take: 1,
