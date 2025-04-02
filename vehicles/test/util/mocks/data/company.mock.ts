@@ -117,6 +117,7 @@ export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
 
 export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.RED_COMPANY_ID,
+  companyGUID: constants.RED_COMPANY_GUID,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
@@ -194,6 +195,7 @@ export const readBlueCompanyUserDtoMock: ReadCompanyUserDto = {
 
 export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.BLUE_COMPANY_ID,
+  companyGUID: constants.BLUE_COMPANY_GUID,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
