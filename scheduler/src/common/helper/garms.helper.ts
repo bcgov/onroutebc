@@ -330,7 +330,7 @@ export const createGarmsCreditFileDetails = (
   gcd.serNoTo = SER_NO_TO;
   //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable 
   //and should always be present once we set up credit account on onRoute
-  gcd.wsAccount = permitTransaction.permit.company.creditAccount.creditAccountNumber?permitTransaction.permit.company.creditAccount.creditAccountNumber: 'WS1234';
+  gcd.wsAccount = permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber ?? 'WS1234';;
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
