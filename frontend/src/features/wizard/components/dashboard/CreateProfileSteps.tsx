@@ -17,7 +17,7 @@ import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoS
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
-  const { migratedClient } = useContext(OnRouteBCContext);
+  const { unclaimedClient: migratedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
