@@ -75,6 +75,7 @@ const navigateBasicBCeID = (
           return ERROR_ROUTES.UNAUTHORIZED;
         }
 
+        console.log('unclaimed client there for basic bceuid')
         // There is an unclaimed client corresponding to the user.
 
         // Take the user to company profile wizard with
@@ -167,6 +168,7 @@ const navigateBusinessBCeID = (
       // A business bceid user whose buisness guid does not match the company guid in the invite
       // cannot be a user of the inviting company.
       if (pendingCompanies[0].companyGUID !== businessGuidFromUserToken) {
+        console.log('companyguid mismatch');
         // TODO Error page to include message asking user to contact PPC.
         return ERROR_ROUTES.UNAUTHORIZED;
       }
