@@ -1,13 +1,13 @@
 export class GarmaCashDetail {
   //Set to 2
   recType: string;
-  //Set to 14017
+  //Set to 14035
   agentNumber: string;
   //YYYYMMDD date of posting
   wsdate: string;
   //Set to 1 for first Detail record associated with header, length 4 format(9999)
   seqNumber: string;
-  //SMARMS service code, length 4 format(9999)
+  //Garm service code, length 4 format(9999)
   serviceCode: string;
   //total no. of services for service code, length 5 format(99999)
   serviceQuantity: string;

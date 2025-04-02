@@ -30,6 +30,7 @@ import {
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
+  OnRouteBCContextType,
 } from "./common/authentication/OnRouteBCContext";
 
 const authority =
@@ -81,7 +82,7 @@ const App = () => {
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
     useState<Optional<IDIRUserDetailContext>>();
-  const [migratedClient, setMigratedClient] =
+  const [unclaimedClient, setUnclaimedClient] =
     useState<Optional<VerifiedClient>>();
   const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
@@ -92,14 +93,14 @@ const App = () => {
     setCompanyId(() => undefined);
     setOnRouteBCClientNumber(() => undefined);
     setCompanyLegalName(() => undefined);
-    setMigratedClient(() => undefined);
+    setUnclaimedClient(() => undefined);
     setIsCompanySuspended(() => undefined);
     sessionStorage.removeItem("onRouteBC.user.companyId");
   }, [
     setCompanyId,
     setOnRouteBCClientNumber,
     setCompanyLegalName,
-    setMigratedClient,
+    setUnclaimedClient,
     setIsCompanySuspended,
   ]);
 
@@ -130,12 +131,12 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
-                migratedClient,
-                setMigratedClient,
+                unclaimedClient,
+                setUnclaimedClient,
                 isNewBCeIDUser,
                 setIsNewBCeIDUser,
                 clearCompanyContext,
-              };
+              } as OnRouteBCContextType;
             }, [
               userClaims,
               companyId,
@@ -144,7 +145,7 @@ const App = () => {
               isCompanySuspended,
               idirUserDetails,
               onRouteBCClientNumber,
-              migratedClient,
+              unclaimedClient,
               isNewBCeIDUser,
               clearCompanyContext,
             ])}
