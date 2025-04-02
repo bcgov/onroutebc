@@ -6,6 +6,9 @@ import { Receipt } from '../common/entities/receipt.entity';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
 import { PermitType } from '../common/entities/permit-type.entity';
+import { PermitData } from '../common/entities/permit-data.entity';
+import { Company } from '../common/entities/company.entity';
+import { CreditAccount } from '../common/entities/credit-account.entity';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { PermitType } from '../common/entities/permit-type.entity';
       GarmsExtractFile,
       GarmsFileTransaction,
       PermitType,
+      PermitData,
+      Company,
+      CreditAccount,
     ]),
   ],
   providers: [GarmsService],
