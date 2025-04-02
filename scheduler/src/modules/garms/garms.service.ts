@@ -83,11 +83,11 @@ export class GarmsService {
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.uploadFile(fileName, remoteFilePath, recordLength);
-        await this.updateFileSubmitTimestamp(oldFile);
-        await this.saveTransactionIds(transactions, fileId);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
+      await this.updateFileSubmitTimestamp(oldFile);
+      await this.saveTransactionIds(transactions, fileId);
     } else {
       this.logger.log('No record to process for GARMS cash file');
     }
@@ -120,11 +120,11 @@ export class GarmsService {
           process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
         const recordLength = GARMS_CREDIT_FILE_LRECL;
         await this.uploadFile(fileName, remoteFilePath, recordLength);
-        await this.updateFileSubmitTimestamp(oldFile);
-        await this.saveTransactionIds(transactions, fileId);
       } else {
         this.logger.log('No data to process for GARMS credit file');
       }
+      await this.updateFileSubmitTimestamp(oldFile);
+      await this.saveTransactionIds(transactions, fileId);
     } else {
       this.logger.log('No record to process for GARMS credit file');
     }
