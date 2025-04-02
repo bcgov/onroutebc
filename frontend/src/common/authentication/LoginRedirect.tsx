@@ -173,6 +173,12 @@ const navigateBusinessBCeID = (
         return ERROR_ROUTES.UNAUTHORIZED;
       }
 
+      // associatedCompanies may have a company in spite of pendingCompanies also having a company.
+      // This happens during a TPS migration workflow.
+      // associatedCompanies may or may not have an associated company for the user
+      // but that is absolutely irrelevant to the invite scenario.
+      // If pending Companies exist, we only account for that.
+
       // If the execution reaches here, this is a valid invite situation.
       // Redirect the user to the welcome page for user info wizard.
       return CREATE_PROFILE_WIZARD_ROUTES.WELCOME;
