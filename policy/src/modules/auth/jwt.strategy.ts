@@ -58,6 +58,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     } else if (req.body.companyId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       companyId = req.body.companyId as number;
+    } else {
+      throw new UnauthorizedException();
     }
 
     if (payload.identity_provider === IDP.IDIR) {
