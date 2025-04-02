@@ -98,14 +98,12 @@ export const CompanyInfoGeneralForm = ({
               validate: {
                 validatePostalCode: (postalCode: string) => {
                   if (!selectedCountry) return true;
-                  // Standard validation for CA, US, MX
                   if (["CA", "US", "MX"].includes(selectedCountry)) {
                     return (
                       isPostalCode(postalCode, selectedCountry) ||
                       invalidPostalCode()
                     );
                   }
-                  // For other countries: Only check max length (30 chars)
                   return postalCode.length < 30 || invalidPostalCode();
                 },
               },
