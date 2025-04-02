@@ -82,7 +82,7 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        this.logger.log(`Sending cash file ${fileName}`)
+        this.logger.log(`Sending cash file ${fileName}`);
         await this.uploadFile(fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS cash file');
@@ -96,6 +96,15 @@ export class GarmsService {
 
   @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCreditTransactions() {
+    const garmsCashFeatureFlag = (await getFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      'GARMS_CREDIT_CRON_JOB',
+    )) as FeatureFlagValue;
+    if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
+      this.logger.log('GARMS_CREDIT_CRON_JOB is DISABLED');
+      return false;
+    }
     const garmsExtractType = GarmsExtractType.CREDIT;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
