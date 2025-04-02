@@ -1,6 +1,3 @@
-import { useFormContext, useWatch } from "react-hook-form";
-import isPostalCode from "validator/lib/isPostalCode";
-
 import "./CompanyInfoGeneralForm.scss";
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
@@ -18,12 +15,6 @@ export const CompanyInfoGeneralForm = ({
 }: {
   feature: ORBCFormFeatureType;
 }) => {
-  const { control } = useFormContext();
-  const selectedCountry = useWatch({
-    control,
-    name: "mailingAddress.countryCode",
-  });
-
   return (
     <div className="company-info-general-form">
       <CustomFormComponent
@@ -96,16 +87,8 @@ export const CompanyInfoGeneralForm = ({
             rules: {
               required: { value: true, message: requiredMessage() },
               validate: {
-                validatePostalCode: (postalCode: string) => {
-                  if (!selectedCountry) return true;
-                  if (["CA", "US", "MX"].includes(selectedCountry)) {
-                    return (
-                      isPostalCode(postalCode, selectedCountry) ||
-                      invalidPostalCode()
-                    );
-                  }
-                  return postalCode.length < 30 || invalidPostalCode();
-                },
+                validatePostalCode: (postalCode: string) =>
+                  postalCode.length <= 30 || invalidPostalCode(),
               },
             },
             label: "Postal / Zip Code",
