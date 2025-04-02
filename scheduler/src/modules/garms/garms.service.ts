@@ -61,9 +61,7 @@ export class GarmsService {
     }
     const garmsExtractType = GarmsExtractType.CASH;
     const toTimestamp = getToDateForGarms();
-    console.log('toTimestamp: ',toTimestamp);
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
-    console.log('File Extract: ',oldFile)
     if (oldFile) {
       const { fileId, fromTimestamp } = oldFile;
       oldFile.toTimestamp = toTimestamp;
@@ -125,10 +123,10 @@ export class GarmsService {
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
       } else {
-        this.logger.log('No data to process for GARMS cash file');
+        this.logger.log('No data to process for GARMS credit file');
       }
     } else {
-      this.logger.log('No record to process for GARMS cash file');
+      this.logger.log('No record to process for GARMS credit file');
     }
   }
 
@@ -188,10 +186,8 @@ export class GarmsService {
     const oldFile = await this.findUnsubmittedOldFile(garmsExtractType);
 
     if (oldFile) {
-      console.log('Found old file')
       return this.updateOldFileRecord(oldFile, toTimestamp);
     } else {
-      console.log('Creating new record')
       return this.createNewFileRecord(garmsExtractType, toTimestamp);
     }
   }

@@ -428,7 +428,7 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
     (acc, transaction) => {
       // Extract just the date part (YYYY-MM-DD)
       const transactionDate = convertUtcToPt(
-        transaction.transactionSubmitDate,
+        transaction.transactionApprovedDate,
         'YYYY-MM-DD',
       );
       // If the date group doesn't exist, create it
