@@ -1,10 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
 import { PermitType } from '../enum/permit-type.enum';
+import { PermitData } from './permit-data.entity';
+import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { Company } from './company.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -31,12 +42,13 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: '74',
     description:
       'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  companyId: number;
+  @ManyToOne(() => Company, { eager: true, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  company: Company;
 
   @AutoMap()
   @ApiProperty({
@@ -121,4 +133,36 @@ export class Permit extends Base {
     nullable: true,
   })
   permitType: PermitType;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: PermitApprovalSource,
+    description: 'Name for the permit approval source',
+    example: PermitApprovalSource.PPC,
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PermitApprovalSource,
+    length: 10,
+    name: 'PERMIT_APPROVAL_SOURCE_TYPE',
+    nullable: true,
+  })
+  permitApprovalSource: PermitApprovalSource;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-13T17:31:17.470Z',
+    description: 'Permit Issue Date ',
+  })
+  @Column({
+    name: 'PERMIT_ISSUE_DATE_TIME',
+    nullable: true,
+  })
+  permitIssueDateTime: Date;
+
+  @AutoMap(() => PermitData)
+  @OneToOne(() => PermitData, (PermitData) => PermitData.permit, {
+    cascade: true,
+  })
+  permitData: PermitData;
 }
