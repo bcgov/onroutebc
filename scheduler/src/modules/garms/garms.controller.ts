@@ -9,7 +9,7 @@ export class FileTransferController {
    transferFile(
   ) {
     try {
-      const result =  this.fileTransferService.processCashTransactions();
+      const result =  this.fileTransferService.processCreditTransactions();
       return { message: result };
     } catch (error) {
       return { message: 'Error during file transfer', error: error.message };
