@@ -9,6 +9,7 @@ import { PermitType } from '../common/entities/permit-type.entity';
 import { PermitData } from '../common/entities/permit-data.entity';
 import { Company } from '../common/entities/company.entity';
 import { CreditAccount } from '../common/entities/credit-account.entity';
+import { FileTransferController } from './garms.controller';
 
 @Module({
   imports: [
@@ -24,5 +25,6 @@ import { CreditAccount } from '../common/entities/credit-account.entity';
     ]),
   ],
   providers: [GarmsService],
+  controllers: [FileTransferController],
 })
 export class GarmsModule {}
