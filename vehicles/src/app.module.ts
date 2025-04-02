@@ -117,7 +117,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(VersionMatchMiddleware).forRoutes('*');
+    consumer
+      .apply(VersionMatchMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })

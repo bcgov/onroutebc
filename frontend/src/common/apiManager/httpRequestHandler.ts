@@ -36,11 +36,12 @@ axios.interceptors.response.use(
   (error) => {
     if (!error.response || error.response.status === 503) {
       console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
+      if (window.location.pathname !== "/service-unavailable") {
+        //prevent infinite loop
         window.location.href = "/service-unavailable";
       }
     } else {
-      console.log("Error Details:", error)
+      console.log("Error Details:", error);
       return Promise.reject(error); // Reject other errors
     }
   },
