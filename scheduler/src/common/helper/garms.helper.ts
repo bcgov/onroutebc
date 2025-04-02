@@ -128,6 +128,7 @@ export const createGarmsCashFileHeader = (
   logStream: fs.WriteStream,
 ) => {
   const gch = new GarmaCashHeader();
+  //Do not change this assignment order.
   gch.recType = HEADER_REC_TYPE;
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
@@ -187,6 +188,7 @@ export const createGarmsCashFileDetails = (
 ) => {
   let seqNumber = 0;
   for (const key of permitTypeAmounts.keys()) {
+    //Do not change this assignment order.
     seqNumber = seqNumber + 1;
     const lastDetailLine = permitTypeAmounts.size === seqNumber;
     const gcd = new GarmaCashDetail();
@@ -269,14 +271,15 @@ export const createGarmsCreditFileHeader = (
   total: number,
   logStream: fs.WriteStream,
 ) => {
+  //Do not change this assignment order.
   const gch = new GarmsCreditHeader();
   gch.recType = HEADER_REC_TYPE;
   gch.agentNumber = CREDIT_AGENT_NUMBER;
   gch.extractDate = convertUtcToPt(extractDate, GARMS_DATE_FORMAT);
   gch.extractTime = convertUtcToPt(extractDate, 'HHmmss');
-  gch.invQuantity = INV_QTY;
   gch.transactionCount = formatNumber(serviceCount, 4);
   gch.servicecount = formatNumber(serviceCount, 5);
+  gch.invQuantity = INV_QTY;
   gch.revAmount = formatAmount(total, 10);
   gch.f1 = GARMS_CREDIT_FILLER;
   const header = Object.values(gch).join('');
@@ -290,6 +293,7 @@ export const createGarmsCreditFileDetails = (
   transaction: Transaction,
   permitServiceCodes: Map<string, number>,
 ) => {
+  //Do not change this assignment order.
   const gcd = new GarmsCreditDetails();
   gcd.recType = DETAIL_REC_TYPE;
   gcd.agentNumber = CREDIT_AGENT_NUMBER;
