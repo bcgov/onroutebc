@@ -194,7 +194,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -319,6 +319,7 @@ vehicles:
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
       - "cfs-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
@@ -342,7 +343,7 @@ dops:
         - "--"
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
@@ -464,6 +465,7 @@ dops:
       - "cdogs-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 scheduler:
@@ -483,7 +485,7 @@ scheduler:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
@@ -575,6 +577,7 @@ scheduler:
       - "cfs-{{tpl $.Values.vault.zone $}}"
       - "tps-{{tpl $.Values.vault.zone $}}"
       - "garms-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 policy:
@@ -594,7 +597,7 @@ policy:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/policy-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/policy-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: policy
@@ -708,4 +711,5 @@ policy:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "policy-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
