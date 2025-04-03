@@ -57,9 +57,9 @@ export const LOATable = ({
                 <FormControlLabel
                   control={
                     <Radio
-                      className={`loa-checkbox ${
+                      className={`loa-radio ${
                         selectableLOA.disabled
-                          ? "loa-checkbox--disabled"
+                          ? "loa-radio--disabled"
                           : ""
                       }`}
                       key={getDefaultRequiredVal(
@@ -78,7 +78,7 @@ export const LOATable = ({
                   label={applyWhenNotNullable(
                     (loaNum) => `${loaNum}`,
                     selectableLOA.loa?.loaNumber,
-                    DEFAULT_EMPTY_LOA_NUMBER,
+                    "None",
                   )}
                   classes={{
                     root: "loa-table__form-control",

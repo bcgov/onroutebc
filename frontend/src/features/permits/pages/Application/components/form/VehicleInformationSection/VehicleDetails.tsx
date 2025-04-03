@@ -21,15 +21,15 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
+import { isUndefined, ORBCFormFeatureType } from "../../../../../../../common/types/common";
 import {
-  isUndefined,
-  ORBCFormFeatureType,
-} from "../../../../../../../common/types/common";
+  disableMouseWheelInputOnNumberField,
+} from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+
 import {
   gvwLimit,
   isPermitVehicleWithinGvwLimit,
 } from "../../../../../helpers/vehicles/rules/gvw";
-import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   PowerUnit,
@@ -63,6 +63,7 @@ export const VehicleDetails = ({
   vehicleFormData,
   vehicleOptions,
   subtypeOptions,
+  isLOAUsed,
   isSelectedLOAVehicle,
   permitType,
   onSetSaveVehicle,
@@ -73,6 +74,7 @@ export const VehicleDetails = ({
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
+  isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   permitType: PermitType;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
@@ -328,8 +330,8 @@ export const VehicleDetails = ({
             className="vehicle-details__input"
             type="select"
             feature={feature}
-            readOnly={disableVehicleTypeSelect || isSelectedLOAVehicle}
-            disabled={disableVehicleTypeSelect || isSelectedLOAVehicle}
+            readOnly={disableVehicleTypeSelect || isLOAUsed}
+            disabled={disableVehicleTypeSelect || isLOAUsed}
             options={{
               name: "permitData.vehicleDetails.vehicleType",
               rules: {
@@ -373,8 +375,8 @@ export const VehicleDetails = ({
               {subtype.type}
             </MenuItem>
           ))}
-          readOnly={isSelectedLOAVehicle}
-          disabled={isSelectedLOAVehicle}
+          readOnly={isLOAUsed}
+          disabled={isLOAUsed}
         />
 
         {showGVW ? (

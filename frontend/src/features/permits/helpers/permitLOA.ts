@@ -138,7 +138,7 @@ export const getUpdatedLOASelection = (
  * @param selectedLOAs Selected LOAs for the permit
  * @param vehicleOptions Provided vehicle options for selection
  * @param prevSelectedVehicle Previously selected vehicle details in the permit form
- * @param eligibleSubtypes Set of eligible vehicle subtypes
+ * @param eligibleSubtypes Set of all possible eligible vehicle subtypes
  * @param vehicleRestrictions Restriction rules that each vehicle must meet
  * @returns Updated vehicle details and filtered vehicle options
  */
@@ -149,36 +149,46 @@ export const getUpdatedVehicleDetailsForLOAs = (
   eligibleSubtypes: Set<string>,
   vehicleRestrictions: ((vehicle: Vehicle) => boolean)[],
 ) => {
+  const isLOAUsed = selectedLOAs.length > 0;
+
   const filteredVehicles = getAllowedVehicles(
     vehicleOptions,
     eligibleSubtypes,
     selectedLOAs,
     vehicleRestrictions,
   );
-  
-  const filteredVehicleIds = filteredVehicles.map(filteredVehicle => ({
-    filteredVehicleType: filteredVehicle.vehicleType,
-    filteredVehicleId: filteredVehicle.vehicleType === VEHICLE_TYPES.TRAILER
-      ? (filteredVehicle as Trailer).trailerId
-      : (filteredVehicle as PowerUnit).powerUnitId,
-  }));
 
-  // If vehicle selected is an existing vehicle but is not in list of vehicle options
-  // Clear the selected vehicle
-  const { vehicleId, vehicleType } = prevSelectedVehicle;
-  if (vehicleId && !filteredVehicleIds.some(({
-    filteredVehicleType,
-    filteredVehicleId,
-  }) => filteredVehicleType === vehicleType && filteredVehicleId === vehicleId)) {
+  // If an LOA is used, then the only allowable subtype is the one defined by the LOA
+  // Otherwise, the allowable subtypes are the ones originally belonging to the permit type
+  const allAllowableSubtypes = isLOAUsed
+    ? new Set<string>([selectedLOAs[0].vehicleSubType])
+    : eligibleSubtypes;
+
+  // If vehicle selected is an existing vehicle (was originally chosen from inventory),
+  // but its subtype is no longer valid, then clear the selected vehicle
+  const { vehicleId, vehicleSubType } = prevSelectedVehicle;
+  if (vehicleId && !allAllowableSubtypes.has(vehicleSubType)) {
+    const defaultVehicleDetails = getDefaultVehicleDetails();
+
     return {
       filteredVehicleOptions: filteredVehicles,
-      updatedVehicle: getDefaultVehicleDetails(),
+      // If an LOA is used, fill the vehicle type and subtype with the LOA's vehicle type/subtype
+      // Otherwise, simply clear the vehicle details and fill with default empty values
+      updatedVehicle: isLOAUsed ? {
+        ...defaultVehicleDetails,
+        vehicleType: selectedLOAs[0].vehicleType,
+        vehicleSubType: selectedLOAs[0].vehicleSubType,
+      } : defaultVehicleDetails,
     };
   }
 
   return {
     filteredVehicleOptions: filteredVehicles,
-    updatedVehicle: prevSelectedVehicle,
+    updatedVehicle: isLOAUsed ? {
+      ...prevSelectedVehicle,
+      vehicleType: selectedLOAs[0].vehicleType,
+      vehicleSubType: selectedLOAs[0].vehicleSubType,
+    } : prevSelectedVehicle,
   };
 };
 

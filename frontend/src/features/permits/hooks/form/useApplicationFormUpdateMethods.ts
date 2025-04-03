@@ -9,8 +9,9 @@ import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitV
 import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
-import { RequiredOrNull } from "../../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
+import { VehicleType } from "../../../manageVehicles/types/Vehicle";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -45,9 +46,17 @@ export const useApplicationFormUpdateMethods = () => {
     });
   }, [setValue]);
 
-  const onClearVehicle = useCallback((saveVehicle: boolean) => {
+  const onClearVehicle = useCallback((
+    saveVehicle: boolean,
+    defaultTypes?: Nullable<{
+      vehicleType: VehicleType;
+      vehicleSubtype: string;
+    }>,
+  ) => {
     setValue("permitData.vehicleDetails", {
       ...EMPTY_VEHICLE_DETAILS,
+      vehicleType: defaultTypes ? defaultTypes.vehicleType : EMPTY_VEHICLE_DETAILS.vehicleType,
+      vehicleSubType: defaultTypes ? defaultTypes.vehicleSubtype : EMPTY_VEHICLE_DETAILS.vehicleSubType,
       saveVehicle,
     });
   }, [setValue]);

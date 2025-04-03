@@ -9,37 +9,36 @@ import { getEligibleSubtypeOptions } from "../helpers/vehicles/subtypes/getEligi
 import { Nullable } from "../../../common/types/common";
 import { getEligibleVehicleSubtypes } from "../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
 import { isPermitVehicleWithinGvwLimit } from "../helpers/vehicles/rules/gvw";
+import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
 } from "../../manageVehicles/types/Vehicle";
 
-export const usePermitVehicles = (
-  data: {
-    policyEngine: Policy;
-    permitType: PermitType;
-    vehicleFormData: PermitVehicleDetails;
-    allVehiclesFromInventory: (PowerUnit | Trailer)[];
-    selectedLOAs: PermitLOA[];
-    powerUnitSubtypeNamesMap: Map<string, string>;
-    trailerSubtypeNamesMap: Map<string, string>;
-    onClearVehicle: () => void;
-    selectedCommodity?: Nullable<string>;
-  },
-) => {
-  const {
-    policyEngine,
-    permitType,
-    vehicleFormData,
-    allVehiclesFromInventory,
-    selectedLOAs,
-    powerUnitSubtypeNamesMap,
-    trailerSubtypeNamesMap,
-    onClearVehicle,
-    selectedCommodity,
-  } = data;
-
+export const usePermitVehicles = ({
+  policyEngine,
+  permitType,
+  vehicleFormData,
+  allVehiclesFromInventory,
+  selectedLOAs,
+  powerUnitSubtypeNamesMap,
+  trailerSubtypeNamesMap,
+  onSetVehicle,
+  selectedCommodity,
+}: {
+  policyEngine: Policy;
+  permitType: PermitType;
+  vehicleFormData: PermitVehicleDetails;
+  allVehiclesFromInventory: (PowerUnit | Trailer)[];
+  selectedLOAs: PermitLOA[];
+  powerUnitSubtypeNamesMap: Map<string, string>;
+  trailerSubtypeNamesMap: Map<string, string>;
+  onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
+  selectedCommodity?: Nullable<string>;
+}) => {
+  // Get the entire set of all eligible subtypes for the permit type
   const eligibleVehicleSubtypes = useMemo(() => {
     return getEligibleVehicleSubtypes(
       permitType,
@@ -52,48 +51,11 @@ export const usePermitVehicles = (
     selectedCommodity,
   ]);
 
-  // Check to see if vehicle details is still valid after LOA has been deselected
-  const {
-    updatedVehicle,
-    filteredVehicleOptions,
-  } = useMemo(() => {
-    return getUpdatedVehicleDetailsForLOAs(
-      selectedLOAs,
-      allVehiclesFromInventory,
-      vehicleFormData,
-      eligibleVehicleSubtypes,
-      [
-        (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
-          || isPermitVehicleWithinGvwLimit(
-            permitType,
-            VEHICLE_TYPES.POWER_UNIT,
-            (v as PowerUnit).licensedGvw,
-          ),
-      ],
-    );
-  }, [
-    selectedLOAs,
-    allVehiclesFromInventory,
-    vehicleFormData,
-    eligibleVehicleSubtypes,
-    permitType,
-  ]);
-
   const vehicleIdInForm = vehicleFormData.vehicleId;
-  const updatedVehicleId = updatedVehicle.vehicleId;
-  useEffect(() => {
-    // If vehicle originally selected exists but the updated vehicle is cleared, clear the vehicle
-    if (vehicleIdInForm && !updatedVehicleId) {
-      onClearVehicle();
-    }
-  }, [
-    vehicleIdInForm,
-    updatedVehicleId,
-  ]);
-
-  // Get vehicle subtypes that are allowed by LOAs
   const vehicleType = vehicleFormData.vehicleType;
   const vehicleSubtype = vehicleFormData.vehicleSubType;
+
+  // Get vehicle subtypes options based on current vehicle details in the form
   const {
     subtypeOptions,
     isSelectedLOAVehicle,
@@ -153,6 +115,70 @@ export const usePermitVehicles = (
     trailerSubtypeNamesMap,
     eligibleVehicleSubtypes,
   ]);
+
+  // Get updated vehicle form details and vehicle inventory options if selected LOA has changed
+  const {
+    updatedVehicle,
+    filteredVehicleOptions,
+  } = useMemo(() => {
+    const updatedVehicleDetails = getUpdatedVehicleDetailsForLOAs(
+      selectedLOAs,
+      allVehiclesFromInventory,
+      vehicleFormData,
+      eligibleVehicleSubtypes,
+      [
+        (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
+          || isPermitVehicleWithinGvwLimit(
+            permitType,
+            VEHICLE_TYPES.POWER_UNIT,
+            (v as PowerUnit).licensedGvw,
+          ),
+      ],
+    );
+
+    // Make sure that the selected subtype is available as one of the select dropdown options,
+    // Otherwise set the subtype to be the default first subtype in the dropdown list,
+    // or set subtype to empty if no subtype options are available 
+    return {
+      updatedVehicle: !subtypeOptions.find(
+        ({ typeCode }) => updatedVehicleDetails.updatedVehicle.vehicleSubType === typeCode,
+      ) ? {
+        ...updatedVehicleDetails.updatedVehicle,
+        vehicleSubType: subtypeOptions.length > 0 ? subtypeOptions[0].typeCode : "",
+      } : updatedVehicleDetails.updatedVehicle,
+      filteredVehicleOptions: updatedVehicleDetails.filteredVehicleOptions,
+    };
+  }, [
+    selectedLOAs,
+    allVehiclesFromInventory,
+    vehicleFormData,
+    eligibleVehicleSubtypes,
+    permitType,
+    subtypeOptions,
+  ]);
+
+  // Updated vehicle should be memoized, otherwise placing the object directly in the dependency array
+  // can cause infinite loops due to checking by reference (rather than by value)
+  const memoizedUpdatedVehicle = useMemoizedObject(
+    updatedVehicle,
+    (v1, v2) => {
+      return getDefaultRequiredVal("", v1.vehicleId) === getDefaultRequiredVal("", v2.vehicleId)
+        && v1.countryCode === v2.countryCode
+        && getDefaultRequiredVal(v1.licensedGVW) === getDefaultRequiredVal(v2.licensedGVW)
+        && v1.make === v2.make
+        && v1.plate === v2.plate
+        && v1.provinceCode === v2.provinceCode
+        && v1.vehicleType === v2.vehicleType
+        && v1.vehicleSubType === v2.vehicleSubType
+        && v1.vin === v2.vin
+        && v1.year === v2.year;
+    },
+  );
+  
+  // Update the vehicle section in the form whenever there is an update to the vehicle details
+  useEffect(() => {
+    onSetVehicle(memoizedUpdatedVehicle);
+  }, [memoizedUpdatedVehicle]);
 
   return {
     filteredVehicleOptions,
