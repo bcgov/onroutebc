@@ -21,6 +21,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -56,6 +57,10 @@ import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 })
 @ApiInternalServerErrorResponse({
   description: 'The Pending User Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Pending User Api Unprocessable Entity Response',
   type: ExceptionDto,
 })
 @ApiBearerAuth()
