@@ -2,6 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ReadAddressDto } from '../../../../common/dto/response/read-address.dto';
 import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
+import { Directory } from '../../../../../common/enum/directory.enum';
 
 /**
  * JSON representation of response object when retrieving a company.
@@ -20,6 +21,13 @@ export class ReadCompanyDto {
     example: '6F9619FF8B86D011B42D00C04FC964FF',
   })
   companyGUID: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: `A property that represents the company's directory`,
+    example: Directory.BBCEID,
+  })
+  directory: Directory;
 
   @AutoMap()
   @ApiProperty({
