@@ -34,7 +34,11 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (!error.response || error.response.status === 503) {
+    if (
+      !error.response ||
+      error.response.status === 503 ||
+      error.response.status === 406
+    ) {
       console.error("CORS or 503 Error:", error);
       if (window.location.pathname !== "/service-unavailable") {
         //prevent infinite loop

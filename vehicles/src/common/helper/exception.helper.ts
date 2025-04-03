@@ -39,9 +39,17 @@ export const throwBadRequestException = (field: string, message: string[]) => {
   } as ExceptionDto);
 };
 
-export const throwNotAcceptableException = (message: string) => {
+export const throwNotAcceptableException = (
+  message: string,
+) => {
   throw new NotAcceptableException({
-    message,
+    message: 'Version Mismatch',
     status: HttpStatus.NOT_ACCEPTABLE,
-  } as ExceptionDto);
+    error: [
+      {
+        message: message,
+        errorCode: 'VERSION_MISMATCH',
+      },
+    ] as ValidationExceptionDto[],
+  });
 };
