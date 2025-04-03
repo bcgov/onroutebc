@@ -40,7 +40,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userRole: BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
+      userRole: BCeID_USER_ROLE.PERMIT_APPLICANT,
     },
     reValidateMode: "onBlur",
   });
