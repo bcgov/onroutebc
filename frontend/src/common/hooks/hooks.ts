@@ -23,6 +23,7 @@ export const useFeatureFlagsQuery = () => {
     enabled: !!user,
     staleTime: Infinity,
     refetchInterval: false,
+    retry: 1, // retry once on failure
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
   });
 };

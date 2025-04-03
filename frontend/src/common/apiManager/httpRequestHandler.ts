@@ -13,7 +13,10 @@ import {
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
+    const releaseNumber =
+      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
+    headers.set("x-onroutebc-version", releaseNumber);
     return config;
   },
   function (error) {
@@ -31,13 +34,18 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (!error.response || error.response.status === 503) {
+    if (
+      !error.response ||
+      error.response.status === 503 ||
+      error.response.status === 406
+    ) {
       console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
+      if (window.location.pathname !== "/service-unavailable") {
+        //prevent infinite loop
         window.location.href = "/service-unavailable";
       }
     } else {
-      console.log("Error Details:", error)
+      console.log("Error Details:", error);
       return Promise.reject(error); // Reject other errors
     }
   },

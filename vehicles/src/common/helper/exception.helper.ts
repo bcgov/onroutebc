@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   HttpStatus,
+  NotAcceptableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ExceptionDto } from '../exception/exception.dto';
@@ -36,4 +37,18 @@ export const throwBadRequestException = (field: string, message: string[]) => {
       },
     ] as BadRequestExceptionDto[],
   } as ExceptionDto);
+};
+
+export const throwNotAcceptableException = (
+  message: string,
+  errorCode: string,
+) => {
+  throw new NotAcceptableException({
+    message,
+    status: HttpStatus.NOT_ACCEPTABLE,
+    error: {
+      message,
+      errorCode,
+    } as ValidationExceptionDto,
+  });
 };
