@@ -309,14 +309,7 @@ export class PolicyService {
       // Handle revoked applications
       if (application.permitStatus === ApplicationStatus.REVOKED) {
         validationResults.violations = null;
-        validationResults.cost = [
-          {
-            type: 'cost',
-            code: 'cost-value',
-            message: 'Calculated permit cost',
-            cost: 0,
-          },
-        ];
+        validationResults.cost.at(0).cost = 0;
         return validationResults;
       }
 
@@ -334,14 +327,7 @@ export class PolicyService {
       // Handle voided applications
       if (application.permitStatus === ApplicationStatus.VOIDED) {
         validationResults.violations = null;
-        validationResults.cost = [
-          {
-            type: 'cost',
-            code: 'cost-value',
-            message: 'Calculated permit cost',
-            cost: -existingPermitAmount,
-          },
-        ];
+        validationResults.cost.at(0).cost = -existingPermitAmount;
         return validationResults;
       }
 
