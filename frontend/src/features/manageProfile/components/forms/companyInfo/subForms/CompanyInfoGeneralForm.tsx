@@ -90,7 +90,7 @@ export const CompanyInfoGeneralForm = ({
             validate: {
               validatePostalCode: (postalCode: string) =>
                 (postalCode.length >= 5 &&
-                  postalCode.length <= 7 &&
+                  postalCode.length <= 30 &&
                   isPostalCode(postalCode, "any")) ||
                 invalidPostalCode(),
             },
