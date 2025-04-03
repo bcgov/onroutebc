@@ -297,10 +297,26 @@ export class PolicyService {
         validationResults.cost?.push(cost);
       }
 
+      validationResults.cost.at(0).cost = validationResults?.cost?.reduce(
+        (acc, { cost }) => acc + cost,
+        0,
+      );
+
+      if (validationResults?.cost?.length > 1) {
+        validationResults.cost.length = 1;
+      }
+
       // Handle revoked applications
       if (application.permitStatus === ApplicationStatus.REVOKED) {
         validationResults.violations = null;
-        validationResults.cost.at(0).cost = 0;
+        validationResults.cost = [
+          {
+            type: 'cost',
+            code: 'cost-value',
+            message: 'Calculated permit cost',
+            cost: 0,
+          },
+        ];
         return validationResults;
       }
 
@@ -318,7 +334,14 @@ export class PolicyService {
       // Handle voided applications
       if (application.permitStatus === ApplicationStatus.VOIDED) {
         validationResults.violations = null;
-        validationResults.cost.at(0).cost = -existingPermitAmount;
+        validationResults.cost = [
+          {
+            type: 'cost',
+            code: 'cost-value',
+            message: 'Calculated permit cost',
+            cost: -existingPermitAmount,
+          },
+        ];
         return validationResults;
       }
 
