@@ -76,7 +76,6 @@ export class Company extends Base {
     length: 10,
     name: 'COMPANY_DIRECTORY',
     nullable: false,
-    update: false,
   })
   directory: Directory;
 
