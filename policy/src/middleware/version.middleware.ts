@@ -1,6 +1,9 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { throwNotAcceptableException } from '../helper/exception.helper';
 
 /**
  * Middleware to check the version of the API.
@@ -14,7 +17,7 @@ export class VersionMatchMiddleware implements NestMiddleware {
       !headers['x-onroutebc-version'] ||
       headers['x-onroutebc-version'] !== process.env.RELEASE_NUM
     ) {
-      throwNotAcceptableException(
+      throw new NotAcceptableException(
         `Expected x-onroutebc-version header ${process.env.RELEASE_NUM} but received ${headers['x-onroutebc-version'] as string}`,
         'VERSION_MISMATCH',
       );
