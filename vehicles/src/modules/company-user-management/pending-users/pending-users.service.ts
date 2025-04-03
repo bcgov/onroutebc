@@ -12,6 +12,8 @@ import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-met
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { User } from '../users/entities/user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
+import { Company } from '../company/entities/company.entity';
+import { ClientUserRole } from '../../../common/enum/user-role.enum';
 
 @Injectable()
 export class PendingUsersService {
@@ -63,6 +65,22 @@ export class PendingUsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const company = await queryRunner.manager.findOne<Company>(Company, {
+        where: {
+          companyId: companyId,
+        },
+        relations: {
+          companyUsers: true,
+        },
+      });
+
+      if (
+        !company?.companyUsers?.length &&
+        createPendingUserDto?.userRole === ClientUserRole.PERMIT_APPLICANT
+      ) {
+        throw new BadRequestException('First user must be an Administrator.');
+      }
+
       const existingPendingUser = await queryRunner.manager.find<PendingUser>(
         PendingUser,
         {
