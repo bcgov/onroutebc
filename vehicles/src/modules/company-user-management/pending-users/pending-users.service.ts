@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, DataSource } from 'typeorm';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
@@ -14,6 +14,7 @@ import { User } from '../users/entities/user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { Company } from '../company/entities/company.entity';
 import { ClientUserRole } from '../../../common/enum/user-role.enum';
+import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
 
 @Injectable()
 export class PendingUsersService {
@@ -78,7 +79,11 @@ export class PendingUsersService {
         !company?.companyUsers?.length &&
         createPendingUserDto?.userRole === ClientUserRole.PERMIT_APPLICANT
       ) {
-        throw new BadRequestException('First user must be an Administrator.');
+        throw throwUnprocessableEntityException(
+          'First user must be an Administrator.',
+          null,
+          'FIRST_USER_ADMIN',
+        );
       }
 
       const existingPendingUser = await queryRunner.manager.find<PendingUser>(
@@ -92,8 +97,10 @@ export class PendingUsersService {
 
       // If the pending user exists, throw an exception to stop the process
       if (existingPendingUser?.length) {
-        throw new BadRequestException(
+        throw throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already added as a pending user to a company and is awaiting processing.',
+          null,
+          'USER_ALREADY_EXISTS',
         );
       }
 
@@ -109,8 +116,10 @@ export class PendingUsersService {
 
       // If the user exists, throw an exception to stop the process
       if (existingUser?.length) {
-        throw new BadRequestException(
+        throw throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already associated with a company.',
+          null,
+          'USER_ALREADY_EXISTS',
         );
       }
 
