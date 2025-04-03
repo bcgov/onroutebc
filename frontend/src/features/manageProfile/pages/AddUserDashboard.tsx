@@ -40,7 +40,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userRole: BCeID_USER_ROLE.PERMIT_APPLICANT,
+      userRole: BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
     },
     reValidateMode: "onBlur",
   });
@@ -66,7 +66,7 @@ export const AddUserDashboard = React.memo(() => {
       const { response } = error as AxiosError;
       if (response?.status === 422) {
         const { error } = response.data as {
-          message: "Unprocessable Entity";
+          message: string;
           status: number;
           error: [
             {
