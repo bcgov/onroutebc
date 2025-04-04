@@ -297,6 +297,15 @@ export class PolicyService {
         validationResults.cost?.push(cost);
       }
 
+      validationResults.cost.at(0).cost = validationResults?.cost?.reduce(
+        (acc, { cost }) => acc + cost,
+        0,
+      );
+
+      if (validationResults?.cost?.length > 1) {
+        validationResults.cost.length = 1;
+      }
+
       // Handle revoked applications
       if (application.permitStatus === ApplicationStatus.REVOKED) {
         validationResults.violations = null;
