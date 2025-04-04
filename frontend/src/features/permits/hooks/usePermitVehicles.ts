@@ -9,8 +9,7 @@ import { getEligibleSubtypeOptions } from "../helpers/vehicles/subtypes/getEligi
 import { Nullable } from "../../../common/types/common";
 import { getEligibleVehicleSubtypes } from "../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
 import { isPermitVehicleWithinGvwLimit } from "../helpers/vehicles/rules/gvw";
-import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { useMemoizedPermitVehicle } from "./useMemoizedPermitVehicle";
 import {
   PowerUnit,
   Trailer,
@@ -50,7 +49,7 @@ export const usePermitVehicles = ({
     permitType,
     selectedCommodity,
   ]);
-
+  
   const vehicleIdInForm = vehicleFormData.vehicleId;
   const vehicleType = vehicleFormData.vehicleType;
   const vehicleSubtype = vehicleFormData.vehicleSubType;
@@ -159,21 +158,7 @@ export const usePermitVehicles = ({
 
   // Updated vehicle should be memoized, otherwise placing the object directly in the dependency array
   // can cause infinite loops due to checking by reference (rather than by value)
-  const memoizedUpdatedVehicle = useMemoizedObject(
-    updatedVehicle,
-    (v1, v2) => {
-      return getDefaultRequiredVal("", v1.vehicleId) === getDefaultRequiredVal("", v2.vehicleId)
-        && v1.countryCode === v2.countryCode
-        && getDefaultRequiredVal(v1.licensedGVW) === getDefaultRequiredVal(v2.licensedGVW)
-        && v1.make === v2.make
-        && v1.plate === v2.plate
-        && v1.provinceCode === v2.provinceCode
-        && v1.vehicleType === v2.vehicleType
-        && v1.vehicleSubType === v2.vehicleSubType
-        && v1.vin === v2.vin
-        && v1.year === v2.year;
-    },
-  );
+  const memoizedUpdatedVehicle = useMemoizedPermitVehicle(updatedVehicle);
   
   // Update the vehicle section in the form whenever there is an update to the vehicle details
   useEffect(() => {

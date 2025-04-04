@@ -16,6 +16,7 @@ import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMetho
 import { usePermittedCommodity } from "../usePermittedCommodity";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { useMemoizedPermitVehicle } from "../useMemoizedPermitVehicle";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -83,6 +84,8 @@ export const useApplicationFormContext = () => {
     thirdPartyLiability,
   } = formData.permitData;
 
+  const memoizedVehicleFormData = useMemoizedPermitVehicle(vehicleFormData);
+
   const createdAt = useMemoizedObject(
     createdDateTime,
     (dateObj1, dateObj2) => Boolean(
@@ -135,7 +138,7 @@ export const useApplicationFormContext = () => {
     permitType,
     permitConditions,
     isLcvDesignated,
-    vehicleFormData.vehicleSubType,
+    memoizedVehicleFormData.vehicleSubType,
     onSetConditions,
   );
 
@@ -166,7 +169,7 @@ export const useApplicationFormContext = () => {
     policyEngine,
     permitType,
     onSetCommodityType,
-    () => handleClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+    () => handleClearVehicle(Boolean(memoizedVehicleFormData.saveVehicle)),
     onClearVehicleConfig,
     permittedCommodity?.commodityType,
   );
@@ -180,7 +183,7 @@ export const useApplicationFormContext = () => {
   } = usePermitVehicles({
     policyEngine,
     permitType,
-    vehicleFormData,
+    vehicleFormData: memoizedVehicleFormData,
     allVehiclesFromInventory,
     selectedLOAs: currentSelectedLOAs,
     powerUnitSubtypeNamesMap,
@@ -206,7 +209,7 @@ export const useApplicationFormContext = () => {
       permittedCommodity?.commodityType,
     ),
     selectedVehicleConfigSubtypes,
-    vehicleFormData.vehicleSubType,
+    memoizedVehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
   );
 
@@ -241,7 +244,7 @@ export const useApplicationFormContext = () => {
     startDate,
     expiryDate,
     currentSelectedLOAs,
-    vehicleFormData,
+    vehicleFormData: memoizedVehicleFormData,
     allConditions,
     availableDurationOptions,
     filteredVehicleOptions,
