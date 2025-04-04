@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export const LogoutButton = () => {
-  const { signoutRedirect, removeUser } = useAuth();
+  const { signoutRedirect, removeUser, user } = useAuth();
   const siteMinderLogOffURL =
     import.meta.env.VITE_SITEMINDER_LOG_OFF_URL ||
     envConfig.VITE_SITEMINDER_LOG_OFF_URL;
@@ -18,7 +18,8 @@ export const LogoutButton = () => {
         removeUser();
         signoutRedirect({
           extraQueryParams: {
-            redirect_uri: `${siteMinderLogOffURL}?retnow=1&returl=${window.location.origin}`,
+            post_logout_redirect_uri: `${siteMinderLogOffURL}?retnow=1&returl=${window.location.origin}`,
+            id_token_hint: user?.id_token as string,
           },
         });
       }}

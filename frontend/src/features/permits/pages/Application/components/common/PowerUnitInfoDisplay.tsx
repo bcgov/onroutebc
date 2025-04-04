@@ -4,6 +4,7 @@ import { getCountryFullName } from "../../../../../../common/helpers/countries/g
 import { getProvinceFullName } from "../../../../../../common/helpers/countries/getProvinceFullName";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../common/constants/constants";
 
 export const PowerUnitInfoDisplay = ({
   powerUnitInfo,
@@ -24,7 +25,7 @@ export const PowerUnitInfoDisplay = ({
         </div>
 
         <div className="power-unit-info-display__value">
-          {powerUnitInfo.unitNumber ? powerUnitInfo.unitNumber : "-"}
+          {powerUnitInfo.unitNumber ? powerUnitInfo.unitNumber : EMPTY_VEHICLE_UNIT_NUMBER}
         </div>
       </div>
 

@@ -1,18 +1,20 @@
+import { Nullable } from "../../../common/types/common";
+
 export const LOA_STEPS = {
   BASIC: 0,
-  VEHICLES: 1,
-  REVIEW: 2,
+  REVIEW: 1,
 } as const;
 
 export type LOAStep = typeof LOA_STEPS[keyof typeof LOA_STEPS];
 
-export const labelForLOAStep = (loaStep: LOAStep) => {
+export const labelForLOAStep = (
+  loaStep: LOAStep,
+  loaId?: Nullable<number>,
+) => {
   switch (loaStep) {
     case LOA_STEPS.REVIEW:
       return "Review and Confirm Details";
-    case LOA_STEPS.VEHICLES:
-      return "Designate Vehicle(s)";
     default:
-      return "Basic Information";
+      return !loaId ? "Add an LOA" : `Editing LOA #: ${loaId}`;
   }
 };

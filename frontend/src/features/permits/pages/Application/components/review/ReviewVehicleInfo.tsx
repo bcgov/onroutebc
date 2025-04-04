@@ -6,9 +6,8 @@ import "./ReviewVehicleInfo.scss";
 import { DiffChip } from "./DiffChip";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 import { Nullable } from "../../../../../../common/types/common";
-import { VEHICLE_TYPES, VehicleType } from "../../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { DEFAULT_VEHICLE_TYPE, PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { getCountryFullName } from "../../../../../../common/helpers/countries/getCountryFullName";
 import { getProvinceFullName } from "../../../../../../common/helpers/countries/getProvinceFullName";
 import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
@@ -16,10 +15,14 @@ import { PowerUnitInfoDisplay } from "../common/PowerUnitInfoDisplay";
 import { SelectedVehicleSubtypeList } from "../common/SelectedVehicleSubtypeList";
 import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
 import { VehicleInConfiguration } from "../../../../types/PermitVehicleConfiguration";
+import { getSubtypeNameByCode } from "../../../../helpers/mappers";
+
 import {
-  getSubtypeNameByCode,
+  DEFAULT_VEHICLE_TYPE,
+  VEHICLE_TYPES,
+  VehicleType,
   vehicleTypeDisplayText,
-} from "../../../../helpers/mappers";
+} from "../../../../../manageVehicles/types/Vehicle";
 
 export const ReviewVehicleInfo = ({
   permitType,

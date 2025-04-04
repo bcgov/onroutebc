@@ -17,6 +17,7 @@ import { ReadPaymentGatewayTransactionDto } from '../dto/response/read-payment-g
 import { Directory } from 'src/common/enum/directory.enum';
 import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
+import { isWebTransactionPurchase } from '../../../../common/helper/payment.helper';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -73,6 +74,25 @@ export class TransactionProfile extends AutomapperProfile {
                 ? PPC_FULL_TEXT
                 : String(firstName) + ' ' + String(lastName);
             }
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.transactionApprovedDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            if (
+              !isWebTransactionPurchase(
+                source.paymentMethodTypeCode,
+                source.transactionTypeId,
+              )
+            ) {
+              return timestamp;
+            }
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.transactionSubmitDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            return timestamp;
           }),
         ),
         forMember(
@@ -149,6 +169,14 @@ export class TransactionProfile extends AutomapperProfile {
           mapFrom((s) => {
             //Temp stub for Release 1 to map card type returned by gateway to ORBC payment types
             return s.pgCardType;
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.transactionApprovedDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            if (source.pgApproved === 1) {
+              return timestamp;
+            }
           }),
         ),
         forMember(

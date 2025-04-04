@@ -3,12 +3,17 @@ import { useFormContext } from "react-hook-form";
 import "./LOAReview.scss";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
-import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
-import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
-import { VehicleTable } from "../../../../components/SpecialAuthorizations/LOA/vehicles/VehicleTable";
-import { LOAVehicle } from "../../../../types/LOAVehicle";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { VEHICLE_TYPES, VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
+import { vehicleTypeDisplayText } from "../../../../../manageVehicles/types/Vehicle";
 
-export const LOAReview = () => {
+export const LOAReview = ({
+  powerUnitSubtypes,
+  trailerSubtypes,
+}: {
+  powerUnitSubtypes: VehicleSubType[];
+  trailerSubtypes: VehicleSubType[];
+}) => {
   const { getValues } = useFormContext<LOAFormData>();
   const formData = getValues();
 
@@ -37,16 +42,12 @@ export const LOAReview = () => {
     ""
   );
 
-  const selectedVehicles = [
-    ...Object.values(formData.selectedVehicles.powerUnits).map(powerUnit => ({
-      ...powerUnit,
-      vehicleType: VEHICLE_TYPES.POWER_UNIT,
-    })),
-    ...Object.values(formData.selectedVehicles.trailers).map(trailer => ({
-      ...trailer,
-      vehicleType: VEHICLE_TYPES.TRAILER,
-    })),
-  ];
+  const vehicleSubtype = getDefaultRequiredVal(
+    "",
+    formData.vehicleType === VEHICLE_TYPES.TRAILER
+      ? trailerSubtypes.find(({ typeCode }) => typeCode === formData.vehicleSubtype)?.type
+      : powerUnitSubtypes.find(({ typeCode }) => typeCode === formData.vehicleSubtype)?.type,
+  );
 
   return (
     <div className="loa-review">
@@ -54,6 +55,19 @@ export const LOAReview = () => {
         <div className="loa-review__header">Permit Type(s)</div>
         <div className="loa-review__data">
           {selectedPermitTypes.join(", ")}
+        </div>
+      </div>
+
+      <div className="loa-review__section loa-review__section--vehicle">
+        <div className="loa-review__header">Vehicle Information</div>
+        <div className="loa-review__data">
+          <p className="loa-review__data-line">
+            Vehicle Type: {vehicleTypeDisplayText(formData.vehicleType)}
+          </p>
+
+          <p className="loa-review__data-line">
+            Vehicle Sub-type: {vehicleSubtype}
+          </p>
         </div>
       </div>
 
@@ -84,15 +98,6 @@ export const LOAReview = () => {
           <div className="loa-review__data">
             {formData.additionalNotes}
           </div>
-        </div>
-      ) : null}
-
-      {selectedVehicles.length > 0 ? (
-        <div className="loa-review__section loa-review__section--vehicles">
-          <div className="loa-review__header">Designated Vehicle(s)</div>
-          <VehicleTable
-            vehicles={selectedVehicles as LOAVehicle[]}
-          />
         </div>
       ) : null}
     </div>

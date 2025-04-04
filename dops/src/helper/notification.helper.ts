@@ -125,14 +125,14 @@ export const renderTemplate = async (
           cacheManager,
           CacheKey.IMG_WHITE_HEADER_LOGO,
         )
-      : process.env.FRONTEND_URL + '/BC_Logo_MOTI_White.jpg',
+      : process.env.FRONTEND_URL + '/BC_TT_H_RGB_pos.jpg',
     whiteMedHeaderLogo: isEmbedBase64Image
       ? await getBase64Img(
           ImageType.JPG,
           cacheManager,
           CacheKey.IMG_WHITE_MED_HEADER_LOGO,
         )
-      : process.env.FRONTEND_URL + '/BC_Logo_MOTI_White@2x.jpg',
+      : process.env.FRONTEND_URL + '/BC_TT_H_RGB_pos@2x.jpg',
     whiteFooterLogo: isEmbedBase64Image
       ? await getBase64Img(
           ImageType.JPG,
@@ -147,6 +147,20 @@ export const renderTemplate = async (
           CacheKey.IMG_WHITE_MED_FOOTER_LOGO,
         )
       : process.env.FRONTEND_URL + '/onRouteBC_Logo_White@2x.jpg',
+    whiteHeaderOrbcLogo: isEmbedBase64Image
+      ? await getBase64Img(
+          ImageType.JPG,
+          cacheManager,
+          CacheKey.IMG_WHITE_HEADER_ORBC_LOGO,
+        )
+      : process.env.FRONTEND_URL + '/onRouteBC_Logo_Email_Header.jpg',
+    whiteMedHeaderOrbcLogo: isEmbedBase64Image
+      ? await getBase64Img(
+          ImageType.JPG,
+          cacheManager,
+          CacheKey.IMG_WHITE_MED_HEADER_ORBC_LOGO,
+        )
+      : process.env.FRONTEND_URL + '/onRouteBC_Logo@2x_Email_Header.jpg',
   });
   return htmlBody;
 };

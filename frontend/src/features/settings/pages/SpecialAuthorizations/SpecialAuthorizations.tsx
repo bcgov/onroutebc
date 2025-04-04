@@ -12,21 +12,22 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { LOASteps } from "./LOA/LOASteps";
 import { useFetchLOAs, useRemoveLOAMutation } from "../../hooks/LOA";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
+import { downloadLOA } from "../../apiManager/loa";
+import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   DEFAULT_NO_FEE_PERMIT_TYPE,
   NoFeePermitType,
 } from "../../types/SpecialAuthorization";
-import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
-import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
-import { downloadLOA } from "../../apiManager/loa";
+
 import {
   useFetchSpecialAuthorizations,
   useUpdateLCV,
   useUpdateNoFee,
 } from "../../hooks/specialAuthorizations";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
@@ -45,6 +46,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
     null,
     specialAuthorizations?.noFeeType,
   );
+
   const isLcvAllowed = getDefaultRequiredVal(
     false,
     specialAuthorizations?.isLcvAllowed,
@@ -120,7 +122,6 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
 
   const updateNoFeeMutation = useUpdateNoFee();
   const updateLCVMutation = useUpdateLCV();
-
   const activeLOAsQuery = useFetchLOAs(companyId, false);
   const expiredLOAsQuery = useFetchLOAs(companyId, true);
   const removeLOAMutation = useRemoveLOAMutation();

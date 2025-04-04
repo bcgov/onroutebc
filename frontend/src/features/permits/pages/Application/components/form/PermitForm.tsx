@@ -14,6 +14,7 @@ import { CommodityDetailsSection } from "./CommodityDetailsSection/CommodityDeta
 import { ApplicationNotesSection } from "./ApplicationNotesSection";
 import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
+import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 
 export const PermitForm = () => {
   const {
@@ -39,6 +40,8 @@ export const PermitForm = () => {
     revisionHistory,
     commodityOptions,
     highwaySequence,
+    tripOrigin,
+    tripDestination,
     totalDistance,
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
@@ -46,6 +49,7 @@ export const PermitForm = () => {
     selectedVehicleConfigSubtypes,
     commodityType,
     vehicleConfiguration,
+    thirdPartyLiability,
     onLeave,
     onSave,
     onCancel,
@@ -56,10 +60,13 @@ export const PermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripOrigin,
+    onUpdateTripDestination,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onUpdateThirdPartyLiability,
   } = useApplicationFormContext();
 
   return (
@@ -88,6 +95,7 @@ export const PermitForm = () => {
 
         <PermitDetails
           feature={feature}
+          permitType={permitType}
           expiryDate={expiryDate}
           allConditions={allConditions}
           durationOptions={availableDurationOptions}
@@ -132,9 +140,19 @@ export const PermitForm = () => {
           feature={feature}
           permitType={permitType}
           highwaySequence={highwaySequence}
+          tripOrigin={tripOrigin}
+          tripDestination={tripDestination}
           totalDistance={totalDistance}
           onUpdateHighwaySequence={onUpdateHighwaySequence}
+          onUpdateTripOrigin={onUpdateTripOrigin}
+          onUpdateTripDestination={onUpdateTripDestination}
           onUpdateTotalDistance={onUpdateTotalDistance}
+        />
+
+        <ThirdPartyLiabilitySection
+          permitType={permitType}
+          thirdPartyLiability={thirdPartyLiability}
+          onChange={onUpdateThirdPartyLiability}
         />
 
         <ApplicationNotesSection feature={feature} permitType={permitType} />

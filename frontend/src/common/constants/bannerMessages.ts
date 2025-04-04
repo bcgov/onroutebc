@@ -17,8 +17,8 @@ export const BANNER_MESSAGES = {
     INELIGIBLE_SUBTYPES:
       "If you are creating a new vehicle, a desired Vehicle Sub-Type may not be available because it is not eligible for the permit application you are currently in.",
   },
-  ISSUED_PERMIT_NUMBER_7_YEARS:
-    "Enter any Permit No. issued to the above Client No. in the last 7 years",
+  ISSUED_PERMIT_NUMBER_2_YEARS:
+    "Enter any Permit No. issued to the above Client No. in the last 2 years",
   SELECT_VEHICLES_LOA:
     "Only vehicles in the Vehicle Inventory can be designated to LOA(s).",
   SELECT_VEHICLES_LOA_INFO:
@@ -39,8 +39,16 @@ export const BANNER_MESSAGES = {
     EXAMPLE:
       "e.g. If the origin is Victoria, BC and the destination is Hope, BC, the sequence of highways travelled in order will be 17 1 3.",
   },
+  PERMIT_SINGLE_ROUND_TRIP:
+    "This permit allows only one round trip into and out of the province during the permit duration.",
+  PERMIT_START_DATE_VALID_QUARTER:
+    "The start date you choose determines the valid quarter for the permit. This permit allows multiple trips into and out of the province during the permit duration.",
   TOTAL_DISTANCE:
     "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
+  NON_FINANCE_USER:
+    "For Credit Accounts, please contact CVSE Revenue. ",
+  CLIENT_NAME_MUST_BE_REGISTERED_OWNER:
+    "Client name must be the registered owner (company or individual) of the vehicles being permitted.",
 };

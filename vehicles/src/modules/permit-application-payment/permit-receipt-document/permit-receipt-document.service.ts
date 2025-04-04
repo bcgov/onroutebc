@@ -532,7 +532,7 @@ export class PermitReceiptDocumentService {
                 permitDetails: permitDetails,
                 transactions: uniqueTransactionList,
                 transactionDate: convertUtcToPt(
-                  transaction?.transactionSubmitDate,
+                  transaction?.transactionApprovedDate,
                   'MMM. D, YYYY, hh:mm a Z',
                 ),
               },

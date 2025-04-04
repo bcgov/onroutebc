@@ -28,6 +28,7 @@ import {
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import { BCeID_USER_ROLE } from "../../../common/authentication/types";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 /**
  * BCeID User - Add User Page.
@@ -63,9 +64,26 @@ export const AddUserDashboard = React.memo(() => {
     mutationFn: addUserToCompany,
     onError: async (error) => {
       const { response } = error as AxiosError;
-      if (response?.status === 400) {
+      if (response?.status === 422) {
+        const { error } = response.data as {
+          message: string;
+          status: number;
+          error: [
+            {
+              message: string;
+              errorCode: string;
+            },
+          ];
+        };
+        let messageToDisplay = "An unexpected error occurred.";
+        if (error[0].errorCode === "USER_ALREADY_EXISTS") {
+          messageToDisplay =
+            "Cannot add user; Check if the user already has been added";
+        } else if (error[0].errorCode === "FIRST_USER_ADMIN") {
+          messageToDisplay = "First user must be an administrator";
+        }
         setSnackBar({
-          message: "Cannot add user; Check if the user already has been added",
+          message: messageToDisplay,
           showSnackbar: true,
           setShowSnackbar: () => true,
           alertType: "error",
@@ -154,7 +172,7 @@ export const AddUserDashboard = React.memo(() => {
 
             <CustomFormComponent
               type="input"
-              feature="add-user"
+              feature={ORBC_FORM_FEATURES.ADD_USER}
               className="user-id__input"
               options={{
                 name: "userName",
