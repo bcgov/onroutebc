@@ -1,5 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -12,10 +11,16 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import { createGarmsCashFile } from 'src/common/helper/garms.helper';
+import {
+  createGarmsCashFile,
+  createGarmsCreditFile,
+} from 'src/common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
+  GARMS_LOCAL_FILE_PATH,
+  GARMS_CREDIT_FILE_LOCATION,
+  GARMS_CREDIT_FILE_LRECL,
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
@@ -25,11 +30,12 @@ import { Cache } from 'cache-manager';
 import { getFromCache } from '../../common/helper/cache.helper';
 import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { execSync } from 'child_process';
+import { uploadToGarms } from '../../common/helper/sftp.helper';
 
 @Injectable()
 export class GarmsService {
   private readonly logger = new Logger(GarmsService.name);
-
   constructor(
     @InjectRepository(GarmsExtractFile)
     private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
@@ -76,14 +82,62 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        await this.updateFileSubmitTimestamp(oldFile);
-        await this.saveTransactionIds(transactions, fileId);
-        await this.upload(fileName, recordLength, remoteFilePath);
+        this.logger.log(`Sending cash file ${fileName}`);
+        await this.uploadFile(fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
+      await this.updateFileSubmitTimestamp(oldFile);
+      await this.saveTransactionIds(transactions, fileId);
     } else {
       this.logger.log('No record to process for GARMS cash file');
+    }
+  }
+
+  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
+  async processCreditTransactions() {
+    const garmsCashFeatureFlag = (await getFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      'GARMS_CREDIT_CRON_JOB',
+    )) as FeatureFlagValue;
+    if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
+      this.logger.log('GARMS_CREDIT_CRON_JOB is DISABLED');
+      return false;
+    }
+    const garmsExtractType = GarmsExtractType.CREDIT;
+    const toTimestamp = getToDateForGarms();
+    const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
+    if (oldFile) {
+      const { fileId, fromTimestamp } = oldFile;
+      oldFile.toTimestamp = toTimestamp;
+      // Fetch transactions based on the provided timestamps
+      const transactions = await this.getTransactionWithPermitDetails(
+        fromTimestamp,
+        toTimestamp,
+        garmsExtractType,
+      );
+      if (transactions?.length) {
+        const permitServiceCodes = await this.getPermitTypeServiceCodes();
+        const fileName = createGarmsCreditFile(
+          transactions,
+          garmsExtractType,
+          permitServiceCodes,
+          this.logger,
+        );
+
+        const remoteFilePath =
+          process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
+        const recordLength = GARMS_CREDIT_FILE_LRECL;
+        this.logger.log(`Sending credit file ${fileName}`);
+        await this.uploadFile(fileName, remoteFilePath, recordLength);
+      } else {
+        this.logger.log('No data to process for GARMS credit file');
+      }
+      await this.updateFileSubmitTimestamp(oldFile);
+      await this.saveTransactionIds(transactions, fileId);
+    } else {
+      this.logger.log('No record to process for GARMS credit file');
     }
   }
 
@@ -254,6 +308,8 @@ export class GarmsService {
       .leftJoinAndSelect('permitTransaction.permit', 'permit');
     if (garmsExtractType === GarmsExtractType.CREDIT) {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
+      qb = qb.leftJoinAndSelect('permit.company', 'company');
+      qb = qb.leftJoinAndSelect('company.creditAccount', 'creditaccount');
     }
     const result = await qb
       .andWhere('transaction.transactionApprovedDate >= :fromTimestamp', {
@@ -288,36 +344,66 @@ export class GarmsService {
     });
     return permitTypeServiceCodes;
   }
-  /**
-   * upload file to GARMS mainframe.
-   * @param fileName
-   * @param recordLength
-   * @param remoteFilePath
-   */
-  async upload(fileName: string, recordLength: number, remoteFilePath: string) {
-    const username = process.env.GARMS_USER;
+
+  async uploadFile(
+    fileName: string,
+    remoteFilePath: string,
+    recordLength: number,
+  ) {
+    try {
+      await uploadToGarms(fileName, this.logger);
+      this.executeSSHAndFTP(fileName, remoteFilePath, recordLength);
+    } catch (error: unknown) {
+      this.logger.error('Error uploading file:', error);
+      throw error;
+    }
+  }
+
+  executeSSHAndFTP(
+    fileName: string,
+    remoteFilePath: string,
+    recordLength: number,
+  ) {
+    const user = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
-    if (username && password) {
-      const localFilePath = fileName; // Unique temp file name
-      const options: FTPS.FTPOptions = {
-        host: process.env.GARMS_HOST,
-        username: process.env.GARMS_USER,
-        password: process.env.GARMS_PWD,
-        // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
-        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
-      };
-      const ftps: FTPS = new FTPS(options);
-      // Wrap the FTPS command inside a Promise
-      const uploadPromise = new Promise(() => {
-        this.logger.log('sending file to garms', localFilePath);
-        // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-        const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-        ftps.raw(ftpCommand).exec(console.log);
-      });
-      // Wait for the upload to complete before proceeding
-      await uploadPromise;
+    const host = process.env.GARMS_HOST;
+    const asciiFileName = fileName + 'ascii';
+    let sshCommand;
+    if (process.env.NODE_ENV === 'production') {
+      sshCommand = `sshpass -p ${password} ssh -o "StrictHostKeyChecking no" ${user}@${host}`;
     } else {
-      this.logger.log('Unable to get username and password for ftp server');
+      // disabling verbose for prod as it displays password
+      sshCommand = `sshpass -p ${password} ssh -v -o "StrictHostKeyChecking no" ${user}@${host}`;
+    }
+    const iconvCommand = `iconv -f ISO8859-1 -t IBM-037 ${fileName} >> ${asciiFileName}`;
+    const ftpCommands = `
+    user ${user} ${password}
+    ascii
+    SITE BLKSIZE=0
+    SITE LRECL=${recordLength}
+    SITE WRAP
+    SITE RECFM=FB
+    put ${asciiFileName} '${remoteFilePath}'
+    QUIT
+    `;
+    const changeTypeCommand = `${sshCommand} "${iconvCommand}"`;
+    this.executeCommand(changeTypeCommand);
+    const fullCommand = `${sshCommand} "echo \\"${ftpCommands}\\" | ftp -n -v ${host}"`;
+    this.executeCommand(fullCommand);
+    const deleteFilesCommand = `${sshCommand} "rm ${fileName} ${asciiFileName}"`;
+    this.executeCommand(deleteFilesCommand);
+    const deleteLocalFileCommand = `rm ${GARMS_LOCAL_FILE_PATH}${fileName}`;
+    this.executeCommand(deleteLocalFileCommand);
+  }
+
+  private executeCommand(command: string) {
+    try {
+      const result = execSync(command, { encoding: 'utf-8' });
+      this.logger.log(result);
+      return result;
+    } catch (error) {
+      this.logger.error(`Execution Error: ${error}`);
+      throw error;
     }
   }
 }

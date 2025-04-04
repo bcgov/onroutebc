@@ -22,4 +22,5 @@ export enum ExternalDocument {
   CVSE1061 = 'CVSE-1061',
   CVSE1070 = 'CVSE-1070',
   MV4001 = 'MV4001',
+  APV96 = 'APV96',
 }

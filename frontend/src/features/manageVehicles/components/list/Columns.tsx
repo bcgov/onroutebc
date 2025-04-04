@@ -1,5 +1,4 @@
 import { MRT_ColumnDef } from "material-react-table";
-
 import { Vehicle } from "../../types/Vehicle";
 import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
 
@@ -48,7 +47,7 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   },
   ...CommonVehicleColumnDefinition,
   {
-    accessorKey: "powerUnitTypeCode",
+    accessorKey: "vehicleSubType",
     header: "Vehicle Sub-Type",
     size: 200,
   },
@@ -62,7 +61,7 @@ export const TrailerColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   },
   ...CommonVehicleColumnDefinition,
   {
-    accessorKey: "trailerTypeCode",
+    accessorKey: "vehicleSubType",
     header: "Vehicle Sub-Type",
     size: 200,
   },

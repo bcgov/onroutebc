@@ -47,7 +47,7 @@ export class ContactProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.phone2Extension,
-          mapFrom((s) => s.extension1),
+          mapFrom((s) => s.extension2),
         ),
       );
 

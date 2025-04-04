@@ -52,12 +52,12 @@ export class PendingUser extends Base {
    */
   @AutoMap()
   @Column({ length: 50, name: 'FIRST_NAME', nullable: true })
-  firstName: string;
+  firstName?: string;
 
   /**
    * Last name of the invited person.
    */
   @AutoMap()
   @Column({ length: 50, name: 'LAST_NAME', nullable: true })
-  lastName: string;
+  lastName?: string;
 }
