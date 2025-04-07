@@ -98,7 +98,6 @@ export const ShoppingCartItem = ({
           {isApplicationInvalid && (
             <div className="shopping-cart-item__detail">
               <span className="shopping-cart-item__info shopping-cart-item__info--invalid">
-                {/* TODO do we wish to change the styling or even hide this message entirely for staff users, since they will be able to proceed with payment */}
                 Invalid Application.
               </span>
             </div>

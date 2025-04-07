@@ -6,7 +6,6 @@ import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { getOutdatedCartItems } from "../../../helpers/cart";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
-/* TODO does this only check for applications that have been removed by another user, e.g. it does not handle applications that have policy validation errors (if not, why is it used in the CartChangedWarningBanner which indicates otherwise) */
 export const useCheckOutdatedCart = (
   companyId: number,
   cartFilterChanged: boolean,

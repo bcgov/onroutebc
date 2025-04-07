@@ -328,7 +328,7 @@ export const startTransaction = async (
     return response.data as StartTransactionResponseData;
   } catch (err) {
     console.error(err);
-    return null;
+    throw err;
   }
 };
 

@@ -5,7 +5,6 @@ import { useFetchCart, useRemoveFromCart } from "../../../hooks/cart";
 import { CartItem, SelectableCartItem } from "../../../types/CartItem";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import { calculatePermitFee } from "../../../helpers/feeSummary";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 
 export const useShoppingCart = (
@@ -46,38 +45,19 @@ export const useShoppingCart = (
   }, [showAllApplications]);
 
   useEffect(() => {
-    const updateCartItemSelection = async (itemsInCart: CartItem[]) => {
-      const cartSelectionWithFees = await Promise.all(
-        itemsInCart.map(async (cartItem) => {
-          /* should we still be calculating the fee here given that we now receive this information as part of our /shopping-cart response?  */
-          const fee = await calculatePermitFee(
-            {
-              permitType: cartItem.permitType,
-              permitData: {
-                startDate: cartItem.startDate,
-                permitDuration: cartItem.duration,
-                permittedRoute: {
-                  manualRoute: {
-                    totalDistance: cartItem.totalDistance,
-                    highwaySequence: [], // required, but not used for fee calculation
-                    origin: "", // required, but not used for fee calculation
-                    destination: "", // required, but not used for fee calculation
-                  },
-                },
-                thirdPartyLiability: cartItem.thirdPartyLiability,
-              },
-            },
-            policyEngine,
-          );
+    const updateCartItemSelection = (itemsInCart: CartItem[]) => {
+      const cartSelectionWithFees = itemsInCart.map((cartItem) => {
+        const fee = getDefaultRequiredVal([], cartItem.validationResults?.cost)
+          .map(({ cost }) => getDefaultRequiredVal(0, cost))
+          .reduce((cost1, cost2) => cost1 + cost2, 0);
 
-          return {
-            ...cartItem,
-            selected: true, // all selected by default
-            isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
-            fee,
-          };
-        }),
-      );
+        return {
+          ...cartItem,
+          selected: true, // all selected by default
+          isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
+          fee,
+        };
+      });
 
       setCartItemSelection(cartSelectionWithFees);
     };

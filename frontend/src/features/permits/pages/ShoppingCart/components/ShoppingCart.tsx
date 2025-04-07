@@ -10,11 +10,9 @@ import { CheckBox, IndeterminateCheckBox } from "@mui/icons-material";
 import "./ShoppingCart.scss";
 import { RemoveCartButton } from "./RemoveCartButton";
 import { ShoppingCartItem } from "./ShoppingCartItem";
-import { CartChangedWarningBanner } from "./CartChangedWarningBanner";
 import { SelectableCartItem } from "../../../types/CartItem";
 
 export const ShoppingCart = ({
-  outdatedApplicationNumbers,
   showCartFilter,
   showAllApplications,
   cartItemSelection,
@@ -25,7 +23,6 @@ export const ShoppingCart = ({
   handleRemoveSelected,
   handleEditCartItem,
 }: {
-  outdatedApplicationNumbers: string[];
   showCartFilter: boolean;
   showAllApplications: boolean;
   cartItemSelection: SelectableCartItem[];
@@ -47,10 +44,6 @@ export const ShoppingCart = ({
 
   return (
     <div className="shopping-cart">
-      {outdatedApplicationNumbers.length > 0 ? (
-        <CartChangedWarningBanner removedItems={outdatedApplicationNumbers} />
-      ) : null}
-
       <div className="shopping-cart__heading">Shopping Cart</div>
 
       <div className="shopping-cart__actions actions">
