@@ -21,6 +21,7 @@ import {
 import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyEntityMock } from '../../util/mocks/data/company.mock';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -35,6 +36,7 @@ describe('PendingUsersService', () => {
     delete: jest.fn(),
     update: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
   };
 
@@ -90,6 +92,8 @@ describe('PendingUsersService', () => {
       mockQueryRunnerManager.save.mockResolvedValue(
         readRedCompanyPendingUserDtoMock,
       );
+
+      mockQueryRunnerManager.findOne.mockResolvedValue(redCompanyEntityMock);
 
       const retPendingUser = await service.create(
         constants.RED_COMPANY_ID,
