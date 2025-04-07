@@ -59,6 +59,7 @@ import {
 } from "../../../../common/constants/constants";
 import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 import { ApplicationErrorsDialog } from "./components/ApplicationErrorsDialog";
+import { PAYMENT_ERRORS } from "../../../policy/types/PaymentError";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -84,10 +85,18 @@ export const ShoppingCartPage = () => {
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();
 
-  const paymentFailed = applyWhenNotNullable(
-    (queryParam) => queryParam === "true",
-    searchParams.get("paymentFailed"),
-    false,
+  // const paymentFailed = applyWhenNotNullable(
+  //   (queryParam) => queryParam === "true",
+  //   searchParams.get("paymentFailed"),
+  //   false,
+  // );
+
+  const [paymentFailed, setPaymentFailed] = useState<boolean>(
+    applyWhenNotNullable(
+      (queryParam) => queryParam === "true",
+      searchParams.get("paymentFailed"),
+      false,
+    ),
   );
 
   const {
@@ -211,14 +220,19 @@ export const ShoppingCartPage = () => {
 
   useEffect(() => {
     if (startTransactionMutationFailed) {
-      if (
-        startTransactionMutationError.response?.data.error[0].errorCode ===
-        "VALIDATION_FAILURE"
-      ) {
-        setOldCartItems([...cartItemSelection]);
-        cartQuery.refetch();
-        refetchCartCount();
-        setShowApplicationErrorsDialog(true);
+      switch (startTransactionMutationError.response?.data.error[0].errorCode) {
+        case PAYMENT_ERRORS.VALIDATION_FAILURE:
+          setOldCartItems([...cartItemSelection]);
+          cartQuery.refetch();
+          refetchCartCount();
+          setShowApplicationErrorsDialog(true);
+          break;
+        case PAYMENT_ERRORS.INVALID_CART:
+          setShowUpdateCartDialog(true);
+          break;
+        default:
+          setPaymentFailed(true);
+          break;
       }
     }
   }, [startTransactionMutationFailed]);

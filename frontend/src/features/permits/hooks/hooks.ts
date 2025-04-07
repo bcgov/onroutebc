@@ -47,7 +47,7 @@ import {
   resendPermit,
   getPendingPermits,
 } from "../apiManager/permitsAPI";
-import { VaildationError } from "../../policy/types/ValidationError";
+import { PaymentError } from "../../policy/types/PaymentError";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (
@@ -234,9 +234,9 @@ export const useStartTransaction = () => {
       setTransaction(transactionData);
     },
     onError: (
-      // The error parameter is required for type inference in the ShoppingCartPage
-      //eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _error: AxiosError<ErrorResponseData<VaildationError>>,
+      // The error parameter is required for type inference when calling the hook
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: AxiosError<ErrorResponseData<PaymentError>>,
     ) => {
       setTransaction(undefined);
     },
