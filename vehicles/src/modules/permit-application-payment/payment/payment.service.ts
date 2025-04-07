@@ -326,10 +326,13 @@ export class PaymentService {
             isApplicationInCart(application.permitStatus) ||
             isAmendmentApplication(application)
           )
-        )
-          throw new BadRequestException(
-            'Application in its current status cannot be processed for payment.',
+        ) {
+          throw throwUnprocessableEntityException(
+            `${application.applicationNumber} in its current status cannot be processed for payment.`,
+            null,
+            'TRANS_INVALID_APPLICATION_STATUS',
           );
+        }
 
         const applicationFromDto =
           createTransactionDto?.applicationDetails?.find(
