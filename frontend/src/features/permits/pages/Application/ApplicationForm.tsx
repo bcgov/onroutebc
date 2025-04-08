@@ -302,6 +302,7 @@ export const ApplicationForm = ({
             },
           },
         };
+    
     await saveApplication(
       {
         data: applicationToBeSaved,

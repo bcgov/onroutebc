@@ -26,6 +26,7 @@ export const usePermitVehicles = ({
   trailerSubtypeNamesMap,
   onSetVehicle,
   selectedCommodity,
+  saveVehicle,
 }: {
   policyEngine: Policy;
   permitType: PermitType;
@@ -36,6 +37,7 @@ export const usePermitVehicles = ({
   trailerSubtypeNamesMap: Map<string, string>;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   selectedCommodity?: Nullable<string>;
+  saveVehicle?: Nullable<boolean>;
 }) => {
   // Get the entire set of all eligible subtypes for the permit type
   const eligibleVehicleSubtypes = useMemo(() => {
@@ -144,7 +146,11 @@ export const usePermitVehicles = ({
       ) ? {
         ...updatedVehicleDetails.updatedVehicle,
         vehicleSubType: subtypeOptions.length > 0 ? subtypeOptions[0].typeCode : "",
-      } : updatedVehicleDetails.updatedVehicle,
+        saveVehicle: isSelectedLOAVehicle ? false : saveVehicle,
+      } : {
+        ...updatedVehicleDetails.updatedVehicle,
+        saveVehicle: isSelectedLOAVehicle ? false : saveVehicle,
+      },
       filteredVehicleOptions: updatedVehicleDetails.filteredVehicleOptions,
     };
   }, [
@@ -154,6 +160,8 @@ export const usePermitVehicles = ({
     eligibleVehicleSubtypes,
     permitType,
     subtypeOptions,
+    isSelectedLOAVehicle,
+    saveVehicle,
   ]);
 
   // Updated vehicle should be memoized, otherwise placing the object directly in the dependency array

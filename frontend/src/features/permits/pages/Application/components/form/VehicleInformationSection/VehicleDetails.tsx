@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -106,10 +106,6 @@ export const VehicleDetails = ({
     VEHICLE_CHOOSE_FROM.UNIT_NUMBER,
   );
 
-  // Radio button value to decide if the user wants to save the vehicle in inventory
-  // Reset to false every reload
-  const [saveVehicle, setSaveVehicle] = useState<boolean>(false);
-
   // Disable vehicle type selection when a vehicle has been selected from dropdown
   // Enable only when user chooses to manually enter new vehicle info by clearing the vehicle details
   const shouldDisableVehicleTypeSelect = () => {
@@ -125,11 +121,6 @@ export const VehicleDetails = ({
   };
 
   const disableVehicleTypeSelect = shouldDisableVehicleTypeSelect();
-
-  // Set the "Save to Inventory" radio button to false on render
-  useEffect(() => {
-    onSetSaveVehicle(saveVehicle);
-  }, [saveVehicle]);
 
   // Whenever a new vehicle is selected
   const onSelectVehicle = (selectedVehicle: Vehicle) => {
@@ -151,7 +142,7 @@ export const VehicleDetails = ({
 
     if (!vehicle) {
       // vehicle selection is invalid
-      onClearVehicle(saveVehicle);
+      onClearVehicle(Boolean(vehicleFormData.saveVehicle));
       return;
     }
 
@@ -178,7 +169,7 @@ export const VehicleDetails = ({
 
     onSetVehicle({
       ...vehicleDetails,
-      saveVehicle,
+      saveVehicle: vehicleFormData.saveVehicle,
     });
   };
 
@@ -187,7 +178,7 @@ export const VehicleDetails = ({
   };
 
   const handleSaveVehicleRadioBtns = (saveToInventory: string) => {
-    setSaveVehicle(saveToInventory === "true");
+    onSetSaveVehicle(saveToInventory === "true");
   };
 
   // Reset the vehicle subtype field whenever a different vehicle type is selected
@@ -198,17 +189,9 @@ export const VehicleDetails = ({
         ...vehicleFormData,
         vehicleType: updatedVehicleType,
         vehicleSubType: "",
-        saveVehicle,
       });
     }
   };
-
-  // If the selected vehicle is an LOA vehicle, it should not be edited/saved to inventory
-  useEffect(() => {
-    if (isSelectedLOAVehicle) {
-      setSaveVehicle(false);
-    }
-  }, [isSelectedLOAVehicle]);
 
   return (
     <div className="vehicle-details">
@@ -229,7 +212,7 @@ export const VehicleDetails = ({
           chooseFrom={chooseFrom}
           selectedVehicle={vehicleFormData}
           vehicleOptions={vehicleOptions}
-          handleClearVehicle={() => onClearVehicle(saveVehicle)}
+          handleClearVehicle={() => onClearVehicle(Boolean(vehicleFormData.saveVehicle))}
           handleSelectVehicle={onSelectVehicle}
         />
       </Box>
@@ -425,8 +408,7 @@ export const VehicleDetails = ({
 
         <RadioGroup
           aria-labelledby="radio-buttons-group-label"
-          defaultValue={saveVehicle}
-          value={saveVehicle}
+          value={Boolean(vehicleFormData.saveVehicle)}
           name="radio-buttons-group"
           onChange={(e) => handleSaveVehicleRadioBtns(e.target.value)}
         >

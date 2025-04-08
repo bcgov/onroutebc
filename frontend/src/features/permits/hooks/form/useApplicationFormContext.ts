@@ -152,6 +152,7 @@ export const useApplicationFormContext = () => {
     );
   }, [currentSelectedLOAs]);
 
+  const saveVehicleFlag = vehicleFormData.saveVehicle;
   const handleSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     onSetVehicle({
       ...vehicleDetails,
@@ -190,6 +191,7 @@ export const useApplicationFormContext = () => {
     trailerSubtypeNamesMap,
     onSetVehicle: handleSetVehicle,
     selectedCommodity: permittedCommodity?.commodityType,
+    saveVehicle: saveVehicleFlag,
   });
 
   const selectedVehicleConfigSubtypes = useMemoizedArray(
