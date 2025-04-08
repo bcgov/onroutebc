@@ -33,6 +33,7 @@ import OnRouteBCContext, {
   OnRouteBCContextType,
 } from "./common/authentication/OnRouteBCContext";
 
+// dev sandbox
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
   envConfig.VITE_KEYCLOAK_ISSUER_URL;
