@@ -20,7 +20,7 @@ export const IDIRCreateCompany = React.memo(() => {
   const navigate = useNavigate();
 
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
-  const { migratedClient } = useContext(OnRouteBCContext);
+  const { unclaimedClient: migratedClient } = useContext(OnRouteBCContext);
 
   const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {

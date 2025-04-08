@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, DataSource } from 'typeorm';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
@@ -8,11 +8,13 @@ import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { User } from '../users/entities/user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
+import { Company } from '../company/entities/company.entity';
+import { ClientUserRole } from '../../../common/enum/user-role.enum';
+import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
 
 @Injectable()
 export class PendingUsersService {
@@ -64,6 +66,26 @@ export class PendingUsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const company = await queryRunner.manager.findOne<Company>(Company, {
+        where: {
+          companyId: companyId,
+        },
+        relations: {
+          companyUsers: true,
+        },
+      });
+
+      if (
+        !company?.companyUsers?.length &&
+        createPendingUserDto?.userRole === ClientUserRole.PERMIT_APPLICANT
+      ) {
+        throw throwUnprocessableEntityException(
+          'First user must be an Administrator.',
+          null,
+          'FIRST_USER_ADMIN',
+        );
+      }
+
       const existingPendingUser = await queryRunner.manager.find<PendingUser>(
         PendingUser,
         {
@@ -75,8 +97,10 @@ export class PendingUsersService {
 
       // If the pending user exists, throw an exception to stop the process
       if (existingPendingUser?.length) {
-        throw new BadRequestException(
+        throw throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already added as a pending user to a company and is awaiting processing.',
+          null,
+          'USER_ALREADY_EXISTS',
         );
       }
 
@@ -92,8 +116,10 @@ export class PendingUsersService {
 
       // If the user exists, throw an exception to stop the process
       if (existingUser?.length) {
-        throw new BadRequestException(
+        throw throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already associated with a company.',
+          null,
+          'USER_ALREADY_EXISTS',
         );
       }
 
@@ -190,10 +216,6 @@ export class PendingUsersService {
       queryBuilder.andWhere('pendingUser.userGUID= :userGUID', {
         userGUID: userGUID,
       });
-    } else {
-      queryBuilder.andWhere('pendingUser.userName != :tpsMigratedUserName', {
-        tpsMigratedUserName: TPS_MIGRATED_USER,
-      });
     }
 
     return await queryBuilder.getMany();
@@ -251,10 +273,6 @@ export class PendingUsersService {
    */
   @LogAsyncMethodExecution()
   async removeAll(userNames: string[], companyId: number): Promise<DeleteDto> {
-    if (userNames.some((name) => name === TPS_MIGRATED_USER)) {
-      throw new BadRequestException('Cannot delete TPS migrated pending user');
-    }
-
     // Retrieve a list of users by company ID before deletion
     const pendingUsersToDelete = await this.pendingUserRepository.find({
       where: {

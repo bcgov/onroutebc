@@ -17,7 +17,7 @@ import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoS
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
-  const { migratedClient } = useContext(OnRouteBCContext);
+  const { unclaimedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
@@ -27,34 +27,36 @@ export const CreateProfileSteps = React.memo(() => {
       legalName: getDefaultRequiredVal(
         "",
         user?.profile?.bceid_business_name as string,
+        unclaimedClient?.legalName as string,
+        user?.profile?.given_name as string,
       ),
-      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      alternateName: getDefaultRequiredVal("", unclaimedClient?.alternateName),
       mailingAddress: {
         addressLine1: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.addressLine1,
+          unclaimedClient?.mailingAddress?.addressLine1,
         ),
         addressLine2: getDefaultRequiredVal(
           null,
-          migratedClient?.mailingAddress?.addressLine2,
+          unclaimedClient?.mailingAddress?.addressLine2,
         ),
         provinceCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.provinceCode,
+          unclaimedClient?.mailingAddress?.provinceCode,
         ),
         countryCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.countryCode,
+          unclaimedClient?.mailingAddress?.countryCode,
         ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        city: getDefaultRequiredVal("", unclaimedClient?.mailingAddress?.city),
         postalCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.postalCode,
+          unclaimedClient?.mailingAddress?.postalCode,
         ),
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
-      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      phone: getDefaultRequiredVal("", unclaimedClient?.phone),
+      extension: getDefaultRequiredVal("", unclaimedClient?.extension),
       adminUser: {
         firstName: "",
         lastName: "",
@@ -68,10 +70,16 @@ export const CreateProfileSteps = React.memo(() => {
         city: "",
       },
       primaryContact: {
-        firstName: "",
-        lastName: "",
+        firstName: getDefaultRequiredVal(
+          "",
+          unclaimedClient?.primaryContact?.firstName,
+        ),
+        lastName: getDefaultRequiredVal(
+          "",
+          unclaimedClient?.primaryContact?.lastName,
+        ),
         email: "",
-        phone1: getDefaultRequiredVal("", migratedClient?.phone),
+        phone1: getDefaultRequiredVal("", unclaimedClient?.phone),
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",

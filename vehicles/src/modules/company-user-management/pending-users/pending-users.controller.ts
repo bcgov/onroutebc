@@ -7,8 +7,8 @@ import {
   Put,
   Delete,
   Req,
-  BadRequestException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 
 import {
@@ -21,6 +21,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -31,7 +32,6 @@ import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
@@ -40,6 +40,7 @@ import {
   IDIRUserRole,
 } from '../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -56,6 +57,10 @@ import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 })
 @ApiInternalServerErrorResponse({
   description: 'The Pending User Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Pending User Api Unprocessable Entity Response',
   type: ExceptionDto,
 })
 @ApiBearerAuth()
@@ -158,11 +163,6 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
-    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
-      throw new BadRequestException(
-        `Action not allowed for username ${userName}`,
-      );
-    }
     const pendingUser = await this.pendingUserService.findPendingUsersDto(
       userName,
       companyId,
@@ -206,6 +206,8 @@ export class PendingUsersController {
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const currentUser = request.user as IUserJWT;
+    /* Before removing the below condition - Create User method needs to be revisited.
+      UserName vs UserGUID mismatch scenarios need to be handled*/
     if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
       throw new BadRequestException(
         `Update not allowed for username ${userName}`,
