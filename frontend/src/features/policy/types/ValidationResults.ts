@@ -8,8 +8,16 @@ export interface ValidationResults {
 
 interface ValidationResult {
   type: string;
-  code: string;
+  code: ViolationCodeType;
   message: string;
   fieldReference?: string;
   cost?: number;
 }
+
+export const VIOLATION_CODES = {
+  COST_VALIDATION_ERROR: "cost-validation-error",
+  FIELD_VALIDATION_ERROR: "field-validation-error",
+};
+
+export type ViolationCodeType =
+  (typeof VIOLATION_CODES)[keyof typeof VIOLATION_CODES];

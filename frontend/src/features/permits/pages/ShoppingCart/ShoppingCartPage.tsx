@@ -85,19 +85,14 @@ export const ShoppingCartPage = () => {
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();
 
-  // const paymentFailed = applyWhenNotNullable(
-  //   (queryParam) => queryParam === "true",
-  //   searchParams.get("paymentFailed"),
-  //   false,
-  // );
-
-  const [paymentFailed, setPaymentFailed] = useState<boolean>(
-    applyWhenNotNullable(
-      (queryParam) => queryParam === "true",
-      searchParams.get("paymentFailed"),
-      false,
-    ),
+  const paymentFailed = applyWhenNotNullable(
+    (queryParam) => queryParam === "true",
+    searchParams.get("paymentFailed"),
+    false,
   );
+
+  const [showPaymentFailedBanner, setShowPaymentFailedBanner] =
+    useState<boolean>(paymentFailed);
 
   const {
     removeFromCartMutation,
@@ -218,21 +213,25 @@ export const ShoppingCartPage = () => {
     error: startTransactionMutationError,
   } = startTransactionMutation;
 
+  // TODO check LOA validation errors are being handled correctly
   useEffect(() => {
     if (startTransactionMutationFailed) {
-      switch (startTransactionMutationError.response?.data.error[0].errorCode) {
-        case PAYMENT_ERRORS.VALIDATION_FAILURE:
-          setOldCartItems([...cartItemSelection]);
-          cartQuery.refetch();
-          refetchCartCount();
-          setShowApplicationErrorsDialog(true);
-          break;
-        case PAYMENT_ERRORS.INVALID_CART:
-          setShowUpdateCartDialog(true);
-          break;
-        default:
-          setPaymentFailed(true);
-          break;
+      const errorCode =
+        startTransactionMutationError.response?.data.error[0].errorCode;
+      if (errorCode === PAYMENT_ERRORS.TRANS_INVALID_APPLICATION_STATUS) {
+        setShowUpdateCartDialog(true);
+      } else if (
+        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        !isApplicationErrors
+      ) {
+        setShowUpdateCartDialog(true);
+      } else if (
+        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        isApplicationErrors
+      ) {
+        setShowApplicationErrorsDialog(true);
+      } else {
+        setShowPaymentFailedBanner(true);
       }
     }
   }, [startTransactionMutationFailed]);
@@ -381,6 +380,7 @@ export const ShoppingCartPage = () => {
       applicationIds: selectedApplicationIds,
     });
 
+    // TODO updateCartDialog not showing when item has already been removed from cart
     if (hasPermitsActionFailed(removeResult)) {
       // Removal failed, show update cart dialog
       setShowUpdateCartDialog(true);
@@ -489,13 +489,14 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {paymentFailed ? <PaymentFailedBanner /> : null}
+          {showPaymentFailedBanner ? <PaymentFailedBanner /> : null}
 
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
             selectedItemsCount={selectedApplications.length}
             onPay={handleSubmit(handlePay)}
             transactionPending={startTransactionMutation.isPending}
+            disablePayNowButton={cartItems?.length === 0}
           />
         </FormProvider>
       </Box>
@@ -508,6 +509,7 @@ export const ShoppingCartPage = () => {
 
       <UpdateCartDialog
         shouldOpen={showUpdateCartDialog}
+        handleClose={() => setShowUpdateCartDialog(false)}
         onUpdateCart={handleForceUpdateCart}
       />
 
