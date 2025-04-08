@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import Card from "@mui/material/Card";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
@@ -139,6 +139,18 @@ export const WelcomePage = React.memo(() => {
 
   const { companyLegalName: companyNameFromContext, unclaimedClient } =
     useContext(OnRouteBCContext);
+
+  const getClientNameToDisplay = useCallback(() => {
+    if (isInvitedUser(companyNameFromContext)) {
+      return companyNameFromContext;
+    } else if (companyNameFromToken) {
+      companyNameFromToken;
+    } else if (isUnclaimedClient(unclaimedClient)) {
+      return unclaimedClient?.legalName;
+    } else {
+      return user?.profile?.given_name;
+    }
+  }, [companyNameFromContext, companyNameFromToken, unclaimedClient, user]);
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
@@ -146,21 +158,7 @@ export const WelcomePage = React.memo(() => {
           <div className="welcome-graphic"></div>
           <h2>Welcome to onRouteBC!</h2>
         </div>
-        {(() => {
-          if (isInvitedUser(companyNameFromContext)) {
-            return <WelcomeCompanyName companyName={companyNameFromContext} />;
-          } else if (companyNameFromToken) {
-            return <WelcomeCompanyName companyName={companyNameFromToken} />;
-          } else if (isUnclaimedClient(unclaimedClient)) {
-            return (
-              <WelcomeCompanyName companyName={unclaimedClient?.legalName} />
-            );
-          } else {
-            return (
-              <WelcomeCompanyName companyName={user?.profile?.given_name} />
-            );
-          }
-        })()}
+        <WelcomeCompanyName companyName={getClientNameToDisplay()} />
         <div className="separator-line"></div>
         {/**
          * If the user is an invited user to a company that exists
