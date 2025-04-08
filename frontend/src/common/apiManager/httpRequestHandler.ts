@@ -33,11 +33,12 @@ axios.interceptors.response.use(
   (error) => {
     if (!error.response || error.response.status === 503) {
       console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
+      if (window.location.pathname !== "/service-unavailable") {
+        //prevent infinite loop
         window.location.href = "/service-unavailable";
       }
     } else {
-      console.log("Error Details:", error)
+      console.log("Error Details:", error);
       return Promise.reject(error); // Reject other errors
     }
   },
@@ -134,19 +135,6 @@ export const getLoginUsernameFromSession = (): string => {
     "",
     parsedSessionObject.profile?.bceid_username,
     parsedSessionObject.profile?.idir_username,
-  );
-};
-
-/**
- * Retrieves given name from session
- * @returns given name or empty string
- */
-export const getLoginUserGivenNameFromSession = (): string => {
-  const parsedSessionObject = getUserStorage();
-  if (!parsedSessionObject) return "";
-  return getDefaultRequiredVal(
-    "",
-    parsedSessionObject.profile?.given_name,    
   );
 };
 
