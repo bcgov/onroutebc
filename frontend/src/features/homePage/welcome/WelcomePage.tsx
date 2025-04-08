@@ -147,14 +147,14 @@ export const WelcomePage = React.memo(() => {
           <h2>Welcome to onRouteBC!</h2>
         </div>
         {(() => {
-          if (isUnclaimedClient(unclaimedClient)) {
-            return (
-              <WelcomeCompanyName companyName={unclaimedClient?.legalName} />
-            );
-          } else if (isInvitedUser(companyNameFromContext)) {
+          if (isInvitedUser(companyNameFromContext)) {
             return <WelcomeCompanyName companyName={companyNameFromContext} />;
           } else if (companyNameFromToken) {
             return <WelcomeCompanyName companyName={companyNameFromToken} />;
+          } else if (isUnclaimedClient(unclaimedClient)) {
+            return (
+              <WelcomeCompanyName companyName={unclaimedClient?.legalName} />
+            );
           } else {
             return <WelcomeCompanyName companyName={givenNameFromToken} />;
           }
