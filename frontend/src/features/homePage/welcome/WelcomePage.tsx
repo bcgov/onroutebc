@@ -9,7 +9,10 @@ import Card from "@mui/material/Card";
 import React, { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
+import {
+  getCompanyNameFromSession,
+  getLoginUserGivenNameFromSession,
+} from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
 import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
@@ -21,7 +24,6 @@ import {
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import "./welcome.scss";
 import { VerifiedClient } from "../../../common/authentication/types";
-import { useAuth } from "react-oidc-context";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -31,8 +33,6 @@ const isUnclaimedClient = (unclaimed?: Optional<VerifiedClient>): boolean =>
 
 const isNewCompanyProfile = (companyNameFromContext?: string): boolean =>
   !isInvitedUser(companyNameFromContext);
-
-const { user } = useAuth();
 
 const WelcomeCompanyName = ({
   companyName,
@@ -136,6 +136,7 @@ const ChallengeOption = ({
  */
 export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
+  const givenNameFromToken = getLoginUserGivenNameFromSession();
 
   const { companyLegalName: companyNameFromContext, unclaimedClient } =
     useContext(OnRouteBCContext);
@@ -144,13 +145,18 @@ export const WelcomePage = React.memo(() => {
     if (isInvitedUser(companyNameFromContext)) {
       return companyNameFromContext;
     } else if (companyNameFromToken) {
-      companyNameFromToken;
+      return companyNameFromToken;
     } else if (isUnclaimedClient(unclaimedClient)) {
       return unclaimedClient?.legalName;
     } else {
-      return user?.profile?.given_name;
+      return givenNameFromToken;
     }
-  }, [companyNameFromContext, companyNameFromToken, unclaimedClient, user]);
+  }, [
+    companyNameFromContext,
+    companyNameFromToken,
+    unclaimedClient,
+    givenNameFromToken,
+  ]);
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">

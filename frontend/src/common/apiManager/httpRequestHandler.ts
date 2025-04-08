@@ -139,6 +139,19 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
+ * Retrieves given name from session
+ * @returns given name or empty string
+ */
+export const getLoginUserGivenNameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal(
+    "",
+    parsedSessionObject.profile?.given_name,    
+  );
+};
+
+/**
  * Retrieves user email from session.
  * @returns string | null | undefined
  */
