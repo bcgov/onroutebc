@@ -104,15 +104,15 @@ export type OnRouteBCContextType = {
     SetStateAction<Optional<IDIRUserDetailContext>>
   >;
   /**
-   * React state setter for a legacy client details.
+   * React state setter for a legacy client or staff created client details.
    * Used only when the user is new and trying to claim their company.
    */
-  setMigratedClient?: Dispatch<SetStateAction<Optional<VerifiedClient>>>;
+  setUnclaimedClient?: Dispatch<SetStateAction<Optional<VerifiedClient>>>;
   /**
-   * The legacy client details.
+   * The unclaimed client details.
    * Used only when the user is new and trying to claim their company.
    */
-  migratedClient?: VerifiedClient;
+  unclaimedClient?: VerifiedClient;
   /**
    * Is the logged in user a new BCeID user?
    */

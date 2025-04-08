@@ -17,7 +17,7 @@ export const useCreateProfileMutation = (
     setUserDetails,
     setCompanyLegalName,
     setOnRouteBCClientNumber,
-    setMigratedClient,
+    setUnclaimedClient,
     isNewBCeIDUser,
   } = useContext(OnRouteBCContext);
 
@@ -80,7 +80,7 @@ export const useCreateProfileMutation = (
           setUserDetails?.(() => userDetails);
           /* Clear any state in migrated client. We no longer need this
         once the user has successfully created/claimed their company. */
-          setMigratedClient?.(() => undefined);
+          setUnclaimedClient?.(() => undefined);
           queryClient.invalidateQueries({
             queryKey: ["userContext"],
           });

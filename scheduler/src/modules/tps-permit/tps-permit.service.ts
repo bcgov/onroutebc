@@ -162,7 +162,7 @@ export class TpsPermitService {
           s3ObjectId,
           s3Object,
           tpsPermit,
-          permitExists.companyId,
+          permitExists.company.companyId,
         );
 
         await this.updatePermitWithDocumentId(tpsPermit, document.documentId);
