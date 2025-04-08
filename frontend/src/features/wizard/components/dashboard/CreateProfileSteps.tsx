@@ -28,6 +28,7 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
         unclaimedClient?.legalName as string,
+        user?.profile?.given_name as string,
       ),
       alternateName: getDefaultRequiredVal("", unclaimedClient?.alternateName),
       mailingAddress: {

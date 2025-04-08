@@ -87,6 +87,11 @@ export const ChallengeProfileSteps = React.memo(() => {
 
         resetCompanyAndUserForm({
           ...defaultCompanyAndUserInfoValues,
+          legalName: getDefaultRequiredVal(
+            "",
+            user?.profile?.bceid_business_name as string,
+            verifiedClient?.legalName,
+          ),
           migratedClientHash: getDefaultRequiredVal(
             "",
             verifiedClient?.migratedClientHash,
