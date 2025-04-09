@@ -39,7 +39,6 @@ import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module
 import { CreditAccountModule } from './modules/credit-account/credit-account.module';
 import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 import { CaseManagementModule } from './modules/case-management/case-management.module';
-import { PolicyModule } from './modules/policy/policy.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -97,15 +96,14 @@ const envPath = path.resolve(process.cwd() + '/../');
     CommonModule,
     PendingUsersModule,
     AuthModule,
-    SpecialAuthModule,
     PaymentModule,
     ShoppingCartModule,
     PermitReceiptDocumentModule,
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
-    PolicyModule,
     CreditAccountModule,
     FeatureFlagsModule,
+    SpecialAuthModule,
     CaseManagementModule,
   ],
   controllers: [AppController],
