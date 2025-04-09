@@ -1,8 +1,112 @@
 import { TransactionType } from '../enum/transaction-type.enum';
 import { PermitHistoryDto } from 'src/modules/permit-application-payment/permit/dto/response/permit-history.dto';
-import { NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, NotAcceptableException } from '@nestjs/common';
+import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
+import { PermitType } from '../enum/permit-type.enum';
+import {
+  TROS_MAX_VALID_DURATION,
+  TROS_MIN_VALID_DURATION,
+  TROS_PRICE_PER_TERM,
+  TROS_TERM,
+  TROW_MAX_VALID_DURATION,
+  TROW_MIN_VALID_DURATION,
+  TROW_PRICE_PER_TERM,
+  TROW_TERM,
+} from '../constants/permit.constant';
+import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
-import { ValidationResult } from 'onroute-policy-engine';
+import { Nullable } from '../types/common';
+
+/**
+ * Calculates the permit fee based on the application and old amount.
+ * @param application The permit application.
+ * @param oldAmount The old amount of the permit.
+ * @returns The calculated permit fee.
+ * @throws {NotAcceptableException} If the duration is invalid for TROS permit type.
+ * @throws {BadRequestException} If the permit type is not recognized.
+ */
+export const permitFee = (
+  application: Permit,
+  isNoFee?: Nullable<boolean>,
+  oldAmount?: Nullable<number>,
+): number => {
+  let duration = calculateDuration(application);
+  switch (application.permitType) {
+    case PermitType.TERM_OVERSIZE: {
+      const validDuration = isValidDuration(
+        duration,
+        TROS_MIN_VALID_DURATION,
+        TROS_MAX_VALID_DURATION,
+      );
+      if (!validDuration) {
+        throw new BadRequestException(
+          `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
+        );
+      }
+      // Adjusting duration for one year term permit
+      if (yearlyPermit(duration)) duration = 360;
+      if (
+        leapYear(
+          duration,
+          application.permitData.startDate,
+          application.permitData.expiryDate,
+        )
+      )
+        duration = 360;
+      return currentPermitFee(
+        duration,
+        TROS_PRICE_PER_TERM,
+        TROS_TERM,
+        oldAmount,
+        isNoFee,
+      );
+    }
+    case PermitType.TERM_OVERWEIGHT: {
+      const validDuration = isValidDuration(
+        duration,
+        TROW_MIN_VALID_DURATION,
+        TROW_MAX_VALID_DURATION,
+      );
+      if (!validDuration) {
+        throw new BadRequestException(
+          `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
+        );
+      }
+      // Adjusting duration for one year term permit
+      if (yearlyPermit(duration)) duration = 360;
+      if (
+        leapYear(
+          duration,
+          application.permitData.startDate,
+          application.permitData.expiryDate,
+        )
+      )
+        duration = 360;
+      return currentPermitFee(
+        duration,
+        TROW_PRICE_PER_TERM,
+        TROW_TERM,
+        oldAmount,
+        isNoFee,
+      );
+    }
+    default:
+      throw new BadRequestException(
+        `Invalid permit type: ${application.permitType}`,
+      );
+  }
+};
+
+export const yearlyPermit = (duration: number): boolean => {
+  return duration <= 365 && duration >= 361;
+};
+
+export const calculateDuration = (application: Permit): number => {
+  const startDate = application.permitData.startDate;
+  const endDate = application.permitData.expiryDate;
+  const duration = differenceBetween(startDate, endDate) + 1;
+  return duration;
+};
 
 export const leapYear = (
   duration: number,
@@ -14,6 +118,41 @@ export const leapYear = (
   const isOneYear =
     start.add(1, 'year').subtract(1, 'day').toDate() === expiry.toDate();
   return duration === 366 && isOneYear;
+};
+export const isValidDuration = (
+  duration: number,
+  minDuration: number,
+  maxDuration: number,
+): boolean => {
+  return duration >= minDuration && duration <= maxDuration;
+};
+
+/**
+ * Calculates the permit fee based on the provided duration, price per term, permit type term, and old amount.
+ *
+ * @param {number} duration The duration for which the permit is required.
+ * @param {number} pricePerTerm The price per term of the permit.
+ * @param {number} allowedPermitTerm The term of the permit type.
+ * @param {number} oldAmount The old amount (if any) for the permit.
+ * @returns {number} The calculated permit fee.
+ */
+export const currentPermitFee = (
+  duration: number,
+  pricePerTerm: number,
+  allowedPermitTerm: number,
+  oldAmount?: Nullable<number>,
+  isNoFee?: Nullable<boolean>,
+): number => {
+  // Calculate the number of permit terms based on the duration
+  const permitTerms = Math.ceil(duration / allowedPermitTerm);
+
+  // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
+  if ((isNoFee && oldAmount === undefined) || oldAmount === 0) return 0;
+  if (oldAmount === undefined) oldAmount = 0;
+  // Calculate fee for non void permit.
+  return oldAmount > 0
+    ? pricePerTerm * permitTerms - oldAmount
+    : pricePerTerm * permitTerms + oldAmount;
 };
 
 export const calculatePermitAmount = (
@@ -39,25 +178,21 @@ export const calculatePermitAmount = (
   return amount;
 };
 
-export const validatePaymentReceived = (
-  cost: number,
+export const validAmount = (
+  calculatedAmount: number,
   receivedAmount: number,
   transactionType: TransactionType,
-): ValidationResult => {
-  const isAmountValid = receivedAmount.toFixed(2) === Math.abs(cost).toFixed(2);
+): boolean => {
+  const isAmountValid =
+    receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
 
-  // For refund transactions, ensure the calculated cost is negative.
-  const isRefundValid = cost < 0 && transactionType === TransactionType.REFUND;
+  // For refund transactions, ensure the calculated amount is negative.
+  const isRefundValid =
+    calculatedAmount < 0 && transactionType === TransactionType.REFUND;
 
-  if (
-    !isAmountValid ||
-    (transactionType === TransactionType.REFUND && !isRefundValid)
-  ) {
-    return {
-      type: 'violation',
-      code: 'cost-validation-error',
-      message: `Transaction amount mismatch`,
-      cost: cost,
-    } as ValidationResult;
-  }
+  // Return true if the amounts are valid or if it's a valid refund transaction
+  return (
+    isAmountValid &&
+    (isRefundValid || transactionType !== TransactionType.REFUND)
+  );
 };

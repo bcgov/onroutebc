@@ -19,7 +19,6 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { isPermitTypeEligibleForQueue } from '../../common/helper/permit-application.helper';
-import { PolicyService } from '../policy/policy.service';
 
 @Injectable()
 export class ShoppingCartService {
@@ -28,7 +27,6 @@ export class ShoppingCartService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
-    private readonly policyService: PolicyService,
   ) {}
 
   /**
@@ -114,7 +112,6 @@ export class ShoppingCartService {
     allApplications?: boolean,
   ): Promise<ReadShoppingCartDto[]> {
     const { userGUID, orbcUserRole } = currentUser;
-    const readShoppingCartDto: ReadShoppingCartDto[] = [];
     const applications = await this.getSelectShoppingCartQB(companyId, {
       userGUID,
       orbcUserRole: orbcUserRole,
@@ -123,30 +120,17 @@ export class ShoppingCartService {
       .orderBy({ 'application.updatedDateTime': 'DESC' })
       .getMany();
 
-    for (const application of applications) {
-      const validationResults =
-        await this.policyService.validateApplicationAndCalculateCost({
-          application,
+    return await this.classMapper.mapArrayAsync(
+      applications,
+      Application,
+      ReadShoppingCartDto,
+      {
+        extraArgs: () => ({
+          currentUserRole: orbcUserRole,
           companyId,
-        });
-
-      readShoppingCartDto.push(
-        await this.classMapper.mapAsync(
-          application,
-          Application,
-          ReadShoppingCartDto,
-          {
-            extraArgs: () => ({
-              currentUserRole: orbcUserRole,
-              companyId,
-              validationResults,
-            }),
-          },
-        ),
-      );
-    }
-
-    return readShoppingCartDto;
+        }),
+      },
+    );
   }
 
   /**
