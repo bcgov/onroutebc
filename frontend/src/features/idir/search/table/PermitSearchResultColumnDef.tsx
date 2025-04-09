@@ -1,5 +1,6 @@
 import { Box, Tooltip } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
+import { useNavigate } from "react-router-dom";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { PermitListItem } from "../../../permits/types/permit";
@@ -110,6 +111,21 @@ export const PermitSearchResultColumnDef = (
     enableSorting: true,
     sortingFn: "alphanumeric",
     size: 180,
+    Cell: (props: { cell: any; row: any }) => {
+      const navigate = useNavigate();
+      const permit = props.row.original as PermitListItem;
+      const { companyId } = permit;
+      return (
+        <CustomActionLink
+          onClick={() => {
+            console.log("clicked");
+            navigate(`/manage-profiles/${companyId}`);
+          }}
+        >
+          {props.cell.getValue()}
+        </CustomActionLink>
+      );
+    },
   },
   {
     accessorKey: "startDate",
