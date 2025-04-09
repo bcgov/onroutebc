@@ -18,6 +18,7 @@ import {
 } from "../../../../../../common/types/common";
 import { useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 
 export const CompanyPrimaryContactForm = ({
   feature,
@@ -28,8 +29,15 @@ export const CompanyPrimaryContactForm = ({
 
   const { getValues } = useFormContext();
 
+  const { user } = useAuth();
+  const isBusinessBCeID = Boolean(user?.profile?.bceid_business_name);
+
   useEffect(() => {
-    if (getValues("email") && feature !== ORBC_FORM_FEATURES.COMPANY_PROFILE) {
+    if (
+      isBusinessBCeID &&
+      getValues("email") &&
+      feature !== ORBC_FORM_FEATURES.COMPANY_PROFILE
+    ) {
       setIsEmailDisabled(true);
     }
   }, []);
