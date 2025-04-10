@@ -13,6 +13,7 @@ import { getApplicantDisplay } from '../../../common/helper/permit-application.h
 import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
 import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
 import { PermitData } from '../../../common/interface/permit.template.interface';
+import { ValidationResults } from 'onroute-policy-engine';
 
 @Injectable()
 export class ShoppingCartProfile extends AutomapperProfile {
@@ -29,6 +30,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
         forMember(
           (d) => d.companyId,
           mapWithArguments((_s, { companyId }) => companyId),
+        ),
+        forMember(
+          (d) => d.validationResults,
+          mapWithArguments(
+            (
+              _s,
+              { validationResults }: { validationResults: ValidationResults },
+            ) => validationResults,
+          ),
         ),
         // permitId
         forMember(
