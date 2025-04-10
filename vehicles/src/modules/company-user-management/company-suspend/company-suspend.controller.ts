@@ -93,6 +93,7 @@ export class CompanySuspendController {
       IDIRUserRole.SYSTEM_ADMINISTRATOR,
       IDIRUserRole.FINANCE,
       IDIRUserRole.CTPO,
+      IDIRUserRole.ENFORCEMENT_OFFICER,
     ],
   })
   @Get('suspend')
