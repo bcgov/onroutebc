@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
@@ -218,14 +217,17 @@ export const ShoppingCartPage = () => {
     if (startTransactionMutationFailed) {
       const errorCode =
         startTransactionMutationError.response?.data.error[0].errorCode;
+      // application has been removed from cart
       if (errorCode === PAYMENT_ERRORS.TRANS_INVALID_APPLICATION_STATUS) {
         setShowUpdateCartDialog(true);
       } else if (
+        // application is no longer valid per policy due to changes to application
         errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
         !isApplicationErrors
       ) {
         setShowUpdateCartDialog(true);
       } else if (
+        // there are already applications with errors shown to the user that need to be resolved
         errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
         isApplicationErrors
       ) {
