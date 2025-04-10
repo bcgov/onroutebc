@@ -161,10 +161,10 @@ export const Header = () => {
         title="Important Notice"
         message={
           <div>
-            onRouteBC is undergoing scheduled maintenance on [Date] from [Start
-            Time] to [End Time]. During this period, you may experience
-            temporary disruptions. We apologize for any inconvenience and
-            appreciate your understanding.
+            onRouteBC is undergoing scheduled maintenance on Jan 10, 2025, 10:14
+            am to Jan. 17, 2025, 02:14 am PDT. During this period, you may
+            experience temporary disruptions. We apologize for any inconvenience
+            and appreciate your understanding.
           </div>
         }
       />
