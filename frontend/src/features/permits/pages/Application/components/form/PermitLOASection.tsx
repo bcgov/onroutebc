@@ -7,7 +7,7 @@ import { InfoBcGovBanner } from "../../../../../../common/components/banners/Inf
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { LOADetail } from "../../../../../settings/types/LOADetail";
 import { LOATable } from "./LOATable";
-import { PermitType } from "../../../../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import { getMinPermitExpiryDate } from "../../../../helpers/dateSelection";
 import { getUpdatedLOASelection } from "../../../../helpers/permitLOA";
 import { doUniqueArraysHaveSameItems } from "../../../../../../common/helpers/equality";
@@ -27,6 +27,11 @@ export const PermitLOASection = ({
   companyLOAs: LOADetail[];
   onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void,
 }) => {
+  const isTermPermit = ([
+    PERMIT_TYPES.TROS,
+    PERMIT_TYPES.TROW,
+  ] as PermitType[]).includes(permitType);
+
   const minPermitExpiryDate = getMinPermitExpiryDate(permitType, startDate);
 
   // Only show the current active company LOAs as selectable LOAs
@@ -72,7 +77,7 @@ export const PermitLOASection = ({
     onUpdateLOAs(loaToSelect ? [loaToSelect] : []);
   };
 
-  return loasForTable.length > 1 ? (
+  return isTermPermit && (loasForTable.length > 1) ? (
     <Box className="permit-loa-section">
       <Box className="permit-loa-section__header">
         <h3>
