@@ -23,7 +23,7 @@ export const createCacheMap = <T extends object>(
 export const addToCache = async (
   cacheManager: Cache,
   key: CacheKey,
-  item: string | Map<string, string> | JSON | object,
+  item: string | Map<string, string>,
 ) => {
   await cacheManager.set(key, item);
 };
