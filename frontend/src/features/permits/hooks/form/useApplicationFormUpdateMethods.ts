@@ -40,6 +40,50 @@ export const useApplicationFormUpdateMethods = () => {
     setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
   }, [setValue]);
 
+  const onSetVin = useCallback((vin: string) => {
+    setValue("permitData.vehicleDetails.vin", vin);
+  }, [setValue]);
+
+  const onSetPlate = useCallback((plate: string) => {
+    setValue("permitData.vehicleDetails.plate", plate);
+  }, [setValue]);
+
+  const onSetMake = useCallback((make: string) => {
+    setValue("permitData.vehicleDetails.make", make);
+  }, [setValue]);
+
+  const onSetYear = useCallback((year: Nullable<number>) => {
+    setValue("permitData.vehicleDetails.year", year);
+  }, [setValue]);
+  
+  const onSetCountryCode = useCallback((countryCode: string) => {
+    setValue("permitData.vehicleDetails.countryCode", countryCode);
+  }, [setValue]);
+  
+  const onSetProvinceCode = useCallback((provinceCode: string) => {
+    setValue("permitData.vehicleDetails.provinceCode", provinceCode);
+  }, [setValue]);
+  
+  const onSetVehicleType = useCallback((vehicleType: string) => {
+    setValue("permitData.vehicleDetails.vehicleType", vehicleType);
+  }, [setValue]);
+  
+  const onSetVehicleSubtype = useCallback((vehicleSubtype: string) => {
+    setValue("permitData.vehicleDetails.vehicleSubType", vehicleSubtype);
+  }, [setValue]);
+  
+  const onSetUnitNumber = useCallback((unitNumber: Nullable<string>) => {
+    setValue("permitData.vehicleDetails.unitNumber", unitNumber);
+  }, [setValue]);
+
+  const onSetVehicleId = useCallback((vehicleId: Nullable<string>) => {
+    setValue("permitData.vehicleDetails.vehicleId", vehicleId);
+  }, [setValue]);
+
+  const onSetLicensedGVW = useCallback((licensedGVW?: Nullable<number>) => {
+    setValue("permitData.vehicleDetails.licensedGVW", licensedGVW);
+  }, [setValue]);
+
   const onSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     setValue("permitData.vehicleDetails", {
       ...vehicleDetails,
@@ -142,6 +186,17 @@ export const useApplicationFormUpdateMethods = () => {
     onSetExpiryDate,
     onSetConditions,
     onToggleSaveVehicle,
+    onSetVin,
+    onSetPlate,
+    onSetMake,
+    onSetYear,
+    onSetCountryCode,
+    onSetProvinceCode,
+    onSetVehicleType,
+    onSetVehicleSubtype,
+    onSetUnitNumber,
+    onSetVehicleId,
+    onSetLicensedGVW,
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,

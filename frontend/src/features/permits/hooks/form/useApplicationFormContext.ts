@@ -16,7 +16,6 @@ import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMetho
 import { usePermittedCommodity } from "../usePermittedCommodity";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
-import { useMemoizedPermitVehicle } from "../useMemoizedPermitVehicle";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -84,8 +83,6 @@ export const useApplicationFormContext = () => {
     thirdPartyLiability,
   } = formData.permitData;
 
-  const memoizedVehicleFormData = useMemoizedPermitVehicle(vehicleFormData);
-
   const createdAt = useMemoizedObject(
     createdDateTime,
     (dateObj1, dateObj2) => Boolean(
@@ -138,7 +135,7 @@ export const useApplicationFormContext = () => {
     permitType,
     permitConditions,
     isLcvDesignated,
-    memoizedVehicleFormData.vehicleSubType,
+    vehicleFormData.vehicleSubType,
     onSetConditions,
   );
 
@@ -152,7 +149,6 @@ export const useApplicationFormContext = () => {
     );
   }, [currentSelectedLOAs]);
 
-  const saveVehicleFlag = vehicleFormData.saveVehicle;
   const handleSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     onSetVehicle({
       ...vehicleDetails,
@@ -170,7 +166,7 @@ export const useApplicationFormContext = () => {
     policyEngine,
     permitType,
     onSetCommodityType,
-    () => handleClearVehicle(Boolean(memoizedVehicleFormData.saveVehicle)),
+    () => handleClearVehicle(Boolean(vehicleFormData.saveVehicle)),
     onClearVehicleConfig,
     permittedCommodity?.commodityType,
   );
@@ -184,14 +180,12 @@ export const useApplicationFormContext = () => {
   } = usePermitVehicles({
     policyEngine,
     permitType,
-    vehicleFormData: memoizedVehicleFormData,
+    vehicleFormData,
     allVehiclesFromInventory,
     selectedLOAs: currentSelectedLOAs,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    onSetVehicle: handleSetVehicle,
     selectedCommodity: permittedCommodity?.commodityType,
-    saveVehicle: saveVehicleFlag,
   });
 
   const selectedVehicleConfigSubtypes = useMemoizedArray(
@@ -211,7 +205,7 @@ export const useApplicationFormContext = () => {
       permittedCommodity?.commodityType,
     ),
     selectedVehicleConfigSubtypes,
-    memoizedVehicleFormData.vehicleSubType,
+    vehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
   );
 
@@ -246,7 +240,7 @@ export const useApplicationFormContext = () => {
     startDate,
     expiryDate,
     currentSelectedLOAs,
-    vehicleFormData: memoizedVehicleFormData,
+    vehicleFormData,
     allConditions,
     availableDurationOptions,
     filteredVehicleOptions,

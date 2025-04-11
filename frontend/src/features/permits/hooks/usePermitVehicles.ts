@@ -9,7 +9,8 @@ import { getEligibleSubtypeOptions } from "../helpers/vehicles/subtypes/getEligi
 import { Nullable } from "../../../common/types/common";
 import { getEligibleVehicleSubtypes } from "../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
 import { isPermitVehicleWithinGvwLimit } from "../helpers/vehicles/rules/gvw";
-import { useMemoizedPermitVehicle } from "./useMemoizedPermitVehicle";
+import { useApplicationFormUpdateMethods } from "./form/useApplicationFormUpdateMethods";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   PowerUnit,
   Trailer,
@@ -24,9 +25,7 @@ export const usePermitVehicles = ({
   selectedLOAs,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
-  onSetVehicle,
   selectedCommodity,
-  saveVehicle,
 }: {
   policyEngine: Policy;
   permitType: PermitType;
@@ -35,10 +34,23 @@ export const usePermitVehicles = ({
   selectedLOAs: PermitLOA[];
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
-  onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   selectedCommodity?: Nullable<string>;
-  saveVehicle?: Nullable<boolean>;
 }) => {
+  const {
+    onSetVin,
+    onSetPlate,
+    onSetMake,
+    onSetYear,
+    onSetCountryCode,
+    onSetProvinceCode,
+    onSetVehicleType,
+    onSetVehicleSubtype,
+    onSetUnitNumber,
+    onSetVehicleId,
+    onSetLicensedGVW,
+    onToggleSaveVehicle,
+  } = useApplicationFormUpdateMethods();
+
   // Get the entire set of all eligible subtypes for the permit type
   const eligibleVehicleSubtypes = useMemo(() => {
     return getEligibleVehicleSubtypes(
@@ -52,9 +64,20 @@ export const usePermitVehicles = ({
     selectedCommodity,
   ]);
   
-  const vehicleIdInForm = vehicleFormData.vehicleId;
-  const vehicleType = vehicleFormData.vehicleType;
-  const vehicleSubtype = vehicleFormData.vehicleSubType;
+  const {
+    vin: vinInForm,
+    plate: plateInForm,
+    make: makeInForm,
+    year: yearInForm,
+    countryCode: countryCodeInForm,
+    provinceCode: provinceCodeInForm,
+    vehicleType: vehicleTypeInForm,
+    vehicleSubType: vehicleSubtypeInForm,
+    saveVehicle: saveVehicleInForm,
+    unitNumber: unitNumberInForm,
+    vehicleId: vehicleIdInForm,
+    licensedGVW: licensedGVWInForm,
+  } = vehicleFormData;
 
   // Get vehicle subtypes options based on current vehicle details in the form
   const {
@@ -77,7 +100,7 @@ export const usePermitVehicles = ({
     const isSelectedLOAVehicle = selectedLOAs.length > 0
       && Boolean(vehicleIdInForm)
       && (
-        allowedLOASubtypes.has(vehicleSubtype)
+        allowedLOASubtypes.has(vehicleSubtypeInForm)
       )
       && (
         powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
@@ -99,7 +122,7 @@ export const usePermitVehicles = ({
       })),
       eligibleVehicleSubtypes,
       allowedLOASubtypes,
-      vehicleType,
+      vehicleTypeInForm,
     );
 
     return {
@@ -109,8 +132,8 @@ export const usePermitVehicles = ({
   }, [
     selectedLOAs,
     allVehiclesFromInventory,
-    vehicleType,
-    vehicleSubtype,
+    vehicleTypeInForm,
+    vehicleSubtypeInForm,
     vehicleIdInForm,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
@@ -125,7 +148,20 @@ export const usePermitVehicles = ({
     const updatedVehicleDetails = getUpdatedVehicleDetailsForLOAs(
       selectedLOAs,
       allVehiclesFromInventory,
-      vehicleFormData,
+      {
+        vin: vinInForm,
+        plate: plateInForm,
+        make: makeInForm,
+        year: yearInForm,
+        countryCode: countryCodeInForm,
+        provinceCode: provinceCodeInForm,
+        vehicleType: vehicleTypeInForm,
+        vehicleSubType: vehicleSubtypeInForm,
+        saveVehicle: saveVehicleInForm,
+        unitNumber: unitNumberInForm,
+        vehicleId: vehicleIdInForm,
+        licensedGVW: licensedGVWInForm,
+      },
       eligibleVehicleSubtypes,
       [
         (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
@@ -146,32 +182,136 @@ export const usePermitVehicles = ({
       ) ? {
         ...updatedVehicleDetails.updatedVehicle,
         vehicleSubType: subtypeOptions.length > 0 ? subtypeOptions[0].typeCode : "",
-        saveVehicle: isSelectedLOAVehicle ? false : saveVehicle,
+        saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
       } : {
         ...updatedVehicleDetails.updatedVehicle,
-        saveVehicle: isSelectedLOAVehicle ? false : saveVehicle,
+        saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
       },
       filteredVehicleOptions: updatedVehicleDetails.filteredVehicleOptions,
     };
   }, [
     selectedLOAs,
     allVehiclesFromInventory,
-    vehicleFormData,
+    vinInForm,
+    plateInForm,
+    makeInForm,
+    yearInForm,
+    countryCodeInForm,
+    provinceCodeInForm,
+    vehicleTypeInForm,
+    vehicleSubtypeInForm,
+    saveVehicleInForm,
+    unitNumberInForm,
+    vehicleIdInForm,
+    licensedGVWInForm,
     eligibleVehicleSubtypes,
     permitType,
     subtypeOptions,
     isSelectedLOAVehicle,
-    saveVehicle,
+    saveVehicleInForm,
   ]);
 
-  // Updated vehicle should be memoized, otherwise placing the object directly in the dependency array
-  // can cause infinite loops due to checking by reference (rather than by value)
-  const memoizedUpdatedVehicle = useMemoizedPermitVehicle(updatedVehicle);
-  
-  // Update the vehicle section in the form whenever there is an update to the vehicle details
+  const {
+    vin: updatedVin,
+    plate: updatedPlate,
+    make: updatedMake,
+    year: updatedYear,
+    countryCode: updatedCountryCode,
+    provinceCode: updatedProvinceCode,
+    vehicleType: updatedVehicleType,
+    vehicleSubType: updatedVehicleSubtype,
+    saveVehicle: updatedSaveVehicle,
+    unitNumber: updatedUnitNumber,
+    vehicleId: updatedVehicleId,
+    licensedGVW: updatedLicensedGVW,
+  } = updatedVehicle;
+
+  // If the fields in the updated vehicle details differ from the ones already in
+  // the form, update each of those fields individually
+  // This is to mitigate an infinite-render issue where the entire vehicle details is set
+  // ie. the vehicle details reference is updated
+  // By updating the each specific field on a case-by-case basis, the vehicle details remains
+  // the same while only its members are updated, preventing an infinite loop
   useEffect(() => {
-    onSetVehicle(memoizedUpdatedVehicle);
-  }, [memoizedUpdatedVehicle]);
+    if (vehicleIdInForm !== updatedVehicleId) {
+      onSetVehicleId(updatedVehicleId);
+    }
+  }, [vehicleIdInForm, updatedVehicleId]);
+
+  useEffect(() => {
+    if (unitNumberInForm !== updatedUnitNumber) {
+      onSetUnitNumber(updatedUnitNumber);
+    }
+  }, [unitNumberInForm, updatedUnitNumber]);
+
+  useEffect(() => {
+    if (vinInForm !== updatedVin) {
+      onSetVin(updatedVin);
+    }
+  }, [vinInForm, updatedVin]);
+
+  useEffect(() => {
+    if (vinInForm !== updatedVin) {
+      onSetVin(updatedVin);
+    }
+  }, [vinInForm, updatedVin]);
+
+  useEffect(() => {
+    if (plateInForm !== updatedPlate) {
+      onSetPlate(updatedPlate);
+    }
+  }, [plateInForm, updatedPlate]);
+
+  useEffect(() => {
+    if (makeInForm !== updatedMake) {
+      onSetMake(updatedMake);
+    }
+  }, [makeInForm, updatedMake]);
+
+  useEffect(() => {
+    if (yearInForm !== updatedYear) {
+      onSetYear(updatedYear);
+    }
+  }, [yearInForm, updatedYear]);
+
+  useEffect(() => {
+    if (countryCodeInForm !== updatedCountryCode) {
+      onSetCountryCode(updatedCountryCode);
+    }
+  }, [countryCodeInForm, updatedCountryCode]);
+
+  useEffect(() => {
+    if (provinceCodeInForm !== updatedProvinceCode) {
+      onSetProvinceCode(updatedProvinceCode);
+    }
+  }, [provinceCodeInForm, updatedProvinceCode]);
+
+  useEffect(() => {
+    if (
+      getDefaultRequiredVal(0, licensedGVWInForm)
+      !== getDefaultRequiredVal(0, updatedLicensedGVW)
+    ) {
+      onSetLicensedGVW(updatedLicensedGVW);
+    }
+  }, [licensedGVWInForm, updatedLicensedGVW]);
+
+  useEffect(() => {
+    if (saveVehicleInForm !== updatedSaveVehicle) {
+      onToggleSaveVehicle(Boolean(updatedSaveVehicle));
+    }
+  }, [saveVehicleInForm, updatedSaveVehicle]);
+
+  useEffect(() => {
+    if (vehicleSubtypeInForm !== updatedVehicleSubtype) {
+      onSetVehicleSubtype(updatedVehicleSubtype);
+    }
+  }, [vehicleSubtypeInForm, updatedVehicleSubtype]);
+
+  useEffect(() => {
+    if (vehicleTypeInForm !== updatedVehicleType) {
+      onSetVehicleType(updatedVehicleType);
+    }
+  }, [vehicleTypeInForm, updatedVehicleType]);
 
   return {
     filteredVehicleOptions,
