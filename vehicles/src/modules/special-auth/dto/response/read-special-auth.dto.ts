@@ -32,7 +32,7 @@ export class ReadSpecialAuthDto {
     return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
   })
   @IsOptional()
-  isLcvAllowed?: boolean;
+  isLcvAllowed: boolean;
 
   @AutoMap()
   @ApiProperty({
@@ -42,5 +42,5 @@ export class ReadSpecialAuthDto {
     required: false,
   })
   @IsOptional()
-  noFeeType?: NoFeeType;
+  noFeeType: NoFeeType;
 }
