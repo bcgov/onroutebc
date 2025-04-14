@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -16,7 +17,7 @@ import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { CompanyInfo } from "../../pages/CompanyInfo";
 import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
-import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
+import { PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizations/SpecialAuthorizations";
@@ -74,8 +75,12 @@ export const ManageProfilesDashboard = React.memo(() => {
   const populatedUserClaims = getDefaultRequiredVal([], userClaims);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
-  const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
-
+  const showUserManagementTab = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "VIEW_USER_MANAGEMENT_SCREEN",
+    },
+  });
   const { data: specialAuthorizations, isPending: isSpecialAuthAPILoading } =
     useFetchSpecialAuthorizations(companyId as number, true);
   const activeLOAsQuery = useFetchLOAs(companyId, false);
@@ -126,27 +131,27 @@ export const ManageProfilesDashboard = React.memo(() => {
     {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
-      componentKey: BCEID_PROFILE_TABS.COMPANY_INFORMATION,
+      componentKey: PROFILE_TABS.COMPANY_INFORMATION,
     },
     !isStaffActingAsCompany
       ? {
           label: "My Information",
           component: <MyInfo />,
-          componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
+          componentKey: PROFILE_TABS.MY_INFORMATION,
         }
       : null,
-    shouldAllowUserManagement
+    showUserManagementTab
       ? {
           label: "Add / Manage Users",
           component: <UserManagement />,
-          componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+          componentKey: PROFILE_TABS.USER_MANAGEMENT,
         }
       : null,
     showSpecialAuth && companyId
       ? {
           label: "Special Authorizations",
           component: <SpecialAuthorizations companyId={companyId} />,
-          componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
+          componentKey: PROFILE_TABS.SPECIAL_AUTH,
         }
       : null,
     showCreditAccountTab
@@ -160,7 +165,7 @@ export const ManageProfilesDashboard = React.memo(() => {
               }
             />
           ),
-          componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
+          componentKey: PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,
   ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
@@ -177,12 +182,10 @@ export const ManageProfilesDashboard = React.memo(() => {
   const showAddUserButton = (selectedTabIndex: number) => {
     // Get index of Add / Manage Users tab, if it exists
     const userManagementTabIndex = tabs.findIndex(
-      (tab) => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
+      (tab) => tab.componentKey === PROFILE_TABS.USER_MANAGEMENT,
     );
 
-    return (
-      shouldAllowUserManagement && selectedTabIndex === userManagementTabIndex
-    );
+    return showUserManagementTab && selectedTabIndex === userManagementTabIndex;
   };
 
   const initialSelectedTabIndex = getSelectedTabFromNavigation();
