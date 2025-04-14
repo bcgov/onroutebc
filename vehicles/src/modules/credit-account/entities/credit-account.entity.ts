@@ -81,6 +81,22 @@ export class CreditAccount extends Base {
   creditAccountNumber: string;
 
   /**
+   * Specifies whether the account is verified. 'Y' for yes, 'N' for no.
+   */
+  @AutoMap()
+  @Column({
+    type: 'char',
+    name: 'IS_VERIFIED',
+    default: false,
+    nullable: false,
+    transformer: {
+      to: (value: boolean): string => (value ? 'Y' : 'N'), // Converts the boolean value to 'Y' or 'N' for storage.
+      from: (value: string): boolean => value === 'Y', // Converts the stored string back to a boolean.
+    },
+  })
+  isVerified: boolean;
+
+  /**
    * A property that stores the CFS site number associated with the credit account.
    * It represents a unique identifier for the site within the CFS system.
    */
