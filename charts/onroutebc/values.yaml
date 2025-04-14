@@ -34,8 +34,8 @@ frontend:
     enabled: true
     data:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-      POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       PUBLIC_API_URL: "https://{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
+      POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
       RELEASE_NUM: "{{.Values.global.env.release_num}}"
@@ -43,6 +43,7 @@ frontend:
         const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
             "VITE_API_VEHICLE_URL":"$ACCESS_API_URL",
+            "VITE_PUBLIC_API_URL":"$PUBLIC_API_URL",
             "VITE_POLICY_URL":"$POLICY_URL",
             "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
             "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
@@ -68,6 +69,8 @@ frontend:
         fromLocalConfigmap: 
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+          - name: PUBLIC_API_URL
+            key: PUBLIC_API_URL
           - name: POLICY_URL
             key: POLICY_URL            
           - name: DEPLOY_ENVIRONMENT
@@ -334,7 +337,7 @@ public:
   configmap:
     enabled: true
     data:
-      PUBLIC_API_URL: "https://{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
   containers:
     - name: public
       command:
@@ -347,8 +350,8 @@ public:
       tag: "{{tpl .Values.global.tag .}}"
       env:
         fromLocalConfigmap: 
-          - name: PUBLIC_API_URL
-            key: PUBLIC_API_URL
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -380,11 +383,11 @@ public:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 300m
-          memory: 500Mi
+          cpu: 75m
+          memory: 150Mi
         requests:
-          cpu: 200m
-          memory: 300Mi
+          cpu: 25m
+          memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
