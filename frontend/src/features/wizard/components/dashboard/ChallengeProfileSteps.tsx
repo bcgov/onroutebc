@@ -41,6 +41,7 @@ export const ChallengeProfileSteps = React.memo(() => {
     legalName: getDefaultRequiredVal(
       "",
       user?.profile?.bceid_business_name as string,
+      user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
     ),
     email: getDefaultRequiredVal("", user?.profile?.email),
     adminUser: {
@@ -90,6 +91,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           legalName: getDefaultRequiredVal(
             "",
             user?.profile?.bceid_business_name as string,
+            user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
             verifiedClient?.legalName,
           ),
           migratedClientHash: getDefaultRequiredVal(
