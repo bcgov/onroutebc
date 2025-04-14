@@ -366,7 +366,8 @@ export class CreditAccountService {
     if (
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ACTIVE &&
-      !creditAccount?.company.isSuspended
+      !creditAccount?.company.isSuspended &&
+      !creditAccount?.isVerified
     ) {
       readCreditAccountMetadataDto.isValidPaymentMethod = true;
     } else {
