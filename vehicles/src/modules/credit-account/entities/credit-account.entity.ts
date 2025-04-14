@@ -67,10 +67,11 @@ export class CreditAccount extends Base {
   /**
    * A property that stores the CFS party number associated with the credit account.
    * It represents a unique identifier for the party within the CFS (Credit and Financial Services) system.
+   * The column was made nullable to accomodate TPS migrated DATA
    */
   @AutoMap()
-  @Column({ type: 'int', name: 'CFS_PARTY_NUMBER', nullable: false })
-  cfsPartyNumber: number;
+  @Column({ type: 'int', name: 'CFS_PARTY_NUMBER', nullable: true })
+  cfsPartyNumber?: number;
 
   /**
    * The unique number associated with the credit account. Its the ORBC_CREDIT_ACCOUNT_NUMBER_SEQ prefixed with WS.
