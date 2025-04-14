@@ -257,3 +257,6 @@
 
 ### Version 68:
 - Update MPF permit templates to fix total distance.
+
+### Version 69:
+- Add OUTAGE_NOTIFICATION table

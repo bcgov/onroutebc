@@ -49,6 +49,17 @@ GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the outage notification table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_OUTAGE_NOTIFICATION', @level2type=N'COLUMN',@level2name=N'OUTAGE_NOTIFICATION_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Title for outage notification. For example: Important Notice' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_OUTAGE_NOTIFICATION', @level2type=N'COLUMN',@level2name=N'TITLE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Detailed message for outage notification.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_OUTAGE_NOTIFICATION', @level2type=N'COLUMN',@level2name=N'MESSAGE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date and time (UTC) when the notification should first appear on the website banner.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_OUTAGE_NOTIFICATION', @level2type=N'COLUMN',@level2name=N'EFFECTIVE_START_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date and time (UTC) when the notification should be removed from the website banner.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_OUTAGE_NOTIFICATION', @level2type=N'COLUMN',@level2name=N'EFFECTIVE_END_TIMESTAMP'
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Create outage notification table'
 
