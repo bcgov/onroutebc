@@ -101,6 +101,10 @@ jobs:
             sonar_projectKey: onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
             triggers: ('frontend/')
+          - dir: public
+            sonar_projectKey: onroutebc_public
+            token: SONAR_TOKEN_PUBLIC
+            triggers: ('public')
     steps:
       - uses: bcgov/action-test-and-analyse@v1.2.1
         with:

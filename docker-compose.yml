@@ -124,7 +124,7 @@ services:
       KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
       KEYCLOAK_IGNORE_EXP: ${KEYCLOAK_IGNORE_EXP}
     healthcheck:
-      test: "curl --silent --fail http://localhost:5080/ > /dev/null || exit 1"
+      test: "curl --silent --fail http://localhost:5003/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -136,7 +136,7 @@ services:
     links:
       - sql-server-db
     ports:
-      - "5080:5080"
+      - "5003:5003"
 
   dops-api:
     container_name: dops-api

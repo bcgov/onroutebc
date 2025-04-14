@@ -12,7 +12,7 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 
 ```conf
 
-PUBLICAPI_URL=http://localhost:5080
+PUBLIC_API_URL=http://localhost:5003
 PUBLIC_API_LOG_LEVEL=debug
 PUBLIC_API_MAX_QUERY_EXECUTION_TIME_MS=5000
 PUBLIC_API_TYPEORM_LOG_LEVEL=query,error,warn,info,log,schema
@@ -48,7 +48,7 @@ Install all frontend dependencies
 Runs the app in the development mode.
 
 ### Swagger API
-Open [http://localhost:5080/api](http://localhost:5080/api) to view the swagger api definitions in the browser.
+Open [http://localhost:5003/api](http://localhost:5003/api) to view the swagger api definitions in the browser.
 
 ### `npm run test`
 

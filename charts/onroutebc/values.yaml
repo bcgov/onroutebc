@@ -358,12 +358,12 @@ public:
             value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: public-api
-          containerPort: 5080
+          containerPort: 5003
           protocol: TCP
       readinessProbe:
         httpGet:
           path: /
-          port: 5080
+          port: 5003
           scheme: HTTP
         initialDelaySeconds: 60
         periodSeconds: 15
@@ -373,7 +373,7 @@ public:
         failureThreshold: 3
         httpGet:
           path: /
-          port: 5080
+          port: 5003
           scheme: HTTP
         initialDelaySeconds: 60
         periodSeconds: 30
@@ -433,10 +433,10 @@ public:
     enabled: true
     type: ClusterIP
     ports:
-      - name: 5080-tcp
+      - name: 5003-tcp
         protocol: TCP
         port: 80
-        targetPort: 5080
+        targetPort: 5003
   serviceAccount:
     name: "{{ .Values.global.license }}-vault"
   vault:

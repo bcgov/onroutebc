@@ -35,7 +35,7 @@ COPY --from=builder /app/dist ./dist
 RUN apk add --no-cache curl
 
 # Expose Port
-EXPOSE 5080
+EXPOSE 5003
 
 # Non-root user
 USER node
@@ -44,4 +44,4 @@ USER node
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5080/
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5003/
