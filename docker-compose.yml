@@ -102,6 +102,42 @@ services:
     ports:
       - "5000:5000"
 
+  public-api:
+    container_name: public-api
+    build:
+      context: ./public/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_LOG_LEVEL: ${PUBLIC_API_LOG_LEVEL}
+      PUBLIC_API_TYPEORM_LOG_LEVEL: ${PUBLIC_API_TYPEORM_LOG_LEVEL}
+      PUBLIC_API_MAX_QUERY_EXECUTION_TIME_MS: ${PUBLIC_API_MAX_QUERY_EXECUTION_TIME_MS}
+      PUBLIC_API_MSSQL_MAX_CONNECTION: ${PUBLIC_API_MSSQL_MAX_CONNECTION}
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
+      KEYCLOAK_IGNORE_EXP: ${KEYCLOAK_IGNORE_EXP}
+    healthcheck:
+      test: "curl --silent --fail http://localhost:5080/ > /dev/null || exit 1"
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: public-api
+    links:
+      - sql-server-db
+    ports:
+      - "5080:5080"
+
   dops-api:
     container_name: dops-api
     build:
