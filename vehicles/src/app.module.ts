@@ -39,6 +39,7 @@ import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module
 import { CreditAccountModule } from './modules/credit-account/credit-account.module';
 import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 import { CaseManagementModule } from './modules/case-management/case-management.module';
+import { OutageNotificationModule } from './modules/outage-notification/outage-notification.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -105,6 +106,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     FeatureFlagsModule,
     SpecialAuthModule,
     CaseManagementModule,
+    OutageNotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
