@@ -1,6 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { Loading } from "../../../common/pages/Loading";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -23,8 +21,6 @@ export const ViewCreditAccount = ({
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
 }) => {
-  const { userDetails } = useContext(OnRouteBCContext);
-
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
 
