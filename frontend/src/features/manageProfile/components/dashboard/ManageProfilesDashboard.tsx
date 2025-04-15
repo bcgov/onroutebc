@@ -62,19 +62,14 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const navigate = useNavigate();
 
-  const {
-    userClaims,
-    companyId: companyIdFromContext,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { companyId: companyIdFromContext, idirUserDetails } =
+    useContext(OnRouteBCContext);
 
   const companyId = getDefaultRequiredVal(0, companyIdFromContext);
   const { data: creditAccountMetadata } =
     useGetCreditAccountMetadataQuery(companyId);
   const { data: featureFlags } = useFeatureFlagsQuery();
-  const populatedUserClaims = getDefaultRequiredVal([], userClaims);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const showUserManagementTab = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
