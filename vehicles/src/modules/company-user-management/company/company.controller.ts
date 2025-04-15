@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -94,6 +95,11 @@ export class CompanyController {
     @Body() createCompanyDto: CreateCompanyDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.orbcUserRole === IDIRUserRole.ENFORCEMENT_OFFICER) {
+      throw new ForbiddenException(
+        `${currentUser.orbcUserRole} cannot create a company`,
+      );
+    }
     return await this.companyService.create(createCompanyDto, currentUser);
   }
 
