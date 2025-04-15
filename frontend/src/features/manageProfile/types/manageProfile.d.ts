@@ -165,7 +165,7 @@ export type DeleteResponse = {
 /**
  * The tabs on the user profile management page.
  */
-export const BCEID_PROFILE_TABS = {
+export const PROFILE_TABS = {
   COMPANY_INFORMATION: "CompanyInformationTab",
   MY_INFORMATION: "MyInformationTab",
   USER_MANAGEMENT: "UserManagementTab",
