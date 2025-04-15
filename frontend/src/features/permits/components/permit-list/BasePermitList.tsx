@@ -41,13 +41,11 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
-  const {
-    idirUserDetails,
-    companyId: companyIdFromContext,
-  } = useContext(OnRouteBCContext);
+  const { idirUserDetails, companyId: companyIdFromContext } =
+    useContext(OnRouteBCContext);
 
   const companyId: number = applyWhenNotNullable(
-    id => Number(id),
+    (id) => Number(id),
     companyIdFromContext,
     0,
   );
@@ -103,7 +101,9 @@ export const BasePermitList = ({
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: PermitsColumnDefinition(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
+    columns: PermitsColumnDefinition(() =>
+      navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+    ),
     data: data?.items ?? [],
     enableRowSelection: false,
     initialState: {
@@ -158,7 +158,10 @@ export const BasePermitList = ({
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {DoesUserHaveRole({
               userRole: idirUserDetails?.userRole,
-              allowedRoles: [IDIR_USER_ROLE.PPC_CLERK],
+              allowedRoles: [
+                IDIR_USER_ROLE.PPC_CLERK,
+                IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
+              ],
             }) ? (
               <IDIRPermitSearchRowActions
                 isPermitInactive={isInactive}
@@ -172,7 +175,9 @@ export const BasePermitList = ({
                 isExpired={isExpired}
                 companyId={row.original.companyId}
                 permitId={row.original.permitId}
-                onDocumentUnavailable={() => {navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)}}
+                onDocumentUnavailable={() => {
+                  navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE);
+                }}
               />
             )}
           </Box>
