@@ -1,3 +1,5 @@
+const wait_time = Cypress.env('wait_time');
+
 Cypress.Commands.add('userLoginBceid', () => {
     const wait_time = Cypress.env('wait_time');
     const username = Cypress.env('bceid_username');
@@ -38,6 +40,33 @@ Cypress.Commands.add('userLoginBceid', () => {
 
     // Step 4: Submit the login form
     cy.get('[name="btnSubmit"]').click();
+    cy.wait(wait_time);
+
+  });
+
+  Cypress.Commands.add('loginAs', (user_role) => {
+    if(user_role === 'ca' || user_role === 'pa'){
+      cy.userLoginBceid();
+    }
+    else{
+      cy.userLoginIdir();
+    }
+  });
+
+  Cypress.Commands.add('search', (company_name) => {
+    cy.get('.search-button').click();
+    cy.wait(wait_time);
+
+    cy.get('[value="companies"]').click();
+    cy.wait(wait_time);
+
+    cy.get('.css-1pog434').type(company_name);
+    cy.wait(wait_time);
+    cy.get('.search-by__search').click();
+    cy.wait(wait_time);
+    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
+      .first()
+      .click();
     cy.wait(wait_time);
 
   });
