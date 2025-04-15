@@ -94,6 +94,23 @@ export const ViewCreditAccount = ({
                   : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
               }}
             />
+            <RenderIf
+              component={
+                <UserTable
+                  companyId={companyId}
+                  creditAccountMetadata={{ creditAccountId, userType }}
+                />
+              }
+              permissionMatrixKeys={{
+                permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                permissionMatrixFunctionKey:
+                  "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER",
+              }}
+              additionalConditionToCheck={() =>
+                creditAccount?.creditAccountStatusType !==
+                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && isAccountHolder
+              }
+            />
           </Box>
           <RenderIf
             component={
@@ -109,18 +126,26 @@ export const ViewCreditAccount = ({
                 ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
                 : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
             }}
-            additionalConditionToCheck={() => {
+          />
+          <RenderIf
+            component={
+              <AccountDetails
+                companyId={companyId}
+                creditAccountMetadata={{ creditAccountId, userType }}
+                creditAccountStatus={creditAccount?.creditAccountStatusType}
+              />
+            }
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey:
+                "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
+            }}
+            additionalConditionToCheck={() =>
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
-              if (userDetails?.userRole) {
-                return (
-                  creditAccount.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
-                );
-              } else {
-                return true;
-              }
-            }}
+              creditAccount.creditAccountStatusType ===
+              CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
+            }
           />
         </Box>
       )}
