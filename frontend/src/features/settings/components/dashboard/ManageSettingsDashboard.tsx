@@ -10,12 +10,10 @@ import { canViewSuspend } from "../../helpers/permissions";
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
-import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { userClaims, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+  const { userClaims, companyId } = useContext(OnRouteBCContext);
   const { data: creditAccountMetadata, isPending } =
     useGetCreditAccountMetadataQuery(companyId as number);
 
@@ -26,16 +24,14 @@ export const ManageSettingsDashboard = React.memo(() => {
    * @returns The permission matrix function key.
    */
   const getPermissionMatrixFunctionKey = () => {
-    if (!isPending && !creditAccountMetadata)
-      return "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER";
-    if (isCreditAccountHolder) {
+    if (!isPending && !creditAccountMetadata) {
+      return "VIEW_CREDIT_ACCOUNT_TAB_NON_HOLDER_OR_USER";
+    } else if (isCreditAccountHolder) {
       return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER";
     } else {
       return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_USER";
     }
   };
-
-  const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
@@ -53,10 +49,6 @@ export const ManageSettingsDashboard = React.memo(() => {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: getPermissionMatrixFunctionKey(),
     },
-    additionalConditionToCheck: () =>
-      // Show the tab if there is a credit account or if the user is a finance user.
-      // Todo: ORV2-2771 Display info box if there is no credit account.
-      Boolean(creditAccountMetadata) || isFinanceUser,
   });
 
   const { state: stateFromNavigation } = useLocation();

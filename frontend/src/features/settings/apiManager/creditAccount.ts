@@ -14,7 +14,6 @@ import {
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
-import { Nullable } from "../../../common/types/common";
 
 /**
  * Backend request to create a credit account.
@@ -38,15 +37,11 @@ export const createCreditAccount = async (data: {
  */
 export const getCreditAccountMetadata = async (
   companyId: number,
-): Promise<Nullable<CreditAccountMetadata>> => {
-  try {
-    const response = await httpGETRequest(
-      CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_META_DATA(companyId),
-    );
-    return response.data;
-  } catch (err) {
-    return null;
-  }
+): Promise<CreditAccountMetadata> => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_META_DATA(companyId),
+  );
+  return response.data;
 };
 
 /**

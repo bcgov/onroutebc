@@ -21,7 +21,6 @@ export const CreditAccountMetadataComponent = ({
   const { data: creditAccountMetadata, isPending } =
     useGetCreditAccountMetadataQuery(companyId);
   const { idirUserDetails } = useContext(OnRouteBCContext);
-  const isStaffUser = Boolean(idirUserDetails?.userRole);
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
   if (!isPending) {
     if (creditAccountMetadata) {
@@ -42,7 +41,7 @@ export const CreditAccountMetadataComponent = ({
           }}
         />
       );
-    } else if (isStaffUser) {
+    } else {
       // Todo: ORV2-2771 Display info box for non-finance staff users who
       // do not have permission to create a new credit account.
       return (
