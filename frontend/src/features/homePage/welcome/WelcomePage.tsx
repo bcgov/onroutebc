@@ -16,20 +16,16 @@ import {
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
 import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
-import { Nullable, Optional } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import {
   CREATE_PROFILE_WIZARD_ROUTES,
   PROFILE_ROUTES,
 } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import "./welcome.scss";
-import { VerifiedClient } from "../../../common/authentication/types";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
-
-const isUnclaimedClient = (unclaimed?: Optional<VerifiedClient>): boolean =>
-  Boolean(unclaimed);
 
 const isNewCompanyProfile = (companyNameFromContext?: string): boolean =>
   !isInvitedUser(companyNameFromContext);
@@ -146,8 +142,6 @@ export const WelcomePage = React.memo(() => {
       return companyNameFromContext;
     } else if (companyNameFromToken) {
       return companyNameFromToken;
-    } else if (isUnclaimedClient(unclaimedClient)) {
-      return unclaimedClient?.legalName;
     } else {
       return givenNameFromToken;
     }

@@ -528,14 +528,16 @@ export class UsersService {
         )),
       );
 
-      const company =
-        await this.companyService.findOneCompanyWithAssociatedUsers(
-          pendingUsers?.at(0)?.companyId,
-        );
+      if (pendingUsers?.at(0)?.companyId) {
+        const company =
+          await this.companyService.findOneCompanyWithAssociatedUsers(
+            pendingUsers?.at(0)?.companyId,
+          );
 
-      if (company && !company?.companyUsers?.length) {
-        userContextDto.unclaimedClient =
-          await this.companyService.mapCompanyEntityToCompanyDto(company);
+        if (company && !company?.companyUsers?.length) {
+          userContextDto.unclaimedClient =
+            await this.companyService.mapCompanyEntityToCompanyDto(company);
+        }
       }
     }
 
