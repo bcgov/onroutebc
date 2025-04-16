@@ -19,8 +19,7 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
-import OutageBanner from "./components/OutageBanner";
-
+import OutageBanner from "../../../features/public/components/OutageBanner";
 const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
