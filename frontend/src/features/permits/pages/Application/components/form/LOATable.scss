@@ -33,8 +33,14 @@
     }
   }
 
+  & &__form-control {
+    .loa-number {
+      margin-bottom: 0;
+    }
+  }
+
   & &__form-control#{&}__form-control--disabled {
-    .loa-checkbox {
+    .loa-radio {
       color: $disabled-colour;
     }
 

@@ -18,7 +18,7 @@ import "../myInfo/MyInfoForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
-  BCEID_PROFILE_TABS,
+  PROFILE_TABS,
   ReadUserInformationResponse,
   UserInfoRequest,
 } from "../../../types/manageProfile.d";
@@ -75,7 +75,7 @@ export const EditUserForm = memo(
     const onClickBreadcrumb = () => {
       navigate(PROFILE_ROUTES.MANAGE, {
         state: {
-          selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+          selectedTab: PROFILE_TABS.USER_MANAGEMENT,
         },
       });
     };
@@ -98,7 +98,7 @@ export const EditUserForm = memo(
 
           navigate(PROFILE_ROUTES.MANAGE, {
             state: {
-              selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+              selectedTab: PROFILE_TABS.USER_MANAGEMENT,
             },
           });
         } else {

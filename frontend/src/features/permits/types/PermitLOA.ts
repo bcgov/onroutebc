@@ -1,5 +1,5 @@
 import { areValuesDifferent, doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
-import { Nullable } from "../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { VehicleType } from "../../manageVehicles/types/Vehicle";
 import { PermitType } from "./PermitType";
 
@@ -14,6 +14,12 @@ export interface PermitLOA {
   vehicleSubType: string;
   originalLoaId: number;
   previousLoaId?: Nullable<number>;
+}
+
+export interface SelectableLOA {
+  loa: RequiredOrNull<PermitLOA>; // null for LOA "none" selection
+  checked: boolean;
+  disabled: boolean;
 }
 
 /**

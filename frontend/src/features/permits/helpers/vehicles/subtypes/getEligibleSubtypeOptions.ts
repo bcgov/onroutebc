@@ -65,8 +65,9 @@ export const getEligibleSubtypeOptions = (
     getSubtypeOptions(vehicleType, powerUnitSubtypes, trailerSubtypes),
   );
 
+  const isLOAUsed = allowedLOASubtypeCodes.size > 0;
   return getAllowedVehicleSubtypes(
     sortedVehicleSubtypes,
-    new Set([...eligibleSubtypesCodes, ...allowedLOASubtypeCodes]),
+    isLOAUsed ? allowedLOASubtypeCodes : eligibleSubtypesCodes,
   );
 };

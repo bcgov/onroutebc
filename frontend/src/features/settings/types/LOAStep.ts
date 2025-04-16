@@ -9,12 +9,12 @@ export type LOAStep = typeof LOA_STEPS[keyof typeof LOA_STEPS];
 
 export const labelForLOAStep = (
   loaStep: LOAStep,
-  loaId?: Nullable<number>,
+  loaNumber?: Nullable<number>,
 ) => {
   switch (loaStep) {
     case LOA_STEPS.REVIEW:
       return "Review and Confirm Details";
     default:
-      return !loaId ? "Add an LOA" : `Editing LOA #: ${loaId}`;
+      return !loaNumber ? "Add an LOA" : `Editing LOA #: ${loaNumber}`;
   }
 };

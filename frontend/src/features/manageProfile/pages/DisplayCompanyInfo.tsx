@@ -5,14 +5,13 @@ import { memo } from "react";
 
 import "./DisplayCompanyInfo.scss";
 import { getUserEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { CLAIMS } from "../../../common/authentication/types";
-import { DoesUserHaveClaimWithContext } from "../../../common/authentication/util";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../types/manageProfile";
 import { getProvinceFullName } from "../../../common/helpers/countries/getProvinceFullName";
 import { getCountryFullName } from "../../../common/helpers/countries/getCountryFullName";
 import { Nullable } from "../../../common/types/common";
 import { getFormattedPhoneNumber } from "../../../common/helpers/phone/getFormattedPhoneNumber";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 export const DisplayInfo = memo(
   ({
@@ -23,13 +22,17 @@ export const DisplayInfo = memo(
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const userEmail = getUserEmailFromSession();
-    const mailingCountry = getCountryFullName(companyInfo?.mailingAddress?.countryCode);
+    const mailingCountry = getCountryFullName(
+      companyInfo?.mailingAddress?.countryCode,
+    );
     const mailingProvince = getProvinceFullName(
       companyInfo?.mailingAddress?.countryCode,
       companyInfo?.mailingAddress?.provinceCode,
     );
 
-    const primaryContactCountry = getCountryFullName(companyInfo?.primaryContact?.countryCode);
+    const primaryContactCountry = getCountryFullName(
+      companyInfo?.primaryContact?.countryCode,
+    );
     const primaryContactProvince = getProvinceFullName(
       companyInfo?.primaryContact?.countryCode,
       companyInfo?.primaryContact?.provinceCode,
@@ -37,10 +40,15 @@ export const DisplayInfo = memo(
 
     const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
       const extDisplay = ext ? `Ext: ${ext}` : "";
-      return `${getFormattedPhoneNumber(
-        phone,
-      )} ${extDisplay}`;
+      return `${getFormattedPhoneNumber(phone)} ${extDisplay}`;
     };
+
+    const enableEditCompanyInformationButton = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PROFILE",
+        permissionMatrixFunctionKey: "EDIT_COMPANY_INFORMATION",
+      },
+    });
 
     return companyInfo ? (
       <div className="display-company-info">
@@ -56,15 +64,9 @@ export const DisplayInfo = memo(
 
           <Typography>{companyInfo.mailingAddress.addressLine1}</Typography>
 
-          <Typography>
-            {mailingCountry}
-          </Typography>
+          <Typography>{mailingCountry}</Typography>
 
-          {mailingProvince ? (
-            <Typography>
-              {mailingProvince}
-            </Typography>
-          ) : null}
+          {mailingProvince ? <Typography>{mailingProvince}</Typography> : null}
 
           <Typography>
             {`${companyInfo.mailingAddress.city} ${companyInfo.mailingAddress.postalCode}`}
@@ -97,32 +99,27 @@ export const DisplayInfo = memo(
             )}`}
           </Typography>
 
-          <Typography>
-            {primaryContactCountry}
-          </Typography>
+          <Typography>{primaryContactCountry}</Typography>
 
           {primaryContactProvince ? (
-            <Typography>
-              {primaryContactProvince}
-            </Typography>
+            <Typography>{primaryContactProvince}</Typography>
           ) : null}
 
           <Typography>{companyInfo.primaryContact.city}</Typography>
         </Box>
 
-        {DoesUserHaveClaimWithContext(CLAIMS.WRITE_ORG) ? (
-          <div className="display-company-info__edit">
-            <Button
-              variant="contained"
-              color="tertiary"
-              sx={{ marginTop: "20px" }}
-              onClick={() => setIsEditting(true)}
-            >
-              <FontAwesomeIcon icon={faPencil} style={{ marginRight: "7px" }} />
-              Edit
-            </Button>
-          </div>
-        ) : null}
+        <div className="display-company-info__edit">
+          <Button
+            variant="contained"
+            color="tertiary"
+            sx={{ marginTop: "20px" }}
+            onClick={() => setIsEditting(true)}
+            disabled={!enableEditCompanyInformationButton}
+          >
+            <FontAwesomeIcon icon={faPencil} style={{ marginRight: "7px" }} />
+            Edit
+          </Button>
+        </div>
       </div>
     ) : null;
   },

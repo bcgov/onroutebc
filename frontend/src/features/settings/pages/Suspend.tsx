@@ -12,8 +12,8 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { SuspensionHistory } from "../components/suspend/SuspensionHistory";
 import { SUSPEND_ACTIVITY_TYPES } from "../types/suspend";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { canUpdateSuspend } from "../helpers/permissions";
 import { ERROR_ROUTES } from "../../../routes/constants";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 export const Suspend = ({
   companyId,
@@ -31,10 +31,15 @@ export const Suspend = ({
   } = useSuspensionHistoryQuery(companyId);
 
   // Check if user can update suspend
-  const { userClaims, isCompanySuspended, setIsCompanySuspended } =
+  const { isCompanySuspended, setIsCompanySuspended } =
     useContext(OnRouteBCContext);
 
-  const canSuspendCompany = canUpdateSuspend(userClaims);
+  const canSuspendCompany = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "UPDATE_SUSPEND_COMPANY_FLAG",
+    },
+  });
 
   const suspendCompanyMutation = useSuspendCompanyMutation();
 
@@ -116,19 +121,18 @@ export const Suspend = ({
 
   return (
     <div className="suspend-page">
-      {canSuspendCompany ? (
-        <div className="suspend-page__suspend-company">
-          <div className="suspend-page__title suspend-page__title--company">
-            Suspend Company
-          </div>
-
-          <Switch
-            className="suspend-company-switch"
-            checked={Boolean(isCompanySuspended)}
-            onChange={async (_, checked) => await handleSuspendToggle(checked)}
-          />
+      <div className="suspend-page__suspend-company">
+        <div className="suspend-page__title suspend-page__title--company">
+          Suspend Company
         </div>
-      ) : null}
+
+        <Switch
+          className="suspend-company-switch"
+          checked={Boolean(isCompanySuspended)}
+          onChange={async (_, checked) => await handleSuspendToggle(checked)}
+          disabled={!canSuspendCompany}
+        />
+      </div>
 
       {suspensionHistoryList.length > 0 ? (
         <div className="suspend-page__suspension-history">

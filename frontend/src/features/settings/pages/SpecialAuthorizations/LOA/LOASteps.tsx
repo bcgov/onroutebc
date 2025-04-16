@@ -64,7 +64,7 @@ export const LOASteps = ({
   }, [loaDetail]);
 
   const [activeStep, setActiveStep] = useState<LOAStep>(LOA_STEPS.BASIC);
-  const stepLabel = labelForLOAStep(activeStep, loaId);
+  const stepLabel = labelForLOAStep(activeStep, loaDetail?.loaNumber);
   const showPrevBtn = activeStep === LOA_STEPS.REVIEW;
   const showNextBtn = activeStep === LOA_STEPS.BASIC;
   const showFinishBtn = activeStep === LOA_STEPS.REVIEW;

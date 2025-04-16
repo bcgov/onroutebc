@@ -28,6 +28,7 @@ export const VehicleInformationSection = ({
   vehicleFormData,
   vehicleOptions,
   subtypeOptions,
+  isLOAUsed,
   isSelectedLOAVehicle,
   nextAllowedSubtypes,
   powerUnitSubtypeNamesMap,
@@ -43,6 +44,7 @@ export const VehicleInformationSection = ({
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
+  isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   nextAllowedSubtypes: {
     value: string;
@@ -162,6 +164,7 @@ export const VehicleInformationSection = ({
               vehicleFormData={vehicleFormData}
               vehicleOptions={vehicleOptions}
               subtypeOptions={subtypeOptions}
+              isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
               permitType={permitType}
               onSetSaveVehicle={onSetSaveVehicle}
@@ -196,6 +199,7 @@ export const VehicleInformationSection = ({
           vehicleFormData={vehicleFormData}
           vehicleOptions={vehicleOptions}
           subtypeOptions={subtypeOptions}
+          isLOAUsed={isLOAUsed}
           isSelectedLOAVehicle={isSelectedLOAVehicle}
           permitType={permitType}
           onCancel={handleClosePowerUnitDialog}

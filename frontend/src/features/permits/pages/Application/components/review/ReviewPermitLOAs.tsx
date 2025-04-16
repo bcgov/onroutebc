@@ -20,7 +20,7 @@ export const ReviewPermitLOAs = ({
 
       <Box className="review-permit-loas__body">
         <Box className="permit-loas">
-          <Typography variant="h3" className="permit-loas__label">
+          <Typography variant="h4" className="permit-loas__label">
             Selected LOA(s)
           </Typography>
 

@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
 import { PermitType } from "../types/PermitType";
-import { getEndOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
+import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
@@ -80,6 +80,7 @@ export const getUpdatedLOASelection = (
   upToDateLOAs: LOADetail[],
   prevSelectedLOAs: PermitLOA[],
   minPermitExpiryDate: Dayjs,
+  permitStartDate: Dayjs,
 ) => {
   // Each LOA should only be selected once, but there's a chance that an up-to-date LOA is also a previously selected LOA,
   // which means that LOA should only be shown once.
@@ -87,14 +88,22 @@ export const getUpdatedLOASelection = (
   // and all non-overlapping LOAs that are not part of the up-to-date LOAs should be removed
   const prevSelectedLOANumbers = new Set([...prevSelectedLOAs.map(loa => loa.loaNumber)]);
 
-  return upToDateLOAs.map(loa => {
+  // Updated selection for LOAs, not including empty selection option "None"
+  const updatedSelection = upToDateLOAs.map(loa => {
     const wasSelected = prevSelectedLOANumbers.has(loa.loaNumber);
     const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
       && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
 
-    // Deselect and disable any LOAs expiring before min permit expiry date
-    const isSelected = wasSelected && !isExpiringBeforeMinPermitExpiry;
-    const isEnabled = !isExpiringBeforeMinPermitExpiry;
+    const isStartingAfterPermitStartDate =
+      permitStartDate.isBefore(getStartOfDate(dayjs(loa.startDate)));
+
+    // Deselect and disable any LOAs expiring before min permit expiry date,
+    // or hasn't started yet (ie. LOA starts after permit start date)
+    const isSelected = wasSelected
+      && !isExpiringBeforeMinPermitExpiry
+      && !isStartingAfterPermitStartDate;
+    
+    const isEnabled = !isExpiringBeforeMinPermitExpiry && !isStartingAfterPermitStartDate;
     
     return {
       loa: {
@@ -113,6 +122,15 @@ export const getUpdatedLOASelection = (
       disabled: !isEnabled,
     };
   });
+
+  // Empty LOA selection state
+  const emptyLOASelection = {
+    loa: null,
+    checked: updatedSelection.filter(({ checked }) => checked).length === 0,
+    disabled: false,
+  };
+
+  return [emptyLOASelection, ...updatedSelection];
 };
 
 /**
@@ -120,7 +138,7 @@ export const getUpdatedLOASelection = (
  * @param selectedLOAs Selected LOAs for the permit
  * @param vehicleOptions Provided vehicle options for selection
  * @param prevSelectedVehicle Previously selected vehicle details in the permit form
- * @param eligibleSubtypes Set of eligible vehicle subtypes
+ * @param eligibleSubtypes Set of all possible eligible vehicle subtypes
  * @param vehicleRestrictions Restriction rules that each vehicle must meet
  * @returns Updated vehicle details and filtered vehicle options
  */
@@ -131,36 +149,46 @@ export const getUpdatedVehicleDetailsForLOAs = (
   eligibleSubtypes: Set<string>,
   vehicleRestrictions: ((vehicle: Vehicle) => boolean)[],
 ) => {
+  const isLOAUsed = selectedLOAs.length > 0;
+
   const filteredVehicles = getAllowedVehicles(
     vehicleOptions,
     eligibleSubtypes,
     selectedLOAs,
     vehicleRestrictions,
   );
-  
-  const filteredVehicleIds = filteredVehicles.map(filteredVehicle => ({
-    filteredVehicleType: filteredVehicle.vehicleType,
-    filteredVehicleId: filteredVehicle.vehicleType === VEHICLE_TYPES.TRAILER
-      ? (filteredVehicle as Trailer).trailerId
-      : (filteredVehicle as PowerUnit).powerUnitId,
-  }));
 
-  // If vehicle selected is an existing vehicle but is not in list of vehicle options
-  // Clear the selected vehicle
-  const { vehicleId, vehicleType } = prevSelectedVehicle;
-  if (vehicleId && !filteredVehicleIds.some(({
-    filteredVehicleType,
-    filteredVehicleId,
-  }) => filteredVehicleType === vehicleType && filteredVehicleId === vehicleId)) {
+  // If an LOA is used, then the only allowable subtype is the one defined by the LOA
+  // Otherwise, the allowable subtypes are the ones originally belonging to the permit type
+  const allAllowableSubtypes = isLOAUsed
+    ? new Set<string>([selectedLOAs[0].vehicleSubType])
+    : eligibleSubtypes;
+
+  // If vehicle selected is an existing vehicle (was originally chosen from inventory),
+  // but its subtype is no longer valid, then clear the selected vehicle
+  const { vehicleId, vehicleSubType } = prevSelectedVehicle;
+  if (vehicleId && !allAllowableSubtypes.has(vehicleSubType)) {
+    const defaultVehicleDetails = getDefaultVehicleDetails();
+
     return {
       filteredVehicleOptions: filteredVehicles,
-      updatedVehicle: getDefaultVehicleDetails(),
+      // If an LOA is used, fill the vehicle type and subtype with the LOA's vehicle type/subtype
+      // Otherwise, simply clear the vehicle details and fill with default empty values
+      updatedVehicle: isLOAUsed ? {
+        ...defaultVehicleDetails,
+        vehicleType: selectedLOAs[0].vehicleType,
+        vehicleSubType: selectedLOAs[0].vehicleSubType,
+      } : defaultVehicleDetails,
     };
   }
 
   return {
     filteredVehicleOptions: filteredVehicles,
-    updatedVehicle: prevSelectedVehicle,
+    updatedVehicle: isLOAUsed ? {
+      ...prevSelectedVehicle,
+      vehicleType: selectedLOAs[0].vehicleType,
+      vehicleSubType: selectedLOAs[0].vehicleSubType,
+    } : prevSelectedVehicle,
   };
 };
 
@@ -203,9 +231,10 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     applicableLOAs,
     prevSelectedLOAs,
     minPermitExpiryDate,
+    applicationData.permitData.startDate,
   )
-    .filter(({ checked }) => checked)
-    .map(({ loa }) => loa);
+    .filter(({ checked, loa }) => checked && Boolean(loa))
+    .map(({ loa }) => loa) as PermitLOA[];
 
   // Update duration in permit if selected LOAs changed
   const durationOptions = getAvailableDurationOptions(
