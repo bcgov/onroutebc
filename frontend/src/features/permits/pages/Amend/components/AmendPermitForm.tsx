@@ -50,6 +50,7 @@ import {
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -166,12 +167,22 @@ export const AmendPermitForm = () => {
         : [],
     );
 
-    const updatedViolations = Object.fromEntries(
+    const policyViolations = Object.fromEntries(
       violations.map(({ fieldReference, message }) => [
         fieldReference,
         message,
       ]),
     );
+
+    // Check if vehicle subtype violations can be overriden by LOA
+    const updatedViolations = shouldOverridePolicyInvalidSubtype(
+      policyViolations,
+      formData.permitData.vehicleDetails.vehicleSubType,
+      formData.permitData.loas,
+    ) ? Object.fromEntries(
+      Object.entries(policyViolations)
+        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
+    ) : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
