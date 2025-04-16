@@ -146,8 +146,6 @@ export const WelcomePage = React.memo(() => {
       return companyNameFromContext;
     } else if (companyNameFromToken) {
       return companyNameFromToken;
-    } else if (isUnclaimedClient(unclaimedClient)) {
-      return unclaimedClient?.legalName;
     } else {
       return givenNameFromToken;
     }
