@@ -15,20 +15,12 @@
     width: 66.6%;
     padding-top: 1.5rem;
     margin-right: 80px;
+    gap: 1.5rem;
   }
 
-  & &__info {
-    border-bottom: 1px solid $bc-border-grey;
-    margin-bottom: 1.5rem;
-    padding: 0 0 1.5rem 0;
 
-    .info {
-      &__body {
-        color: $bc-black;
-        font-size: 1rem;
-        margin: 0;
-      }
-    }
+  &__banner {
+    font-weight: normal;
   }
 
   & &__right-container {
