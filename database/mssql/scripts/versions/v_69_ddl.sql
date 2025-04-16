@@ -12,136 +12,154 @@ BEGIN TRANSACTION
 GO
 
 -- Create staging table for credit accounts
-CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS](
-	[ID] [bigint] IDENTITY(1,1) NOT NULL,
-	[CLIENT_HASH] [nvarchar](64) NULL,
-	[ACCOUNT_NUMBER] [nvarchar](15) NULL,
-	[ACCOUNT_STATUS] [nvarchar](10) NULL,
+CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNT](
+	[CREDIT_ACCOUNT_ID] [bigint] IDENTITY(1,1) NOT NULL,
+    [TPS_PKEY] int NOT NULL,
+	[CLIENT_HASH] [nvarchar](64) NOT NULL,
+	[ACCOUNT_NUMBER] [nvarchar](15) NOT NULL,
 	[ETL_PROCESS_ID] [varchar](38) NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
- CONSTRAINT [PK_ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ORBC_TPS_MIGRATED_CREDIT_ACCOUNT] PRIMARY KEY CLUSTERED 
 (
-	[ID] ASC
+	[CREDIT_ACCOUNT_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this credit account migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this credit account migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Hash of the TPS client number of the credit account owner.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'CLIENT_HASH'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this credit account from TPS.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'TPS_PKEY'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Credit account number.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'ACCOUNT_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Hash of the TPS client number of the credit account owner.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CLIENT_HASH'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Status of the credit account, derived from the status code in TPS.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'ACCOUNT_STATUS'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Credit account number.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'ACCOUNT_NUMBER'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNTS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 -- Create staging table for credit account users
-CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_USERS](
+CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_USER](
 	[ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[CLIENT_HASH] [nvarchar](64) NULL,
-	[ACCOUNT_NUMBER] [nvarchar](15) NULL,
+	[CREDIT_ACCOUNT_ID] [bigint] NULL,
 	[ETL_PROCESS_ID] [varchar](38) NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
- CONSTRAINT [PK_ORBC_TPS_MIGRATED_CREDIT_USERS] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ORBC_TPS_MIGRATED_CREDIT_USER] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this credit account user migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'ID'
+ALTER TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TPS_MIGRATED_CREDIT_USER_CREDIT_ACCOUNT] FOREIGN KEY([CREDIT_ACCOUNT_ID])
+REFERENCES [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNT] ([CREDIT_ACCOUNT_ID])
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Hash of the TPS client number.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'CLIENT_HASH'
+ALTER TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_USER] CHECK CONSTRAINT [FK_ORBC_TPS_MIGRATED_CREDIT_USER_CREDIT_ACCOUNT]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Credit account number the client is permitted to use.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'ACCOUNT_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this credit account user migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Hash of the TPS client number.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'CLIENT_HASH'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the credit account the client is permitted to use.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USERS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_USER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
--- Create temp table to store unposted TPS credit balance
-CREATE TABLE [tps].[ORBC_TPS_UNPOSTED_CREDIT_TOTAL](
+-- Create temp table to store unposted TPS credit balance and status
+CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_STATUS](
 	[ID] [bigint] IDENTITY(1,1) NOT NULL,
-	[ACCOUNT_NUMBER] [nvarchar](15) NULL,
+	[CREDIT_ACCOUNT_ID] [bigint] NULL,
 	[UNPOSTED_TOTAL] [numeric](18, 0) NULL,
+	[ACCOUNT_STATUS] [nvarchar](10) NULL,
 	[ETL_PROCESS_ID] [varchar](38) NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
- CONSTRAINT [PK_ORBC_TPS_UNPOSTED_CREDIT_TOTAL] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ORBC_TPS_MIGRATED_CREDIT_STATUS] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this unposted total migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'ID'
+ALTER TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_STATUS]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TPS_MIGRATED_CREDIT_STATUS_CREDIT_ACCOUNT] FOREIGN KEY([CREDIT_ACCOUNT_ID])
+REFERENCES [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNT] ([CREDIT_ACCOUNT_ID])
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Credit account number.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'ACCOUNT_NUMBER'
+ALTER TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_STATUS] CHECK CONSTRAINT [FK_ORBC_TPS_MIGRATED_CREDIT_STATUS_CREDIT_ACCOUNT]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Total dollar amount not yet posted to the financial system.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'UNPOSTED_TOTAL'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID for this unposted total migration record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the credit account.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Total dollar amount not yet posted to the financial system.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'UNPOSTED_TOTAL'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Status of the credit account, derived from the status code in TPS.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'ACCOUNT_STATUS'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the ETL process that created this record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'ETL_PROCESS_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_UNPOSTED_CREDIT_TOTAL', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'tps', @level1type=N'TABLE',@level1name=N'ORBC_TPS_MIGRATED_CREDIT_STATUS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -212,6 +230,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 -- Add verified flag for TPS migrated accounts
+-- Add verified flag for TPS migrated accounts
 ALTER TABLE permit.ORBC_CREDIT_ACCOUNT
 ADD IS_VERIFIED char(1) NULL
 GO
@@ -226,6 +245,25 @@ BEGIN
 END
 GO
 
+-- Add external adjustment dollar amount, currently will only be used
+-- for TPS migrations to store the unposted credit value, but may be
+-- used in future for ad-hoc adjustments if necessary
+-- Add verified flag for TPS migrated accounts
+ALTER TABLE permit.ORBC_CREDIT_ACCOUNT
+ADD EXTERNAL_ADJUSTMENT numeric(18,0) NULL
+GO
+
+-- The EXTERNAL_ADJUSTMENT column is not removed from the HIST table in
+-- the revert script to avoid data loss, so it is only added here
+-- if it does not already exist.
+IF COL_LENGTH('permit.ORBC_CREDIT_ACCOUNT_HIST', 'EXTERNAL_ADJUSTMENT') IS NULL
+BEGIN
+  ALTER TABLE permit.ORBC_CREDIT_ACCOUNT_HIST
+  ADD EXTERNAL_ADJUSTMENT numeric(18,0) NULL
+END
+GO
+
+
 ALTER TRIGGER [permit].[ORBC_CRACC_A_S_IUD_TR] ON [permit].[ORBC_CREDIT_ACCOUNT] FOR INSERT, UPDATE, DELETE AS
 SET NOCOUNT ON
 BEGIN TRY
@@ -239,8 +277,8 @@ SET @curr_date = getutcdate();
     update [permit].[ORBC_CREDIT_ACCOUNT_HIST] set END_DATE_HIST = @curr_date where CREDIT_ACCOUNT_ID in (select CREDIT_ACCOUNT_ID from deleted) and END_DATE_HIST is null;
   
   IF EXISTS(SELECT * FROM inserted)
-    insert into [permit].[ORBC_CREDIT_ACCOUNT_HIST] ([CREDIT_ACCOUNT_ID], [COMPANY_ID], [CREDIT_ACCOUNT_STATUS_TYPE], [CREDIT_ACCOUNT_TYPE], [CFS_PARTY_NUMBER], [CREDIT_ACCOUNT_NUMBER], [CFS_SITE_NUMBER], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [IS_VERIFIED], _CREDIT_ACCOUNT_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
-      select [CREDIT_ACCOUNT_ID], [COMPANY_ID], [CREDIT_ACCOUNT_STATUS_TYPE], [CREDIT_ACCOUNT_TYPE], [CFS_PARTY_NUMBER], [CREDIT_ACCOUNT_NUMBER], [CFS_SITE_NUMBER], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [IS_VERIFIED], (next value for [permit].[ORBC_CREDIT_ACCOUNT_H_ID_SEQ]) as [_CREDIT_ACCOUNT_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
+    insert into [permit].[ORBC_CREDIT_ACCOUNT_HIST] ([CREDIT_ACCOUNT_ID], [COMPANY_ID], [CREDIT_ACCOUNT_STATUS_TYPE], [CREDIT_ACCOUNT_TYPE], [CFS_PARTY_NUMBER], [CREDIT_ACCOUNT_NUMBER], [CFS_SITE_NUMBER], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [IS_VERIFIED], [EXTERNAL_ADJUSTMENT], _CREDIT_ACCOUNT_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
+      select [CREDIT_ACCOUNT_ID], [COMPANY_ID], [CREDIT_ACCOUNT_STATUS_TYPE], [CREDIT_ACCOUNT_TYPE], [CFS_PARTY_NUMBER], [CREDIT_ACCOUNT_NUMBER], [CFS_SITE_NUMBER], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [IS_VERIFIED], [EXTERNAL_ADJUSTMENT], (next value for [permit].[ORBC_CREDIT_ACCOUNT_H_ID_SEQ]) as [_CREDIT_ACCOUNT_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
 
 END TRY
 BEGIN CATCH
