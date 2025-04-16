@@ -16,7 +16,11 @@ import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/serialize/deserializeApplication";
 import { deserializePermitResponse } from "../helpers/serialize/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
-import { Nullable, Optional } from "../../../common/types/common";
+import {
+  ErrorResponseData,
+  Nullable,
+  Optional,
+} from "../../../common/types/common";
 import { useTableControls } from "./useTableControls";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Application, ApplicationFormData } from "../types/application";
@@ -43,6 +47,7 @@ import {
   resendPermit,
   getPendingPermits,
 } from "../apiManager/permitsAPI";
+import { PaymentError } from "../../policy/types/PaymentError";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (
@@ -216,8 +221,8 @@ export const usePermitDetailsQuery = (companyId: number, permitId: string) => {
 export const useStartTransaction = () => {
   const [transaction, setTransaction] =
     useState<Nullable<StartTransactionResponseData>>(undefined);
+
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: startTransaction,
     retry: false,
@@ -228,14 +233,12 @@ export const useStartTransaction = () => {
       queryClient.setQueryData(["transaction"], transactionData);
       setTransaction(transactionData);
     },
-    onError: (error: AxiosError) => {
-      console.error(error);
+    onError: (
+      // The error parameter is required for type inference when calling the hook
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: AxiosError<ErrorResponseData<PaymentError>>,
+    ) => {
       setTransaction(undefined);
-      navigate(ERROR_ROUTES.UNEXPECTED, {
-        state: {
-          correlationId: error?.response?.headers["x-correlation-id"],
-        },
-      });
     },
   });
 

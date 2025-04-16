@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationStatus } from '../../../../common/enum/application-status.enum';
 import { PermitType } from '../../../../common/enum/permit-type.enum';
 import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
-import { ThirdPartyLiability } from '../../../../common/enum/third-party-liability.enum';
 import { ValidationResults } from 'onroute-policy-engine';
 
 export class ReadShoppingCartDto {
@@ -84,26 +83,6 @@ export class ReadShoppingCartDto {
     example: '2023-07-04T19:12:22Z',
   })
   expiryDate: string;
-
-  @ApiProperty({
-    description: 'The permit duration',
-    example: 30,
-  })
-  duration: number;
-
-  @ApiProperty({
-    description: 'The total distance',
-    example: 30,
-  })
-  totalDistance?: number;
-
-  @AutoMap()
-  @ApiProperty({
-    enum: ThirdPartyLiability,
-    example: ThirdPartyLiability.DANGEROUS_GOODS,
-    description: 'Third Party Liability for ICBC Permits.',
-  })
-  thirdPartyLiability?: ThirdPartyLiability;
 
   @AutoMap()
   @ApiProperty({

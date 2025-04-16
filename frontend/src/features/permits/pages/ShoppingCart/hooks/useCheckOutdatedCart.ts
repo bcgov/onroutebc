@@ -11,8 +11,10 @@ export const useCheckOutdatedCart = (
   cartFilterChanged: boolean,
   fetchedCartItems?: CartItem[],
 ) => {
-  const [showEditCartItemDialog, setShowEditCartItemDialog] = useState<boolean>(false);
-  const [showUpdateCartDialog, setShowUpdateCartDialog] = useState<boolean>(false);
+  const [showEditCartItemDialog, setShowEditCartItemDialog] =
+    useState<boolean>(false);
+  const [showUpdateCartDialog, setShowUpdateCartDialog] =
+    useState<boolean>(false);
   const [oldCartItems, setOldCartItems] = useState<CartItem[]>([]);
 
   const {
@@ -20,13 +22,11 @@ export const useCheckOutdatedCart = (
     cartItemData: cartItemToEdit,
     fetchStatusFor,
   } = useFetchCartItemStatus(companyId);
-  
+
   useEffect(() => {
     // Reset old cart items whenever radio button filter is changed
-    setOldCartItems([]); 
-  }, [
-    cartFilterChanged
-  ]);
+    setOldCartItems([]);
+  }, [cartFilterChanged]);
 
   useEffect(() => {
     if (cartItemToEdit) {
@@ -41,7 +41,7 @@ export const useCheckOutdatedCart = (
   const outdatedApplicationNumbers = getOutdatedCartItems(
     oldCartItems,
     getDefaultRequiredVal([], fetchedCartItems),
-  ).map(cartItem => cartItem.applicationNumber);
+  ).map((cartItem) => cartItem.applicationNumber);
 
   return {
     showEditCartItemDialog,
