@@ -11,7 +11,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
@@ -20,7 +20,10 @@ import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
-import { setBaseEntityProperties } from '../../common/helper/database.helper';
+import {
+  getQueryRunner,
+  setBaseEntityProperties,
+} from '../../common/helper/database.helper';
 
 @Injectable()
 export class LoaService {
@@ -155,10 +158,67 @@ export class LoaService {
       loaDetail,
       LoaDetail,
       ReadLoaDto,
-      {
-        extraArgs: () => ({ companyId: companyId }),
-      },
     );
+    return readLoaDto;
+  }
+
+  /**
+   * Find LOA (Letter of Authorization) details by LOA numbers for a specified company.
+   *
+   * Steps:
+   * 1. Acquire a query runner, either using a provided one or creating a new one.
+   * 2. Fetch active LOA details for the specified company and LOA numbers.
+   * 3. Map the fetched LOA details to ReadLoaDto objects.
+   * 4. Rollback the transaction and log an error if an exception occurs.
+   * 5. Release the query runner and return the mapped ReadLoaDto array.
+   *
+   * @param {number} companyId - ID of the company to fetch LOA details for.
+   * @param {number[]} loaNumbers - List of LOA numbers to fetch details for.
+   * @param {Nullable<QueryRunner>} queryRunner - Optional query runner to handle transaction.
+   * @returns {Promise<ReadLoaDto[]>} - Returns an array of ReadLoaDto containing the details of the fetched LOAs.
+   */
+  @LogAsyncMethodExecution()
+  async findLoaByLoaNumber(
+    companyId: number,
+    loaNumbers: number[],
+    queryRunner?: Nullable<QueryRunner>,
+  ): Promise<ReadLoaDto[]> {
+    let readLoaDto: ReadLoaDto[];
+    let localQueryRunner = true;
+    ({ localQueryRunner, queryRunner } = await getQueryRunner({
+      queryRunner,
+      dataSource: this.dataSource,
+    }));
+    try {
+      // Fetch initial active LOA details
+      const loaDetails = await queryRunner.manager.find(LoaDetail, {
+        where: {
+          loaNumber: In(loaNumbers),
+          isActive: true,
+          company: { companyId },
+        },
+        relations: ['company', 'loaVehicle', 'loaPermitTypes'],
+      });
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
+
+      readLoaDto = await this.classMapper.mapArrayAsync(
+        loaDetails,
+        LoaDetail,
+        ReadLoaDto,
+      );
+    } catch (error) {
+      if (localQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
+      this.logger.error(error);
+      throw error;
+    } finally {
+      if (localQueryRunner) {
+        await queryRunner.release();
+      }
+    }
     return readLoaDto;
   }
 

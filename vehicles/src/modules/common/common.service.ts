@@ -9,9 +9,9 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 export class CommonService {
   constructor(
     @InjectRepository(Country)
-    private countryRepository: Repository<Country>,
+    private readonly countryRepository: Repository<Country>,
     @InjectRepository(Province)
-    private provinceRepository: Repository<Province>,
+    private readonly provinceRepository: Repository<Province>,
   ) {}
 
   @LogAsyncMethodExecution()

@@ -63,7 +63,7 @@ INSERT INTO
 VALUES
   (
     '3',
-    'POLICY-CONFIG',
+    'VALIDATE-WITH-POLICY-ENGINE',
     'ENABLED',
     NULL,
     N'dbo',
