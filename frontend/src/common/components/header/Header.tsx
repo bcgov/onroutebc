@@ -19,7 +19,7 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
-import OutageBanner from "./components/Outagebanner";
+import OutageBanner from "./components/OutageBanner";
 
 const getEnv = () => {
   const env =

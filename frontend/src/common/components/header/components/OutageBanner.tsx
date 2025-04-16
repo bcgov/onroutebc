@@ -5,7 +5,27 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import "./Outagebanner.scss";
 import { PUBLIC_API_URL } from "../../../apiManager/endpoints/endpoints";
 
-const NotificationBanner = () => {
+// Utility to fetch outage banner data
+const fetchOutageNotification = async () => {
+  try {
+    const res = await axios.get(`${PUBLIC_API_URL}/outage-notification`);
+    if (res.status === 200 && res.data?.title && res.data?.message) {
+      return {
+        title: res.data.title,
+        message: res.data.message,
+      };
+    }
+  } catch (err: any) {
+    if (err.response?.status === 429) {
+      console.warn("Too many requests. Try again later.");
+    } else {
+      console.error("Error fetching outage notification:", err);
+    }
+  }
+  return null;
+};
+
+const OutageBanner = () => {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState<React.ReactNode>("");
   const [isVisible, setIsVisible] = useState(false);
@@ -24,29 +44,15 @@ const NotificationBanner = () => {
       return;
     }
 
-    axios
-      .get(`${PUBLIC_API_URL}/outage-notification`)
-      .then((res) => {
-        if (res.status === 200 && res.data?.title && res.data?.message) {
-          setTitle(res.data.title);
-          setMessage(res.data.message);
-          setIsVisible(true);
-          sessionStorage.setItem(
-            "cachedBanner",
-            JSON.stringify({
-              title: res.data.title,
-              message: res.data.message,
-            }),
-          );
-        }
-      })
-      .catch((err) => {
-        if (err.response?.status === 429) {
-          console.warn("Too many requests. Try again later.");
-        } else {
-          console.error("Error fetching outage notification:", err);
-        }
-      });
+    // Fetch and cache banner data
+    fetchOutageNotification().then((data) => {
+      if (data) {
+        setTitle(data.title);
+        setMessage(data.message);
+        setIsVisible(true);
+        sessionStorage.setItem("cachedBanner", JSON.stringify(data));
+      }
+    });
   }, []);
 
   const handleClose = () => {
@@ -70,4 +76,4 @@ const NotificationBanner = () => {
   );
 };
 
-export default NotificationBanner;
+export default OutageBanner;
