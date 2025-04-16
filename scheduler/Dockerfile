@@ -2,7 +2,7 @@
 FROM node:22.14.0-alpine AS builder
 
 #install ssh for sending file to GARMS mainframe
-RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass && apk add --no-cache netcat-openbsd && apk add --no-cache busybox-extras
+RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass && apk add --no-cache netcat-openbsd && apk add --no-cache busybox-extras && apk --no-cache add traceroute
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN npm prune --production
 FROM node:22.14.0-alpine
 
 #install ssh for sending file to GARMS mainframe
-RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass && apk add --no-cache netcat-openbsd && apk add --no-cache busybox-extras
+RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass && apk add --no-cache netcat-openbsd && apk add --no-cache busybox-extras && apk --no-cache add traceroute
 
 RUN npm cache clean --force
 
