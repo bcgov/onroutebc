@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit } from "../../../../../../types/PermitType";
 import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
@@ -19,8 +19,9 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../../../../helpers/dateSelection";
+import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
 
-const feature = "testfeature";
+const feature = ORBC_FORM_FEATURES.TEST_FEATURE;
 export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
@@ -38,18 +39,19 @@ const permitType = DEFAULT_PERMIT_TYPE;
 export const conditions = getDefaultConditions(permitType);
 export const defaultDuration = minDurationForPermitType(permitType);
 export const emptyConditions: PermitCondition[] = [];
-export const allDurations = durationOptionsForPermitType(permitType)
-  .map(durationOption => ({
+export const allDurations = durationOptionsForPermitType(permitType).map(
+  (durationOption) => ({
     text: durationOption.label,
     days: durationOption.value,
-  }));
+  }),
+);
 
-const mandatoryConditions = getMandatoryConditions(permitType).map(condition => condition.condition);
+const mandatoryConditions = getMandatoryConditions(permitType).map(
+  (condition) => condition.condition,
+);
 export const requiredConditionIndices = conditions
   .map((condition, i) =>
-    mandatoryConditions.includes(condition.condition)
-      ? i
-      : -1,
+    mandatoryConditions.includes(condition.condition) ? i : -1,
   )
   .filter((i) => i >= 0);
 
@@ -59,7 +61,11 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
       permitData: {
         startDate: currentDt,
         permitDuration: defaultDuration,
-        expiryDate: getExpiryDate(currentDt, defaultDuration),
+        expiryDate: getExpiryDate(
+          currentDt,
+          isQuarterlyPermit(permitType),
+          defaultDuration,
+        ),
         commodities: [],
         loas: [],
       },
@@ -78,7 +84,12 @@ export const renderTestComponent = (
 ) => {
   const user = userEvent.setup(userEventOptions);
   let selectedConditions = [...conditions];
-  const expiryDate = getExpiryDate(startDate, duration);
+  const expiryDate = getExpiryDate(
+    startDate,
+    isQuarterlyPermit(permitType),
+    duration,
+  );
+
   const allConditions = getDefaultConditions(permitType, false)
     .map(condition => {
       const existingCondition = selectedConditions
@@ -90,12 +101,14 @@ export const renderTestComponent = (
           ? existingCondition.checked
           : condition.checked,
       };
-    });
+    },
+  );
 
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
+        permitType={permitType}
         expiryDate={expiryDate}
         allConditions={allConditions}
         durationOptions={allDurations.map((duration) => ({

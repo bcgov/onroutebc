@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -32,7 +31,7 @@ import {
 } from "../../../../../common/helpers/tableHelper";
 import { Controller, useFormContext } from "react-hook-form";
 import { RefundFormData } from "../types/RefundFormData";
-import { Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
 

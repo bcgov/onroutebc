@@ -12,7 +12,7 @@ import { UserRole } from '../../../common/enum/user-role.enum';
 import { getApplicantDisplay } from '../../../common/helper/permit-application.helper';
 import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
 import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
-import { PermitData } from '../../../common/interface/permit.template.interface';
+import { ValidationResults } from 'onroute-policy-engine';
 
 @Injectable()
 export class ShoppingCartProfile extends AutomapperProfile {
@@ -29,6 +29,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
         forMember(
           (d) => d.companyId,
           mapWithArguments((_s, { companyId }) => companyId),
+        ),
+        forMember(
+          (d) => d.validationResults,
+          mapWithArguments(
+            (
+              _s,
+              { validationResults }: { validationResults: ValidationResults },
+            ) => validationResults,
+          ),
         ),
         // permitId
         forMember(
@@ -47,25 +56,6 @@ export class ShoppingCartProfile extends AutomapperProfile {
         forMember(
           (d) => d.applicantGUID,
           mapFrom((s) => s?.applicationOwner?.userGUID),
-        ),
-        forMember(
-          (d) => d.duration,
-          mapFrom((s) => {
-            const parsedPermitData = JSON.parse(
-              s?.permitData?.permitData,
-            ) as PermitData;
-            return +parsedPermitData?.permitDuration;
-          }),
-        ),
-        forMember(
-          (d) => d.totalDistance,
-          mapFrom((s) => {
-            const parsedPermitData = JSON.parse(
-              s?.permitData?.permitData,
-            ) as PermitData;
-            return +parsedPermitData?.permittedRoute?.manualRoute
-              ?.totalDistance;
-          }),
         ),
         forMember(
           (d) => d.plate,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -21,11 +21,15 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { isUndefined } from "../../../../../../../common/types/common";
-import { gvwLimit, isPermitVehicleWithinGvwLimit } from "../../../../../helpers/vehicles/rules/gvw";
+import { isUndefined, ORBCFormFeatureType } from "../../../../../../../common/types/common";
 import {
   disableMouseWheelInputOnNumberField,
 } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+
+import {
+  gvwLimit,
+  isPermitVehicleWithinGvwLimit,
+} from "../../../../../helpers/vehicles/rules/gvw";
 
 import {
   PowerUnit,
@@ -34,12 +38,12 @@ import {
   VEHICLE_TYPES,
   Vehicle,
   VehicleType,
+  VEHICLE_TYPE_OPTIONS,
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
   CHOOSE_FROM_OPTIONS,
   VEHICLE_CHOOSE_FROM,
-  VEHICLE_TYPE_OPTIONS,
   VehicleChooseFrom,
 } from "../../../../../constants/constants";
 
@@ -50,6 +54,7 @@ import {
   invalidVINLength,
   invalidYearMin,
   licensedGVWExceeded,
+  provinceVehicleDoesNotRequirePermit,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
 
@@ -58,16 +63,18 @@ export const VehicleDetails = ({
   vehicleFormData,
   vehicleOptions,
   subtypeOptions,
+  isLOAUsed,
   isSelectedLOAVehicle,
   permitType,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
+  isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   permitType: PermitType;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
@@ -75,18 +82,29 @@ export const VehicleDetails = ({
   onClearVehicle: (saveVehicle: boolean) => void;
 }) => {
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
-  const disableVehicleType = permitType === PERMIT_TYPES.MFP;
-  const showGVW = permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.MFP;
+  const disableVehicleType = (
+    [PERMIT_TYPES.MFP, PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+  ).includes(permitType);
+
+  const showGVW = (
+    [
+      PERMIT_TYPES.STOS,
+      PERMIT_TYPES.MFP,
+      PERMIT_TYPES.STFR,
+      PERMIT_TYPES.QRFR,
+    ] as PermitType[]
+  ).includes(permitType);
+
+  const shouldValidateProvince = (
+    [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+  ).includes(permitType);
+
   const vehicleType = vehicleFormData.vehicleType;
 
   // Choose vehicle based on either Unit Number or Plate
   const [chooseFrom, setChooseFrom] = useState<VehicleChooseFrom>(
     VEHICLE_CHOOSE_FROM.UNIT_NUMBER,
   );
-
-  // Radio button value to decide if the user wants to save the vehicle in inventory
-  // Reset to false every reload
-  const [saveVehicle, setSaveVehicle] = useState<boolean>(false);
 
   // Disable vehicle type selection when a vehicle has been selected from dropdown
   // Enable only when user chooses to manually enter new vehicle info by clearing the vehicle details
@@ -103,11 +121,6 @@ export const VehicleDetails = ({
   };
 
   const disableVehicleTypeSelect = shouldDisableVehicleTypeSelect();
-
-  // Set the "Save to Inventory" radio button to false on render
-  useEffect(() => {
-    onSetSaveVehicle(saveVehicle);
-  }, [saveVehicle]);
 
   // Whenever a new vehicle is selected
   const onSelectVehicle = (selectedVehicle: Vehicle) => {
@@ -129,7 +142,7 @@ export const VehicleDetails = ({
 
     if (!vehicle) {
       // vehicle selection is invalid
-      onClearVehicle(saveVehicle);
+      onClearVehicle(Boolean(vehicleFormData.saveVehicle));
       return;
     }
 
@@ -156,7 +169,7 @@ export const VehicleDetails = ({
 
     onSetVehicle({
       ...vehicleDetails,
-      saveVehicle,
+      saveVehicle: vehicleFormData.saveVehicle,
     });
   };
 
@@ -165,7 +178,7 @@ export const VehicleDetails = ({
   };
 
   const handleSaveVehicleRadioBtns = (saveToInventory: string) => {
-    setSaveVehicle(saveToInventory === "true");
+    onSetSaveVehicle(saveToInventory === "true");
   };
 
   // Reset the vehicle subtype field whenever a different vehicle type is selected
@@ -176,17 +189,9 @@ export const VehicleDetails = ({
         ...vehicleFormData,
         vehicleType: updatedVehicleType,
         vehicleSubType: "",
-        saveVehicle,
       });
     }
   };
-
-  // If the selected vehicle is an LOA vehicle, it should not be edited/saved to inventory
-  useEffect(() => {
-    if (isSelectedLOAVehicle) {
-      setSaveVehicle(false);
-    }
-  }, [isSelectedLOAVehicle]);
 
   return (
     <div className="vehicle-details">
@@ -207,7 +212,7 @@ export const VehicleDetails = ({
           chooseFrom={chooseFrom}
           selectedVehicle={vehicleFormData}
           vehicleOptions={vehicleOptions}
-          handleClearVehicle={() => onClearVehicle(saveVehicle)}
+          handleClearVehicle={() => onClearVehicle(Boolean(vehicleFormData.saveVehicle))}
           handleSelectVehicle={onSelectVehicle}
         />
       </Box>
@@ -275,8 +280,7 @@ export const VehicleDetails = ({
               maxLength: 4,
               validate: {
                 isNumber: (v) => !isNaN(v) || invalidNumber(),
-                lessThan1950: (v) =>
-                  parseInt(v) > 1950 || invalidYearMin(1950),
+                lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
               },
             },
             inputType: "number",
@@ -295,6 +299,13 @@ export const VehicleDetails = ({
           isProvinceRequired={true}
           readOnly={isSelectedLOAVehicle}
           disabled={isSelectedLOAVehicle}
+          provinceValidationRules={{
+            shouldNotBeInBC: (province?: string) =>
+              !shouldValidateProvince ||
+              !province ||
+              province !== "BC" ||
+              provinceVehicleDoesNotRequirePermit("BC"),
+          }}
         />
 
         {!hideVehicleType ? (
@@ -302,8 +313,8 @@ export const VehicleDetails = ({
             className="vehicle-details__input"
             type="select"
             feature={feature}
-            readOnly={disableVehicleTypeSelect || isSelectedLOAVehicle}
-            disabled={disableVehicleTypeSelect || isSelectedLOAVehicle}
+            readOnly={disableVehicleTypeSelect || isLOAUsed}
+            disabled={disableVehicleTypeSelect || isLOAUsed}
             options={{
               name: "permitData.vehicleDetails.vehicleType",
               rules: {
@@ -347,8 +358,8 @@ export const VehicleDetails = ({
               {subtype.type}
             </MenuItem>
           ))}
-          readOnly={isSelectedLOAVehicle}
-          disabled={isSelectedLOAVehicle}
+          readOnly={isLOAUsed}
+          disabled={isLOAUsed}
         />
 
         {showGVW ? (
@@ -365,14 +376,16 @@ export const VehicleDetails = ({
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   exceededGvw: (v) => {
                     const maxAllowedGvw = gvwLimit(permitType);
-                    return isSelectedLOAVehicle
-                      || isUndefined(maxAllowedGvw)
-                      || isPermitVehicleWithinGvwLimit(
+                    return (
+                      isSelectedLOAVehicle ||
+                      isUndefined(maxAllowedGvw) ||
+                      isPermitVehicleWithinGvwLimit(
                         permitType,
                         vehicleType as VehicleType,
                         parseInt(v),
-                      )
-                      || licensedGVWExceeded(maxAllowedGvw, true);
+                      ) ||
+                      licensedGVWExceeded(maxAllowedGvw, true)
+                    );
                   },
                 },
               },
@@ -390,14 +403,12 @@ export const VehicleDetails = ({
           id="demo-radio-buttons-group-label"
           className="save-to-inventory__label"
         >
-          Would you like to add/update this vehicle to your Vehicle
-          Inventory?
+          Would you like to add/update this vehicle to your Vehicle Inventory?
         </FormLabel>
 
         <RadioGroup
           aria-labelledby="radio-buttons-group-label"
-          defaultValue={saveVehicle}
-          value={saveVehicle}
+          value={Boolean(vehicleFormData.saveVehicle)}
           name="radio-buttons-group"
           onChange={(e) => handleSaveVehicleRadioBtns(e.target.value)}
         >

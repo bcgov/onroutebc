@@ -99,6 +99,14 @@ export class PermitHistoryDto {
 
   @AutoMap()
   @ApiProperty({
+    example: '2023-01-01 10:00:00.000000',
+    description:
+      'Represents the date that the transaction was approved in ORBC.',
+  })
+  transactionApprovedDate: Date;
+
+  @AutoMap()
+  @ApiProperty({
     example: '1',
     description:
       'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',

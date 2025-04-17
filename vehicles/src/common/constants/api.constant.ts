@@ -13,3 +13,9 @@ export const GL_PROJ_CODE_PLACEHOLDER = 'PROJECT';
 export const THIRD_PARTY_LIABILITY_DANGEROUS_GOODS =
   'Dangerous Goods ($2,000,000)';
 export const THIRD_PARTY_LIABILITY_GENERAL_GOODS = 'General Goods ($1,000,000)';
+export const CONDITIONAL_LICENSING_NONE_TEXT = 'none';
+export const CONDITIONAL_LICENSING_FEE_RATE_TEXT = 'Conditional license';
+export const INDUSTRIAL_X_PLATE_TYPE_FEE_RATE_TEXT =
+  'Industrial (X-Plate Type)';
+export const FARM_VEHICLE_FEE_RATE_TEXT = 'Farm Vehicle';
+export const FARM_TRACTOR_FEE_RATE_TEXT = 'Farm Tractor';

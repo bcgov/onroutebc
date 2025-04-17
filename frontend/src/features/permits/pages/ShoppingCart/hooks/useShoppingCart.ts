@@ -2,10 +2,10 @@ import { useContext, useEffect, useState } from "react";
 
 import { CartContext } from "../../../context/CartContext";
 import { useFetchCart, useRemoveFromCart } from "../../../hooks/cart";
-import { SelectableCartItem } from "../../../types/CartItem";
+import { CartItem, SelectableCartItem } from "../../../types/CartItem";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import { calculatePermitFee } from "../../../helpers/feeSummary";
+import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 
 export const useShoppingCart = (
   companyId: number,
@@ -14,7 +14,8 @@ export const useShoppingCart = (
   const { refetchCartCount } = useContext(CartContext);
 
   // Cart filter state
-  const [showAllApplications, setShowAllApplications] = useState<boolean>(enableCartFilter);
+  const [showAllApplications, setShowAllApplications] =
+    useState<boolean>(enableCartFilter);
 
   // Interacting with backend for cart
   const removeFromCartMutation = useRemoveFromCart();
@@ -24,13 +25,16 @@ export const useShoppingCart = (
   // Check if no-fee permit type is designated
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
+  const policyEngine = usePolicyEngine(specialAuth);
 
   // Cart item state
-  const [cartItemSelection, setCartItemSelection] = useState<SelectableCartItem[]>([]);
+  const [cartItemSelection, setCartItemSelection] = useState<
+    SelectableCartItem[]
+  >([]);
   const cartItemsTotalCount = cartItemSelection.length;
   const selectedTotalFee = cartItemSelection
-    .filter(cartItem => cartItem.selected)
-    .map(cartItem => cartItem.fee)
+    .filter((cartItem) => cartItem.selected)
+    .map((cartItem) => cartItem.fee)
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
 
   useEffect(() => {
@@ -41,38 +45,48 @@ export const useShoppingCart = (
   }, [showAllApplications]);
 
   useEffect(() => {
-    const items = getDefaultRequiredVal([], cartItems);
-    setCartItemSelection(
-      items.map(cartItem => ({
-        ...cartItem,
-        selected: true, // all selected by default
-        isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
-        fee: isNoFeePermitType
-          ? 0
-          : calculatePermitFee(
-            cartItem.permitType,
-            cartItem.duration,
-            cartItem.totalDistance,
-          ),
-      })),
-    );
-  }, [cartItems, isNoFeePermitType]);
+    const updateCartItemSelection = (itemsInCart: CartItem[]) => {
+      const cartSelectionWithFees = itemsInCart.map((cartItem) => {
+        const fee = getDefaultRequiredVal([], cartItem.validationResults?.cost)
+          .map(({ cost }) => getDefaultRequiredVal(0, cost))
+          .reduce((cost1, cost2) => cost1 + cost2, 0);
 
-  const selectedItemsCount = cartItemSelection.filter(cartItem => cartItem.selected).length;
+        return {
+          ...cartItem,
+          selected: true, // all selected by default
+          isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
+          fee,
+        };
+      });
+
+      setCartItemSelection(cartSelectionWithFees);
+    };
+
+    const items = getDefaultRequiredVal([], cartItems);
+    updateCartItemSelection(items);
+  }, [cartItems, isNoFeePermitType, policyEngine]);
+
+  const selectedItemsCount = cartItemSelection.filter(
+    (cartItem) => cartItem.selected,
+  ).length;
 
   const toggleSelectAll = () => {
     if (cartItemsTotalCount === 0) return;
 
     if (selectedItemsCount !== cartItemsTotalCount) {
-      setCartItemSelection(cartItemSelection.map(cartItem => ({
-        ...cartItem,
-        selected: cartItem.isSelectable ? true : cartItem.selected,
-      })));
+      setCartItemSelection(
+        cartItemSelection.map((cartItem) => ({
+          ...cartItem,
+          selected: cartItem.isSelectable ? true : cartItem.selected,
+        })),
+      );
     } else {
-      setCartItemSelection(cartItemSelection.map(cartItem => ({
-        ...cartItem,
-        selected: cartItem.isSelectable ? false : cartItem.selected,
-      })));
+      setCartItemSelection(
+        cartItemSelection.map((cartItem) => ({
+          ...cartItem,
+          selected: cartItem.isSelectable ? false : cartItem.selected,
+        })),
+      );
     }
   };
 
@@ -82,20 +96,24 @@ export const useShoppingCart = (
 
   const handleSelectItem = (id: string) => {
     setCartItemSelection(
-      cartItemSelection.map(cartItem => ({
+      cartItemSelection.map((cartItem) => ({
         ...cartItem,
-        selected: cartItem.applicationId === id && cartItem.isSelectable ?
-          true : cartItem.selected,
+        selected:
+          cartItem.applicationId === id && cartItem.isSelectable
+            ? true
+            : cartItem.selected,
       })),
     );
   };
 
   const handleDeselectItem = (id: string) => {
     setCartItemSelection(
-      cartItemSelection.map(cartItem => ({
+      cartItemSelection.map((cartItem) => ({
         ...cartItem,
-        selected: cartItem.applicationId === id && cartItem.isSelectable ?
-          false : cartItem.selected,
+        selected:
+          cartItem.applicationId === id && cartItem.isSelectable
+            ? false
+            : cartItem.selected,
       })),
     );
   };

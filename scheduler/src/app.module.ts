@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,8 +10,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
-import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 import { PermitModule } from './modules/permit/permit.module';
+import { GarmsModule } from './modules/garms/garms.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
@@ -42,10 +42,18 @@ const envPath = path.resolve(process.cwd() + '/../');
     }),
     TpsPermitModule,
     FeatureFlagsModule,
-    CgiSftpModule,
     PermitModule,
+    GarmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AppModule.name);
+  constructor(private readonly appService: AppService) {}
+  async onApplicationBootstrap() {
+    await this.appService.initializeCache().catch((err) => {
+      this.logger.error('Cache initialization failed:', err);
+    });
+  }
+}

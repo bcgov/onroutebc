@@ -63,7 +63,7 @@ INSERT INTO
 VALUES
   (
     '3',
-    'POLICY-CONFIG',
+    'VALIDATE-WITH-POLICY-ENGINE',
     'ENABLED',
     NULL,
     N'dbo',
@@ -324,6 +324,97 @@ VALUES
     GETUTCDATE()
   );
 
+INSERT INTO
+  [dbo].[ORBC_FEATURE_FLAG] (
+    [FEATURE_ID],
+    [FEATURE_KEY],
+    [FEATURE_VALUE],
+    [CONCURRENCY_CONTROL_NUMBER],
+    [DB_CREATE_USERID],
+    [DB_CREATE_TIMESTAMP],
+    [DB_LAST_UPDATE_USERID],
+    [DB_LAST_UPDATE_TIMESTAMP]
+  )
+VALUES
+  (
+    '15',
+    'STFR',
+    'ENABLED',
+    NULL,
+    N'dbo',
+    GETUTCDATE(),
+    N'dbo',
+    GETUTCDATE()
+  );
+
+INSERT INTO
+  [dbo].[ORBC_FEATURE_FLAG] (
+    [FEATURE_ID],
+    [FEATURE_KEY],
+    [FEATURE_VALUE],
+    [CONCURRENCY_CONTROL_NUMBER],
+    [DB_CREATE_USERID],
+    [DB_CREATE_TIMESTAMP],
+    [DB_LAST_UPDATE_USERID],
+    [DB_LAST_UPDATE_TIMESTAMP]
+  )
+VALUES
+  (
+    '16',
+    'QRFR',
+    'ENABLED',
+    NULL,
+    N'dbo',
+    GETUTCDATE(),
+    N'dbo',
+    GETUTCDATE()
+  );
+
+INSERT INTO
+  [dbo].[ORBC_FEATURE_FLAG] (
+    [FEATURE_ID],
+    [FEATURE_KEY],
+    [FEATURE_VALUE],
+    [CONCURRENCY_CONTROL_NUMBER],
+    [DB_CREATE_USERID],
+    [DB_CREATE_TIMESTAMP],
+    [DB_LAST_UPDATE_USERID],
+    [DB_LAST_UPDATE_TIMESTAMP]
+  )
+VALUES
+  (
+    '17',
+    'GARMS_CASH_CRON_JOB',
+    'ENABLED',
+    NULL,
+    N'dbo',
+    GETUTCDATE(),
+    N'dbo',
+    GETUTCDATE()
+  );    
+
+INSERT INTO
+  [dbo].[ORBC_FEATURE_FLAG] (
+    [FEATURE_ID],
+    [FEATURE_KEY],
+    [FEATURE_VALUE],
+    [CONCURRENCY_CONTROL_NUMBER],
+    [DB_CREATE_USERID],
+    [DB_CREATE_TIMESTAMP],
+    [DB_LAST_UPDATE_USERID],
+    [DB_LAST_UPDATE_TIMESTAMP]
+  )
+VALUES
+  (
+    '18',
+    'GARMS_CREDIT_CRON_JOB',
+    'ENABLED',
+    NULL,
+    N'dbo',
+    GETUTCDATE(),
+    N'dbo',
+    GETUTCDATE()
+  );  
 SET
   IDENTITY_INSERT [dbo].[ORBC_FEATURE_FLAG] OFF
 GO

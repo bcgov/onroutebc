@@ -6,17 +6,17 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { Loading } from "../../../../common/pages/Loading";
-import { ApplicationInQueueReview } from "../../../queue/components/ApplicationInQueueReview";
 import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+
 import {
   DEFAULT_PERMIT_TYPE,
   PERMIT_TYPES,
@@ -25,7 +25,6 @@ import {
 } from "../../types/PermitType";
 
 import {
-  APPLICATION_STEP_CONTEXTS,
   APPLICATION_STEPS,
   ApplicationStep,
   ApplicationStepContext,
@@ -64,7 +63,9 @@ export const ApplicationStepPage = ({
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
-
+  const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
+  
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
@@ -100,15 +101,14 @@ export const ApplicationStepPage = ({
     applicationData?.permitType,
   );
 
-  // Currently onRouteBC only handles TROS and TROW permits, and STOS and MFP only if feature flag is enabled
+  // Currently onRouteBC only handles TROS and TROW permits
+  // other permit types are only allowed if its feature flag is enabled
   const isPermitTypeAllowed = () => {
-    const allowedPermitTypes: string[] = [
-      PERMIT_TYPES.TROS,
-      PERMIT_TYPES.TROW,
-      PERMIT_TYPES.STOS,
-      PERMIT_TYPES.MFP,
-    ].filter(pType => enableSTOS ? true : pType !== PERMIT_TYPES.STOS)
-      .filter(pType => enableMFP ? true : pType !== PERMIT_TYPES.MFP);
+    const allowedPermitTypes: string[] = ([PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[])
+      .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
+      .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
+      .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
+      .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };
@@ -126,12 +126,8 @@ export const ApplicationStepPage = ({
 
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
-      return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
-        <ApplicationInQueueReview
-          applicationData={contextData.applicationData}
-        />
-      ) : (
-        <ApplicationReview companyId={companyId} />
+      return (
+        <ApplicationReview applicationStepContext={applicationStepContext} />
       );
     }
     return (

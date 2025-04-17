@@ -1,0 +1,63 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.edit-cart-item-dialog {
+  &__header {
+    display: flex;
+    align-items: center;
+    background-color: $bc-background-light-grey;
+    color: $bc-black;
+    padding: 1.5rem;
+  }
+
+  &__icon {
+    display: flex;
+    padding: 0.75rem;
+    border-radius: 50%;
+    background-color: $bc-black;
+    margin-right: 1rem;
+
+    .icon {
+      height: 1.5rem;
+      color: $white;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  &__info {
+    padding: 1.5rem;
+    color: $bc-black;
+  }
+
+  & &__btn {
+    &--cancel {
+      margin-right: 1.5rem;
+      color: $bc-black;
+      padding: 0.75rem 1rem;
+      background-color: $bc-background-light-grey;
+      box-shadow: none;
+
+      &:hover {
+        border: 2px solid $bc-text-box-border-grey;
+        background-color: $bc-background-light-grey;
+        cursor: pointer;
+        box-shadow: none;
+      }
+    }
+
+    &--edit {
+      color: $white;
+      font-weight: bold;
+      padding: 0.75rem 2rem;
+    }
+  }
+}

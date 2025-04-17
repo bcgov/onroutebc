@@ -5,9 +5,9 @@ import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { PermittedCommodity } from "../types/PermittedCommodity";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import {
-  DEFAULT_COMMODITY_SELECT_OPTION,
-  DEFAULT_COMMODITY_SELECT_VALUE,
-} from "../constants/constants";
+  DEFAULT_EMPTY_SELECT_VALUE,
+  DEFAULT_SELECT_OPTIONS,
+} from "../../../common/constants/constants";
 
 /**
  * Get default permitted commodity data for an application/permit, or null if not applicable.
@@ -23,7 +23,7 @@ export const getDefaultPermittedCommodity = (
 
   return {
     commodityType: getDefaultRequiredVal(
-      DEFAULT_COMMODITY_SELECT_VALUE,
+      DEFAULT_EMPTY_SELECT_VALUE,
       permittedCommodity?.commodityType,
     ),
     loadDescription: getDefaultRequiredVal(
@@ -59,5 +59,5 @@ export const getPermittedCommodityOptions = (
       return a.label.localeCompare(b.label);
     });
 
-  return [DEFAULT_COMMODITY_SELECT_OPTION].concat(commodityOptions);
+  return DEFAULT_SELECT_OPTIONS.concat(commodityOptions);
 };

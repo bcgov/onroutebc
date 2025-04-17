@@ -9,7 +9,9 @@ import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitV
 import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
-import { RequiredOrNull } from "../../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../../common/types/common";
+import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
+import { VehicleType } from "../../../manageVehicles/types/Vehicle";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -38,15 +40,67 @@ export const useApplicationFormUpdateMethods = () => {
     setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
   }, [setValue]);
 
+  const onSetVin = useCallback((vin: string) => {
+    setValue("permitData.vehicleDetails.vin", vin);
+  }, [setValue]);
+
+  const onSetPlate = useCallback((plate: string) => {
+    setValue("permitData.vehicleDetails.plate", plate);
+  }, [setValue]);
+
+  const onSetMake = useCallback((make: string) => {
+    setValue("permitData.vehicleDetails.make", make);
+  }, [setValue]);
+
+  const onSetYear = useCallback((year: Nullable<number>) => {
+    setValue("permitData.vehicleDetails.year", year);
+  }, [setValue]);
+  
+  const onSetCountryCode = useCallback((countryCode: string) => {
+    setValue("permitData.vehicleDetails.countryCode", countryCode);
+  }, [setValue]);
+  
+  const onSetProvinceCode = useCallback((provinceCode: string) => {
+    setValue("permitData.vehicleDetails.provinceCode", provinceCode);
+  }, [setValue]);
+  
+  const onSetVehicleType = useCallback((vehicleType: string) => {
+    setValue("permitData.vehicleDetails.vehicleType", vehicleType);
+  }, [setValue]);
+  
+  const onSetVehicleSubtype = useCallback((vehicleSubtype: string) => {
+    setValue("permitData.vehicleDetails.vehicleSubType", vehicleSubtype);
+  }, [setValue]);
+  
+  const onSetUnitNumber = useCallback((unitNumber: Nullable<string>) => {
+    setValue("permitData.vehicleDetails.unitNumber", unitNumber);
+  }, [setValue]);
+
+  const onSetVehicleId = useCallback((vehicleId: Nullable<string>) => {
+    setValue("permitData.vehicleDetails.vehicleId", vehicleId);
+  }, [setValue]);
+
+  const onSetLicensedGVW = useCallback((licensedGVW?: Nullable<number>) => {
+    setValue("permitData.vehicleDetails.licensedGVW", licensedGVW);
+  }, [setValue]);
+
   const onSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     setValue("permitData.vehicleDetails", {
       ...vehicleDetails,
     });
   }, [setValue]);
 
-  const onClearVehicle = useCallback((saveVehicle: boolean) => {
+  const onClearVehicle = useCallback((
+    saveVehicle: boolean,
+    defaultTypes?: Nullable<{
+      vehicleType: VehicleType;
+      vehicleSubtype: string;
+    }>,
+  ) => {
     setValue("permitData.vehicleDetails", {
       ...EMPTY_VEHICLE_DETAILS,
+      vehicleType: defaultTypes ? defaultTypes.vehicleType : EMPTY_VEHICLE_DETAILS.vehicleType,
+      vehicleSubType: defaultTypes ? defaultTypes.vehicleSubtype : EMPTY_VEHICLE_DETAILS.vehicleSubType,
       saveVehicle,
     });
   }, [setValue]);
@@ -63,6 +117,20 @@ export const useApplicationFormUpdateMethods = () => {
     setValue(
       "permitData.permittedRoute.manualRoute.highwaySequence",
       updatedHighwaySequence,
+    );
+  }, [setValue]);
+
+  const onUpdateTripOrigin = useCallback((updatedTripOrigin: string) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.origin",
+      updatedTripOrigin,
+    );
+  }, [setValue]);
+
+  const onUpdateTripDestination = useCallback((updatedTripDestination: string) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.destination",
+      updatedTripDestination,
     );
   }, [setValue]);
 
@@ -103,19 +171,43 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateThirdPartyLiability = useCallback(
+    (updatedThirdPartyLiability: ThirdPartyLiability) => {
+      setValue(
+        "permitData.thirdPartyLiability",
+        updatedThirdPartyLiability,
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
     onSetConditions,
     onToggleSaveVehicle,
+    onSetVin,
+    onSetPlate,
+    onSetMake,
+    onSetYear,
+    onSetCountryCode,
+    onSetProvinceCode,
+    onSetVehicleType,
+    onSetVehicleSubtype,
+    onSetUnitNumber,
+    onSetVehicleId,
+    onSetLicensedGVW,
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripOrigin,
+    onUpdateTripDestination,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
     onUpdateVehicleConfig,
     onClearVehicleConfig,
+    onUpdateThirdPartyLiability,
   };
 };

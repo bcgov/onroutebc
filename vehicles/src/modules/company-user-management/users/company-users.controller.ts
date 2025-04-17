@@ -120,6 +120,11 @@ export class CompanyUsersController {
     @Body() createUserDto: CreateUserDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.orbcUserRole === IDIRUserRole.ENFORCEMENT_OFFICER) {
+      throw new ForbiddenException(
+        `${currentUser.orbcUserRole} cannot create a user`,
+      );
+    }
 
     return await this.userService.create(createUserDto, companyId, currentUser);
   }

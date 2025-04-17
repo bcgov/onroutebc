@@ -14,8 +14,10 @@ import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfig
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
 import { SelectedVehicleSubtypeList } from "../../common/SelectedVehicleSubtypeList";
-
-const DEFAULT_EMPTY_SUBTYPE = "-";
+import {
+  DEFAULT_EMPTY_SELECT_VALUE,
+  DEFAULT_SELECT_OPTIONS,
+} from "../../../../../../../common/constants/constants";
 
 export const AddTrailer = ({
   selectedTrailerSubtypes,
@@ -31,13 +33,13 @@ export const AddTrailer = ({
   trailerSubtypeNamesMap: Map<string, string>;
   onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
 }) => {
-  const [trailerSelection, setTrailerSelection] = useState<string>(DEFAULT_EMPTY_SUBTYPE);
+  const [trailerSelection, setTrailerSelection] = useState<string>(DEFAULT_EMPTY_SELECT_VALUE);
 
   const trailersFieldRef = "permitData.vehicleConfiguration.trailers";
   const { policyViolations, clearViolation } = useContext(ApplicationFormContext);
 
   const subtypeOptions = useMemoizedArray(
-    [{ value: DEFAULT_EMPTY_SUBTYPE, label: "Select" }].concat(trailerSubtypeOptions),
+    DEFAULT_SELECT_OPTIONS.concat(trailerSubtypeOptions),
     (option) => option.value,
     (option1, option2) => option1.value === option2.value && option1.label === option2.label,
   );
@@ -55,12 +57,12 @@ export const AddTrailer = ({
   );
 
   const handleAddTrailerSubtype = (subtype: string) => {
-    if (subtype !== DEFAULT_EMPTY_SUBTYPE) {
+    if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(selectedTrailerSubtypes.map(addedSubtype => ({
         vehicleSubType: addedSubtype,
       })).concat([{ vehicleSubType: subtype }]));
 
-      setTrailerSelection(DEFAULT_EMPTY_SUBTYPE);
+      setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
       clearViolation(trailersFieldRef);
     }
   };

@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -40,18 +39,18 @@ import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import {
-  calculatePermitAmount,
-  permitFee,
-  validAmount,
-} from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
-  validApplicationDates,
+  isApplicationInCart,
+  isVoidorRevoked,
 } from '../../../common/helper/permit-application.helper';
-import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
+import {
+  isCfsPaymentMethodType,
+  isTransactionPurchase,
+  isWebTransactionPurchase,
+} from 'src/common/helper/payment.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
@@ -69,34 +68,30 @@ import {
   isCVClient,
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
-import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 import { PaymentTransactionDto } from './dto/common/payment-transaction.dto';
 import { Nullable } from '../../../common/types/common';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
-import { PermitData } from 'src/common/interface/permit.template.interface';
-import { isValidLoa } from 'src/common/helper/validate-loa.helper';
-import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
-import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
+import { PolicyService } from '../../policy/policy.service';
+import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
+import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   constructor(
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
     @InjectRepository(Transaction)
-    private transactionRepository: Repository<Transaction>,
+    private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(Receipt)
-    private receiptRepository: Repository<Receipt>,
+    private readonly receiptRepository: Repository<Receipt>,
     @InjectRepository(PaymentMethodType)
-    private paymentMethodTypeRepository: Repository<PaymentMethodType>,
+    private readonly paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
-    private paymentCardTypeRepository: Repository<PaymentCardType>,
-    @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
-    private readonly specialAuthService: SpecialAuthService,
+    private readonly paymentCardTypeRepository: Repository<PaymentCardType>,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly policyService: PolicyService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -238,31 +233,6 @@ export class PaymentService {
     return receiptNumber;
   }
 
-  private isTransactionPurchase(transactionType: TransactionType) {
-    return transactionType == TransactionType.PURCHASE;
-  }
-
-  private isWebTransactionPurchase(
-    paymentMethod: PaymentMethodTypeEnum,
-    transactionType: TransactionType,
-  ) {
-    return (
-      paymentMethod == PaymentMethodTypeEnum.WEB &&
-      this.isTransactionPurchase(transactionType)
-    );
-  }
-
-  private isApplicationInCart(permitStatus: ApplicationStatus) {
-    return permitStatus === ApplicationStatus.IN_CART;
-  }
-
-  private isVoidorRevoked(permitStatus: ApplicationStatus) {
-    return (
-      permitStatus === ApplicationStatus.VOIDED ||
-      permitStatus === ApplicationStatus.REVOKED
-    );
-  }
-
   /**
    * Creates a Refund Transaction in ORBC System, ensuring that payment methods align with user roles and enabled features.
    * The method verifies transactions against application status and computes transaction amounts.
@@ -344,8 +314,8 @@ export class PaymentService {
 
       if (
         !(
-          this.isVoidorRevoked(existingApplication.permitStatus) ||
-          this.isApplicationInCart(existingApplication.permitStatus) ||
+          isVoidorRevoked(existingApplication.permitStatus) ||
+          isApplicationInCart(existingApplication.permitStatus) ||
           isAmendmentApplication(existingApplication)
         )
       ) {
@@ -354,21 +324,43 @@ export class PaymentService {
         );
       }
 
+      const companyId = existingApplication?.company?.companyId;
+      const validationResults =
+        await this.policyService.validateApplicationAndCalculateCost({
+          application: existingApplication,
+          queryRunner,
+          companyId,
+        });
+
       const totalTransactionAmount = transactions?.reduce(
         (accumulator, item) => accumulator + item.transactionAmount,
         0,
       );
-
-      await this.validateApplicationAndPayment(
+      const paymentValidationResult = validatePaymentReceived(
+        validationResults?.cost?.at(0)?.cost,
         totalTransactionAmount,
         TransactionType.REFUND,
-        [existingApplication],
-        currentUser,
-        queryRunner,
       );
 
-      let newTransactionList: Transaction[] = [];
+      if (paymentValidationResult) {
+        validationResults?.violations?.push(paymentValidationResult);
+      }
 
+      const policyEngineValdiationFailure =
+        validationResults?.violations?.some(
+          (violation) => violation?.fieldReference !== 'permitData.startDate',
+        ) || isCVClient(currentUser.identity_provider);
+
+      if (policyEngineValdiationFailure) {
+        throw throwUnprocessableEntityException(
+          'Policy Engine Validation Failure',
+          validationResults,
+          'VALIDATION_FAILURE',
+        );
+      }
+
+      let newTransactionList: Transaction[] = [];
+      const date = new Date();
       for (const transaction of transactions) {
         const transactionOrderNumber =
           await this.generateTransactionOrderNumber();
@@ -382,6 +374,7 @@ export class PaymentService {
         newTransaction.pgCardType = transaction.paymentCardTypeCode;
         newTransaction.pgPaymentMethod = transaction.pgPaymentMethod;
         newTransaction.transactionOrderNumber = transactionOrderNumber;
+        newTransaction.transactionApprovedDate = date;
         newTransaction.payerName = PPC_FULL_TEXT;
         if (transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.WEB) {
           newTransaction.pgApproved = 1;
@@ -389,6 +382,7 @@ export class PaymentService {
         setBaseEntityProperties<Transaction>({
           entity: newTransaction,
           currentUser,
+          date,
         });
         newTransactionList.push(newTransaction);
       }
@@ -405,18 +399,13 @@ export class PaymentService {
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
         newPermitTransactions.permit = existingApplication;
-        newPermitTransactions.createdDateTime = new Date();
-        newPermitTransactions.createdUser = currentUser.userName;
-        newPermitTransactions.createdUserDirectory =
-          currentUser.orbcUserDirectory;
-        newPermitTransactions.createdUserGuid = currentUser.userGUID;
-        newPermitTransactions.updatedDateTime = new Date();
-        newPermitTransactions.updatedUser = currentUser.userName;
-        newPermitTransactions.updatedUserDirectory =
-          currentUser.orbcUserDirectory;
-        newPermitTransactions.updatedUserGuid = currentUser.userGUID;
         newPermitTransactions.transactionAmount =
           newTransaction.totalTransactionAmount;
+        setBaseEntityProperties<PermitTransaction>({
+          entity: newPermitTransactions,
+          currentUser,
+          date,
+        });
         newPermitTransactions = await queryRunner.manager.save(
           newPermitTransactions,
         );
@@ -568,39 +557,73 @@ export class PaymentService {
           relations: { permitData: true },
         },
       );
+
+      let totalTransactionAmount = 0;
+      const policyValidationDto: ReadPolicyValidationDto[] = [];
       for (const application of existingApplications) {
         if (
           !(
-            this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInCart(application.permitStatus) ||
+            isVoidorRevoked(application.permitStatus) ||
+            isApplicationInCart(application.permitStatus) ||
             isAmendmentApplication(application)
           )
-        )
-          throw new BadRequestException(
-            'Application in its current status cannot be processed for payment.',
+        ) {
+          throw throwUnprocessableEntityException(
+            `${application.applicationNumber} in its current status cannot be processed for payment.`,
+            null,
+            'TRANS_INVALID_APPLICATION_STATUS',
           );
-        const permitData = JSON.parse(
-          application.permitData.permitData,
-        ) as PermitData;
-        // If application includes LoAs then validate Loa data.
-        if (permitData.loas) {
-          await isValidLoa(application, queryRunner, this.classMapper);
+        }
+
+        const applicationFromDto =
+          createTransactionDto?.applicationDetails?.find(
+            (app) => app.applicationId === application.permitId,
+          );
+
+        const companyId = application?.company?.companyId;
+        const validationResults =
+          await this.policyService.validateApplicationAndCalculateCost({
+            application,
+            queryRunner,
+            companyId,
+          });
+
+        const paymentValidationResult = validatePaymentReceived(
+          validationResults?.cost?.at(0)?.cost,
+          applicationFromDto?.transactionAmount,
+          createTransactionDto?.transactionTypeId,
+        );
+
+        if (paymentValidationResult) {
+          validationResults?.violations?.push(paymentValidationResult);
+        }
+
+        policyValidationDto.push({
+          id: application.permitId,
+          ...validationResults,
+        });
+
+        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
+      }
+
+      for (const policyValidation of policyValidationDto) {
+        if (policyValidation?.violations?.length) {
+          const policyEngineValdiationFailure =
+            policyValidation?.violations?.some(
+              (violation) =>
+                violation?.fieldReference !== 'permitData.startDate',
+            ) || isCVClient(currentUser.identity_provider);
+
+          if (policyEngineValdiationFailure) {
+            throw throwUnprocessableEntityException(
+              'Policy Engine Validation Failure',
+              policyValidation,
+              'VALIDATION_FAILURE',
+            );
+          }
         }
       }
 
-      let totalTransactionAmount =
-        createTransactionDto.applicationDetails?.reduce(
-          (accumulator, item) => accumulator + item.transactionAmount,
-          0,
-        );
-
-      totalTransactionAmount = await this.validateApplicationAndPayment(
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
-        existingApplications,
-        currentUser,
-        queryRunner,
-      );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -655,7 +678,7 @@ export class PaymentService {
           await queryRunner.manager.save(newCfsTransaction);
         }
         if (
-          this.isWebTransactionPurchase(
+          isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
           )
@@ -669,8 +692,8 @@ export class PaymentService {
 
           await queryRunner.manager.save(existingApplication);
         } else if (
-          this.isTransactionPurchase(newTransaction.transactionTypeId) &&
-          !this.isVoidorRevoked(existingApplication.permitStatus)
+          isTransactionPurchase(newTransaction.transactionTypeId) &&
+          !isVoidorRevoked(existingApplication.permitStatus)
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
@@ -693,7 +716,7 @@ export class PaymentService {
 
       let url: string = undefined;
       if (
-        this.isWebTransactionPurchase(
+        isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
@@ -703,13 +726,12 @@ export class PaymentService {
       }
 
       if (
-        !this.isWebTransactionPurchase(
+        !isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
       ) {
         const receiptNumber = await this.generateReceiptNumber();
-
         let receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
@@ -720,7 +742,6 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-
         receipt = await queryRunner.manager.save(receipt);
 
         await queryRunner.manager.update(
@@ -763,66 +784,6 @@ export class PaymentService {
     }
 
     return readTransactionDto;
-  }
-
-  /**
-   * Validates the payment information in the request against the backend data, calculates the transaction amount,
-   * and checks for transaction type and amount consistency.
-   *
-   * This method first calculates the total transaction amount based on the backend permit data and
-   * compares it with the transaction amount sent in the request to ensure they match. If there's a mismatch, it throws an error.
-   * Additionally, for refund transactions, it checks if the total calculated transaction amount is negative as expected;
-   * if not, it throws an error.
-   *
-   * @param {number} totalTransactionAmount - The total transaction amount from the request.
-   * @param {TransactionType} transactionType - The transactionType.
-   * @param {Permit[]} applications - A list of permits associated with the transaction.
-   * @param {IUserJWT} currentUser - The current user performing the transaction.
-   * @param {QueryRunner} queryRunner - The query runner to use for database operations within the method.
-   * @returns {Promise<number>} The total transaction amount calculated from the backend data.
-   * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
-   * or if there's a transaction type and amount mismatch in case of refunds.
-   */
-  private async validateApplicationAndPayment(
-    totalTransactionAmount: number,
-    transactionType: TransactionType,
-    applications: Permit[],
-    currentUser: IUserJWT,
-    queryRunner: QueryRunner,
-  ) {
-    let totalTransactionAmountCalculated = 0;
-    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
-    // Calculate and add amount for each requested application, as per the available backend data.
-    for (const application of applications) {
-      //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-        throw new UnprocessableEntityException(
-          `Atleast one of the application has invalid startDate or expiryDate.`,
-        );
-      }
-      totalTransactionAmountCalculated += await this.permitFeeCalculator(
-        application,
-        queryRunner,
-      );
-    }
-
-    if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        transactionType,
-      )
-    ) {
-      this.logger.error(
-        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmountCalculated}`,
-      );
-
-      throw new BadRequestException('Transaction amount mismatch.');
-    }
-    return totalTransactionAmount;
   }
 
   @LogAsyncMethodExecution()
@@ -975,9 +936,7 @@ export class PaymentService {
 
       if (updateTransactionTemp.pgApproved === 1) {
         const receiptNumber = await this.generateReceiptNumber();
-
         let receipt = new Receipt();
-        receipt.receiptNumber = receiptNumber;
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
@@ -987,7 +946,6 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-
         receipt = await queryRunner.manager.save(receipt);
 
         await queryRunner.manager.update(
@@ -1077,85 +1035,5 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
-  }
-
-  /**
-   * Calculates the permit fee based on the application status, historical payments, and current permit data.
-   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
-   * Otherwise, it calculates the fee based on existing payments and current permit data.
-   *
-   * @param application - The Permit application for which to calculate the fee.
-   * @param queryRunner - An optional QueryRunner for database transactions.
-   * @returns {Promise<number>} - The calculated permit fee or refund amount.
-   */
-  @LogAsyncMethodExecution()
-  async permitFeeCalculator(
-    application: Permit,
-    queryRunner?: QueryRunner,
-  ): Promise<number> {
-    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
-    const companyId = application.company.companyId;
-
-    const permitPaymentHistory = await this.findPermitHistory(
-      application.originalPermitId,
-      queryRunner,
-      companyId,
-    );
-    const isNoFee = await this.specialAuthService.findNoFee(companyId);
-    const oldAmount =
-      permitPaymentHistory.length > 0
-        ? calculatePermitAmount(permitPaymentHistory)
-        : undefined;
-    if (application.permitStatus === ApplicationStatus.VOIDED)
-      return -oldAmount;
-    const fee = permitFee(application, isNoFee, oldAmount);
-    return fee;
-  }
-
-  /**
-   *
-   * This function is deprecated and will be removed once the validation endpoints are established.
-   */
-  @LogAsyncMethodExecution()
-  public async findPermitHistory(
-    originalPermitId: string,
-    queryRunner: QueryRunner,
-    companyId?: number,
-  ): Promise<PermitHistoryDto[]> {
-    const permits = await queryRunner.manager
-      .createQueryBuilder()
-      .select('permit')
-      .from(Permit, 'permit')
-      .leftJoinAndSelect('permit.company', 'company')
-      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.originalPermitId = :originalPermitId', {
-        originalPermitId: originalPermitId,
-      })
-      .andWhere('company.companyId = :companyId', { companyId: companyId })
-      .orderBy('transaction.transactionSubmitDate', 'DESC')
-      .getMany();
-
-    return permits.flatMap((permit) =>
-      permit.permitTransactions.map((permitTransaction) => ({
-        permitNumber: permit.permitNumber,
-        comment: permit.comment,
-        transactionOrderNumber:
-          permitTransaction.transaction.transactionOrderNumber,
-        transactionAmount: permitTransaction.transactionAmount,
-        transactionTypeId: permitTransaction.transaction.transactionTypeId,
-        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
-        pgTransactionId: permitTransaction.transaction.pgTransactionId,
-        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
-        paymentMethodTypeCode:
-          permitTransaction.transaction.paymentMethodTypeCode,
-        commentUsername: permit.createdUser,
-        permitId: +permit.permitId,
-        transactionSubmitDate:
-          permitTransaction.transaction.transactionSubmitDate,
-        pgApproved: permitTransaction.transaction.pgApproved,
-      })),
-    ) as PermitHistoryDto[];
   }
 }

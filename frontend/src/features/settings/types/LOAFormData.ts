@@ -2,8 +2,10 @@ import { Dayjs } from "dayjs";
 
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_TYPES } from "../../permits/types/PermitType";
-import { LOAVehicle } from "./LOAVehicle";
+import { VehicleType } from "../../manageVehicles/types/Vehicle";
+import { DEFAULT_VEHICLE_TYPE } from "../../manageVehicles/types/Vehicle";
 import { LOADetail } from "./LOADetail";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../common/constants/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -34,10 +36,8 @@ export interface LOAFormData {
     fileName: string;
   }> | File;
   additionalNotes?: Nullable<string>;
-  selectedVehicles: {
-    powerUnits: Record<string, Nullable<LOAVehicle>>;
-    trailers: Record<string, Nullable<LOAVehicle>>;
-  };
+  vehicleType: VehicleType;
+  vehicleSubtype: string;
 }
 
 /**
@@ -63,23 +63,21 @@ export const loaDetailToFormData = (
     loaDetail?.startDate,
     now(),
   );
+
   const expiryDate = applyWhenNotNullable(
     expiryDateStr => getEndOfDate(toLocalDayjs(expiryDateStr)),
     loaDetail?.expiryDate,
     null,
   );
+
   const neverExpires = !expiryDate;
   const additionalNotes = getDefaultRequiredVal("", loaDetail?.comment);
-  const powerUnits = applyWhenNotNullable(
-    powerUnitsArr => Object.fromEntries(powerUnitsArr.map(powerUnitId => [powerUnitId, null])),
-    loaDetail?.powerUnits,
-    {},
+  const vehicleType = getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, loaDetail?.vehicleType);
+  const vehicleSubtype = getDefaultRequiredVal(
+    DEFAULT_EMPTY_SELECT_VALUE,
+    loaDetail?.vehicleSubType,
   );
-  const trailers = applyWhenNotNullable(
-    trailersArr => Object.fromEntries(trailersArr.map(trailerId => [trailerId, null])),
-    loaDetail?.trailers,
-    {},
-  );
+
   const defaultFile = loaDetail?.documentId ? {
     fileName: getDefaultRequiredVal("", loaDetail?.fileName),
   } : null;
@@ -91,10 +89,8 @@ export const loaDetailToFormData = (
     neverExpires,
     uploadFile: defaultFile,
     additionalNotes,
-    selectedVehicles: {
-      powerUnits,
-      trailers,
-    },
+    vehicleType,
+    vehicleSubtype,
   };
 };
 
@@ -112,9 +108,6 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
     })
     .map(([permitType]) => permitType);
 
-  const powerUnits = Object.keys(loaFormData.selectedVehicles.powerUnits);
-  const trailers = Object.keys(loaFormData.selectedVehicles.trailers);
-  
   const body = {
     startDate: dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
     expiryDate: loaFormData.expiryDate
@@ -122,8 +115,8 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
       : null,
     comment: getDefaultRequiredVal("", loaFormData.additionalNotes),
     loaPermitType: permitTypes,
-    powerUnits: powerUnits.length > 0 ? powerUnits : undefined,
-    trailers: trailers.length > 0 ? trailers : undefined,
+    vehicleType: loaFormData.vehicleType,
+    vehicleSubType: loaFormData.vehicleSubtype,
   };
 
   if (loaFormData.uploadFile instanceof File) {

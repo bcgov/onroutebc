@@ -6,7 +6,6 @@ import { SETTINGS_TABS, SettingsTab } from "../../types/tabs";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
-import { canViewSuspend } from "../../helpers/permissions";
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
@@ -14,8 +13,7 @@ import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { userClaims, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+  const { companyId, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: creditAccountMetadata, isPending } =
     useGetCreditAccountMetadataQuery(companyId as number);
 
@@ -38,13 +36,21 @@ export const ManageSettingsDashboard = React.memo(() => {
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
-  const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
+
+  const canViewSuspend = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "VIEW_SUSPEND_COMPANY_INFO",
+    },
+  });
+
+  const showSuspendTab = canViewSuspend && !hideSuspendTab;
 
   const showSpecialAuth = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    }
+    },
   });
 
   const showCreditAccountTab = usePermissionMatrix({

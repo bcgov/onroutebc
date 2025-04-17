@@ -78,7 +78,7 @@ const MANAGE_VEHICLE_INVENTORY = {
 const MANAGE_PERMITS = {
   VIEW_PERMITS_SCREEN: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   START_APPLICATION: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
@@ -123,7 +123,7 @@ const MANAGE_PERMITS = {
    */
   VIEW_ACTIVE_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
@@ -160,7 +160,7 @@ const MANAGE_PROFILE = {
    */
   VIEW_COMPANY_INFORMATION: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   EDIT_COMPANY_INFORMATION: {
     allowedBCeIDRoles: [CA],
@@ -346,6 +346,9 @@ const STICKY_SIDE_BAR = {
   },
   MANAGE_PPC_USERS_BUTTON: {
     allowedIDIRRoles: [SA],
+  },
+  BRIDGE_FORMULA_CALCULATION_TOOL_BUTTON: {
+    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
   },
 } as const;
 

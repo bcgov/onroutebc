@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 
 import "./CustomFormComponents.scss";
-import { ORBC_FormTypes } from "../../types/common";
+import { ORBC_FormTypes, ORBCFormFeatureType } from "../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -20,8 +20,8 @@ import { WholeNumberInput } from "./subFormComponents/WholeNumberInput";
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "textarea" | "ext" | "number";
-  feature: string;
+  type: "input" | "select" | "phone" | "textarea" | "ext";
+  feature: ORBCFormFeatureType;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
   className?: string;

@@ -30,9 +30,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
         TemplateName.PERMIT_NRQCL,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRSCL,
+        TemplateName.PERMIT_STFR,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRQCL,
+        TemplateName.PERMIT_QRFR,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
@@ -45,9 +45,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
         TemplateName.PERMIT_NRQCL_VOID,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRSCL_VOID,
+        TemplateName.PERMIT_STFR_VOID,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRQCL_VOID,
+        TemplateName.PERMIT_QRFR_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
@@ -60,9 +60,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
         TemplateName.PERMIT_NRQCL_REVOKED,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRSCL_REVOKED,
+        TemplateName.PERMIT_STFR_REVOKED,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
-        TemplateName.PERMIT_NRQCL_REVOKED,
+        TemplateName.PERMIT_QRFR_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };

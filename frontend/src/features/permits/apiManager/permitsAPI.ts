@@ -97,9 +97,7 @@ export const updateApplication = async (
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPUTRequest(
     APPLICATIONS_API_ROUTES.UPDATE(companyId, applicationId),
-    replaceEmptyValuesWithNull(
-      serializeForUpdateApplication(application),
-    ),
+    replaceEmptyValuesWithNull(serializeForUpdateApplication(application)),
   );
 };
 
@@ -330,7 +328,7 @@ export const startTransaction = async (
     return response.data as StartTransactionResponseData;
   } catch (err) {
     console.error(err);
-    return null;
+    throw err;
   }
 };
 

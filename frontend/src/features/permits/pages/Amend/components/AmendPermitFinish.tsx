@@ -8,7 +8,6 @@ import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcru
 import { RefundErrorModal } from "../../Refund/components/RefundErrorModal";
 import { RefundPage, PERMIT_REFUND_ACTIONS } from "../../Refund/RefundPage";
 
-import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import {
@@ -29,6 +28,10 @@ import {
   mapToRefundRequestData,
   mapToZeroDollarRefundRequestData,
 } from "../../Refund/helpers/mapper";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
+import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
+import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmount";
+import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -44,22 +47,27 @@ export const AmendPermitFinish = () => {
   );
 
   const permitId = getDefaultRequiredVal("", amendmentApplication?.permitId);
-  const amountToRefund =
-    -1 *
-    calculateAmountToRefund(
-      validTransactionHistory,
-      getDefaultRequiredVal(
-        0,
-        amendmentApplication?.permitData?.permitDuration,
-      ),
-      getDefaultRequiredVal(
-        DEFAULT_PERMIT_TYPE,
-        amendmentApplication?.permitType,
-        permit?.permitType,
-      ),
-      amendmentApplication?.permitData?.permittedRoute?.manualRoute
-        ?.totalDistance,
-    );
+  const permitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    amendmentApplication?.permitType,
+    permit?.permitType,
+  );
+
+  const { data: specialAuthorizations } =
+    useFetchSpecialAuthorizations(companyId);
+  const policyEngine = usePolicyEngine(specialAuthorizations);
+  const calculatedRefundAmount = useCalculateRefundAmount(
+    validTransactionHistory,
+    {
+      permitType,
+      permitData: amendmentApplication?.permitData
+        ? serializePermitData(amendmentApplication.permitData)
+        : {},
+    },
+    policyEngine,
+  );
+
+  const amountToRefund = -1 * calculatedRefundAmount;
 
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
 

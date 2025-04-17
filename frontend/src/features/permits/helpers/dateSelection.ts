@@ -4,7 +4,7 @@ import {
   BASE_DAYS_IN_YEAR,
   TERM_DURATION_INTERVAL_DAYS,
 } from "../constants/constants";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { getMostRecentExpiryFromLOAs } from "./permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
@@ -30,6 +30,13 @@ import {
 } from "../constants/stos";
 
 import {
+  MAX_STFR_DURATION,
+  MIN_STFR_DURATION,
+  STFR_DURATION_INTERVAL_DAYS,
+  STFR_DURATION_OPTIONS,
+} from "../constants/stfr";
+
+import {
   MAX_MFP_DURATION,
   MFP_DURATION_INTERVAL_DAYS,
   MFP_DURATION_OPTIONS,
@@ -43,6 +50,8 @@ import {
  */
 export const durationOptionsForPermitType = (permitType: PermitType) => {
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return STFR_DURATION_OPTIONS;
     case PERMIT_TYPES.MFP:
       return MFP_DURATION_OPTIONS;
     case PERMIT_TYPES.STOS:
@@ -51,6 +60,7 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:
       return TROS_DURATION_OPTIONS;
+    case PERMIT_TYPES.QRFR:
     default:
       return [];
   }
@@ -63,6 +73,8 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
  */
 export const minDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return MIN_STFR_DURATION;
     case PERMIT_TYPES.MFP:
       return MIN_MFP_DURATION;
     case PERMIT_TYPES.STOS:
@@ -71,6 +83,7 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_TROW_DURATION;
     case PERMIT_TYPES.TROS:
       return MIN_TROS_DURATION;
+    case PERMIT_TYPES.QRFR:
     default:
       return 0;
   }
@@ -83,6 +96,8 @@ export const minDurationForPermitType = (permitType: PermitType) => {
  */
 export const maxDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return MAX_STFR_DURATION;
     case PERMIT_TYPES.MFP:
       return MAX_MFP_DURATION;
     case PERMIT_TYPES.STOS:
@@ -103,6 +118,8 @@ export const maxDurationForPermitType = (permitType: PermitType) => {
  */
 export const getDurationIntervalDays = (permitType: PermitType) => {
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return STFR_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.MFP:
       return MFP_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.STOS:
@@ -127,7 +144,11 @@ export const getMinPermitExpiryDate = (
   startDate: Dayjs,
 ) => {
   const minDuration = minDurationForPermitType(permitType);
-  return getExpiryDate(startDate, minDuration);
+  return getExpiryDate(
+    startDate,
+    isQuarterlyPermit(permitType),
+    minDuration,
+  );
 };
 
 /**
@@ -150,7 +171,13 @@ export const getAvailableDurationOptions = (
 
   return fullDurationOptions.filter(
     ({ value: durationDays }) =>
-      !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)),
+      !mostRecentLOAExpiry.isBefore(
+        getExpiryDate(
+          startDate,
+          false, // only non-quarterly permits have duration options
+          durationDays,
+        ),
+      ),
   );
 };
 

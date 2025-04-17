@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationStatus } from '../../../../common/enum/application-status.enum';
 import { PermitType } from '../../../../common/enum/permit-type.enum';
 import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
+import { ValidationResults } from 'onroute-policy-engine';
 
 export class ReadShoppingCartDto {
   @AutoMap()
@@ -83,18 +84,6 @@ export class ReadShoppingCartDto {
   })
   expiryDate: string;
 
-  @ApiProperty({
-    description: 'The permit duration',
-    example: 30,
-  })
-  duration: number;
-
-  @ApiProperty({
-    description: 'The total distance',
-    example: 30,
-  })
-  totalDistance?: number;
-
   @AutoMap()
   @ApiProperty({
     enum: PermitApplicationOrigin,
@@ -102,4 +91,10 @@ export class ReadShoppingCartDto {
     description: 'Unique identifier for the application origin.',
   })
   permitApplicationOrigin: PermitApplicationOrigin;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Validation results from PE.',
+  })
+  validationResults: ValidationResults;
 }
