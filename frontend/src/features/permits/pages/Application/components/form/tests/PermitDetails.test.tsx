@@ -72,9 +72,11 @@ describe("Permit Details duration", () => {
     await selectDurationOption(user, durationText);
 
     // Assert
-    const expectedExpiry = getExpiryDate(dayjs(currentDt), durationDays).format(
-      DATE_FORMATS.SHORT,
-    );
+    const expectedExpiry = getExpiryDate(
+      dayjs(currentDt),
+      false, // only non-quarterly permits have selectable duration list
+      durationDays,
+    ).format(DATE_FORMATS.SHORT);
 
     expect(await expiryDateElement()).toHaveTextContent(expectedExpiry);
   });
@@ -208,6 +210,7 @@ describe("Permit Details start date", () => {
     // Assert
     const expectedExpiry = getExpiryDate(
       dayjs(tomorrow),
+      false, // non-quarterly permit being used as test data
       defaultDuration,
     ).format(DATE_FORMATS.SHORT);
 

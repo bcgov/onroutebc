@@ -12,7 +12,7 @@ import { CustomExternalLink } from "../../../../../../common/components/links/Cu
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { DATE_FORMATS } from "../../../../../../common/helpers/formatDate";
-import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import {
   CustomDatePicker,
   PastStartDateStatus,
@@ -49,6 +49,7 @@ export const PermitDetails = ({
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
   const showSTFRInfoBanner = permitType === PERMIT_TYPES.STFR;
+  const showQRFRInfoBanner = permitType === PERMIT_TYPES.QRFR;
 
   return (
     <Box className="permit-details">
@@ -61,6 +62,13 @@ export const PermitDetails = ({
           <InfoBcGovBanner
             className="permit-details__info-banner--top"
             msg={BANNER_MESSAGES.PERMIT_SINGLE_ROUND_TRIP}
+          />
+        ) : null}
+
+        {showQRFRInfoBanner ? (
+          <InfoBcGovBanner
+            className="permit-details__info-banner--top"
+            msg={BANNER_MESSAGES.PERMIT_START_DATE_VALID_QUARTER}
           />
         ) : null}
 
@@ -79,23 +87,25 @@ export const PermitDetails = ({
             maxDaysInFuture={14}
           />
 
-          <CustomFormComponent
-            className="permit-details__input permit-details__input--duration"
-            type="select"
-            feature={feature}
-            options={{
-              name: "permitData.permitDuration",
-              rules: {
-                required: { value: true, message: requiredMessage() },
-              },
-              label: "Permit Duration",
-            }}
-            menuOptions={durationOptions.map((data) => (
-              <MenuItem key={data.value} value={data.value}>
-                {data.label}
-              </MenuItem>
-            ))}
-          />
+          {!isQuarterlyPermit(permitType) ? (
+            <CustomFormComponent
+              className="permit-details__input permit-details__input--duration"
+              type="select"
+              feature={feature}
+              options={{
+                name: "permitData.permitDuration",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                },
+                label: "Permit Duration",
+              }}
+              menuOptions={durationOptions.map((data) => (
+                <MenuItem key={data.value} value={data.value}>
+                  {data.label}
+                </MenuItem>
+              ))}
+            />
+          ) : null}
         </Box>
 
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
