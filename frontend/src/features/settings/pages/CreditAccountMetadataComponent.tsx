@@ -6,7 +6,7 @@ import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBan
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import "./CreditAccountMetadataComponent.scss";
 import {
-  CSVE_REVENUE_PHONE,
+  CVSE_REVENUE_PHONE,
   CVSE_REVENUE_EMAIL,
 } from "../../../common/constants/constants";
 import { useContext } from "react";
@@ -53,7 +53,7 @@ export const CreditAccountMetadataComponent = ({
                 {BANNER_MESSAGES.NON_FINANCE_USER}
                 Phone:
                 <span className="non-finance-container__info">
-                  {CSVE_REVENUE_PHONE}{" "}
+                  {CVSE_REVENUE_PHONE}{" "}
                 </span>
                 Email:
                 <span className="non-finance-container__info">
