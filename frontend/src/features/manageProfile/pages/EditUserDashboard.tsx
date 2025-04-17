@@ -9,7 +9,7 @@ import "./EditUserDashboard.scss";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUser";
-import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
+import { PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import {
@@ -30,13 +30,13 @@ export const EditUserDashboard = React.memo(() => {
     retry: false,
     refetchOnWindowFocus: false,
     enabled: true,
-    gcTime: 0 // Disable saving in cache - Always fetch for latest data.
+    gcTime: 0, // Disable saving in cache - Always fetch for latest data.
   });
 
   const onClickBreadcrumb = () => {
     navigate(PROFILE_ROUTES.MANAGE, {
       state: {
-        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+        selectedTab: PROFILE_TABS.USER_MANAGEMENT,
       },
     });
   };

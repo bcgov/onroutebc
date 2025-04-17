@@ -175,6 +175,7 @@ export class PermitController {
       IDIRUserRole.CTPO,
       IDIRUserRole.FINANCE,
       IDIRUserRole.HQ_ADMINISTRATOR,
+      IDIRUserRole.ENFORCEMENT_OFFICER,
     ],
   })
   @Post('/:permitId/notification')
