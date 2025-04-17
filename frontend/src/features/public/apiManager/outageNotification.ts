@@ -7,8 +7,7 @@ export interface OutageNotification {
 }
 
 export const getOutageNotification = async (): Promise<OutageNotification> => {
-  const response = await httpGETRequest(PUBLIC_API_ROUTES.OUTAGE_NOTIFICATION());
   const url = PUBLIC_API_ROUTES.OUTAGE_NOTIFICATION();
-  console.log("Outage Notification API URL:", url);
+  const response = await httpGETRequest(url);
   return response.data;
 };
