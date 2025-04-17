@@ -158,6 +158,7 @@ export const ManageProfilesDashboard = React.memo(() => {
               creditAccountMetadata={
                 creditAccountMetadata as CreditAccountMetadata
               }
+              fromTab="MANAGE_PROFILE"
             />
           ),
           componentKey: PROFILE_TABS.CREDIT_ACCOUNT,

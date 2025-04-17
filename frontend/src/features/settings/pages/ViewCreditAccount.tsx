@@ -17,9 +17,14 @@ import "./CreditAccount.scss";
 export const ViewCreditAccount = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
+  fromTab,
 }: {
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
+  /**
+   * The tab from where this component is called.
+   */
+  fromTab: "MANAGE_SETTINGS" | "MANAGE_PROFILE";
 }) => {
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
@@ -83,28 +88,26 @@ export const ViewCreditAccount = ({
                   creditAccountMetadata={{ creditAccountId, userType }}
                 />
               }
-              permissionMatrixKeys={{
-                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-                permissionMatrixFunctionKey: isAccountHolder
-                  ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
-                  : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
-              }}
-            />
-            <RenderIf
-              component={
-                <UserTable
-                  companyId={companyId}
-                  creditAccountMetadata={{ creditAccountId, userType }}
-                />
+              permissionMatrixKeys={
+                fromTab === "MANAGE_SETTINGS"
+                  ? {
+                      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                      permissionMatrixFunctionKey: isAccountHolder
+                        ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
+                        : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
+                    }
+                  : {
+                      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                      permissionMatrixFunctionKey:
+                        "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER",
+                    }
               }
-              permissionMatrixKeys={{
-                permissionMatrixFeatureKey: "MANAGE_PROFILE",
-                permissionMatrixFunctionKey:
-                  "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER",
-              }}
               additionalConditionToCheck={() =>
-                creditAccount?.creditAccountStatusType !==
-                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && isAccountHolder
+                fromTab === "MANAGE_SETTINGS" ||
+                (fromTab === "MANAGE_PROFILE" &&
+                  creditAccount?.creditAccountStatusType !==
+                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
+                  isAccountHolder)
               }
             />
           </Box>
@@ -116,31 +119,27 @@ export const ViewCreditAccount = ({
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
               />
             }
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey: isAccountHolder
-                ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
-                : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
-            }}
-          />
-          <RenderIf
-            component={
-              <AccountDetails
-                companyId={companyId}
-                creditAccountMetadata={{ creditAccountId, userType }}
-                creditAccountStatus={creditAccount?.creditAccountStatusType}
-              />
+            permissionMatrixKeys={
+              fromTab === "MANAGE_SETTINGS"
+                ? {
+                    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                    permissionMatrixFunctionKey: isAccountHolder
+                      ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
+                      : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
+                  }
+                : {
+                    permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                    permissionMatrixFunctionKey:
+                      "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
+                  }
             }
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_PROFILE",
-              permissionMatrixFunctionKey:
-                "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
-            }}
             additionalConditionToCheck={() =>
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
-              creditAccount.creditAccountStatusType ===
-              CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
+              fromTab === "MANAGE_SETTINGS" ||
+              (fromTab === "MANAGE_PROFILE" &&
+                creditAccount.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE)
             }
           />
         </Box>

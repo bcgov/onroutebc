@@ -28,6 +28,7 @@ export const CreditAccountMetadataComponent = ({
         <ViewCreditAccount
           companyId={companyId}
           creditAccountMetadata={creditAccountMetadata}
+          fromTab="MANAGE_SETTINGS"
         />
       );
     } else if (isFinanceUser) {
