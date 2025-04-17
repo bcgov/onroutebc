@@ -33,6 +33,7 @@ export const StartApplicationAction = () => {
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
@@ -54,7 +55,7 @@ export const StartApplicationAction = () => {
   // Update the structure of menuItems to ensure the callback is applied correctly
   const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS
     .filter(option => enableSTOS ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP)
-    .filter(option => enableSTFR ? true : option.value !== PERMIT_CATEGORIES.NON_RESIDENT)
+    .filter(option => (enableSTFR || enableQRFR) ? true : option.value !== PERMIT_CATEGORIES.NON_RESIDENT)
     .filter(option => enableMFP ? true : option.value !== PERMIT_TYPES.MFP)
     .map(
       (item: PermitTypeChooseFromItem) => ({
