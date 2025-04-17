@@ -30,6 +30,7 @@ export const AddPowerUnitDialog = ({
   vehicleFormData,
   vehicleOptions,
   subtypeOptions,
+  isLOAUsed,
   isSelectedLOAVehicle,
   permitType,
   onCancel,
@@ -40,6 +41,7 @@ export const AddPowerUnitDialog = ({
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
+  isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   permitType: PermitType;
   onCancel: () => void;
@@ -120,6 +122,7 @@ export const AddPowerUnitDialog = ({
               vehicleFormData={selectedVehicle}
               vehicleOptions={vehicleOptions}
               subtypeOptions={subtypeOptions}
+              isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
               permitType={permitType}
               onSetSaveVehicle={onToggleSaveVehicle}
