@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 
 @Injectable()
 export class OutageNotificationService {
@@ -30,6 +31,9 @@ export class OutageNotificationService {
       return cachedValue;
     }
     const notification = await this.findOutageNotification();
+    if (!notification) {
+      throw new DataNotFoundException();
+    }
     await this.cacheManager.set(
       CacheKey.OUTAGE_NOTIFICATION,
       notification,
