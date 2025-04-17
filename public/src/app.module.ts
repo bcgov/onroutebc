@@ -20,12 +20,23 @@ import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { OutageNotificationModule } from './modules/outage-notification/outage-notification.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
+import { APP_GUARD } from '@nestjs/core';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+          limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
+        },
+      ],
+    }),
     CacheModule.register({
       max: 50, //Max cache items in store. Revisit the number when required.
       ttl: 0, // disable expiration of the cache.
@@ -70,7 +81,13 @@ const envPath = path.resolve(process.cwd() + '/../');
     OutageNotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {
   private readonly logger = new Logger(AppModule.name);

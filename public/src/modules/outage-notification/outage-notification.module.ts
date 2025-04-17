@@ -4,29 +4,10 @@ import { OutageNotificationService } from './outage-notification.service';
 import { OutageNotificationProfile } from './profile/outage-notification.profile';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OutageNotification } from './entities/outage-notification.entity';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([OutageNotification]),
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
-          limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
-        },
-      ],
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([OutageNotification])],
   controllers: [OutageNotificationController],
-  providers: [
-    OutageNotificationService,
-    OutageNotificationProfile,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [OutageNotificationService, OutageNotificationProfile],
 })
 export class OutageNotificationModule {}
