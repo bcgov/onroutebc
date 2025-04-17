@@ -20,6 +20,6 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer() as unknown as App)
       .get('/')
       .expect(200)
-      .expect('Public API Healthcheck!');
+      .expect('Public Healthcheck!');
   });
 });
