@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Public Healthcheck!"', () => {
-      expect(appController.getHello()).toBe('Public Healthcheck!');
+    it('should return "Public API Healthcheck!"', () => {
+      expect(appController.getHello()).toBe('Public API Healthcheck!');
     });
   });
 });

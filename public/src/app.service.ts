@@ -4,6 +4,6 @@ import { Injectable, Logger } from '@nestjs/common';
 export class AppService {
   private readonly logger = new Logger(AppService.name);
   getHello(): string {
-    return 'Public Healthcheck!';
+    return 'Public API Healthcheck!';
   }
 }
