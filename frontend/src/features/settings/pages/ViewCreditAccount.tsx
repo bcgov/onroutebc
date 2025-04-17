@@ -1,6 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { Loading } from "../../../common/pages/Loading";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -19,12 +17,15 @@ import "./CreditAccount.scss";
 export const ViewCreditAccount = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
+  fromTab,
 }: {
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
+  /**
+   * The tab from where this component is called.
+   */
+  fromTab: "MANAGE_SETTINGS" | "MANAGE_PROFILE";
 }) => {
-  const { userDetails } = useContext(OnRouteBCContext);
-
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
 
@@ -87,12 +88,27 @@ export const ViewCreditAccount = ({
                   creditAccountMetadata={{ creditAccountId, userType }}
                 />
               }
-              permissionMatrixKeys={{
-                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-                permissionMatrixFunctionKey: isAccountHolder
-                  ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
-                  : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
-              }}
+              permissionMatrixKeys={
+                fromTab === "MANAGE_SETTINGS"
+                  ? {
+                      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                      permissionMatrixFunctionKey: isAccountHolder
+                        ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
+                        : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
+                    }
+                  : {
+                      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                      permissionMatrixFunctionKey:
+                        "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER",
+                    }
+              }
+              additionalConditionToCheck={() =>
+                fromTab === "MANAGE_SETTINGS" ||
+                (fromTab === "MANAGE_PROFILE" &&
+                  creditAccount?.creditAccountStatusType !==
+                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
+                  isAccountHolder)
+              }
             />
           </Box>
           <RenderIf
@@ -103,24 +119,28 @@ export const ViewCreditAccount = ({
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
               />
             }
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey: isAccountHolder
-                ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
-                : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
-            }}
-            additionalConditionToCheck={() => {
+            permissionMatrixKeys={
+              fromTab === "MANAGE_SETTINGS"
+                ? {
+                    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                    permissionMatrixFunctionKey: isAccountHolder
+                      ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
+                      : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
+                  }
+                : {
+                    permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                    permissionMatrixFunctionKey:
+                      "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
+                  }
+            }
+            additionalConditionToCheck={() =>
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
-              if (userDetails?.userRole) {
-                return (
-                  creditAccount.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
-                );
-              } else {
-                return true;
-              }
-            }}
+              fromTab === "MANAGE_SETTINGS" ||
+              (fromTab === "MANAGE_PROFILE" &&
+                creditAccount.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE)
+            }
           />
         </Box>
       )}
