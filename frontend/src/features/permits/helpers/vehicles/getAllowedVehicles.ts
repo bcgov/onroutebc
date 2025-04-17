@@ -21,22 +21,24 @@ export const getAllowedVehicles = (
   restrictions: ((vehicle: Vehicle) => boolean)[],
 ) => {
   return vehicles.filter((vehicle) => {
+    const isLOAUsed = loas.length > 0;
+
     if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = vehicle as Trailer;
-      return loas.some(loa => (
+      return isLOAUsed ? loas.some(loa => (
         trailer.vehicleType === loa.vehicleType
         && trailer.trailerTypeCode === loa.vehicleSubType
-      )) || (
+      )) : (
         eligibleSubtypes.has(trailer.trailerTypeCode)
           && restrictions.every(restriction => restriction(trailer))
       );
     }
 
     const powerUnit = vehicle as PowerUnit;
-    return loas.some(loa => (
+    return isLOAUsed ? loas.some(loa => (
       powerUnit.vehicleType === loa.vehicleType
       && powerUnit.powerUnitTypeCode === loa.vehicleSubType
-    )) || (
+    )) : (
       eligibleSubtypes.has(powerUnit.powerUnitTypeCode)
         && restrictions.every(restriction => restriction(powerUnit))
     );
