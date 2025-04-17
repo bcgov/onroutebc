@@ -1,7 +1,7 @@
 import { BcGovAlertBanner } from "./BcGovAlertBanner";
 import { ALERT_BANNER_TYPES } from "./types/AlertBannerType";
 
-export const ErrorBcGovBanner = ({
+export const ErrorAltBcGovBanner = ({
   msg,
   additionalInfo,
   className,
@@ -13,7 +13,7 @@ export const ErrorBcGovBanner = ({
   <BcGovAlertBanner
     msg={msg}
     additionalInfo={additionalInfo}
-    bannerType={ALERT_BANNER_TYPES.ERROR}
+    bannerType={ALERT_BANNER_TYPES.ERROR_ALT}
     className={className}
   />
 );

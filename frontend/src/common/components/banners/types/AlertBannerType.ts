@@ -3,6 +3,7 @@ export const ALERT_BANNER_TYPES = {
   SUCCESS: "success",
   WARNING: "warning",
   ERROR: "error",
+  ERROR_ALT: "error-alt",
 } as const;
 
 export type AlertBannerType =

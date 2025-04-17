@@ -4,7 +4,7 @@ import { getFromCache } from './cache.helper';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { Cache } from 'cache-manager';
 import { CacheKey } from '../enum/cache-key.enum';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { callDatabaseSequence } from './database.helper';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
@@ -19,6 +19,7 @@ import { ApplicationStatus } from '../enum/application-status.enum';
 import { PermitType } from '../enum/permit-type.enum';
 import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
 import * as dayjs from 'dayjs';
+import { PermitHistoryDto } from '../../modules/permit-application-payment/permit/dto/response/permit-history.dto';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -287,4 +288,72 @@ export const isVoidorRevoked = (permitStatus: ApplicationStatus) => {
     permitStatus === ApplicationStatus.VOIDED ||
     permitStatus === ApplicationStatus.REVOKED
   );
+};
+
+export const findPermitHistory = async (
+  originalPermitId: string,
+  companyId: number,
+  queryRunner: QueryRunner,
+): Promise<PermitHistoryDto[]> => {
+  const permits = await queryRunner.manager
+    .createQueryBuilder()
+    .select('permit')
+    .from(Permit, 'permit')
+    .leftJoinAndSelect('permit.company', 'company')
+    .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+    .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+    .where('permit.permitNumber IS NOT NULL')
+    .andWhere('permit.originalPermitId = :originalPermitId', {
+      originalPermitId: originalPermitId,
+    })
+    .andWhere('company.companyId = :companyId', { companyId: companyId })
+    .orderBy('transaction.transactionSubmitDate', 'DESC')
+    .getMany();
+
+  return permits.flatMap((permit) =>
+    permit.permitTransactions.map((permitTransaction) => ({
+      permitNumber: permit.permitNumber,
+      comment: permit.comment,
+      transactionOrderNumber:
+        permitTransaction.transaction.transactionOrderNumber,
+      transactionAmount: permitTransaction.transactionAmount,
+      transactionTypeId: permitTransaction.transaction.transactionTypeId,
+      pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+      pgTransactionId: permitTransaction.transaction.pgTransactionId,
+      paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+      paymentMethodTypeCode:
+        permitTransaction.transaction.paymentMethodTypeCode,
+      commentUsername: permit.createdUser,
+      permitId: +permit.permitId,
+      transactionSubmitDate:
+        permitTransaction.transaction.transactionSubmitDate,
+      transactionApprovedDate:
+        permitTransaction.transaction.transactionApprovedDate,
+      pgApproved: permitTransaction.transaction.pgApproved,
+    })),
+  ) as PermitHistoryDto[];
+};
+
+/**
+ * @deprecated This function is deprecated and should only be used within the Policy Module.
+ * It is not intended for use outside of this context and may be removed in future releases.
+ */
+export const findApplicationForPE = async (
+  queryRunner: QueryRunner,
+  applicationId: string,
+  companyId: number,
+): Promise<Permit> => {
+  const application = await queryRunner.manager
+    .createQueryBuilder()
+    .select('permit')
+    .from(Permit, 'permit')
+    .leftJoinAndSelect('permit.company', 'company')
+    .leftJoinAndSelect('permit.permitData', 'permitData')
+    .where('permit.permitId = :applicationId', {
+      applicationId: applicationId,
+    })
+    .andWhere('company.companyId = :companyId', { companyId: companyId })
+    .getOne();
+
+  return application;
 };
