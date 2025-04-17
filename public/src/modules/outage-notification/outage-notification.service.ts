@@ -23,22 +23,21 @@ export class OutageNotificationService {
 
   @LogAsyncMethodExecution()
   async getOutageNotification(): Promise<ReadOutageNotificationDto> {
-    const cachedValue = await this.cacheManager.get(
+    const cachedValue: ReadOutageNotificationDto = await this.cacheManager.get(
       CacheKey.OUTAGE_NOTIFICATION,
     );
-    if (cachedValue != null) {
-      return cachedValue as ReadOutageNotificationDto;
+    if (cachedValue) {
+      return cachedValue;
     }
     const notification = await this.findOutageNotification();
-    const notificationToCache =
-      notification != null ? notification : new ReadOutageNotificationDto();
     await this.cacheManager.set(
       CacheKey.OUTAGE_NOTIFICATION,
-      notificationToCache,
+      notification,
       +process.env.PUBLIC_API_NOTIFICATION_DB_CACHE_TTL_MS || 300000, // Use the cache TTL from the environment variable or default to 300,000 milliseconds (5 minutes) if not set.
     );
-    return notificationToCache;
+    return notification;
   }
+
   @LogAsyncMethodExecution()
   async findOutageNotification(): Promise<ReadOutageNotificationDto> {
     const currentTime = new Date();

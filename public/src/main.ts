@@ -9,7 +9,10 @@ import { customLogger } from './common/logger/logger.config';
 import * as responseTime from 'response-time';
 import { CustomValidationPipe } from './common/pipe/custom-validation.pipe';
 
-const allowedOrigins = [process.env.FRONTEND_URL];
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.ONROUTEBC_HOMEPAGE_URL,
+];
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
