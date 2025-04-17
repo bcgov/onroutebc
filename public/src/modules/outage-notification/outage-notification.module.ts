@@ -13,8 +13,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: +process.env.PUBLIC_API_TTL,
-          limit: +process.env.PUBLIC_API_RATE_LIMIT,
+          ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+          limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
         },
       ],
     }),
@@ -23,10 +23,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
   providers: [
     OutageNotificationService,
     OutageNotificationProfile,
-      {
-        provide: APP_GUARD,
-        useClass: ThrottlerGuard,
-      },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class OutageNotificationModule {}

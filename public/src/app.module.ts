@@ -78,12 +78,6 @@ export class AppModule {
 
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
-    console.log('process.env.PUBLIC_API_TTL', process.env.PUBLIC_API_TTL);
-    console.log(
-      'process.env.PUBLIC_API_RATE_LIMIT',
-      process.env.PUBLIC_API_RATE_LIMIT,
-    );
-
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })

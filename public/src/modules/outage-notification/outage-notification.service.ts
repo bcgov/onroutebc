@@ -35,7 +35,7 @@ export class OutageNotificationService {
     await this.cacheManager.set(
       CacheKey.OUTAGE_NOTIFICATION,
       notificationToCache,
-      +process.env.PUBLIC_API_CACHE_TTL,
+      +process.env.PUBLIC_API_NOTIFICATION_DB_CACHE_TTL_MS || 300000, // Use the cache TTL from the environment variable or default to 300,000 milliseconds (5 minutes) if not set.
     );
     return notificationToCache;
   }
