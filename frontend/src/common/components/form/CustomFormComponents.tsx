@@ -14,7 +14,6 @@ import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 import { CustomTextArea } from "./subFormComponents/CustomTextArea";
 import { PhoneExtInput } from "./subFormComponents/PhoneExtInput";
-import { WholeNumberInput } from "./subFormComponents/WholeNumberInput";
 
 /**
  * Properties of onRouteBC custom form components
@@ -159,20 +158,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
       case "ext":
         return (
           <PhoneExtInput
-            feature={feature}
-            name={name}
-            rules={rules}
-            inputProps={inputProps}
-            invalid={invalid}
-            inputType={inputType}
-            disabled={disabled}
-            readOnly={readOnly}
-          />
-        );
-
-      case "number":
-        return (
-          <WholeNumberInput
             feature={feature}
             name={name}
             rules={rules}
