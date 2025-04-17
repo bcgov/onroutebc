@@ -1,8 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import { Inject, Injectable } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { ClsService } from 'nestjs-cls';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
@@ -10,11 +8,23 @@ import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execut
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
     private readonly httpService: HttpService,
     private readonly cls: ClsService,
-  ) {}
+  ) {
+    this.httpService.axiosRef.interceptors.request.use(
+      (config) => {
+        config.headers['x-correlation-id'] = cls.getId();
+        config.headers['x-onroutebc-version'] = process.env.RELEASE_NUM;
+        return config;
+      },
+      undefined,
+      {
+        runWhen(config) {
+          return config.baseURL === process.env.ACCESS_API_URL;
+        },
+      },
+    );
+  }
 
   @LogAsyncMethodExecution()
   async getUserDetails(
@@ -26,6 +36,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-onroutebc-version': process.env.RELEASE_NUM,
           'x-correlation-id': this.cls.getId(),
         },
       }),
@@ -53,6 +64,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-onroutebc-version': process.env.RELEASE_NUM,
           'x-correlation-id': this.cls.getId(),
         },
       }),
@@ -76,6 +88,7 @@ export class AuthService {
           headers: {
             Authorization: accessToken,
             'Content-Type': 'application/json',
+            'x-onroutebc-version': process.env.RELEASE_NUM,
             'x-correlation-id': this.cls.getId(),
           },
         },
