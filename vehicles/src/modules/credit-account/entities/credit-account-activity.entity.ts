@@ -34,9 +34,9 @@ export class CreditAccountActivity extends Base {
    * The User entity linked to credit account activity.
    */
   @AutoMap(() => User)
-  @OneToOne(() => User, { nullable: false, cascade: false })
+  @OneToOne(() => User, { nullable: true, cascade: false })
   @JoinColumn({ name: 'IDIR_USER_GUID' })
-  idirUser: User;
+  idirUser?: User;
 
   /**
    * The date and time when the credit account activity occurred.
