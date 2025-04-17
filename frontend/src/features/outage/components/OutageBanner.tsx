@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { useOutageNotificationQuery } from "../hooks/outageNotification";
+import { useOutageNotification } from "../hooks/useOutageNotification";
 import "./Outagebanner.scss";
 
-const OutageBanner = () => {
+export const OutageBanner = () => {
   const [dismissed, setDismissed] = useState(false);
-  const { data, isSuccess } = useOutageNotificationQuery();
+  const { data, isSuccess } = useOutageNotification();
 
   const handleClose = () => {
     setDismissed(true);
@@ -28,5 +28,3 @@ const OutageBanner = () => {
     </div>
   );
 };
-
-export default OutageBanner;
