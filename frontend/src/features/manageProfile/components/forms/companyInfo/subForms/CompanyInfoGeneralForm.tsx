@@ -10,8 +10,13 @@ import {
   isValidOptionalString,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
-export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
+export const CompanyInfoGeneralForm = ({
+  feature,
+}: {
+  feature: ORBCFormFeatureType;
+}) => (
   <div className="company-info-general-form">
     <CustomFormComponent
       type="input"
@@ -85,7 +90,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
             validate: {
               validatePostalCode: (postalCode: string) =>
                 (postalCode.length >= 5 &&
-                  postalCode.length <= 7 &&
+                  postalCode.length <= 30 &&
                   isPostalCode(postalCode, "any")) ||
                 invalidPostalCode(),
             },

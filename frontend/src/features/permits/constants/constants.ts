@@ -1,4 +1,3 @@
-import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import {
   getPermitCategoryName,
   PERMIT_CATEGORIES,
@@ -23,11 +22,6 @@ export type VehicleChooseFrom =
 export const CHOOSE_FROM_OPTIONS = [
   { value: VEHICLE_CHOOSE_FROM.UNIT_NUMBER, label: "Unit Number" },
   { value: VEHICLE_CHOOSE_FROM.PLATE, label: "Plate" },
-];
-
-export const VEHICLE_TYPE_OPTIONS = [
-  { value: VEHICLE_TYPES.POWER_UNIT, label: "Power Unit" },
-  { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
 ];
 
 export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
@@ -124,9 +118,3 @@ export const LCV_VEHICLE_SUBTYPES = [
     description: "LCV vehicles for approved carriers and routes only."
   },
 ];
-
-export const DEFAULT_COMMODITY_SELECT_VALUE = "-";
-export const DEFAULT_COMMODITY_SELECT_OPTION = {
-  value: DEFAULT_COMMODITY_SELECT_VALUE,
-  label: "Select",
-};

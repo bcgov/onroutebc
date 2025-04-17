@@ -3,6 +3,7 @@ import { Policy } from "onroute-policy-engine";
 import { Nullable } from "../../../../../common/types/common";
 import { PermitType } from "../../../types/PermitType";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
 
 /**
  * Get eligible vehicle subtypes based on given criteria.
@@ -26,7 +27,7 @@ export const getEligibleVehicleSubtypes = (
   // result in an empty map returned.
   const subtypesMap = policyEngine.getPermittableVehicleTypes(
     permitType,
-    getDefaultRequiredVal("-", selectedCommodity),
+    getDefaultRequiredVal(DEFAULT_EMPTY_SELECT_VALUE, selectedCommodity),
   );
 
   return new Set(

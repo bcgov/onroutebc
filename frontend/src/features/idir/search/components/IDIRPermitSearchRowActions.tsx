@@ -45,7 +45,10 @@ const PERMIT_ACTIONS: PermitAction[] = [
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userRole?: string) =>
       userRole === USER_ROLE.PPC_CLERK ||
-      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR,
+      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      userRole === USER_ROLE.HQ_ADMINISTRATOR ||
+      userRole === USER_ROLE.FINANCE ||
+      userRole === USER_ROLE.ENFORCEMENT_OFFICER,
   },
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
@@ -128,10 +131,8 @@ export const IDIRPermitSearchRowActions = ({
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(
-        companyId,
-        permitId,
-        () => navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+      viewReceiptPdf(companyId, permitId, () =>
+        navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
       );
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);

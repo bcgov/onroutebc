@@ -26,6 +26,7 @@ import { PendingUsersService } from '../../src/modules/company-user-management/p
 import { createMapper } from '@automapper/core';
 import { PendingUsersController } from '../../src/modules/company-user-management/pending-users/pending-users.controller';
 import { PendingUsersProfile } from '../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
+import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -40,6 +41,7 @@ describe('PendingUsers (e2e)', () => {
     delete: jest.fn(),
     update: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
   };
 
@@ -91,6 +93,8 @@ describe('PendingUsers (e2e)', () => {
 
   describe('companies/1/pending-users CREATE', () => {
     it('should create a new pending User.', async () => {
+      mockQueryRunnerManager.findOne.mockResolvedValue(redCompanyEntityMock);
+
       // Override the save method for this specific test
       mockQueryRunnerManager.save.mockResolvedValue(
         readRedCompanyPendingUserDtoMock,

@@ -5,6 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../common/helpers/validationMessages";
 import "./RejectApplicationModal.scss";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 export const RejectApplicationModal = ({
   showModal,
@@ -64,7 +65,7 @@ export const RejectApplicationModal = ({
           <div className="reject-application-form">
             <CustomFormComponent
               type="textarea"
-              feature="reject-application-comment"
+              feature={ORBC_FORM_FEATURES.REJECT_APPLICATION}
               options={{
                 label: "Reason for Rejection",
                 name: "comment",

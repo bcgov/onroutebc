@@ -40,7 +40,7 @@ describe('Login Test for OnRouteBC', () => {
     cy.wait(wait_time);
 
     // Find elements to amend application
-    cy.get('.css-1pog434').type('t');
+    cy.get('.css-1pog434').type('inc');
     cy.wait(wait_time);
 
     cy.get('.search-by__search').click();

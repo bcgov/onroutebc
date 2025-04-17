@@ -1,5 +1,6 @@
 import { areValuesDifferent, doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
-import { Nullable } from "../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
+import { VehicleType } from "../../manageVehicles/types/Vehicle";
 import { PermitType } from "./PermitType";
 
 export interface PermitLOA {
@@ -9,10 +10,16 @@ export interface PermitLOA {
   startDate: string;
   expiryDate?: Nullable<string>;
   loaPermitType: PermitType[];
-  powerUnits: string[];
-  trailers: string[];
+  vehicleType: VehicleType;
+  vehicleSubType: string;
   originalLoaId: number;
   previousLoaId?: Nullable<number>;
+}
+
+export interface SelectableLOA {
+  loa: RequiredOrNull<PermitLOA>; // null for LOA "none" selection
+  checked: boolean;
+  disabled: boolean;
 }
 
 /**
@@ -34,8 +41,8 @@ export const arePermitLOADetailsEqual = (
     && loa1.startDate === loa2.startDate
     && !areValuesDifferent(loa1.expiryDate, loa2.expiryDate)
     && doUniqueArraysHaveSameItems<string>(loa1.loaPermitType, loa2.loaPermitType)
-    && doUniqueArraysHaveSameItems<string>(loa1.powerUnits, loa2.powerUnits)
-    && doUniqueArraysHaveSameItems<string>(loa1.trailers, loa2.trailers)
+    && loa1.vehicleType === loa2.vehicleType
+    && loa1.vehicleSubType === loa2.vehicleSubType
     && loa1.originalLoaId === loa2.originalLoaId
     && !areValuesDifferent(loa1.previousLoaId, loa2.previousLoaId);
 };

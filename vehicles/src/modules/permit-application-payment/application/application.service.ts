@@ -1361,7 +1361,7 @@ export class ApplicationService {
       .createQueryBuilder('permitLoa')
       .innerJoinAndSelect('permitLoa.loa', 'loa')
       .innerJoinAndSelect('loa.company', 'company')
-      .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
+      .innerJoinAndSelect('loa.loaVehicle', 'loaVehicle')
       .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
       .where('permitLoa.permitId = :permitId', {
         permitId: permitId,

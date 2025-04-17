@@ -12,7 +12,7 @@ import {
 
 import "./PermitResendDialog.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { Optional } from "../../../../common/types/common";
+import { Optional, ORBC_FORM_FEATURES } from "../../../../common/types/common";
 import {
   requiredMessage,
   selectionRequired,
@@ -37,7 +37,7 @@ interface PermitResendFormData {
   };
 }
 
-const FEATURE = "permit-resend";
+const FEATURE = ORBC_FORM_FEATURES.PERMIT_RESEND;
 
 const notificationTypesRules = {
   validate: {

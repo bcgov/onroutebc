@@ -95,20 +95,22 @@ export const setBaseEntityProperties = <T extends Base>({
   entity,
   currentUser,
   update,
+  date,
 }: {
   entity: T;
   currentUser: IUserJWT;
   update?: Nullable<boolean>;
+  date?: Date;
 }): void => {
   if (!update) {
     entity.createdUser = currentUser.userName;
-    entity.createdDateTime = new Date();
+    entity.createdDateTime = date ?? new Date();
     entity.createdUserDirectory = currentUser.orbcUserDirectory;
     entity.createdUserGuid = currentUser.userGUID;
   }
 
   entity.updatedUser = currentUser.userName;
-  entity.updatedDateTime = new Date();
+  entity.updatedDateTime = date ?? new Date();
   entity.updatedUserDirectory = currentUser.orbcUserDirectory;
   entity.updatedUserGuid = currentUser.userGUID;
 };

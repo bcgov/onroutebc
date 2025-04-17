@@ -17,7 +17,12 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
-import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
+import {
+  isNull,
+  isUndefined,
+  Nullable,
+  ORBC_FORM_FEATURES,
+} from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
@@ -55,8 +60,9 @@ import {
 } from "../../../../routes/constants";
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
+import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 
-const FEATURE = "application";
+const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
 /**
  * The first step in creating or saving an Application.
@@ -175,12 +181,22 @@ export const ApplicationForm = ({
         })),
     );
 
-    const updatedViolations = Object.fromEntries(
+    const policyViolations = Object.fromEntries(
       violations.map(({ fieldReference, message }) => [
         fieldReference,
         message,
       ]),
     );
+
+    // Check if vehicle subtype violations can be overriden by LOA
+    const updatedViolations = shouldOverridePolicyInvalidSubtype(
+      policyViolations,
+      currentFormData.permitData.vehicleDetails.vehicleSubType,
+      currentFormData.permitData.loas,
+    ) ? Object.fromEntries(
+      Object.entries(policyViolations)
+        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
+    ) : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -286,6 +302,7 @@ export const ApplicationForm = ({
             },
           },
         };
+    
     await saveApplication(
       {
         data: applicationToBeSaved,

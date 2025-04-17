@@ -9,6 +9,7 @@ import {
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
 } from "../../types/creditAccount";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
 export const CloseCreditAccountModal = ({
   showModal,
@@ -76,7 +77,7 @@ export const CloseCreditAccountModal = ({
           <div className="close-account-form">
             <CustomFormComponent
               type="textarea"
-              feature="close-account-comment"
+              feature={ORBC_FORM_FEATURES.CLOSE_CREDIT_ACCOUNT}
               options={{
                 label: "Reason for Account Closure",
                 name: "comment",

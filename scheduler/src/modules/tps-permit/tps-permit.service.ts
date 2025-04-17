@@ -10,7 +10,7 @@ import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
-import { Permit } from '../permit/entities/permit.entity';
+import { Permit } from 'src/modules/common/entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
@@ -162,7 +162,7 @@ export class TpsPermitService {
           s3ObjectId,
           s3Object,
           tpsPermit,
-          permitExists.companyId,
+          permitExists.company.companyId,
         );
 
         await this.updatePermitWithDocumentId(tpsPermit, document.documentId);

@@ -19,8 +19,9 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../../../../helpers/dateSelection";
+import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
 
-const feature = "testfeature";
+const feature = ORBC_FORM_FEATURES.TEST_FEATURE;
 export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
@@ -38,18 +39,19 @@ const permitType = DEFAULT_PERMIT_TYPE;
 export const conditions = getDefaultConditions(permitType);
 export const defaultDuration = minDurationForPermitType(permitType);
 export const emptyConditions: PermitCondition[] = [];
-export const allDurations = durationOptionsForPermitType(permitType)
-  .map(durationOption => ({
+export const allDurations = durationOptionsForPermitType(permitType).map(
+  (durationOption) => ({
     text: durationOption.label,
     days: durationOption.value,
-  }));
+  }),
+);
 
-const mandatoryConditions = getMandatoryConditions(permitType).map(condition => condition.condition);
+const mandatoryConditions = getMandatoryConditions(permitType).map(
+  (condition) => condition.condition,
+);
 export const requiredConditionIndices = conditions
   .map((condition, i) =>
-    mandatoryConditions.includes(condition.condition)
-      ? i
-      : -1,
+    mandatoryConditions.includes(condition.condition) ? i : -1,
   )
   .filter((i) => i >= 0);
 
@@ -99,7 +101,8 @@ export const renderTestComponent = (
           ? existingCondition.checked
           : condition.checked,
       };
-    });
+    },
+  );
 
   const renderedComponent = render(
     <TestFormWrapper>

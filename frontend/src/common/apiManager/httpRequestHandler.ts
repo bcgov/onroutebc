@@ -1,11 +1,13 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+
+import { Nullable, RequiredOrNull } from "../types/common";
+import { GEOCODER_URL } from "./endpoints/endpoints";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../helpers/util";
-import { Nullable, RequiredOrNull } from "../types/common";
 
 // Request interceptor to add a correlationId to the header.
 axios.interceptors.request.use(
@@ -16,6 +18,29 @@ axios.interceptors.request.use(
   },
   function (error) {
     console.log("Unable to make a request:", error);
+  },
+  {
+    runWhen: (config) => {
+      // Add exception to not use interceptor when requesting Geocoder URL
+      return Boolean(!config.url?.startsWith(GEOCODER_URL));
+    },
+  },
+);
+
+// Response interceptor to handle errors globally
+axios.interceptors.response.use(
+  (response) => response, // Return response if successful
+  (error) => {
+    if (!error.response || error.response.status === 503) {
+      console.error("CORS or 503 Error:", error);
+      if (window.location.pathname !== "/service-unavailable") {
+        //prevent infinite loop
+        window.location.href = "/service-unavailable";
+      }
+    } else {
+      console.log("Error Details:", error);
+      return Promise.reject(error); // Reject other errors
+    }
   },
 );
 
@@ -110,6 +135,19 @@ export const getLoginUsernameFromSession = (): string => {
     "",
     parsedSessionObject.profile?.bceid_username,
     parsedSessionObject.profile?.idir_username,
+  );
+};
+
+/**
+ * Retrieves given name from session
+ * @returns given name or empty string
+ */
+export const getLoginUserGivenNameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal(
+    "",
+    parsedSessionObject.profile?.given_name,    
   );
 };
 

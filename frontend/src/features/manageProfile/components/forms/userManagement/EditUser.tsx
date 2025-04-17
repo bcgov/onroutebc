@@ -18,7 +18,7 @@ import "../myInfo/MyInfoForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
-  BCEID_PROFILE_TABS,
+  PROFILE_TABS,
   ReadUserInformationResponse,
   UserInfoRequest,
 } from "../../../types/manageProfile.d";
@@ -27,8 +27,9 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 
-const FEATURE = "user-info-form";
+const FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION;
 
 /**
  * Edit User form for User Management.
@@ -44,9 +45,17 @@ export const EditUserForm = memo(
         firstName: getDefaultRequiredVal("", userInfo?.firstName),
         lastName: getDefaultRequiredVal("", userInfo?.lastName),
         email: getDefaultRequiredVal("", userInfo?.email),
-        phone1: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.phone1, ""),
+        phone1: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone1,
+          "",
+        ),
         phone1Extension: getDefaultRequiredVal("", userInfo?.phone1Extension),
-        phone2: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.phone2, ""),
+        phone2: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone2,
+          "",
+        ),
         phone2Extension: getDefaultRequiredVal("", userInfo?.phone2Extension),
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
@@ -59,14 +68,14 @@ export const EditUserForm = memo(
     });
 
     const { handleSubmit } = formMethods;
-    
+
     const [isUserGroupsModalOpen, setIsUserGroupsModalOpen] =
       useState<boolean>(false);
 
     const onClickBreadcrumb = () => {
       navigate(PROFILE_ROUTES.MANAGE, {
         state: {
-          selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+          selectedTab: PROFILE_TABS.USER_MANAGEMENT,
         },
       });
     };
@@ -89,7 +98,7 @@ export const EditUserForm = memo(
 
           navigate(PROFILE_ROUTES.MANAGE, {
             state: {
-              selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+              selectedTab: PROFILE_TABS.USER_MANAGEMENT,
             },
           });
         } else {
