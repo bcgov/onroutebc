@@ -1,6 +1,7 @@
 import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import { LCV_CONDITION } from "../constants/constants";
 import { MANDATORY_STFR_CONDITIONS, STFR_CONDITIONS } from "../constants/stfr";
+import { MANDATORY_QRFR_CONDITIONS, QRFR_CONDITIONS } from "../constants/qrfr";
 import { MANDATORY_MFP_CONDITIONS, MFP_CONDITIONS } from "../constants/mfp";
 import { MANDATORY_STOS_CONDITIONS, STOS_CONDITIONS } from "../constants/stos";
 import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
@@ -20,6 +21,8 @@ export const getMandatoryConditions = (
 ) => {
   const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
   switch (permitType) {
+    case PERMIT_TYPES.QRFR:
+      return MANDATORY_QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return MANDATORY_STFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
@@ -41,6 +44,8 @@ const getConditionsByPermitType = (
 ) => {
   const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
   switch (permitType) {
+    case PERMIT_TYPES.QRFR:
+      return QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return STFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
