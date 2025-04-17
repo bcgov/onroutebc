@@ -1,4 +1,5 @@
 import { Nullable } from "../../../common/types/common";
+import { ValidationResults } from "../../policy/types/ValidationResults";
 import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
 import { PermitStatus } from "./PermitStatus";
 import { PermitType } from "./PermitType";
@@ -24,7 +25,8 @@ export interface CartItem {
   totalDistance?: Nullable<number>;
   permitApplicationOrigin: PermitApplicationOrigin;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
-};
+  validationResults: ValidationResults;
+}
 
 export interface SelectableCartItem extends CartItem {
   selected: boolean;

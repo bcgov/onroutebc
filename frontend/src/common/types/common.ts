@@ -15,9 +15,10 @@ import {
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
 
-export interface ApiErrorResponse {
+export interface ErrorResponseData<T = any> {
+  error: T[];
+  message: string;
   status: number;
-  errorMessage: string; // array?
 }
 
 /**

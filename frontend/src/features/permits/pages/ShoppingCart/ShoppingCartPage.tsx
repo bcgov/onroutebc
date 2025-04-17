@@ -16,8 +16,8 @@ import { ShoppingCart } from "./components/ShoppingCart";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { useShoppingCart } from "./hooks/useShoppingCart";
 import { useCheckOutdatedCart } from "./hooks/useCheckOutdatedCart";
-import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
-import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
+import { EditCartItemDialog } from "./components/EditCartItemDialog";
+import { UpdateCartDialog } from "./components/UpdateCartDialog";
 import { BCeID_USER_ROLE } from "../../../../common/authentication/types";
 import { Loading } from "../../../../common/pages/Loading";
 import {
@@ -49,11 +49,16 @@ import {
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
-import {
-  TOLL_FREE_NUMBER,
-  PPC_EMAIL,
-} from "../../../../common/constants/constants";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
+import {
+  PPC_EMAIL,
+  TOLL_FREE_NUMBER,
+} from "../../../../common/constants/constants";
+import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
+import { ApplicationErrorsDialog } from "./components/ApplicationErrorsDialog";
+import { PAYMENT_ERRORS } from "../../../policy/types/PaymentError";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -78,11 +83,15 @@ export const ShoppingCartPage = () => {
   );
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();
+
   const paymentFailed = applyWhenNotNullable(
     (queryParam) => queryParam === "true",
     searchParams.get("paymentFailed"),
     false,
   );
+
+  const [showPaymentFailedBanner, setShowPaymentFailedBanner] =
+    useState<boolean>(paymentFailed);
 
   const {
     removeFromCartMutation,
@@ -98,6 +107,10 @@ export const ShoppingCartPage = () => {
     refetchCartCount,
   } = useShoppingCart(companyId, enableCartFilter);
 
+  const isApplicationErrors = cartItems?.some(
+    (item) => item.validationResults.violations.length,
+  );
+
   const isFeeZero = isZeroAmount(selectedTotalFee);
   const selectedApplications = cartItemSelection.filter(
     (cartItem) => cartItem.selected,
@@ -109,7 +122,6 @@ export const ShoppingCartPage = () => {
   const {
     showEditCartItemDialog,
     showUpdateCartDialog,
-    outdatedApplicationNumbers,
     idOfCartItemToEdit,
     setOldCartItems,
     fetchStatusFor,
@@ -121,6 +133,8 @@ export const ShoppingCartPage = () => {
     useStartTransaction();
 
   const [hasIssued, setHasIssued] = useState<boolean>(false);
+  const [showApplicationErrorsDialog, setShowApplicationErrorsDialog] =
+    useState<boolean>(false);
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
@@ -192,6 +206,37 @@ export const ShoppingCartPage = () => {
       navigate(PERMITS_ROUTES.SUCCESS, { replace: true });
     }
   }, [issueResults]);
+
+  const {
+    isError: startTransactionMutationFailed,
+    error: startTransactionMutationError,
+  } = startTransactionMutation;
+
+  // TODO check LOA validation errors are being handled correctly
+  useEffect(() => {
+    if (startTransactionMutationFailed) {
+      const errorCode =
+        startTransactionMutationError.response?.data.error[0].errorCode;
+      // application has been removed from cart
+      if (errorCode === PAYMENT_ERRORS.TRANS_INVALID_APPLICATION_STATUS) {
+        setShowUpdateCartDialog(true);
+      } else if (
+        // application is no longer valid per policy due to changes to application
+        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        !isApplicationErrors
+      ) {
+        setShowUpdateCartDialog(true);
+      } else if (
+        // there are already applications with errors shown to the user that need to be resolved
+        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        isApplicationErrors
+      ) {
+        setShowApplicationErrorsDialog(true);
+      } else {
+        setShowPaymentFailedBanner(true);
+      }
+    }
+  }, [startTransactionMutationFailed]);
 
   const handlePayWithIcepay = (
     cardType: PaymentCardTypeCode,
@@ -337,6 +382,7 @@ export const ShoppingCartPage = () => {
       applicationIds: selectedApplicationIds,
     });
 
+    // TODO updateCartDialog not showing when item has already been removed from cart
     if (hasPermitsActionFailed(removeResult)) {
       // Removal failed, show update cart dialog
       setShowUpdateCartDialog(true);
@@ -392,16 +438,35 @@ export const ShoppingCartPage = () => {
   return (
     <div className="shopping-cart-page">
       <Box className="shopping-cart-page__left-container">
-        <div className="shopping-cart-page__info">
-          <p className="info__body">
-            Have questions? Please contact the Provincial Permit Centre.
-            Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
-            <strong>{PPC_EMAIL}</strong>
-          </p>
-        </div>
+        <InfoBcGovBanner
+          className="shopping-cart-page__banner"
+          msg={<strong>Know your shopping cart.</strong>}
+          additionalInfo={
+            <div>
+              <div>{BANNER_MESSAGES.KNOW_YOUR_SHOPPING_CART}</div>
+              <br></br>
+              <div>
+                Have any questions? Please contact the Provincial Permit Centre.
+                Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
+                <strong>{PPC_EMAIL}</strong>
+              </div>
+            </div>
+          }
+        />
+
+        {isApplicationErrors && (
+          <ErrorAltBcGovBanner
+            className="shopping-cart-page__banner"
+            msg={
+              <strong>Your shopping cart has invalid application(s).</strong>
+            }
+            additionalInfo={
+              BANNER_MESSAGES.YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED
+            }
+          />
+        )}
 
         <ShoppingCart
-          outdatedApplicationNumbers={outdatedApplicationNumbers}
           showCartFilter={enableCartFilter}
           showAllApplications={showAllApplications}
           cartItemSelection={cartItemSelection}
@@ -426,13 +491,14 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {paymentFailed ? <PaymentFailedBanner /> : null}
+          {showPaymentFailedBanner ? <PaymentFailedBanner /> : null}
 
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
             selectedItemsCount={selectedApplications.length}
             onPay={handleSubmit(handlePay)}
             transactionPending={startTransactionMutation.isPending}
+            disablePayNowButton={cartItems?.length === 0}
           />
         </FormProvider>
       </Box>
@@ -445,7 +511,13 @@ export const ShoppingCartPage = () => {
 
       <UpdateCartDialog
         shouldOpen={showUpdateCartDialog}
+        handleClose={() => setShowUpdateCartDialog(false)}
         onUpdateCart={handleForceUpdateCart}
+      />
+
+      <ApplicationErrorsDialog
+        shouldOpen={showApplicationErrorsDialog}
+        handleClose={() => setShowApplicationErrorsDialog(false)}
       />
     </div>
   );
