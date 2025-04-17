@@ -14,6 +14,7 @@ import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfig
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
 import { SelectedVehicleSubtypeList } from "../../common/SelectedVehicleSubtypeList";
+import { isTrailerSubtypeNone } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
@@ -46,7 +47,7 @@ export const AddTrailer = ({
 
   const selectedSubtypesDisplay = useMemoizedArray(
     selectedTrailerSubtypes.map(subtype => {
-      if (subtype === "NONEXXX") return "None";
+      if (isTrailerSubtypeNone(subtype)) return "None";
       return getDefaultRequiredVal(
         subtype,
         trailerSubtypeNamesMap.get(subtype),
