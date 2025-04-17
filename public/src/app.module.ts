@@ -19,12 +19,18 @@ import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { OutageNotificationModule } from './modules/outage-notification/outage-notification.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    CacheModule.register({
+      max: 50, //Max cache items in store. Revisit the number when required.
+      ttl: 0, // disable expiration of the cache.
+      isGlobal: true, // Allows access to cache manager globally.
+    }),
     // Register the ClsModule,
     ClsModule.forRoot({
       global: true,
@@ -68,6 +74,8 @@ const envPath = path.resolve(process.cwd() + '/../');
 })
 export class AppModule {
   private readonly logger = new Logger(AppModule.name);
+  constructor(private readonly appService: AppService) {}
+
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
     consumer

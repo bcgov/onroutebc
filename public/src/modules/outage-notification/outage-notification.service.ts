@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { OutageNotification } from './entities/outage-notification.entity';
@@ -6,6 +6,9 @@ import { ReadOutageNotificationDto } from './dto/read-outage-notification.dto';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheKey } from 'src/common/enum/cache-key.enum';
 
 @Injectable()
 export class OutageNotificationService {
@@ -14,8 +17,25 @@ export class OutageNotificationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(OutageNotification)
     private outageNotificationRepository: Repository<OutageNotification>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
+  @LogAsyncMethodExecution()
+  async getOutageNotification(): Promise<ReadOutageNotificationDto> {
+    const cachedValue = await this.cacheManager.get(CacheKey.OUTAGE_NOTIFICATION);
+    if (cachedValue != null) {
+      return cachedValue as ReadOutageNotificationDto;
+    }
+    const notification = await this.findOutageNotification();
+    const notificationToCache = notification != null ? notification : new ReadOutageNotificationDto();
+    await this.cacheManager.set(
+      CacheKey.OUTAGE_NOTIFICATION,
+      notificationToCache,
+      5 * 60 * 1000, // 5 minutes
+    );
+    return notificationToCache;
+  }
   @LogAsyncMethodExecution()
   async findOutageNotification(): Promise<ReadOutageNotificationDto> {
     const currentTime = new Date();

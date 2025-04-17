@@ -10,13 +10,13 @@ export class OutageNotificationController {
     private readonly outageNotificationService: OutageNotificationService,
   ) {}
 
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 100, ttl: 60000 } })
   @ApiOperation({
     summary: 'Get outage notification',
     description: 'Returns outage notification for OnRouteBC.',
   })
   @Get()
   async getNotification(): Promise<ReadOutageNotificationDto> {
-    return await this.outageNotificationService.findOutageNotification();
+    return await this.outageNotificationService.getOutageNotification();
   }
 }
