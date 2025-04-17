@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Policy } from "onroute-policy-engine";
 
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
@@ -15,6 +15,7 @@ import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
 import { usePermittedCommodity } from "../usePermittedCommodity";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
+import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -138,6 +139,26 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
+  const handleClearVehicle = useCallback((saveVehicle: boolean) => {
+    onClearVehicle(
+      Boolean(saveVehicle),
+      currentSelectedLOAs.length > 0 ? {
+        vehicleType: currentSelectedLOAs[0].vehicleType,
+        vehicleSubtype: currentSelectedLOAs[0].vehicleSubType,
+      } : undefined,
+    );
+  }, [currentSelectedLOAs]);
+
+  const handleSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
+    onSetVehicle({
+      ...vehicleDetails,
+      vehicleType: currentSelectedLOAs.length > 0 ?
+        currentSelectedLOAs[0].vehicleType : vehicleDetails.vehicleType,
+      vehicleSubType: currentSelectedLOAs.length > 0 ?
+        currentSelectedLOAs[0].vehicleSubType : vehicleDetails.vehicleSubType,
+    });
+  }, [currentSelectedLOAs]);
+
   const {
     commodityOptions,
     onChangeCommodityType,
@@ -145,7 +166,7 @@ export const useApplicationFormContext = () => {
     policyEngine,
     permitType,
     onSetCommodityType,
-    () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+    () => handleClearVehicle(Boolean(vehicleFormData.saveVehicle)),
     onClearVehicleConfig,
     permittedCommodity?.commodityType,
   );
@@ -164,7 +185,6 @@ export const useApplicationFormContext = () => {
     selectedLOAs: currentSelectedLOAs,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    onClearVehicle: () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
     selectedCommodity: permittedCommodity?.commodityType,
   });
 
@@ -253,8 +273,8 @@ export const useApplicationFormContext = () => {
     onSetExpiryDate,
     onSetConditions,
     onToggleSaveVehicle,
-    onSetVehicle,
-    onClearVehicle,
+    onSetVehicle: handleSetVehicle,
+    onClearVehicle: handleClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateTripOrigin,
