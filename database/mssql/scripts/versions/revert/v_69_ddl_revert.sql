@@ -16,8 +16,8 @@ GO
 BEGIN TRANSACTION
 GO
 
--- Drop staging table for credit accounts
-DROP TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNT]
+-- Drop temp table to store unposted TPS credit balance and status
+DROP TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_STATUS]
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -30,8 +30,8 @@ GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
--- Drop temp table to store unposted TPS credit balance and status
-DROP TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_STATUS]
+-- Drop staging table for credit accounts
+DROP TABLE [tps].[ORBC_TPS_MIGRATED_CREDIT_ACCOUNT]
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -137,7 +137,7 @@ DROP COLUMN IS_VERIFIED
 GO
 
 ALTER TABLE permit.ORBC_CREDIT_ACCOUNT
-DROP COLUMN EXTERNAL_ADJUSTMENT
+DROP COLUMN EXTERNAL_ADJUSTMENT_AMT
 GO
 
 IF @@ERROR <> 0
