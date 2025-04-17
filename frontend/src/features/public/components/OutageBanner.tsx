@@ -12,7 +12,8 @@ const OutageBanner = () => {
     setDismissed(true);
   };
 
-  if (!isSuccess || !data?.title || !data?.message || dismissed) return null;
+  if (!isSuccess || !data || !data.title || !data.message || dismissed)
+    return null;
 
   return (
     <div className="outage-banner">
