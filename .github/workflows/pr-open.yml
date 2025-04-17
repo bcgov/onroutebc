@@ -35,6 +35,7 @@ jobs:
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
             - [Policy](https://${{ env.PREFIX }}-policy.${{ env.DOMAIN }}/api)
             - [Scheduler](https://${{ env.PREFIX }}-scheduler.${{ env.DOMAIN }}/api)
+            - [Public](https://${{ env.PREFIX }}-public.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
             - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
@@ -62,7 +63,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, scheduler, policy]
+        package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 10
     steps:
       - uses: bcgov/action-builder-ghcr@v2.2.0
