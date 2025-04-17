@@ -346,7 +346,7 @@ public:
         - "source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/public-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: vehicles
+      image: public
       tag: "{{tpl .Values.global.tag .}}"
       env:
         fromLocalConfigmap: 
