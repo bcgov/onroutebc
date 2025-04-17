@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { OutageNotificationService } from './outage-notification.service';
-import { Throttle } from '@nestjs/throttler';
 import { ApiOperation } from '@nestjs/swagger';
 import { ReadOutageNotificationDto } from './dto/read-outage-notification.dto';
 
@@ -10,7 +9,6 @@ export class OutageNotificationController {
     private readonly outageNotificationService: OutageNotificationService,
   ) {}
 
-  @Throttle({ default: { limit: 100, ttl: 60000 } })
   @ApiOperation({
     summary: 'Get outage notification',
     description: 'Returns outage notification for OnRouteBC.',

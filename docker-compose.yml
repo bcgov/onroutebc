@@ -121,6 +121,9 @@ services:
       MSSQL_SA_USER: ${MSSQL_SA_USER}
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      PUBLIC_API_RATE_LIMIT: ${PUBLIC_API_RATE_LIMIT}
+      PUBLIC_API_TTL: ${PUBLIC_API_TTL}
+      PUBLIC_API_CACHE_TTL: ${PUBLIC_API_CACHE_TTL}
     healthcheck:
       test: "curl --silent --fail http://localhost:5003/ > /dev/null || exit 1"
       interval: 30s
