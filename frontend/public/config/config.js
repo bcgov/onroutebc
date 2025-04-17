@@ -27,5 +27,6 @@ const envConfig = (() => {
     VITE_BC_GEOCODER_CLIENT_ID: "",
     VITE_BC_GEOCODER_API_KEY: "",
     VITE_BC_GEOCODER_API_URL: "",
+    VITE_PUBLIC_API_URL: "",
   };
 })();
