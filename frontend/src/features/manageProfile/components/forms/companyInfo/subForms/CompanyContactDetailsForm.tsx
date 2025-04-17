@@ -12,16 +12,11 @@ import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
 export const CompanyContactDetailsForm = ({
   feature,
-  disableEmail = true,
 }: {
   /**
    * The name of the feature that this form is part of.
    */
   feature: ORBCFormFeatureType;
-  /**
-   * Should the email be disabled? By default it is.
-   */
-  disableEmail?: boolean;
 }) => (
   <div className="company-contact-details-form">
     <CustomFormComponent
@@ -38,8 +33,6 @@ export const CompanyContactDetailsForm = ({
         label: "Email",
       }}
       className="company-contact-details-form__input"
-      disabled={disableEmail}
-      readOnly={disableEmail}
     />
 
     <div className="side-by-side-inputs">

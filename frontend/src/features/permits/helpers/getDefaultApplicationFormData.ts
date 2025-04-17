@@ -4,7 +4,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -125,13 +125,14 @@ export const getStartDateOrDefault = (
 
 export const getExpiryDateOrDefault = (
   startDateOrDefault: Dayjs,
+  isQuarterly: boolean,
   durationOrDefault: number,
   expiryDate?: Nullable<Dayjs | string>,
 ): Dayjs => {
   return applyWhenNotNullable(
     (date) => getEndOfDate(dayjs(date)),
     expiryDate,
-    getExpiryDate(startDateOrDefault, durationOrDefault),
+    getExpiryDate(startDateOrDefault, isQuarterly, durationOrDefault),
   );
 };
 
@@ -161,6 +162,7 @@ export const getDefaultValues = (
 
   const expiryDateOrDefault = getExpiryDateOrDefault(
     startDateOrDefault,
+    isQuarterlyPermit(permitType),
     durationOrDefault,
     applicationData?.permitData?.expiryDate,
   );

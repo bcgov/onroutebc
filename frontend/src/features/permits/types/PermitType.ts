@@ -202,3 +202,13 @@ export const isPermitTypeValid = (permitType?: Nullable<string>) => {
 export const isTermPermitType = (permitType: PermitType) => {
   return permitType === PERMIT_TYPES.TROS || permitType === PERMIT_TYPES.TROW;
 };
+
+/**
+ * Determine whether or not a permit type is considered a quarterly permit.
+ * @param permitType Type of permit
+ * @returns Whether or not the permit of that type is considered a quarterly permit
+ */
+export const isQuarterlyPermit = (permitType?: Nullable<PermitType>) => {
+  if (!permitType) return false;
+  return ([PERMIT_TYPES.QRFR] as PermitType[]).includes(permitType);
+};

@@ -12,12 +12,15 @@ import { pastStartOrExpiryDate } from "../../../../../../common/helpers/validati
 import { ErrorBcGovBanner } from "../../../../../../common/components/banners/ErrorBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
+import { isQuarterlyPermit, PermitType } from "../../../../types/PermitType";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
+  getQuarterForDate,
 } from "../../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
+  permitType,
   startDate,
   permitDuration,
   expiryDate,
@@ -27,6 +30,7 @@ export const ReviewPermitDetails = ({
   oldDuration,
   showDateErrorBanner,
 }: {
+  permitType?: Nullable<PermitType>;
   startDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   expiryDate?: Nullable<Dayjs>;
@@ -63,6 +67,21 @@ export const ReviewPermitDetails = ({
     return duration === BASE_DAYS_IN_YEAR
       ? "1 Year"
       : `${duration} ${measurementUnit}`;
+  };
+
+  const displayDurationQuarter = (start: Dayjs) => {
+    const quarter = getQuarterForDate(start);
+    switch (quarter) {
+      case 2:
+        return "Apr. - Jun.";
+      case 3:
+        return "Jul. - Sep.";
+      case 4:
+        return "Oct. - Dec.";
+      case 1:
+      default:
+        return "Jan. - Mar.";
+    }
   };
 
   return (
@@ -104,9 +123,13 @@ export const ReviewPermitDetails = ({
               className="permit-dates__data"
               data-testid="permit-duration"
             >
-              {applyWhenNotNullable(
+              {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
                 displayDuration,
                 permitDuration,
+                "",
+              ) : applyWhenNotNullable(
+                displayDurationQuarter,
+                startDate,
                 "",
               )}
             </Typography>

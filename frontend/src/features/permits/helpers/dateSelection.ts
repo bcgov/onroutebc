@@ -4,7 +4,7 @@ import {
   BASE_DAYS_IN_YEAR,
   TERM_DURATION_INTERVAL_DAYS,
 } from "../constants/constants";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { getMostRecentExpiryFromLOAs } from "./permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
@@ -60,6 +60,7 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:
       return TROS_DURATION_OPTIONS;
+    case PERMIT_TYPES.QRFR:
     default:
       return [];
   }
@@ -82,6 +83,7 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_TROW_DURATION;
     case PERMIT_TYPES.TROS:
       return MIN_TROS_DURATION;
+    case PERMIT_TYPES.QRFR:
     default:
       return 0;
   }
@@ -142,7 +144,11 @@ export const getMinPermitExpiryDate = (
   startDate: Dayjs,
 ) => {
   const minDuration = minDurationForPermitType(permitType);
-  return getExpiryDate(startDate, minDuration);
+  return getExpiryDate(
+    startDate,
+    isQuarterlyPermit(permitType),
+    minDuration,
+  );
 };
 
 /**
@@ -165,7 +171,13 @@ export const getAvailableDurationOptions = (
 
   return fullDurationOptions.filter(
     ({ value: durationDays }) =>
-      !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)),
+      !mostRecentLOAExpiry.isBefore(
+        getExpiryDate(
+          startDate,
+          false, // only non-quarterly permits have duration options
+          durationDays,
+        ),
+      ),
   );
 };
 

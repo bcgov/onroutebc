@@ -141,6 +141,7 @@ export const PermitReview = (props: PermitReviewProps) => {
         <ReviewPermitLOAs loas={props.loas} />
 
         <ReviewPermitDetails
+          permitType={props.permitType}
           startDate={props.permitStartDate}
           permitDuration={props.permitDuration}
           expiryDate={props.permitExpiryDate}

@@ -3,12 +3,14 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
 
 // Need to add these plugins here
 dayjs.extend(utc); // for using utc
 dayjs.extend(timezone); // for using timezones
 dayjs.extend(localizedFormat); // for using localized datetime formats (eg. LLL)
 dayjs.extend(advancedFormat); // for using advanced datetime formats
+dayjs.extend(quarterOfYear); // for calculating dates based on quarters of a year
 
 export const DATE_FORMATS = {
   DATEONLY: "YYYY-MM-DD",
@@ -126,7 +128,7 @@ export const getDateDiffInDays = (laterDt: Dayjs, earlierDt: Dayjs) => {
 
 /**
  * Get the start of any datetime (ie. the date + time of 00:00:00 am).
- * @param date Any Dayjs object
+ * @param date Any Dayjs object or date string representation
  * @returns Dayjs object representing the start of the datetime (with time 00:00:00 am)
  */
 export const getStartOfDate = (date: Dayjs | string) => {
@@ -135,9 +137,27 @@ export const getStartOfDate = (date: Dayjs | string) => {
 
 /**
  * Get the end of any datetime (ie. the date + time of 23:59:59 pm).
- * @param date Any Dayjs object
+ * @param date Any Dayjs object or date string representation
  * @returns Dayjs object representing the end of the datetime (with time 23:59:59 pm)
  */
 export const getEndOfDate = (date: Dayjs | string) => {
   return dayjs(date).hour(23).minute(59).second(59).millisecond(999);
+};
+
+/**
+ * Get the end of the quarter for any given datetime (ie. the date + time of 23:59:59 pm).
+ * @param date Any Dayjs object or date string representation
+ * @returns Dayjs object representing the end of the quarter for the datetime (with time 23:59:59 pm)
+ */
+export const getEndOfQuarter = (date: Dayjs | string) => {
+  return dayjs(date).endOf("quarter").hour(23).minute(59).second(59).millisecond(999);
+};
+
+/**
+ * Get the quarter number for a given date.
+ * @param date Any Dayjs object or date string representation
+ * @returns Number representing the quarter that the date is in
+ */
+export const getQuarterForDate = (date: Dayjs | string) => {
+  return dayjs(date).quarter();
 };

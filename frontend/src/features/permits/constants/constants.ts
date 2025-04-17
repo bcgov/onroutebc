@@ -53,6 +53,10 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
     label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
     items: [
       {
+        value: PERMIT_TYPES.QRFR,
+        label: getPermitTypeShortName(PERMIT_TYPES.QRFR),
+      },
+      {
         value: PERMIT_TYPES.STFR,
         label: getPermitTypeShortName(PERMIT_TYPES.STFR),
       },

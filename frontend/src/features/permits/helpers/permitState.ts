@@ -5,9 +5,11 @@ import { Nullable } from "../../../common/types/common";
 import { removeEmptyIdsFromPermitsActionResponse } from "./mappers";
 import { minDurationForPermitType } from "./dateSelection";
 import { BASE_DAYS_IN_YEAR } from "../constants/constants";
+import { isQuarterlyPermit } from "../types/PermitType";
 import {
   getDateDiffInDays,
   getEndOfDate,
+  getEndOfQuarter,
   getStartOfDate,
   now,
   toLocalDayjs,
@@ -34,8 +36,10 @@ export const daysLeftBeforeExpiry = (permit: Permit) => {
   const permitStartDate = getStartOfDate(
     toLocalDayjs(permit.permitData.startDate),
   );
+
   const permitExpiryDate = getExpiryDate(
     permitStartDate,
+    isQuarterlyPermit(permit.permitType),
     permit.permitData.permitDuration,
   );
 
@@ -58,8 +62,10 @@ export const getPermitState = (permit: Permit): PermitState => {
   const permitStartDate = getStartOfDate(
     toLocalDayjs(permit.permitData.startDate),
   );
+
   const permitExpiryDate = getExpiryDate(
     permitStartDate,
+    isQuarterlyPermit(permit.permitType),
     permit.permitData.permitDuration,
   );
 
@@ -82,9 +88,13 @@ export const getPermitState = (permit: Permit): PermitState => {
 /**
  * Get the expiry date of a permit given its start date and duration.
  * @param startDate Dayjs object representing start date
+ * @param isQuarterly Whether or not the permit is a quarterly permit
  * @param duration Number representing duration period
+ * @returns Dayjs object representing the exact expiry date
  */
-export const getExpiryDate = (startDate: Dayjs, duration: number) => {
+export const getExpiryDate = (startDate: Dayjs, isQuarterly: boolean, duration: number) => {
+  if (isQuarterly) return getEndOfQuarter(startDate);
+
   if (duration === BASE_DAYS_IN_YEAR) {
     // This is when user selects "1 year", and the library will take handle the leap year situation
     return getEndOfDate(dayjs(startDate).add(1, "year").subtract(1, "day"));
