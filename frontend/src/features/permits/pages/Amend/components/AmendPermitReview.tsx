@@ -29,7 +29,11 @@ import {
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
   const { companyId: companyIdParam } = useParams();
-  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
 
   const {
     permit,
