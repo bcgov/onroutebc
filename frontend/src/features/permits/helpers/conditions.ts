@@ -26,7 +26,7 @@ export const getMandatoryConditions = (
     case PERMIT_TYPES.STFR:
       return MANDATORY_STFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
-      return MANDATORY_MFP_CONDITIONS.concat(additionalConditions);
+      return MANDATORY_MFP_CONDITIONS; // MFP never allows additional conditions
     case PERMIT_TYPES.STOS:
       return MANDATORY_STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
@@ -49,7 +49,7 @@ const getConditionsByPermitType = (
     case PERMIT_TYPES.STFR:
       return STFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
-      return MFP_CONDITIONS.concat(additionalConditions);
+      return MFP_CONDITIONS; // MFP never allows additional conditions
     case PERMIT_TYPES.STOS:
       return STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
