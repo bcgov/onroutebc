@@ -192,6 +192,8 @@ export class CreditAccountController {
       IDIRUserRole.FINANCE,
       IDIRUserRole.HQ_ADMINISTRATOR,
       IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.CTPO,
     ],
   })
   async getCreditAccountLimit(

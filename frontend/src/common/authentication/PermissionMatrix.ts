@@ -230,6 +230,13 @@ const MANAGE_PROFILE = {
   VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
     allowedBCeIDRoles: [CA],
   },
+
+  /**
+   * View Credit Account info banner - Account holder
+   */
+  VIEW_CREDIT_ACCOUNT_INFO_BANNER_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
 } as const;
 
 const MANAGE_SETTINGS = {

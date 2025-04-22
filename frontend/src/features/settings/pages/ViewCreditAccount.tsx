@@ -13,6 +13,12 @@ import {
   CreditAccountMetadata,
 } from "../types/creditAccount";
 import "./CreditAccount.scss";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import {
+  CVSE_REVENUE_EMAIL,
+  CVSE_REVENUE_PHONE,
+} from "../../../common/constants/constants";
 
 export const ViewCreditAccount = ({
   companyId,
@@ -43,12 +49,41 @@ export const ViewCreditAccount = ({
                 <Typography variant="h3" className="overview__title">
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
-
-                <StatusChip status={creditAccount.creditAccountStatusType} />
+                <StatusChip
+                  status={creditAccount.creditAccountStatusType}
+                  isVerified={creditAccount?.isVerified}
+                />
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
+              <RenderIf
+                component={
+                  <Box className="overview__info-banner">
+                    <InfoBcGovBanner
+                      msg={
+                        <div className="overview__info-banner__banner">
+                          {BANNER_MESSAGES.CREDIT_ACCOUNT_CVSE_INFO}
+                          Phone:
+                          <span className="overview__info-banner__contact">
+                            {CVSE_REVENUE_PHONE}{" "}
+                          </span>
+                          Email:
+                          <span className="overview__info-banner__contact">
+                            {CVSE_REVENUE_EMAIL}
+                          </span>
+                        </div>
+                      }
+                    />
+                  </Box>
+                }
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                  permissionMatrixFunctionKey:
+                    "VIEW_CREDIT_ACCOUNT_INFO_BANNER_ACCOUNT_HOLDER",
+                }}
+                additionalConditionToCheck={() => isAccountHolder}
+              />
             </Box>
             <RenderIf
               component={
@@ -62,7 +97,11 @@ export const ViewCreditAccount = ({
                 permissionMatrixFunctionKey:
                   "VIEW_HOLD_OR_CLOSE_HISTORY_ACCOUNT_HOLDER",
               }}
-              additionalConditionToCheck={() => isAccountHolder}
+              additionalConditionToCheck={() =>
+                !creditAccount?.isVerified ||
+                creditAccount?.creditAccountStatusType !==
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
+              }
             />
             <RenderIf
               component={
@@ -105,9 +144,8 @@ export const ViewCreditAccount = ({
               additionalConditionToCheck={() =>
                 fromTab === "MANAGE_SETTINGS" ||
                 (fromTab === "MANAGE_PROFILE" &&
-                  creditAccount?.creditAccountStatusType !==
-                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
-                  isAccountHolder)
+                  isAccountHolder &&
+                  creditAccount?.isVerified)
               }
             />
           </Box>
@@ -139,7 +177,8 @@ export const ViewCreditAccount = ({
               fromTab === "MANAGE_SETTINGS" ||
               (fromTab === "MANAGE_PROFILE" &&
                 creditAccount.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE)
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE &&
+                creditAccount?.isVerified)
             }
           />
         </Box>

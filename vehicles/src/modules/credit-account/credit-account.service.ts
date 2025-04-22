@@ -281,13 +281,18 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveRole(currentUser.orbcUserRole, [
-        IDIRUserRole.HQ_ADMINISTRATOR,
-        IDIRUserRole.SYSTEM_ADMINISTRATOR,
-        IDIRUserRole.FINANCE,
-        IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.CTPO,
-      ])
+      !(
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          IDIRUserRole.HQ_ADMINISTRATOR,
+          IDIRUserRole.SYSTEM_ADMINISTRATOR,
+          IDIRUserRole.FINANCE,
+          IDIRUserRole.PPC_CLERK,
+          IDIRUserRole.CTPO,
+        ]) ||
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          ClientUserRole.COMPANY_ADMINISTRATOR,
+        ])
+      )
     ) {
       throw new DataNotFoundException();
     }
@@ -336,13 +341,18 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveRole(currentUser.orbcUserRole, [
-        IDIRUserRole.HQ_ADMINISTRATOR,
-        IDIRUserRole.SYSTEM_ADMINISTRATOR,
-        IDIRUserRole.FINANCE,
-        IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.CTPO,
-      ])
+      !(
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          IDIRUserRole.HQ_ADMINISTRATOR,
+          IDIRUserRole.SYSTEM_ADMINISTRATOR,
+          IDIRUserRole.FINANCE,
+          IDIRUserRole.PPC_CLERK,
+          IDIRUserRole.CTPO,
+        ]) ||
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          ClientUserRole.COMPANY_ADMINISTRATOR,
+        ])
+      )
     ) {
       throw new DataNotFoundException();
     }
@@ -1021,16 +1031,29 @@ export class CreditAccountService {
       // Throw exception if companyId is a Credit Account User and user is Company Admin.
       throw new ForbiddenException();
     } else if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      !creditAccount?.isVerified
+    ) {
+      // Throw exception credit account is unverified.
+      throw new ForbiddenException();
+    } else if (
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveRole(currentUser.orbcUserRole, [
-        IDIRUserRole.HQ_ADMINISTRATOR,
-        IDIRUserRole.SYSTEM_ADMINISTRATOR,
-        IDIRUserRole.FINANCE,
-        IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.CTPO,
-      ])
+      !(
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          IDIRUserRole.HQ_ADMINISTRATOR,
+          IDIRUserRole.SYSTEM_ADMINISTRATOR,
+          IDIRUserRole.FINANCE,
+          IDIRUserRole.PPC_CLERK,
+          IDIRUserRole.CTPO,
+        ]) ||
+        doesUserHaveRole(currentUser.orbcUserRole, [
+          ClientUserRole.COMPANY_ADMINISTRATOR,
+        ])
+      )
     ) {
       throw new DataNotFoundException();
     }
@@ -1104,6 +1127,14 @@ export class CreditAccountService {
       // Throw exception if companyId is a Credit Account User and user is Company Admin.
       throw new ForbiddenException();
     } else if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      !creditAccount?.isVerified
+    ) {
+      // Throw exception credit account is unverified.
+      throw new ForbiddenException();
+    } else if (
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
@@ -1131,6 +1162,11 @@ export class CreditAccountService {
       creditAccount,
       CreditAccount,
       ReadCreditAccountLimitDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
     );
   }
 

@@ -37,6 +37,19 @@
       &__user-designation {
         text-transform: capitalize;
       }
+
+      &__info-banner {
+        padding-top: 1.5rem;
+        padding-bottom: .75rem;
+        &__banner {
+          font-weight: normal;
+        }
+      
+        &__contact {
+          font-weight: bold;
+          margin-left: 0.25rem;
+        }
+      }      
     }
   }
 }
