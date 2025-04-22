@@ -341,7 +341,7 @@ export const TransactionHistoryTable = ({
         },
       },
     ],
-    [],
+    [totalRefundDue],
   );
 
   const table = useMaterialReactTable({
@@ -349,11 +349,14 @@ export const TransactionHistoryTable = ({
     columns: columns,
     data: validTransactionHistory,
     onRowSelectionChange: setRowSelection,
-    state: { ...defaultTableStateOptions, rowSelection },
+    state: {
+      ...defaultTableStateOptions,
+      rowSelection,
+      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
+    },
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
-      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
     },
     getRowId: (row: RefundFormData) => row.permitNumber,
     displayColumnDefOptions: {
