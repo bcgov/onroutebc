@@ -51,7 +51,7 @@ export const ViewCreditAccount = ({
                 </Typography>
                 <StatusChip
                   status={creditAccount.creditAccountStatusType}
-                  isVerified={creditAccount?.isVerified}
+                  isCreditAccountVerified={creditAccount?.isVerified}
                 />
               </Box>
               <Typography className="overview__user-designation">
