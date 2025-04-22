@@ -1,3 +1,4 @@
+import { Optional } from "../../../../common/types/common";
 import {
   CreditAccountStatusType,
   CreditAccountStatusDisplayValues,
@@ -7,7 +8,7 @@ import "./StatusChip.scss";
 
 interface StatusChipProps {
   status: CreditAccountStatusType | "SUSPENDED";
-  isVerified: boolean;
+  isVerified?: Optional<boolean>;
 }
 
 export const StatusChip = ({ status, isVerified }: StatusChipProps) => {
