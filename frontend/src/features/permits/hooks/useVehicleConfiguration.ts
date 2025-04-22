@@ -4,6 +4,7 @@ import { Policy } from "onroute-policy-engine";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../common/constants/constants";
+import { isTrailerSubtypeNone } from "../../manageVehicles/helpers/vehicleSubtypes";
 
 export const useVehicleConfiguration = (
   policyEngine: Policy,
@@ -65,8 +66,12 @@ export const useVehicleConfiguration = (
       [selectedPowerUnitSubtype, ...selectedSubtypes],
     );
 
-    // Sort next allowed subtypes so that if the option "None" is present, it appears at the very beginning
-    const hasNoneOption = nextAllowed.find(subtypeOption => subtypeOption.value === "NONEXXX");
+    // Sort next allowed subtypes so that if the option "None" is present,
+    // it appears at the very beginning
+    const hasNoneOption = nextAllowed.find(
+      subtypeOption => isTrailerSubtypeNone(subtypeOption.value),
+    );
+
     return hasNoneOption ? [
       hasNoneOption,
       ...nextAllowed.filter(({ value }) => value !== hasNoneOption.value),
