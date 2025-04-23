@@ -1,9 +1,9 @@
 @import "../../../../themes/orbcStyles";
 
 .status-chip {
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   font-size: 0.9rem;
-  padding: .25rem .75rem;
+  padding: 0.25rem 0.75rem;
   text-transform: capitalize;
 
   &--on-hold {
@@ -17,6 +17,11 @@
   }
 
   &--suspended {
+    background-color: $bc-messages-red-text;
+    color: $white;
+  }
+
+  &--unverified {
     background-color: $bc-messages-red-text;
     color: $white;
   }

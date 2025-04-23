@@ -6,12 +6,13 @@ import {
 import "./StatusChip.scss";
 
 interface StatusChipProps {
-  status: CreditAccountStatusType | "SUSPENDED";
+  status: CreditAccountStatusType | "SUSPENDED" | "UNVERIFIED";
 }
 
 export const StatusChip = ({ status }: StatusChipProps) => {
   const classModifier =
     status !== "SUSPENDED" &&
+    status !== "UNVERIFIED" &&
     CreditAccountStatusDisplayValues[status].toLowerCase().replace(" ", "-");
 
   if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE) {
@@ -24,6 +25,14 @@ export const StatusChip = ({ status }: StatusChipProps) => {
       </span>
     );
   }
+  if (status === "UNVERIFIED") {
+    return (
+      <span role="status" className="status-chip status-chip--unverified">
+        Unverified
+      </span>
+    );
+  }
+
   return (
     <span role="status" className={`status-chip status-chip--${classModifier}`}>
       {CreditAccountStatusDisplayValues[status]}
