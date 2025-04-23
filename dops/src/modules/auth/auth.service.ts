@@ -10,21 +10,7 @@ export class AuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly cls: ClsService,
-  ) {
-    this.httpService.axiosRef.interceptors.request.use(
-      (config) => {
-        config.headers['x-correlation-id'] = cls.getId();
-        config.headers['x-onroutebc-version'] = process.env.RELEASE_NUM;
-        return config;
-      },
-      undefined,
-      {
-        runWhen(config) {
-          return config.baseURL === process.env.ACCESS_API_URL;
-        },
-      },
-    );
-  }
+  ) {}
 
   @LogAsyncMethodExecution()
   async getUserDetails(
@@ -36,7 +22,6 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
-          'x-onroutebc-version': process.env.RELEASE_NUM,
           'x-correlation-id': this.cls.getId(),
         },
       }),
@@ -64,7 +49,6 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
-          'x-onroutebc-version': process.env.RELEASE_NUM,
           'x-correlation-id': this.cls.getId(),
         },
       }),
@@ -88,7 +72,6 @@ export class AuthService {
           headers: {
             Authorization: accessToken,
             'Content-Type': 'application/json',
-            'x-onroutebc-version': process.env.RELEASE_NUM,
             'x-correlation-id': this.cls.getId(),
           },
         },

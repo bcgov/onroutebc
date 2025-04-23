@@ -150,7 +150,6 @@ export class PermitService {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'x-onroutebc-version': process.env.RELEASE_NUM,
         },
       };
 
