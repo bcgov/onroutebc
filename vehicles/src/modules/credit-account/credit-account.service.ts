@@ -236,6 +236,11 @@ export class CreditAccountService {
       savedCreditAccount,
       CreditAccount,
       ReadCreditAccountDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
     );
 
     return createdCreditAccountDto;
@@ -304,6 +309,11 @@ export class CreditAccountService {
       creditAccount,
       CreditAccount,
       ReadCreditAccountDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
     );
 
     return readCreditAccountDto;

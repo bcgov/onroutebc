@@ -38,7 +38,7 @@ export const CreditAccountActivityColumnsDefinition: MRT_ColumnDef<CreditAccount
     },
     {
       accessorKey: "creditAccountActivityType",
-      header: "Status",
+      header: "Action",
       grow: false,
       Cell: (props: { row: MRT_Row<CreditAccountActivity> }) => {
         return (
