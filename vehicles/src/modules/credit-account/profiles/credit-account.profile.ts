@@ -104,7 +104,23 @@ export class CreditAccountProfile extends AutomapperProfile {
         mapper,
         CreditAccount,
         ReadCreditAccountLimitDto,
-        forMember((d) => d.creditLimit, fromValue(CreditAccountLimit[10000])),
+        forMember(
+          (d) => d.creditLimit,
+          mapWithArguments(
+            (source, { currentUser }: { currentUser: IUserJWT }) => {
+              if (
+                doesUserHaveRole(currentUser.orbcUserRole, [
+                  IDIRUserRole.PPC_CLERK,
+                  IDIRUserRole.CTPO,
+                ])
+              ) {
+                return undefined;
+              } else {
+                return CreditAccountLimit[10000]; //TODO - Change to the credit limit from GARMS
+              }
+            },
+          ),
+        ),
         forMember(
           (d) => d.creditBalance,
           mapWithArguments(
@@ -124,20 +140,7 @@ export class CreditAccountProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.availableCredit,
-          mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
-              if (
-                doesUserHaveRole(currentUser.orbcUserRole, [
-                  IDIRUserRole.PPC_CLERK,
-                  IDIRUserRole.CTPO,
-                ])
-              ) {
-                return undefined;
-              } else {
-                return 0; //TODO - Change to the calculated available balance
-              }
-            },
-          ),
+          fromValue(0), //TODO - Change to the calculated available credit
         ),
       );
 

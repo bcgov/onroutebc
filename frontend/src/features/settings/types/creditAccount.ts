@@ -199,6 +199,8 @@ export const CREDIT_ACCOUNT_ACTIVITY_TYPE = {
   CLOSED: "CLOSED",
   HOLDRMVD: "HOLDRMVD",
   ONHOLD: "ONHOLD",
+  MIGRATED: "MIGRATED",
+  VERIFIED: "VERIFIED",
 } as const;
 
 export type CreditAccountActivityType =
@@ -212,6 +214,8 @@ export const CreditAccountActivityDisplayValues: {
   REOPENED: "Account Reopened",
   ONHOLD: "On Hold",
   HOLDRMVD: "Hold Removed",
+  MIGRATED: "Migrated",
+  VERIFIED: "Account Verified",
 };
 
 export interface CreditAccountActivity {
