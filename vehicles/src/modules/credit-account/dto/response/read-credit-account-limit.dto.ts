@@ -16,14 +16,16 @@ export class ReadCreditAccountLimitDto {
   @AutoMap()
   @ApiProperty({
     description: 'The credit balance of the account.',
-    example: 1200,
+    example: 9200,
+    required: false,
   })
-  creditBalance: number;
+  creditBalance?: number;
 
   @AutoMap()
   @ApiProperty({
     description: 'The available credit of the account.',
     example: 800,
+    required: false,
   })
-  availableCredit: number;
+  availableCredit?: number;
 }
