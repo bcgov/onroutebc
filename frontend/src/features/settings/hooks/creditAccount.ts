@@ -71,7 +71,6 @@ export const useGetCreditAccountLimitsQuery = (data: {
     queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
     retry: false,
     refetchOnWindowFocus: false,
-    staleTime:0
   });
 };
 
