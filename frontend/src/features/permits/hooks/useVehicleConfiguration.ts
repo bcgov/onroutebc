@@ -64,7 +64,7 @@ export const useVehicleConfiguration = (
     const nextAllowed = getNextAllowedVehicleSubtypes(
       selectedCommodity,
       [selectedPowerUnitSubtype, ...selectedSubtypes],
-    ).filter(({ value }) => !selectedSubtypes.includes(value));
+    );
 
     // Sort next allowed subtypes so that if the option "None" is present,
     // it appears at the very beginning
