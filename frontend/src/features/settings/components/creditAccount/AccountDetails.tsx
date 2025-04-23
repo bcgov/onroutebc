@@ -212,13 +212,14 @@ export const AccountDetails = ({
           />
         </Box>
         <Box className="account-details__body">
-          <Box className="account-details__row">
-            <dt className="account-details__text">Credit Limit</dt>
-            <dd className="account-details__text">
-              {creditAccountLimitData?.creditLimit &&
-                renderValue(creditAccountLimitData.creditLimit)}
-            </dd>
-          </Box>
+          {creditAccountLimitData?.creditLimit && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Credit Limit</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.creditLimit)}
+              </dd>
+            </Box>
+          )}
           {creditAccountLimitData?.creditBalance != undefined && (
             <Box className="account-details__row">
               <dt className="account-details__text">Credit Balance</dt>
