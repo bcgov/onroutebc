@@ -31,9 +31,9 @@ export const SelectedVehicleSubtypeList = ({
         </TableHead>
 
         <TableBody>
-          {selectedSubtypesDisplay.map((subtype) => (
+          {selectedSubtypesDisplay.map((subtype, subtypeIndex) => (
             <TableRow
-              key={subtype}
+              key={`${subtype}-${subtypeIndex}`}
               className="selected-vehicle-subtype-list__row"
             >
               <TableCell
