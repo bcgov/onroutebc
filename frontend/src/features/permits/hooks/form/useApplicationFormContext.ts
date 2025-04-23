@@ -16,6 +16,7 @@ import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMetho
 import { usePermittedCommodity } from "../usePermittedCommodity";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequence";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -188,12 +189,11 @@ export const useApplicationFormContext = () => {
     selectedCommodity: permittedCommodity?.commodityType,
   });
 
-  const selectedVehicleConfigSubtypes = useMemoizedArray(
+  const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
       vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType),
     ),
-    (subtype) => subtype,
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
