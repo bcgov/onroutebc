@@ -97,11 +97,7 @@ export const ViewCreditAccount = ({
                 permissionMatrixFunctionKey:
                   "VIEW_HOLD_OR_CLOSE_HISTORY_ACCOUNT_HOLDER",
               }}
-              additionalConditionToCheck={() =>
-                !creditAccount?.isVerified ||
-                creditAccount?.creditAccountStatusType !==
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
-              }
+              additionalConditionToCheck={() => isAccountHolder}
             />
             <RenderIf
               component={
