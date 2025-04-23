@@ -17,6 +17,7 @@ export interface CreditAccountData {
   availableCredit: string;
   creditLimit: CreditAccountLimitType;
   creditBalance: number;
+  isVerified: boolean;
 }
 
 export interface CreditAccountUser
