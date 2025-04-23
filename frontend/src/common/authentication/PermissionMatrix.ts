@@ -279,7 +279,7 @@ const MANAGE_SETTINGS = {
    * Comment: Credit Limit/Current Balance/Available Credit
    */
   VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
-    allowedIDIRRoles: [SA, FIN, HQA],
+    allowedIDIRRoles: [SA, FIN, HQA, PC, CTPO],
   },
   /**
    * Perform Credit Account Detail actions - Account Holder
