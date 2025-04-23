@@ -24,8 +24,8 @@ const envConfig = (() => {
     VITE_FRONTEND_PR_NUM: "",
     VITE_POLICY_URL: "",
     VITE_RELEASE_NUM: "",
-    VITE_BC_GEOCODER_CLIENT_ID: "F7453A91-B26135167A0",
-    VITE_BC_GEOCODER_API_KEY: "FQCorfltG9Cez1qXT6vWuQAzuLVQnYUL",
-    VITE_BC_GEOCODER_API_URL: "https://geocoder.api.gov.bc.ca/addresses.json",
+    VITE_BC_GEOCODER_CLIENT_ID: "",
+    VITE_BC_GEOCODER_API_KEY: "",
+    VITE_BC_GEOCODER_API_URL: "",
   };
 })();
