@@ -1,6 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { Loading } from "../../../common/pages/Loading";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -15,16 +13,25 @@ import {
   CreditAccountMetadata,
 } from "../types/creditAccount";
 import "./CreditAccount.scss";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import {
+  CVSE_REVENUE_EMAIL,
+  CVSE_REVENUE_PHONE,
+} from "../../../common/constants/constants";
 
 export const ViewCreditAccount = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
+  fromTab,
 }: {
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
+  /**
+   * The tab from where this component is called.
+   */
+  fromTab: "MANAGE_SETTINGS" | "MANAGE_PROFILE";
 }) => {
-  const { userDetails } = useContext(OnRouteBCContext);
-
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
 
@@ -42,12 +49,41 @@ export const ViewCreditAccount = ({
                 <Typography variant="h3" className="overview__title">
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
-
+                {!creditAccount?.isVerified && (
+                  <StatusChip status="UNVERIFIED" />
+                )}
                 <StatusChip status={creditAccount.creditAccountStatusType} />
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
+              <RenderIf
+                component={
+                  <Box className="overview__info-banner">
+                    <InfoBcGovBanner
+                      msg={
+                        <div className="overview__info-banner__banner">
+                          {BANNER_MESSAGES.CREDIT_ACCOUNT_CVSE_INFO}
+                          Phone:
+                          <span className="overview__info-banner__contact">
+                            {CVSE_REVENUE_PHONE}{" "}
+                          </span>
+                          Email:
+                          <span className="overview__info-banner__contact">
+                            {CVSE_REVENUE_EMAIL}
+                          </span>
+                        </div>
+                      }
+                    />
+                  </Box>
+                }
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                  permissionMatrixFunctionKey:
+                    "VIEW_CREDIT_ACCOUNT_INFO_BANNER_ACCOUNT_HOLDER",
+                }}
+                additionalConditionToCheck={() => isAccountHolder}
+              />
             </Box>
             <RenderIf
               component={
@@ -87,12 +123,26 @@ export const ViewCreditAccount = ({
                   creditAccountMetadata={{ creditAccountId, userType }}
                 />
               }
-              permissionMatrixKeys={{
-                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-                permissionMatrixFunctionKey: isAccountHolder
-                  ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
-                  : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
-              }}
+              permissionMatrixKeys={
+                fromTab === "MANAGE_SETTINGS"
+                  ? {
+                      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                      permissionMatrixFunctionKey: isAccountHolder
+                        ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
+                        : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER",
+                    }
+                  : {
+                      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                      permissionMatrixFunctionKey:
+                        "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER",
+                    }
+              }
+              additionalConditionToCheck={() =>
+                fromTab === "MANAGE_SETTINGS" ||
+                (fromTab === "MANAGE_PROFILE" &&
+                  isAccountHolder &&
+                  creditAccount?.isVerified)
+              }
             />
           </Box>
           <RenderIf
@@ -103,24 +153,29 @@ export const ViewCreditAccount = ({
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
               />
             }
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey: isAccountHolder
-                ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
-                : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
-            }}
-            additionalConditionToCheck={() => {
+            permissionMatrixKeys={
+              fromTab === "MANAGE_SETTINGS"
+                ? {
+                    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                    permissionMatrixFunctionKey: isAccountHolder
+                      ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
+                      : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
+                  }
+                : {
+                    permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                    permissionMatrixFunctionKey:
+                      "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
+                  }
+            }
+            additionalConditionToCheck={() =>
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
-              if (userDetails?.userRole) {
-                return (
-                  creditAccount.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
-                );
-              } else {
-                return true;
-              }
-            }}
+              fromTab === "MANAGE_SETTINGS" ||
+              (fromTab === "MANAGE_PROFILE" &&
+                creditAccount.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE &&
+                creditAccount?.isVerified)
+            }
           />
         </Box>
       )}

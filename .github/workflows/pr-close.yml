@@ -18,4 +18,4 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: helm
-      packages: dops frontend scheduler vehicles policy
+      packages: dops frontend scheduler vehicles policy public

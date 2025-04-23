@@ -20,6 +20,10 @@ import { CreditAccountActivity } from '../entities/credit-account-activity.entit
 import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-account-user-details.dto';
 import { ReadCreditAccountLimitDto } from '../dto/response/read-credit-account-limit.dto';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { IDIRUserRole } from '../../../common/enum/user-role.enum';
+import { CreditAccountLimit } from '../../../common/enum/credit-account-limit.enum';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -96,7 +100,46 @@ export class CreditAccountProfile extends AutomapperProfile {
 
       createMap(mapper, CreditAccount, ReadCreditAccountDto);
 
-      createMap(mapper, CreditAccount, ReadCreditAccountLimitDto);
+      createMap(
+        mapper,
+        CreditAccount,
+        ReadCreditAccountLimitDto,
+        forMember((d) => d.creditLimit, fromValue(CreditAccountLimit[10000])),
+        forMember(
+          (d) => d.creditBalance,
+          mapWithArguments(
+            (source, { currentUser }: { currentUser: IUserJWT }) => {
+              if (
+                doesUserHaveRole(currentUser.orbcUserRole, [
+                  IDIRUserRole.PPC_CLERK,
+                  IDIRUserRole.CTPO,
+                ])
+              ) {
+                return undefined;
+              } else {
+                return 0; //TODO - Change to the calculated credit balance
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.availableCredit,
+          mapWithArguments(
+            (source, { currentUser }: { currentUser: IUserJWT }) => {
+              if (
+                doesUserHaveRole(currentUser.orbcUserRole, [
+                  IDIRUserRole.PPC_CLERK,
+                  IDIRUserRole.CTPO,
+                ])
+              ) {
+                return undefined;
+              } else {
+                return 0; //TODO - Change to the calculated available balance
+              }
+            },
+          ),
+        ),
+      );
 
       createMap(
         mapper,
