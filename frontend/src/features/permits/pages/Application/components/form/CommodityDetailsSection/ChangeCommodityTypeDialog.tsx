@@ -41,7 +41,7 @@ export const ChangeCommodityTypeDialog = ({
 
       <DialogContent className="change-commodity-type-dialog__content">
         <Typography className="change-commodity-type-dialog__warning-msg">
-          Changing your commodity will require you to re-enter your vehicle information.
+          Changing your commodity will require you to re-enter your vehicle information and loaded dimensions.
         </Typography> 
       </DialogContent>
 

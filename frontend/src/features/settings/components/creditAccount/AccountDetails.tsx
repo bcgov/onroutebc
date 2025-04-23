@@ -11,7 +11,10 @@ import {
 import { MouseEvent, useState } from "react";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { useUpdateCreditAccountStatusMutation } from "../../hooks/creditAccount";
+import {
+  useGetCreditAccountLimitsQuery,
+  useUpdateCreditAccountStatusMutation,
+} from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_STATUS_TYPE,
   CREDIT_ACCOUNT_USER_TYPE,
@@ -45,10 +48,10 @@ export const AccountDetails = ({
   const isMenuOpen = Boolean(anchorEl);
   const queryClient = useQueryClient();
 
-  // const {
-  //   data: creditAccountLimitData,
-  //   refetch: refetchCreditAccountLimitData,
-  // } = useGetCreditAccountLimitsQuery({ companyId, creditAccountId });
+  const { data: creditAccountLimitData } = useGetCreditAccountLimitsQuery({
+    companyId,
+    creditAccountId,
+  });
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
@@ -208,32 +211,31 @@ export const AccountDetails = ({
             additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>
-        {/* TODO remove mock values once API is complete */}
         <Box className="account-details__body">
-          <Box className="account-details__row">
-            <dt className="account-details__text">Credit Limit</dt>
-            <dd className="account-details__text">
-              {renderValue(100000)}
-              {/* {creditAccountLimitData?.creditLimit &&
-                renderValue(creditAccountLimitData.creditLimit)} */}
-            </dd>
-          </Box>
-          <Box className="account-details__row">
-            <dt className="account-details__text">Credit Balance</dt>
-            <dd className="account-details__text">
-              {renderValue(0)}
-              {/* {creditAccountLimitData?.creditBalance &&
-                renderValue(creditAccountLimitData.creditBalance)} */}
-            </dd>
-          </Box>
-          <Box className="account-details__row">
-            <dt className="account-details__text">Available Credit</dt>
-            <dd className="account-details__text">
-              {renderValue(100000)}
-              {/* {creditAccountLimitData?.availableCredit &&
-                renderValue(creditAccountLimitData.availableCredit)} */}
-            </dd>
-          </Box>
+          {creditAccountLimitData?.creditLimit && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Credit Limit</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.creditLimit)}
+              </dd>
+            </Box>
+          )}
+          {creditAccountLimitData?.creditBalance !== undefined && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Credit Balance</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.creditBalance)}
+              </dd>
+            </Box>
+          )}
+          {creditAccountLimitData?.availableCredit !== undefined && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Available Credit</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.availableCredit)}
+              </dd>
+            </Box>
+          )}
         </Box>
       </Box>
       {showHoldCreditAccountModal && (

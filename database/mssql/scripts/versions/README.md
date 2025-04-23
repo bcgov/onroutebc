@@ -274,3 +274,6 @@
     - permit.ORBC_CREDIT_ACCOUNT_ACTIVITY.IDIR_USER_GUID
   - Add IS_VERIFIED column with valid values 'Y' and 'N' to the permit.ORBC_CREDIT_ACCOUNT table, with default value of 'N', to indicate whether a company with a credit account has yet been verified by staff.
   - Add EXTERNAL_ADJUSTMENT column to store the unposted credit total to the permit.ORBC_CREDIT_ACCOUNT table
+
+ ### Version 70:
+- Add OUTAGE_NOTIFICATION table
