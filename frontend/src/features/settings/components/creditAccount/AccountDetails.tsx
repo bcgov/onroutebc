@@ -210,7 +210,7 @@ export const AccountDetails = ({
             }}
             additionalConditionToCheck={() => isAccountHolder}
           />
-        </Box>        
+        </Box>
         <Box className="account-details__body">
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Limit</dt>
@@ -219,7 +219,7 @@ export const AccountDetails = ({
                 renderValue(creditAccountLimitData.creditLimit)}
             </dd>
           </Box>
-          {creditAccountLimitData?.creditBalance!=undefined && (
+          {creditAccountLimitData?.creditBalance != undefined && (
             <Box className="account-details__row">
               <dt className="account-details__text">Credit Balance</dt>
               <dd className="account-details__text">
@@ -227,7 +227,7 @@ export const AccountDetails = ({
               </dd>
             </Box>
           )}
-          {creditAccountLimitData?.availableCredit!=undefined && (
+          {creditAccountLimitData?.availableCredit != undefined && (
             <Box className="account-details__row">
               <dt className="account-details__text">Available Credit</dt>
               <dd className="account-details__text">
