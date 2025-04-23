@@ -38,7 +38,10 @@ import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-use
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
-import { callDatabaseSequence } from '../../common/helper/database.helper';
+import {
+  callDatabaseSequence,
+  setBaseEntityProperties,
+} from '../../common/helper/database.helper';
 import { CreditAccountActivity } from './entities/credit-account-activity.entity';
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
@@ -523,6 +526,104 @@ export class CreditAccountService {
           currentUser.orbcUserDirectory;
         creditAccountActivity.updatedDateTime = currentDateTime;
 
+        await queryRunner.manager.save(creditAccountActivity);
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+    return await this.getCreditAccount({
+      currentUser,
+      companyId: creditAccountHolderId,
+    });
+  }
+
+  /**
+   * Verifies a credit account.
+   *
+   * This method marks a specified credit account as verified.
+   * It ensures that an unverified credit account can be marked as verified,
+   * updates the audit fields with the user's details, and records the verification activity.
+   * If the account is already verified or doesn't exist, appropriate errors are thrown.
+   *
+   * @param {Object} params - The parameters for verifying the credit account.
+   * @param {number} params.creditAccountHolderId - The ID of the holder of the credit account.
+   * @param {number} params.creditAccountId - The ID of the credit account.
+   * @param {string} params.comment - A comment detailing the reason for the verification.
+   * @param {IUserJWT} currentUser - The current user performing the verification.
+   * @returns {Promise<ReadCreditAccountDto>} - The updated credit account data transfer object.
+   * @throws {UnprocessableEntityException} - If the account is already verified or not found.
+   * @memberof CreditAccountService
+   */
+  @LogAsyncMethodExecution()
+  public async verifyCreditAccount(
+    currentUser: IUserJWT,
+    {
+      creditAccountHolderId,
+      creditAccountId,
+      comment,
+    }: {
+      creditAccountHolderId: number;
+      creditAccountId: number;
+      comment: string;
+    },
+  ): Promise<ReadCreditAccountDto> {
+    // Retrieve the credit account using credit account ID and holder ID
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
+
+    if (!creditAccount) {
+      // If no credit account is found, throw UnprocessableEntityException
+      throwUnprocessableEntityException(
+        'Invalid CreditAccount/Company combination',
+      );
+    }
+
+    if (creditAccount?.isVerified) {
+      throwUnprocessableEntityException(
+        'Credit Account is already in verified status',
+      );
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const currentDateTime: Date = new Date();
+      const { affected } = await queryRunner.manager.update(
+        CreditAccount,
+        { creditAccountId: creditAccountId },
+        {
+          isVerified: true,
+          updatedUser: currentUser.userName,
+          updatedDateTime: currentDateTime,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        },
+      );
+
+      if (affected === 1) {
+        const creditAccountActivity: CreditAccountActivity =
+          new CreditAccountActivity();
+
+        creditAccountActivity.creditAccount = creditAccount;
+        creditAccountActivity.idirUser = new User();
+        creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+        creditAccountActivity.creditAccountActivityType =
+          CreditAccountActivityType.ACCOUNT_VERIFIED;
+        creditAccountActivity.comment = comment;
+        creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
+        setBaseEntityProperties<CreditAccountActivity>({
+          entity: creditAccountActivity,
+          currentUser,
+          date: currentDateTime,
+        });
         await queryRunner.manager.save(creditAccountActivity);
       }
       await queryRunner.commitTransaction();

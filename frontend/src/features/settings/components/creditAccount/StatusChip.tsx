@@ -1,4 +1,3 @@
-import { Optional } from "../../../../common/types/common";
 import {
   CreditAccountStatusType,
   CreditAccountStatusDisplayValues,
@@ -7,16 +6,16 @@ import {
 import "./StatusChip.scss";
 
 interface StatusChipProps {
-  status: CreditAccountStatusType | "SUSPENDED";
-  isCreditAccountVerified?: Optional<boolean>;
+  status: CreditAccountStatusType | "SUSPENDED" | "UNVERIFIED";
 }
 
-export const StatusChip = ({ status, isCreditAccountVerified }: StatusChipProps) => {
+export const StatusChip = ({ status }: StatusChipProps) => {
   const classModifier =
     status !== "SUSPENDED" &&
+    status !== "UNVERIFIED" &&
     CreditAccountStatusDisplayValues[status].toLowerCase().replace(" ", "-");
 
-  if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && isCreditAccountVerified) {
+  if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE) {
     return;
   }
   if (status === "SUSPENDED") {
@@ -26,22 +25,17 @@ export const StatusChip = ({ status, isCreditAccountVerified }: StatusChipProps)
       </span>
     );
   }
+  if (status === "UNVERIFIED") {
+    return (
+      <span role="status" className="status-chip status-chip--unverified">
+        Unverified
+      </span>
+    );
+  }
 
   return (
-    <>
-      {!isCreditAccountVerified && (
-        <span role="status" className="status-chip status-chip--unverified">
-          Unverified
-        </span>
-      )}
-      {status !== CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
-        <span
-          role="status"
-          className={`status-chip status-chip--${classModifier}`}
-        >
-          {CreditAccountStatusDisplayValues[status]}
-        </span>
-      )}
-    </>
+    <span role="status" className={`status-chip status-chip--${classModifier}`}>
+      {CreditAccountStatusDisplayValues[status]}
+    </span>
   );
 };

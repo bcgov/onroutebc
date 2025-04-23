@@ -30,6 +30,7 @@ import {
 } from '../../common/enum/user-role.enum';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
+import { UpdateCreditAccountVerificationDto } from './dto/request/update-credit-account-verification.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -278,5 +279,37 @@ export class CreditAccountController {
         comment: comment,
       },
     );
+  }
+
+  /**
+   * Verifies a credit account.
+   *
+   * @param {string} companyId - The companyId path parameter.
+   * @param {string} creditAccountId - The creditAccountId path parameter.
+   * @param {string} comment - The comment to update during verification.
+   * @returns {Promise<ReadCreditAccountDto>} The result of the verification operation.
+   */
+  @ApiOperation({
+    summary: 'Verifies a credit account.',
+    description:
+      'Verifies the status of a credit account user, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The verified credit account status details.',
+    type: ReadCreditAccountDto,
+  })
+  @Put(':creditAccountId/verification')
+  @Permissions({ allowedIdirRoles: [IDIRUserRole.FINANCE] })
+  async verifyCreditAccount(
+    @Req() request: Request,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
+    @Body() { comment }: UpdateCreditAccountVerificationDto,
+  ): Promise<ReadCreditAccountDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.creditAccountService.verifyCreditAccount(currentUser, {
+      creditAccountHolderId: companyId,
+      creditAccountId,
+      comment: comment,
+    });
   }
 }

@@ -49,10 +49,10 @@ export const ViewCreditAccount = ({
                 <Typography variant="h3" className="overview__title">
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
-                <StatusChip
-                  status={creditAccount.creditAccountStatusType}
-                  isCreditAccountVerified={creditAccount?.isVerified}
-                />
+                {!creditAccount?.isVerified && (
+                  <StatusChip status="UNVERIFIED" />
+                )}
+                <StatusChip status={creditAccount.creditAccountStatusType} />
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}

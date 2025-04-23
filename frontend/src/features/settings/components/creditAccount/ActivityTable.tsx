@@ -12,12 +12,10 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import {
-  useGetCreditAccountHistoryQuery
-} from "../../hooks/creditAccount";
+import { useGetCreditAccountHistoryQuery } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_ACTIVITY_TYPE,
-  CreditAccountActivity
+  CreditAccountActivity,
 } from "../../types/creditAccount";
 import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import "./ActivityTable.scss";
@@ -38,10 +36,7 @@ export const ActivityTable = ({
     isError: fetchCreditAccountError,
   } = useGetCreditAccountHistoryQuery({ companyId, creditAccountId });
 
-  const dataToBeShown = getDefaultRequiredVal(
-    [],
-    creditAccountActivities,
-  )
+  const dataToBeShown = getDefaultRequiredVal([], creditAccountActivities)
     .filter(
       (activity: CreditAccountActivity) =>
         activity.creditAccountActivityType !==
@@ -83,7 +78,7 @@ export const ActivityTable = ({
       () => (
         <Box className="toolbar__inner">
           <Typography variant="h3" className="activity-table__heading">
-            Hold / Close History
+            Account History
           </Typography>
         </Box>
       ),
