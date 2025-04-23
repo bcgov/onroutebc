@@ -19,6 +19,8 @@ import {
   CVSE_REVENUE_EMAIL,
   CVSE_REVENUE_PHONE,
 } from "../../../common/constants/constants";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 
 export const ViewCreditAccount = ({
   companyId,
@@ -35,10 +37,15 @@ export const ViewCreditAccount = ({
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
 
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const isIdir = Boolean(idirUserDetails?.userRole);
+
   const isAccountHolder = userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
-  if (creditAccountPending) return <Loading />;
+  const isStaffOrVerifiedAccount =
+    isIdir || (!isIdir && creditAccount?.isVerified);
 
+  if (creditAccountPending) return <Loading />;
   return (
     <div className="credit-account-page">
       {creditAccount && (
@@ -47,12 +54,16 @@ export const ViewCreditAccount = ({
             <Box className="overview">
               <Box className="overview__flex">
                 <Typography variant="h3" className="overview__title">
-                  Credit Account No: {creditAccount.creditAccountNumber}
+                  Credit Account No:{" "}
+                  {isStaffOrVerifiedAccount &&
+                    creditAccount.creditAccountNumber}
                 </Typography>
                 {!creditAccount?.isVerified && (
                   <StatusChip status="UNVERIFIED" />
                 )}
-                <StatusChip status={creditAccount.creditAccountStatusType} />
+                {isStaffOrVerifiedAccount && (
+                  <StatusChip status={creditAccount.creditAccountStatusType} />
+                )}
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}
