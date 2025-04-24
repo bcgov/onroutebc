@@ -249,6 +249,7 @@ services:
         VITE_BC_GEOCODER_CLIENT_ID: ${VITE_BC_GEOCODER_CLIENT_ID}
         VITE_BC_GEOCODER_API_KEY: ${VITE_BC_GEOCODER_API_KEY}
         VITE_BC_GEOCODER_API_URL: ${VITE_BC_GEOCODER_API_URL}
+        VITE_PUBLIC_API_URL: ${VITE_PUBLIC_API_URL}
     healthcheck:
       test: "curl --silent --fail http://localhost:3000/ > /dev/null || exit 1"
       interval: 1m30s
