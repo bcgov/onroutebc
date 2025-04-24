@@ -429,6 +429,7 @@ export class PermitService {
    const permits = await this.benchmarkGetPermitsFromDB(companyId);
    return await this.benchmarkParsePermitData(permits);
   }
+  
 
   @LogAsyncMethodExecution({ printMemoryStats: true })
   public async benchmarkParsePermitData(
