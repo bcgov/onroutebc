@@ -30,6 +30,7 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
       if (
         logMethodOptions?.printMemoryStats
       ) {
+        
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
