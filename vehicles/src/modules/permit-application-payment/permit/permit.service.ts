@@ -423,6 +423,35 @@ export class PermitService {
     );
   }
 
+
+
+  @LogAsyncMethodExecution({printMemoryStats:true})
+  public async benchmarkPermitDataProcessing(    
+    companyId: number,
+  ): Promise<void> {
+    const permits = await this.benchmarkGetPermitsFromDB(companyId);
+
+    this.benchmarkParsePermitData(permits);
+  }
+
+  @LogAsyncMethodExecution({printMemoryStats:true})
+  public benchmarkParsePermitData(permits: Permit[]) {
+    for (let i = 0; i < permits.length; i++) {
+      const parsedPermitData = JSON.parse(permits[i]?.permitData?.permitData);
+    }
+  }
+
+  @LogAsyncMethodExecution({printMemoryStats:true})
+  public async benchmarkGetPermitsFromDB(companyId: number) {
+    return await this.permitRepository
+      .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
+      .leftJoinAndSelect('permit.permitData', 'permitData')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('company.companyId = :companyId', { companyId: companyId })
+      .getMany();
+  }
+
   @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,

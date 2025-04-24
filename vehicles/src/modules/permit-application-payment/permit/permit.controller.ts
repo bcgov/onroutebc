@@ -92,6 +92,12 @@ export class PermitController {
     });
   }
 
+  @AuthOnly()
+  @Get('benchmark')
+  async benchmarkPermitDataProcessing(): Promise<void> {
+    await this.permitService.benchmarkPermitDataProcessing(74);
+  }
+
   /**
    * Fetches all available permit types from the service layer and returns them.
    * Uses an @AuthOnly() decorator to enforce authentication.
