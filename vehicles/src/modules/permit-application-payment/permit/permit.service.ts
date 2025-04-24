@@ -430,6 +430,7 @@ export class PermitService {
    return await this.benchmarkParsePermitData(permits);
   }
   
+  
   @LogAsyncMethodExecution({ printMemoryStats: true })
   public async benchmarkParsePermitData(
     permits: IPermitReportDataDetails[],
