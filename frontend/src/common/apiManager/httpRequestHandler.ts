@@ -13,7 +13,10 @@ import {
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
+    const releaseNumber =
+      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
+    headers.set("x-onroutebc-version", releaseNumber);
     return config;
   },
   function (error) {
@@ -36,6 +39,11 @@ axios.interceptors.response.use(
       if (window.location.pathname !== "/service-unavailable") {
         //prevent infinite loop
         window.location.href = "/service-unavailable";
+      }
+    } else if (error.response.status === 406) {
+      if (window.location.pathname !== "/version-mismatch") {
+        //prevent infinite loop
+        window.location.href = "/version-mismatch";
       }
     } else {
       console.log("Error Details:", error);
@@ -145,10 +153,7 @@ export const getLoginUsernameFromSession = (): string => {
 export const getLoginUserGivenNameFromSession = (): string => {
   const parsedSessionObject = getUserStorage();
   if (!parsedSessionObject) return "";
-  return getDefaultRequiredVal(
-    "",
-    parsedSessionObject.profile?.given_name,    
-  );
+  return getDefaultRequiredVal("", parsedSessionObject.profile?.given_name);
 };
 
 /**
