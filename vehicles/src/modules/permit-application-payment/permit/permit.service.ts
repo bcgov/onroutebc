@@ -34,7 +34,7 @@ import { PermitData } from './entities/permit-data.entity';
 import { Base } from '../../common/entities/base.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { getMapFromCache } from 'src/common/helper/cache.helper';
+import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
@@ -57,6 +57,7 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { NotificationType } from '../../../common/enum/notification-type.enum';
 import { validateEmailList } from '../../../common/helper/notification.helper';
+import { IPermitReportDataDetails } from '../../../common/interface/permit-report-data.interface';
 
 @Injectable()
 export class PermitService {
@@ -423,33 +424,88 @@ export class PermitService {
     );
   }
 
-
-
-  @LogAsyncMethodExecution({printMemoryStats:true})
-  public async benchmarkPermitDataProcessing(    
-    companyId: number,
-  ): Promise<void> {
+  @LogAsyncMethodExecution({ printMemoryStats: true })
+  public async benchmarkPermitDataProcessing(companyId: number): Promise<void> {
     const permits = await this.benchmarkGetPermitsFromDB(companyId);
 
-    //this.benchmarkParsePermitData(permits);
+    await this.benchmarkParsePermitData(permits);
   }
 
-  @LogAsyncMethodExecution({printMemoryStats:true})
-  public benchmarkParsePermitData(permits: Permit[]) {
+  public async benchmarkParsePermitData(
+    permits: IPermitReportDataDetails[],
+  ): Promise<IPermitReportDataDetails[]> {
     for (let i = 0; i < permits.length; i++) {
-      const parsedPermitData = JSON.parse(permits[i]?.permitData?.permitData);
+      permits[i].VEH_COUNTRY_CODE = await getFromCache(
+        this.cacheManager,
+        CacheKey.COUNTRY,
+        permits[i]?.VEH_COUNTRY_CODE,
+      );
+
+      permits[i].VEH_PROVINCE_CODE = await getFromCache(
+        this.cacheManager,
+        CacheKey.COUNTRY,
+        permits[i]?.VEH_PROVINCE_CODE,
+      );
     }
+    return permits;
   }
 
-  @LogAsyncMethodExecution({printMemoryStats:true})
-  public async benchmarkGetPermitsFromDB(companyId: number) {
-    return await this.permitRepository
-      .createQueryBuilder('permit')
-      .leftJoinAndSelect('permit.company', 'company')
-      //.leftJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('company.companyId = :companyId', { companyId: companyId })
-      .getMany();
+  @LogAsyncMethodExecution({ printMemoryStats: true })
+  public async benchmarkGetPermitsFromDB(
+    companyId: number,
+  ): Promise<IPermitReportDataDetails[]> {
+    const queryBuilder = this.permitRepository.createQueryBuilder('permit');
+
+    queryBuilder
+      .select('company.CLIENT_NUMBER', 'CLIENT_NUMBER')
+      .addSelect('company.LEGAL_NAME', 'CLIENT_NAME')
+      .addSelect('company.ALTERNATE_NAME', 'CLIENT_DBA')
+      .addSelect('address.ADDRESS_LINE_1', 'CLIENT_ADDR1')
+      .addSelect('address.ADDRESS_LINE_2', 'CLIENT_ADDR2')
+      .addSelect('address.CITY', 'CLIENT_CITY')
+      .addSelect(`UPPER(address.POSTAL_CODE)`, 'CLIENT_POSTAL_CODE')
+      .addSelect('province.PROVINCE_NAME', 'CLIENT_PROVINCE')
+      .addSelect('country.COUNTRY_NAME', 'CLIENT_COUNTRY')
+      .addSelect('permit.PERMIT_ISSUED_BY_TYPE', 'OFFICE')
+      .addSelect('permit.PERMIT_NUMBER', 'PERMIT_NUMBER')
+      .addSelect('permit.PERMIT_ISSUE_DATE_TIME', 'PERMIT_ISSUE_DATE_TIME')
+      .addSelect('permitData.START_DATE', 'APP_PERMIT_START_DATE')
+      .addSelect('permitData.EXPIRY_DATE', 'APP_PERMIT_END_DATE')
+      .addSelect('permit.PERMIT_TYPE', 'PERMIT_TYPE')
+      .addSelect(
+        `json_value([PERMIT_DATA], '$.permittedCommodity.commodityType')`,
+        'COMMODITY',
+      )
+      .addSelect(
+        `json_value([PERMIT_DATA], '$.vehicleDetails.plate')`,
+        'VEH_PLATE',
+      )
+      .addSelect(`json_value([PERMIT_DATA], '$.vehicleDetails.vin')`, 'VEH_VIN')
+      .addSelect(
+        `json_value([PERMIT_DATA], '$.vehicleDetails.provinceCode')`,
+        'VEH_PROVINCE_CODE',
+      )
+      .addSelect(
+        `json_value([PERMIT_DATA], '$.vehicleDetails.countryCode')`,
+        'VEH_COUNTRY_CODE',
+      )
+      .addSelect(
+        `json_value([PERMIT_DATA], '$.permittedRoute.manualRoute.totalDistance')`,
+        'TOTAL_KM',
+      )
+      .addSelect('permit.PERMIT_STATUS_TYPE', 'STATUS');
+
+    queryBuilder
+      .innerJoin('permit.company', 'company')
+      .innerJoin('company.mailingAddress', 'address')
+      .innerJoin('address.province', 'province')
+      .innerJoin('province.country', 'country')
+      .innerJoin('permit.permitData', 'permitData')
+      .andWhere('company.companyId = :companyId', { companyId: companyId });
+
+    const permitReportDataCollection: IPermitReportDataDetails[] =
+      await queryBuilder.getRawMany();
+    return permitReportDataCollection;
   }
 
   @LogAsyncMethodExecution()
