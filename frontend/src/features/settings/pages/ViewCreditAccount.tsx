@@ -162,6 +162,7 @@ export const ViewCreditAccount = ({
                 companyId={companyId}
                 creditAccountMetadata={{ creditAccountId, userType }}
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
+                isCreditAccountVerified={creditAccount?.isVerified}
               />
             }
             permissionMatrixKeys={
