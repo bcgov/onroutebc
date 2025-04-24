@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { BadRequestExceptionDto } from './badRequestException.dto';
+import { ValidationExceptionDto } from './validation.exception.dto';
 
 export class ExceptionDto {
   constructor(
@@ -26,6 +27,10 @@ export class ExceptionDto {
   @ApiProperty({
     description: 'The optional field with additional error details',
     required: false,
+    oneOf: [
+      { $ref: getSchemaPath(BadRequestExceptionDto) },
+      { $ref: getSchemaPath(ValidationExceptionDto) },
+    ],
   })
-  error?: BadRequestExceptionDto[];
+  error?: BadRequestExceptionDto[] | ValidationExceptionDto[];
 }
