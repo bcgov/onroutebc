@@ -20,7 +20,7 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
-      logger.debug(
+      console.log(
         `>> Entering ${target.constructor.name}.${propertyKey} method${memoryUsage}`,
       );
 
@@ -35,7 +35,7 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
-      logger.debug(
+      console.log(
         `<< Exiting ${target.constructor.name}.${propertyKey} method, execution time: ${executionTime}ms${memoryUsage}`,
       );
       return result;
