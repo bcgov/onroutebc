@@ -431,7 +431,7 @@ export class PermitService {
   ): Promise<void> {
     const permits = await this.benchmarkGetPermitsFromDB(companyId);
 
-    this.benchmarkParsePermitData(permits);
+    //this.benchmarkParsePermitData(permits);
   }
 
   @LogAsyncMethodExecution({printMemoryStats:true})
@@ -446,7 +446,7 @@ export class PermitService {
     return await this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
-      .leftJoinAndSelect('permit.permitData', 'permitData')
+      //.leftJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
       .andWhere('company.companyId = :companyId', { companyId: companyId })
       .getMany();
