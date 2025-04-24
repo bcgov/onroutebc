@@ -24,7 +24,6 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import {
   CLIENT_USER_ROLE_LIST,
-  ClientUserRole,
   IDIRUserRole,
 } from '../../../common/enum/user-role.enum';
 import { CreditAccountLimit } from '../../../common/enum/credit-account-limit.enum';
