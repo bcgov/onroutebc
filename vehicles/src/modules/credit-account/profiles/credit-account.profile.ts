@@ -22,7 +22,11 @@ import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-acc
 import { ReadCreditAccountLimitDto } from '../dto/response/read-credit-account-limit.dto';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { IDIRUserRole } from '../../../common/enum/user-role.enum';
+import {
+  CLIENT_USER_ROLE_LIST,
+  ClientUserRole,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
 import { CreditAccountLimit } from '../../../common/enum/credit-account-limit.enum';
 
 @Injectable()
@@ -98,19 +102,57 @@ export class CreditAccountProfile extends AutomapperProfile {
         ),
       );
 
-      createMap(mapper, CreditAccount, ReadCreditAccountDto);
+      createMap(
+        mapper,
+        CreditAccount,
+        ReadCreditAccountDto,
+        forMember(
+          (d) => d.creditAccountNumber,
+          mapWithArguments(
+            (source, { currentUser }: { currentUser: IUserJWT }) => {
+              if (
+                !source?.isVerified &&
+                doesUserHaveRole(
+                  currentUser?.orbcUserRole,
+                  CLIENT_USER_ROLE_LIST,
+                )
+              ) {
+                return undefined;
+              } else {
+                return source.creditAccountNumber;
+              }
+            },
+          ),
+        ),
+      );
 
       createMap(
         mapper,
         CreditAccount,
         ReadCreditAccountLimitDto,
-        forMember((d) => d.creditLimit, fromValue(CreditAccountLimit[10000])),
+        forMember(
+          (d) => d.creditLimit,
+          mapWithArguments(
+            (source, { currentUser }: { currentUser: IUserJWT }) => {
+              if (
+                doesUserHaveRole(currentUser?.orbcUserRole, [
+                  IDIRUserRole.PPC_CLERK,
+                  IDIRUserRole.CTPO,
+                ])
+              ) {
+                return undefined;
+              } else {
+                return CreditAccountLimit[10000]; //TODO - Change to the credit limit from GARMS
+              }
+            },
+          ),
+        ),
         forMember(
           (d) => d.creditBalance,
           mapWithArguments(
             (source, { currentUser }: { currentUser: IUserJWT }) => {
               if (
-                doesUserHaveRole(currentUser.orbcUserRole, [
+                doesUserHaveRole(currentUser?.orbcUserRole, [
                   IDIRUserRole.PPC_CLERK,
                   IDIRUserRole.CTPO,
                 ])
@@ -124,20 +166,7 @@ export class CreditAccountProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.availableCredit,
-          mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
-              if (
-                doesUserHaveRole(currentUser.orbcUserRole, [
-                  IDIRUserRole.PPC_CLERK,
-                  IDIRUserRole.CTPO,
-                ])
-              ) {
-                return undefined;
-              } else {
-                return 0; //TODO - Change to the calculated available balance
-              }
-            },
-          ),
+          fromValue(0), //TODO - Change to the calculated available credit
         ),
       );
 

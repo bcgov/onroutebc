@@ -59,4 +59,6 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/credit-account-users`,
   UPDATE_ACCOUNT_STATUS: (companyId: number, creditAccountId: number) =>
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/status`,
+  VERIFY_ACCOUNT_STATUS: (companyId: number, creditAccountId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/verification`,
 };
