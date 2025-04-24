@@ -14,8 +14,7 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
     const originalMethod = descriptor.value;
     descriptor.value = async function (...args: any[]) {
       if (
-        logMethodOptions?.printMemoryStats &&
-        process.env.VEHICLES_API_LOG_LEVEL === 'debug'
+        logMethodOptions?.printMemoryStats
       ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
@@ -29,8 +28,7 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
       const end = performance.now();
       const executionTime = end - start;
       if (
-        logMethodOptions?.printMemoryStats &&
-        process.env.VEHICLES_API_LOG_LEVEL === 'debug'
+        logMethodOptions?.printMemoryStats
       ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
