@@ -9,6 +9,7 @@ import {
   getCreditAccount,
   getCreditAccountHistory,
   getCreditAccountLimits,
+  verifyCreditAccount,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -288,6 +289,46 @@ export const useUpdateCreditAccountStatusMutation = () => {
         showSnackbar: true,
         setShowSnackbar: () => true,
         ...getResultingSnackbarOptionsFromAction(updateStatusAction),
+      });
+    },
+    onError: (error: AxiosError) => {
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
+    },
+  });
+};
+
+/**
+ * Hook to verify a credit account.
+ * @returns Result of the credit account verification action
+ */
+export const useVerifyCreditAccountMutation = () => {
+  const navigate = useNavigate();
+  const { setSnackBar } = useContext(SnackBarContext);
+
+  return useMutation({
+    mutationFn: (data: {
+      companyId: number;
+      creditAccountId: number;
+      reason: string;
+    }) => {
+      const { companyId, creditAccountId, reason } = data;
+
+      return verifyCreditAccount({
+        companyId,
+        creditAccountId,
+        reason,
+      });
+    },
+    onSuccess: () => {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        alertType: "success",
+        message: "Account Verified",
       });
     },
     onError: (error: AxiosError) => {
