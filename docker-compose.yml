@@ -317,6 +317,9 @@ services:
       GARMS_ENV: ${GARMS_ENV}
       GARMS_CASH_FILE_INTERVAL: ${GARMS_CASH_FILE_INTERVAL}
       GARMS_CREDIT_FILE_INTERVAL: ${GARMS_CREDIT_FILE_INTERVAL}
+      EGARMS_CREDIT_API_USER: ${EGARMS_CREDIT_API_USER}
+      EGARMS_CREDIT_API_PWD: ${EGARMS_CREDIT_API_PWD}
+      EGARMS_CREDIT_API_URL: ${EGARMS_CREDIT_API_URL}
     healthcheck:
       test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
