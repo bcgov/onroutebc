@@ -197,3 +197,27 @@ export const updateCreditAccountStatus = async (data: {
   );
   return response;
 };
+
+/**
+ * Backend request to verify credit account.
+ * @param companyId Identifier of the company with which the credit Account is associated
+ * @param creditAccountId Id of the credit account we wish to add a user to
+ * @param reason The reason why the status has been updated
+ * @returns Result of the verification action, or error on fail
+ */
+
+export const verifyCreditAccount = async (data: {
+  companyId: number;
+  creditAccountId: number;
+  reason?: string;
+}) => {
+  const { companyId, creditAccountId, reason } = data;
+
+  const response = await httpPUTRequest(
+    CREDIT_ACCOUNT_API_ROUTES.VERIFY_ACCOUNT_STATUS(companyId, creditAccountId),
+    {
+      comment: reason,
+    },
+  );
+  return response;
+};
