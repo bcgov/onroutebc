@@ -425,12 +425,12 @@ export class PermitService {
   }
 
   @LogAsyncMethodExecution({ printMemoryStats: true })
-  public async benchmarkPermitDataProcessing(companyId: number): Promise<void> {
-    const permits = await this.benchmarkGetPermitsFromDB(companyId);
-
-    await this.benchmarkParsePermitData(permits);
+  public async benchmarkPermitDataProcessing(companyId: number): Promise<IPermitReportDataDetails[]> {
+   const permits = await this.benchmarkGetPermitsFromDB(companyId);
+   return await this.benchmarkParsePermitData(permits);
   }
 
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   public async benchmarkParsePermitData(
     permits: IPermitReportDataDetails[],
   ): Promise<IPermitReportDataDetails[]> {
