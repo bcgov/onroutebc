@@ -40,6 +40,8 @@ EXPOSE 5000
 # Non-root user
 USER node
 
+ENV NODE_OPTIONS='--max-old-space-size=8192'
+
 # Start the app
 CMD ["npm", "run", "start:prod"]
 
