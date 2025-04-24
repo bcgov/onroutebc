@@ -34,15 +34,16 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (
-      !error.response ||
-      error.response.status === 503 ||
-      error.response.status === 406
-    ) {
+    if (!error.response || error.response.status === 503) {
       console.error("CORS or 503 Error:", error);
       if (window.location.pathname !== "/service-unavailable") {
         //prevent infinite loop
         window.location.href = "/service-unavailable";
+      }
+    } else if (error.response.status === 406) {
+      if (window.location.pathname !== "/version-mismatch") {
+        //prevent infinite loop
+        window.location.href = "/version-mismatch";
       }
     } else {
       console.log("Error Details:", error);
@@ -152,10 +153,7 @@ export const getLoginUsernameFromSession = (): string => {
 export const getLoginUserGivenNameFromSession = (): string => {
   const parsedSessionObject = getUserStorage();
   if (!parsedSessionObject) return "";
-  return getDefaultRequiredVal(
-    "",
-    parsedSessionObject.profile?.given_name,    
-  );
+  return getDefaultRequiredVal("", parsedSessionObject.profile?.given_name);
 };
 
 /**
