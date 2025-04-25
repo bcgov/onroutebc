@@ -40,6 +40,7 @@ import { CreditAccountModule } from './modules/credit-account/credit-account.mod
 import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 import { CaseManagementModule } from './modules/case-management/case-management.module';
 import { PolicyModule } from './modules/policy/policy.module';
+import { VersionMatchMiddleware } from './common/middleware/version.middleware';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -116,6 +117,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(VersionMatchMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })

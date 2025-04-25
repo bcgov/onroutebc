@@ -24,6 +24,7 @@ import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { PolicyConfigModule } from './modules/policy-config/policy-config.module';
+import { VersionMatchMiddleware } from './middleware/version.middleware';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -84,6 +85,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(VersionMatchMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })

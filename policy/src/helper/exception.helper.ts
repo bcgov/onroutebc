@@ -5,8 +5,8 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ExceptionDto } from '../exception/exception.dto';
-import { ValidationExceptionDto } from '../exception/validation.exception.dto';
 import { BadRequestExceptionDto } from '../exception/badRequestException.dto';
+import { ValidationExceptionDto } from '../exception/validation.exception.dto';
 
 export const throwUnprocessableEntityException = (
   message: string,
@@ -19,8 +19,8 @@ export const throwUnprocessableEntityException = (
     error: [
       {
         message: message,
-        errorCode: errorCode,
         additionalInfo: additionalInfo,
+        errorCode: errorCode,
       },
     ] as ValidationExceptionDto[],
   } as ExceptionDto);
