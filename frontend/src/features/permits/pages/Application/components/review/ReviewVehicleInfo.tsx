@@ -16,7 +16,7 @@ import { SelectedVehicleSubtypeList } from "../common/SelectedVehicleSubtypeList
 import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
 import { VehicleInConfiguration } from "../../../../types/PermitVehicleConfiguration";
 import { getSubtypeNameByCode } from "../../../../helpers/mappers";
-
+import { isTrailerSubtypeNone } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 import {
   DEFAULT_VEHICLE_TYPE,
   VEHICLE_TYPES,
@@ -116,7 +116,7 @@ export const ReviewVehicleInfo = ({
       [],
       selectedVehicleConfigSubtypes,
     ).map(({ vehicleSubType }) => {
-      if (vehicleSubType === "NONEXXX") return "None";
+      if (isTrailerSubtypeNone(vehicleSubType)) return "None";
       return getDefaultRequiredVal(
         vehicleSubType,
         trailerSubtypeNamesMap.get(vehicleSubType),

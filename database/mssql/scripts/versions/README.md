@@ -257,3 +257,23 @@
 
 ### Version 68:
 - Update MPF permit templates to fix total distance.
+
+### Version 69:
+- Include support for synchronizing TPS accounts to ORBC
+  - Create tps.ORBC_TPS_MIGRATED_CREDIT_ACCOUNT table to store account numbers, owner, and status
+  - Create tps.ORBC_TPS_MIGRATED_CREDIT_USER table to store clients permitted to use the account
+  - Create tps.ORBC_TPS_MIGRATED_CREDIT_STATUS table to store amounts not yet posted to GARMS and account status
+  - Add 2 new credit account activity types to permit.ORBC_CREDIT_ACCOUNT_ACTIVITY_TYPE:
+    - MIGRATED to indicate an account was migrated from TPS
+    - VERIFIED to indicate that staff have verified the company account with the client in ORBC
+  - Add new 'UNVERIFIED' type to the permit.ORBC_CREDIT_ACCOUNT_TYPE table to indicate that we cannot determine whether an account is secured, unsecured, or prepaid based on the migrated data from TPS
+  - Add a new 'CRE' type to the tps.ETL_PROCESS_TYPE table to indicate a credit account migration process
+  - Make non-nullable columns nullable, based on data we do not need with GARMS vs. CFS:
+    - permit.ORBC_CREDIT_ACCOUNT.CFS_PARTY_NUMBER
+    - permit.ORBC_CREDIT_ACCOUNT_ACTIVITY_HIST.IDIR_USER_GUID
+    - permit.ORBC_CREDIT_ACCOUNT_ACTIVITY.IDIR_USER_GUID
+  - Add IS_VERIFIED column with valid values 'Y' and 'N' to the permit.ORBC_CREDIT_ACCOUNT table, with default value of 'N', to indicate whether a company with a credit account has yet been verified by staff.
+  - Add EXTERNAL_ADJUSTMENT column to store the unposted credit total to the permit.ORBC_CREDIT_ACCOUNT table
+
+ ### Version 70:
+- Add OUTAGE_NOTIFICATION table

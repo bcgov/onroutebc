@@ -118,11 +118,13 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           vehicleOptions={filteredVehicleOptions}
           subtypeOptions={subtypeOptions}
+          isLOAUsed={currentSelectedLOAs.length > 0}
           isSelectedLOAVehicle={isSelectedLOAVehicle}
           nextAllowedSubtypes={nextAllowedSubtypes}
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           selectedConfigSubtypes={selectedVehicleConfigSubtypes}
+          selectedCommodityType={commodityType}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}

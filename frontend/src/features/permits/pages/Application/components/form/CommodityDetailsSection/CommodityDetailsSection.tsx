@@ -79,6 +79,10 @@ export const CommodityDetailsSection = ({
       </Box>
 
       <Box className="commodity-details-section__body">
+        <h4>
+          The commodity type must be chosen before adding vehicle information.
+        </h4>
+
         <Controller
           name="permitData.permittedCommodity.commodityType"
           rules={{

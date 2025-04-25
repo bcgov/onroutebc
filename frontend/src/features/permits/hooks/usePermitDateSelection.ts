@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Dayjs } from "dayjs";
 
 import { getExpiryDate } from "../helpers/permitState";
-import { PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PermitType } from "../types/PermitType";
 import { getAvailableDurationOptions, handleUpdateDurationIfNeeded } from "../helpers/dateSelection";
 import { PermitLOA } from "../types/PermitLOA";
 import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
@@ -52,11 +52,18 @@ export const usePermitDateSelection = (
     updatedDuration,
   ]);
   
-  const expiryDate = getExpiryDate(startDate, selectedDuration);
   useEffect(() => {
+    const expiryDate = getExpiryDate(
+      startDate,
+      isQuarterlyPermit(permitType),
+      selectedDuration,
+    );
+
     onSetExpiryDate(expiryDate);
   }, [
-    expiryDate,
+    startDate,
+    selectedDuration,
+    permitType,
   ]);
 
   return { availableDurationOptions };

@@ -26,3 +26,7 @@ dependencies: # A list of the chart requirements (optional)
     repository: "https://bcgov.github.io/helm-service"
     alias: scheduler
     version: 0.3.3
+  - name: component
+    repository: "https://bcgov.github.io/helm-service"
+    alias: public
+    version: 0.3.3    

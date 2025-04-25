@@ -60,6 +60,7 @@ import {
 } from "../../../../routes/constants";
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
+import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -180,12 +181,22 @@ export const ApplicationForm = ({
         })),
     );
 
-    const updatedViolations = Object.fromEntries(
+    const policyViolations = Object.fromEntries(
       violations.map(({ fieldReference, message }) => [
         fieldReference,
         message,
       ]),
     );
+
+    // Check if vehicle subtype violations can be overriden by LOA
+    const updatedViolations = shouldOverridePolicyInvalidSubtype(
+      policyViolations,
+      currentFormData.permitData.vehicleDetails.vehicleSubType,
+      currentFormData.permitData.loas,
+    ) ? Object.fromEntries(
+      Object.entries(policyViolations)
+        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
+    ) : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -291,6 +302,7 @@ export const ApplicationForm = ({
             },
           },
         };
+    
     await saveApplication(
       {
         data: applicationToBeSaved,

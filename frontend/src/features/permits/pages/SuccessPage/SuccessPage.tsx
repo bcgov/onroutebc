@@ -29,7 +29,8 @@ export const SuccessPage = () => {
         </Box>
 
         <Box className="success__block success__block--info">
-          The permit(s) and receipt have been sent to the email provided.
+          The permit(s) and receipt have been sent to the email provided. Active
+          permits can also be viewed under the Permits tab.
         </Box>
 
         <Box className="success__block success__block--apply-permit">

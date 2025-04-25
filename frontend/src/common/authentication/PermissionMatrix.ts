@@ -78,7 +78,7 @@ const MANAGE_VEHICLE_INVENTORY = {
 const MANAGE_PERMITS = {
   VIEW_PERMITS_SCREEN: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   START_APPLICATION: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
@@ -123,7 +123,7 @@ const MANAGE_PERMITS = {
    */
   VIEW_ACTIVE_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
@@ -160,7 +160,7 @@ const MANAGE_PROFILE = {
    */
   VIEW_COMPANY_INFORMATION: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   EDIT_COMPANY_INFORMATION: {
     allowedBCeIDRoles: [CA],
@@ -230,6 +230,13 @@ const MANAGE_PROFILE = {
   VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
     allowedBCeIDRoles: [CA],
   },
+
+  /**
+   * View Credit Account info banner - Account holder
+   */
+  VIEW_CREDIT_ACCOUNT_INFO_BANNER_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
 } as const;
 
 const MANAGE_SETTINGS = {
@@ -272,7 +279,7 @@ const MANAGE_SETTINGS = {
    * Comment: Credit Limit/Current Balance/Available Credit
    */
   VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
-    allowedIDIRRoles: [SA, FIN, HQA],
+    allowedIDIRRoles: [SA, FIN, HQA, PC, CTPO],
   },
   /**
    * Perform Credit Account Detail actions - Account Holder

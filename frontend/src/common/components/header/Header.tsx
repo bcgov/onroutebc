@@ -19,7 +19,7 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
-
+import { OutageBanner } from "../../../features/outage/components/OutageBanner";
 const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
@@ -156,6 +156,7 @@ export const Header = () => {
 
   return (
     <div className="header">
+      <OutageBanner />
       <header
         className={`header__main header__main--${getEnv()}`}
         data-testid="header-background"

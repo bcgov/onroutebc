@@ -63,7 +63,6 @@ export const SnackBarContext = createContext({
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
-
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({
     showSnackbar: false,
