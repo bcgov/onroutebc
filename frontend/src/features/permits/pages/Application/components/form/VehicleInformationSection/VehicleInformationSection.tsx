@@ -20,7 +20,8 @@ import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
-import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import { Nullable, ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
 
 export const VehicleInformationSection = ({
   permitType,
@@ -28,11 +29,13 @@ export const VehicleInformationSection = ({
   vehicleFormData,
   vehicleOptions,
   subtypeOptions,
+  isLOAUsed,
   isSelectedLOAVehicle,
   nextAllowedSubtypes,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
   selectedConfigSubtypes,
+  selectedCommodityType,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
@@ -43,6 +46,7 @@ export const VehicleInformationSection = ({
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
+  isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   nextAllowedSubtypes: {
     value: string;
@@ -51,6 +55,7 @@ export const VehicleInformationSection = ({
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   selectedConfigSubtypes: string[];
+  selectedCommodityType?: Nullable<string>;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
@@ -67,6 +72,9 @@ export const VehicleInformationSection = ({
     `vehicle-information-section__info-banner` +
     `${isSingleTrip ? " vehicle-information-section__info-banner--single-trip" : ""}`;
 
+  const isCommodityTypeSelected =
+    Boolean(selectedCommodityType) && (selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE);
+
   const isPowerUnitSelectedForSingleTrip =
     isSingleTrip && Boolean(vehicleFormData.vin);
 
@@ -77,7 +85,7 @@ export const VehicleInformationSection = ({
   const { clearErrors } = useFormContext<ApplicationFormData>();
 
   const handleClickAddPowerUnit = () => {
-    if (isPowerUnitSelectedForSingleTrip) return;
+    if (isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected) return;
     setShowAddPowerUnitDialog(true);
   };
 
@@ -140,7 +148,7 @@ export const VehicleInformationSection = ({
                     aria-label="Add Power Unit"
                     variant="contained"
                     color="tertiary"
-                    disabled={isPowerUnitSelectedForSingleTrip}
+                    disabled={isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected}
                     onClick={handleClickAddPowerUnit}
                   >
                     <FontAwesomeIcon
@@ -162,6 +170,7 @@ export const VehicleInformationSection = ({
               vehicleFormData={vehicleFormData}
               vehicleOptions={vehicleOptions}
               subtypeOptions={subtypeOptions}
+              isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
               permitType={permitType}
               onSetSaveVehicle={onSetSaveVehicle}
@@ -196,6 +205,7 @@ export const VehicleInformationSection = ({
           vehicleFormData={vehicleFormData}
           vehicleOptions={vehicleOptions}
           subtypeOptions={subtypeOptions}
+          isLOAUsed={isLOAUsed}
           isSelectedLOAVehicle={isSelectedLOAVehicle}
           permitType={permitType}
           onCancel={handleClosePowerUnitDialog}

@@ -1,8 +1,8 @@
 #  Build container
 FROM node:22.14.0-alpine AS builder
 
-#install lftp for sending file to GARMS mainframe
-RUN apk update && apk add --no-cache lftp 
+#install ssh for sending file to GARMS mainframe
+RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -23,8 +23,8 @@ RUN npm prune --production
 # Deployment container
 FROM node:22.14.0-alpine
 
-#install lftp for sending file to GARMS mainframe
-RUN apk update && apk add --no-cache lftp
+#install ssh for sending file to GARMS mainframe
+RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass
 
 RUN npm cache clean --force
 

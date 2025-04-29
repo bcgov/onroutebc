@@ -59,6 +59,7 @@
     "@nestjs/testing": "^10.4.15",
     "@nestjs/typeorm": "^10.0.2",
     "@types/crypto-js": "^4.2.2",
+    "@types/ssh2-sftp-client": "^9.0.4",
     "cache-manager": "^5.7.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",

@@ -450,7 +450,7 @@ export class UsersService {
         company.accountSource === AccountSource.TpsAccount &&
         !company?.companyUsers?.length
       ) {
-        userContextDto.migratedClient =
+        userContextDto.unclaimedClient =
           await this.companyService.mapCompanyEntityToCompanyDto(company);
       } else if (company) {
         const companyMetadata =
@@ -508,13 +508,18 @@ export class UsersService {
     currentUser: IUserJWT,
     userContextDto: ReadUserOrbcStatusDto,
   ) {
-    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
-      currentUser.userName,
-      null,
-      null,
-    );
-    //Auto invite for TPS migrated client for second user onward.
-    if (!userContextDto.migratedClient) {
+    let pendingUsers: ReadPendingUserDto[] = [];
+
+    /* unClaimedClient - a company has been migrated from TPS
+      and the associated BCeID business GUID does not yet have any users attached to it.*/
+    if (!userContextDto.unclaimedClient) {
+      pendingUsers = await this.pendingUsersService.findPendingUsersDto(
+        currentUser.userName,
+        null,
+        null,
+      );
+
+      //Auto invite for TPS unclaimed client for second user onward.
       pendingUsers.push(
         ...(await this.pendingUsersService.findPendingUsersDto(
           null,
@@ -522,9 +527,21 @@ export class UsersService {
           currentUser.userGUID,
         )),
       );
+
+      if (pendingUsers?.at(0)?.companyId) {
+        const company =
+          await this.companyService.findOneCompanyWithAssociatedUsers(
+            pendingUsers?.at(0)?.companyId,
+          );
+
+        if (company && !company?.companyUsers?.length) {
+          userContextDto.unclaimedClient =
+            await this.companyService.mapCompanyEntityToCompanyDto(company);
+        }
+      }
     }
 
-    if (pendingUsers?.length) {
+    if (pendingUsers?.length && !userContextDto.unclaimedClient) {
       for (const pendingUser of pendingUsers) {
         if (
           !userContextDto.pendingCompanies?.some((company) => {

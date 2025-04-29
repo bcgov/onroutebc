@@ -34,6 +34,7 @@ frontend:
     enabled: true
     data:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      PUBLIC_API_URL: "https://{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
       POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
@@ -42,6 +43,7 @@ frontend:
         const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
             "VITE_API_VEHICLE_URL":"$ACCESS_API_URL",
+            "VITE_PUBLIC_API_URL":"$PUBLIC_API_URL",
             "VITE_POLICY_URL":"$POLICY_URL",
             "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
             "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
@@ -67,6 +69,8 @@ frontend:
         fromLocalConfigmap: 
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+          - name: PUBLIC_API_URL
+            key: PUBLIC_API_URL
           - name: POLICY_URL
             key: POLICY_URL            
           - name: DEPLOY_ENVIRONMENT
@@ -194,7 +198,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -319,6 +323,140 @@ vehicles:
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
       - "cfs-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
+
+public:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+  containers:
+    - name: public
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/public-{{.Values.global.vault.zone}} && npm run start:prod"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: public
+      tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
+      ports:
+        - name: public-api
+          containerPort: 5003
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5003
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5003
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 1
+    #-- the maximum number of replicas.
+    maxReplicas: 2
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
+  ingress:
+    className: openshift-default
+    annotations: 
+      haproxy.router.openshift.io/timeout: 2m
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5003-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5003
+  serviceAccount:
+    name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "public-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
@@ -342,7 +480,7 @@ dops:
         - "--"
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
@@ -464,6 +602,7 @@ dops:
       - "cdogs-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 scheduler:
@@ -483,7 +622,7 @@ scheduler:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
@@ -575,6 +714,7 @@ scheduler:
       - "cfs-{{tpl $.Values.vault.zone $}}"
       - "tps-{{tpl $.Values.vault.zone $}}"
       - "garms-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 policy:
@@ -594,7 +734,7 @@ policy:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/policy-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/policy-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: policy
@@ -708,4 +848,5 @@ policy:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "policy-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"

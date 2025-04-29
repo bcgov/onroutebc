@@ -13,7 +13,10 @@ import {
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
+    const releaseNumber =
+      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
+    headers.set("x-onroutebc-version", releaseNumber);
     return config;
   },
   function (error) {
@@ -33,11 +36,17 @@ axios.interceptors.response.use(
   (error) => {
     if (!error.response || error.response.status === 503) {
       console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") { //prevent infinite loop
+      if (window.location.pathname !== "/service-unavailable") {
+        //prevent infinite loop
         window.location.href = "/service-unavailable";
       }
+    } else if (error.response.status === 406) {
+      if (window.location.pathname !== "/version-mismatch") {
+        //prevent infinite loop
+        window.location.href = "/version-mismatch";
+      }
     } else {
-      console.log("Error Details:", error)
+      console.log("Error Details:", error);
       return Promise.reject(error); // Reject other errors
     }
   },
@@ -138,6 +147,16 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
+ * Retrieves given name from session
+ * @returns given name or empty string
+ */
+export const getLoginUserGivenNameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal("", parsedSessionObject.profile?.given_name);
+};
+
+/**
  * Retrieves user email from session.
  * @returns string | null | undefined
  */
@@ -173,6 +192,8 @@ export const httpGETRequestStream = (url: string) => {
     headers: {
       Authorization: getAccessToken(),
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };
@@ -190,6 +211,8 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
       Authorization: getAccessToken(),
       "Content-Type": "application/json",
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };

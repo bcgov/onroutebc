@@ -6,10 +6,13 @@ import {
   Typography,
 } from "@mui/material";
 import Card from "@mui/material/Card";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
+import {
+  getCompanyNameFromSession,
+  getLoginUserGivenNameFromSession,
+} from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
 import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
@@ -37,7 +40,7 @@ const WelcomeCompanyName = ({
     <>
       <div className="separator-line"></div>
       <div className="welcome-page__company-info">
-        <div className="company-label">Company Name</div>
+        <div className="company-label">Client Name</div>
         <div className="company-name">{companyName}</div>
       </div>
     </>
@@ -129,8 +132,25 @@ const ChallengeOption = ({
  */
 export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext, migratedClient } =
+  const givenNameFromToken = getLoginUserGivenNameFromSession();
+
+  const { companyLegalName: companyNameFromContext, unclaimedClient } =
     useContext(OnRouteBCContext);
+
+  const getClientNameToDisplay = useCallback(() => {
+    if (isInvitedUser(companyNameFromContext)) {
+      return companyNameFromContext;
+    } else if (companyNameFromToken) {
+      return companyNameFromToken;
+    } else {
+      return givenNameFromToken;
+    }
+  }, [
+    companyNameFromContext,
+    companyNameFromToken,
+    unclaimedClient,
+    givenNameFromToken,
+  ]);
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
@@ -138,11 +158,7 @@ export const WelcomePage = React.memo(() => {
           <div className="welcome-graphic"></div>
           <h2>Welcome to onRouteBC!</h2>
         </div>
-        {isInvitedUser(companyNameFromContext) ? (
-          <WelcomeCompanyName companyName={companyNameFromContext} />
-        ) : (
-          <WelcomeCompanyName companyName={companyNameFromToken} />
-        )}
+        <WelcomeCompanyName companyName={getClientNameToDisplay()} />
         <div className="separator-line"></div>
         {/**
          * If the user is an invited user to a company that exists
@@ -165,16 +181,27 @@ export const WelcomePage = React.memo(() => {
          */}
         {/**
          * No challenge Workflow
+         *
+         * If there is a matching unclaimedClient for the user, we
+         * redirect them to the company profile info wizard
+         * and prepopulate the form with the unclaimedClient data.
+         *
+         * This covers the scenario where the user is a new BCeID user and
+         * - Unclaimed company was created by staff and user was invited.
+         * - Unclaimed company was migrated from TPS WEB which had users.
+         * - Unclaimed company was migrated from TPS and business guid matches the migrated company guid.
          */}
         {!companyNameFromContext &&
-          migratedClient?.clientNumber &&
+          unclaimedClient?.clientNumber &&
           isNewCompanyProfile(companyNameFromContext) && (
             <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
           )}
         {/**
          * Challenge Workflow
+         * These options are presented if we do not know anything about the user.
+         * i.e., this is a net new BCeID user with no company in the system.
          */}
-        {!companyNameFromContext && !migratedClient && (
+        {!companyNameFromContext && !unclaimedClient && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
             <div style={{ alignSelf: "center" }}>
               Has this company purchased a commercial vehicle

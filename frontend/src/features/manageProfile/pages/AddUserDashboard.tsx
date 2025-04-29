@@ -21,10 +21,7 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
-import {
-  BCEID_PROFILE_TABS,
-  BCeIDAddUserRequest,
-} from "../types/manageProfile.d";
+import { PROFILE_TABS, BCeIDAddUserRequest } from "../types/manageProfile.d";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import { BCeID_USER_ROLE } from "../../../common/authentication/types";
@@ -52,7 +49,7 @@ export const AddUserDashboard = React.memo(() => {
   const onClickBreadCrumb = () => {
     navigate(PROFILE_ROUTES.MANAGE, {
       state: {
-        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+        selectedTab: PROFILE_TABS.USER_MANAGEMENT,
       },
     });
   };
@@ -64,9 +61,26 @@ export const AddUserDashboard = React.memo(() => {
     mutationFn: addUserToCompany,
     onError: async (error) => {
       const { response } = error as AxiosError;
-      if (response?.status === 400) {
+      if (response?.status === 422) {
+        const { error } = response.data as {
+          message: string;
+          status: number;
+          error: [
+            {
+              message: string;
+              errorCode: string;
+            },
+          ];
+        };
+        let messageToDisplay = "An unexpected error occurred.";
+        if (error[0].errorCode === "USER_ALREADY_EXISTS") {
+          messageToDisplay =
+            "Cannot add user; Check if the user already has been added";
+        } else if (error[0].errorCode === "FIRST_USER_ADMIN") {
+          messageToDisplay = "First user must be an administrator";
+        }
         setSnackBar({
-          message: "Cannot add user; Check if the user already has been added",
+          message: messageToDisplay,
           showSnackbar: true,
           setShowSnackbar: () => true,
           alertType: "error",
@@ -90,7 +104,7 @@ export const AddUserDashboard = React.memo(() => {
         });
         navigate(PROFILE_ROUTES.MANAGE, {
           state: {
-            selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+            selectedTab: PROFILE_TABS.USER_MANAGEMENT,
           },
         });
       } else {
