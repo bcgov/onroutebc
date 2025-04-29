@@ -11,7 +11,11 @@ import {
 import { MouseEvent, useState } from "react";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { useUpdateCreditAccountStatusMutation } from "../../hooks/creditAccount";
+import {
+  useGetCreditAccountLimitsQuery,
+  useUpdateCreditAccountStatusMutation,
+  useVerifyCreditAccountMutation,
+} from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_STATUS_TYPE,
   CREDIT_ACCOUNT_USER_TYPE,
@@ -24,6 +28,7 @@ import "./AccountDetails.scss";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { VerifyCreditAccountModal } from "./VerifyCreditAccountModal";
 
 /**
  * Component that displays credit limit, available balance etc.
@@ -32,12 +37,16 @@ export const AccountDetails = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
   creditAccountStatus,
+  isCreditAccountVerified,
 }: {
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
   creditAccountStatus: CreditAccountStatusType;
+  isCreditAccountVerified: boolean;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showVerifyCreditAccountModal, setShowVerifyCreditAccountModal] =
+    useState<boolean>(false);
   const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
     useState<boolean>(false);
   const [showCloseCreditAccountModal, setShowCloseCreditAccountModal] =
@@ -45,12 +54,17 @@ export const AccountDetails = ({
   const isMenuOpen = Boolean(anchorEl);
   const queryClient = useQueryClient();
 
-  // const {
-  //   data: creditAccountLimitData,
-  //   refetch: refetchCreditAccountLimitData,
-  // } = useGetCreditAccountLimitsQuery({ companyId, creditAccountId });
+  const { data: creditAccountLimitData } = useGetCreditAccountLimitsQuery({
+    companyId,
+    creditAccountId,
+  });
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
+
+  const {
+    mutateAsync: mutateAsyncVerifyCreditAccount,
+    isPending: isPendingVerifyCreditAccount,
+  } = useVerifyCreditAccountMutation();
 
   const toSentenceCase = (str: string): string => {
     if (!str) return str;
@@ -89,6 +103,27 @@ export const AccountDetails = ({
 
   const isActionSuccessful = (status: number) => {
     return status === 200;
+  };
+
+  const handleVerifyCreditAccount = async (reason: string) => {
+    if (creditAccountId) {
+      const { status } = await mutateAsyncVerifyCreditAccount({
+        companyId: getDefaultRequiredVal(0, companyId),
+        creditAccountId,
+        reason,
+      });
+
+      if (isActionSuccessful(status)) {
+        setShowVerifyCreditAccountModal(false);
+        handleMenuClose();
+        // Reload all credit account data.
+        queryClient.refetchQueries({
+          predicate: (query) => query.queryKey[0] === "credit-account",
+        });
+      } else {
+        console.error(`${status}: Failed to update credit account status.`);
+      }
+    }
   };
 
   const handleUpdateCreditAccountStatus = async (
@@ -152,6 +187,14 @@ export const AccountDetails = ({
                     "aria-labelledby": "actions-button",
                   }}
                 >
+                  {!isCreditAccountVerified && (
+                    <MenuItem
+                      onClick={() => setShowVerifyCreditAccountModal(true)}
+                      disabled={isPendingVerifyCreditAccount}
+                    >
+                      Verify Account
+                    </MenuItem>
+                  )}
                   {creditAccountStatus ===
                     CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
                     <MenuItem
@@ -208,34 +251,41 @@ export const AccountDetails = ({
             additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>
-        {/* TODO remove mock values once API is complete */}
         <Box className="account-details__body">
-          <Box className="account-details__row">
-            <dt className="account-details__text">Credit Limit</dt>
-            <dd className="account-details__text">
-              {renderValue(100000)}
-              {/* {creditAccountLimitData?.creditLimit &&
-                renderValue(creditAccountLimitData.creditLimit)} */}
-            </dd>
-          </Box>
-          <Box className="account-details__row">
-            <dt className="account-details__text">Credit Balance</dt>
-            <dd className="account-details__text">
-              {renderValue(0)}
-              {/* {creditAccountLimitData?.creditBalance &&
-                renderValue(creditAccountLimitData.creditBalance)} */}
-            </dd>
-          </Box>
-          <Box className="account-details__row">
-            <dt className="account-details__text">Available Credit</dt>
-            <dd className="account-details__text">
-              {renderValue(100000)}
-              {/* {creditAccountLimitData?.availableCredit &&
-                renderValue(creditAccountLimitData.availableCredit)} */}
-            </dd>
-          </Box>
+          {creditAccountLimitData?.creditLimit && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Credit Limit</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.creditLimit)}
+              </dd>
+            </Box>
+          )}
+          {creditAccountLimitData?.creditBalance !== undefined && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Credit Balance</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.creditBalance)}
+              </dd>
+            </Box>
+          )}
+          {creditAccountLimitData?.availableCredit !== undefined && (
+            <Box className="account-details__row">
+              <dt className="account-details__text">Available Credit</dt>
+              <dd className="account-details__text">
+                {renderValue(creditAccountLimitData.availableCredit)}
+              </dd>
+            </Box>
+          )}
         </Box>
       </Box>
+      {showVerifyCreditAccountModal && (
+        <VerifyCreditAccountModal
+          showModal={showVerifyCreditAccountModal}
+          onCancel={() => setShowVerifyCreditAccountModal(false)}
+          onConfirm={handleVerifyCreditAccount}
+          isPending={isPendingVerifyCreditAccount}
+        />
+      )}
       {showHoldCreditAccountModal && (
         <HoldCreditAccountModal
           showModal={showHoldCreditAccountModal}
