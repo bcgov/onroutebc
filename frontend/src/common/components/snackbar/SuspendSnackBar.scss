@@ -2,11 +2,11 @@
   height: fit-content;
   padding: 1rem;
   border-radius: 0.5rem;
-  position: fixed;
+  position: relative;
   left: 50%;
-  top: 8.25rem;
+  top: 0.5rem;
   transform: translate(-50%, 0);
-  z-index: 4;
+  z-index: 1000;
 
   .bc-gov-alertbanner {
     &__icon {
