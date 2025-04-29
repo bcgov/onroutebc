@@ -20,6 +20,7 @@ import {
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
 import { OutageBanner } from "../../../features/outage/components/OutageBanner";
+import { SuspendSnackBar } from "../snackbar/SuspendSnackBar";
 const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
@@ -104,6 +105,7 @@ const Navbar = ({
             </>
           )}
         </ul>
+        <SuspendSnackBar />
       </div>
     </nav>
   );
