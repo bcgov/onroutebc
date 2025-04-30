@@ -4,6 +4,7 @@ import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
+import { Optional } from "../types/common";
 
 // Need to add these plugins here
 dayjs.extend(utc); // for using utc
@@ -74,9 +75,10 @@ export const toLocal = (
   dateTimeStr: string,
   formatStr?: string,
   isDateTimeStrLocal?: boolean,
-) => isDateTimeStrLocal
-  ? dayjs(dateTimeStr).format(formatStr)
-  : dayjs(dateTimeStr).local().format(formatStr);
+) =>
+  isDateTimeStrLocal
+    ? dayjs(dateTimeStr).format(formatStr)
+    : dayjs(dateTimeStr).local().format(formatStr);
 
 /**
  * Get local DayJS object for a given UTC datetime string
@@ -150,7 +152,12 @@ export const getEndOfDate = (date: Dayjs | string) => {
  * @returns Dayjs object representing the end of the quarter for the datetime (with time 23:59:59 pm)
  */
 export const getEndOfQuarter = (date: Dayjs | string) => {
-  return dayjs(date).endOf("quarter").hour(23).minute(59).second(59).millisecond(999);
+  return dayjs(date)
+    .endOf("quarter")
+    .hour(23)
+    .minute(59)
+    .second(59)
+    .millisecond(999);
 };
 
 /**
@@ -160,4 +167,14 @@ export const getEndOfQuarter = (date: Dayjs | string) => {
  */
 export const getQuarterForDate = (date: Dayjs | string) => {
   return dayjs(date).quarter();
+};
+
+/**
+ * Convert a time string formatted as "HH:MM" to the total number of seconds.
+ * @param timeStr Optional string representing time in "HH:MM" format.
+ * @returns the total number of seconds corresponding to the provided time string.
+ */
+export const convertTimeStrToSeconds = (timeStr?: Optional<string>): number => {
+  const [hours, minutes] = timeStr ? timeStr.split(":").map(Number) : [0, 0];
+  return hours * 3600 + minutes * 60;
 };
