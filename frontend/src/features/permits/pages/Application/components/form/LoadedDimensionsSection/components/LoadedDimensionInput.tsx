@@ -18,7 +18,7 @@ export const LoadedDimensionInput = ({
   className,
   value,
   onUpdateValue,
-  required,
+  minValue,
 }: {
   name: string;
   label: {
@@ -28,16 +28,14 @@ export const LoadedDimensionInput = ({
   className: string;
   value?: Nullable<number>;
   onUpdateValue: (updateValue: RequiredOrNull<number>) => void;
-  required: boolean;
+  minValue: number;
 }) => {
   return (
     <Controller
       name={name}
       rules={{
-        required: required ? { value: true, message: requiredMessage() } : "",
-        min: required
-          ? { value: 0.01, message: mustBeGreaterThanOrEqualTo(0.01) }
-          : "",
+        required: { value: true, message: requiredMessage() },
+        min: { value: minValue, message: mustBeGreaterThanOrEqualTo(minValue) },
       }}
       render={({ fieldState: { error } }) => (
         <NumberInput

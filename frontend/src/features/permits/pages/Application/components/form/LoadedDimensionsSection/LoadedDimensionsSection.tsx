@@ -47,7 +47,7 @@ export const LoadedDimensionsSection = ({
                 overallWidth: updatedValue,
               })
             }
-            required={true}
+            minValue={0.01}
           />
 
           <LoadedDimensionInput
@@ -64,7 +64,7 @@ export const LoadedDimensionsSection = ({
                 overallHeight: updatedValue,
               })
             }
-            required={true}
+            minValue={0.01}
           />
 
           <LoadedDimensionInput
@@ -81,7 +81,7 @@ export const LoadedDimensionsSection = ({
                 overallLength: updatedValue,
               })
             }
-            required={true}
+            minValue={0.01}
           />
         </div>
 
@@ -100,7 +100,7 @@ export const LoadedDimensionsSection = ({
                 frontProjection: updatedValue,
               })
             }
-            required={false}
+            minValue={0}
           />
 
           <LoadedDimensionInput
@@ -117,7 +117,7 @@ export const LoadedDimensionsSection = ({
                 rearProjection: updatedValue,
               })
             }
-            required={false}
+            minValue={0}
           />
         </div>
       </Box>
