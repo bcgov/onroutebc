@@ -24,8 +24,8 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { useNavigate } from "react-router-dom";
-import { VerifiedClient } from "../../../../common/authentication/types";
 import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
+import { onCompanyClick } from "../helpers/CompanySelect";
 
 /*
  *
@@ -36,90 +36,17 @@ import { StatusChip } from "../../../settings/components/creditAccount/StatusChi
  *
  */
 export const IDIRCompanySearchResults = memo(
-  ({
-    searchParams,
-  }: {
-    /**
-     * The search parameters entered by the user.
-     */
-    searchParams: SearchFields;
-  }) => {
+  ({ searchParams }: { searchParams: SearchFields }) => {
     const {
       searchString: searchString,
       searchByFilter,
       searchEntity,
     } = searchParams;
 
-    const {
-      setCompanyId,
-      setCompanyLegalName,
-      setOnRouteBCClientNumber,
-      setUnclaimedClient,
-      setIsCompanySuspended,
-    } = useContext(OnRouteBCContext);
+    const context = useContext(OnRouteBCContext);
+    console.log(context);
 
     const navigate = useNavigate();
-
-    /**
-     * On click event handler for the company link.
-     * Sets the company context and directs the user to the company page.
-     *
-     * @param selectedCompany The company that the staff user clicked on.
-     */
-    const onClickCompany = (
-      selectedCompany: CompanyProfile | VerifiedClient,
-    ) => {
-      const {
-        companyId,
-        legalName,
-        clientNumber,
-        primaryContact,
-        isSuspended,
-      } = selectedCompany;
-
-      if (primaryContact?.firstName) {
-        setCompanyId?.(() => companyId);
-        setCompanyLegalName?.(() => legalName);
-        setOnRouteBCClientNumber?.(() => clientNumber);
-        setIsCompanySuspended?.(() => isSuspended);
-        sessionStorage.setItem(
-          "onRouteBC.user.companyId",
-          companyId.toString(),
-        );
-        navigate(routes.APPLICATIONS_ROUTES.BASE);
-      } else {
-        setUnclaimedClient?.(() => {
-          const {
-            migratedClientHash,
-            mailingAddress,
-            email,
-            alternateName,
-            phone,
-            extension,
-            isSuspended,
-            directory,
-          } = selectedCompany as VerifiedClient;
-
-          return {
-            clientNumber,
-            companyId,
-            legalName,
-            migratedClientHash,
-            mailingAddress,
-            email,
-            phone,
-            extension,
-            alternateName,
-            isSuspended,
-            directory,
-          };
-        });
-
-        setIsCompanySuspended?.(() => isSuspended);
-
-        navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
-      }
-    };
 
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
@@ -165,7 +92,9 @@ export const IDIRCompanySearchResults = memo(
             return (
               <>
                 <CustomActionLink
-                  onClick={() => onClickCompany(props.row.original)}
+                  onClick={() =>
+                    onCompanyClick(props.row.original, context, navigate)
+                  }
                 >
                   {props.row.original.legalName}
                 </CustomActionLink>
