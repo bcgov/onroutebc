@@ -30,29 +30,31 @@ axios.interceptors.request.use(
   },
 );
 
-// Response interceptor to handle errors globally
 axios.interceptors.response.use(
-  (response) => response, // Return response if successful
+  (response) => response,
   (error) => {
     const url = error.config?.url || '';
     const isVehiclesOrPolicyAPI = url.includes(VEHICLES_URL) || url.includes(POLICY_URL);
-    if (error.response?.status === 503 && isVehiclesOrPolicyAPI) {
-      console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") {
-        //prevent infinite loop
-        window.location.href = "/service-unavailable";
-      }
-    } else if (error.response.status === 406) {
-      if (window.location.pathname !== "/version-mismatch") {
-        //prevent infinite loop
-        window.location.href = "/version-mismatch";
+
+    if (isVehiclesOrPolicyAPI) {
+      if (!error.response || error.response.status === 503) {
+        console.error("503 or CORS error from Vehicles or Policy API:", error);
+        if (window.location.pathname !== "/service-unavailable") {
+          window.location.href = "/service-unavailable";
+        }
+      } else if (error.response.status === 406) {
+        if (window.location.pathname !== "/version-mismatch") {
+          window.location.href = "/version-mismatch";
+        }
+      } else {
+        return Promise.reject(error);
       }
     } else {
-      console.log("Error Details:", error);
-      return Promise.reject(error); // Reject other errors
+      return Promise.reject(error);
     }
-  },
+  }
 );
+
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
