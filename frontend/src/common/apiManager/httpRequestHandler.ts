@@ -40,10 +40,12 @@ axios.interceptors.response.use(
       if (!error.response || error.response.status === 503) {
         console.error("503 or CORS error from Vehicles or Policy API:", error);
         if (window.location.pathname !== "/service-unavailable") {
+          //prevent infinite loop
           window.location.href = "/service-unavailable";
         }
       } else if (error.response.status === 406) {
         if (window.location.pathname !== "/version-mismatch") {
+          //prevent infinite loop
           window.location.href = "/version-mismatch";
         }
       } else {
