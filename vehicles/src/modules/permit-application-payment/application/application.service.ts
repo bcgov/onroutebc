@@ -472,6 +472,7 @@ export class ApplicationService {
     // Filter permits without permit numbers (i.e., applications)
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
+    // Remove amend applications from the list
     permitsQuery = permitsQuery.where('permit.revision = :revision', {
       revision: 0,
     });
