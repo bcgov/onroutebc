@@ -205,6 +205,13 @@ export class CompanyApplicationController {
     // Extracts the user object from the request, casting it to the expected IUserJWT type
     const currentUser = request.user as IUserJWT;
 
+    //CV Clients do not have permission tofetch amendment application
+    if (
+      amendment &&
+      doesUserHaveRole(currentUser.orbcUserRole, CLIENT_USER_ROLE_LIST)
+    ) {
+      throw new ForbiddenException();
+    }
     // Based on the amendment query parameter, selects the appropriate method to retrieve
     // either the application or its current amendment, passing the permitId and current user for authorization and filtering
     const retApplicationDto = !amendment
