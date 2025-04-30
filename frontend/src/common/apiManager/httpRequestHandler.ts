@@ -2,7 +2,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { Nullable, RequiredOrNull } from "../types/common";
-import { GEOCODER_URL } from "./endpoints/endpoints";
+import { GEOCODER_URL, VEHICLES_URL } from "./endpoints/endpoints";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
@@ -34,7 +34,10 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (!error.response || error.response.status === 503) {
+    const url = error.config?.url || '';
+    const isVehiclesAPI = url.includes(VEHICLES_URL);
+
+    if (error.response?.status === 503 && isVehiclesAPI) {
       console.error("CORS or 503 Error:", error);
       if (window.location.pathname !== "/service-unavailable") {
         //prevent infinite loop
