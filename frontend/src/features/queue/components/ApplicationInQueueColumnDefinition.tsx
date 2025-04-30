@@ -4,7 +4,6 @@ import { CustomNavLink } from "../../../common/components/links/CustomNavLink";
 import { APPLICATION_QUEUE_ROUTES } from "../../../routes/constants";
 import { ApplicationListItem } from "../../permits/types/application";
 import { getPermitTypeName } from "../../permits/types/PermitType";
-import { Optional } from "../../../common/types/common";
 import { convertTimeStrToSeconds } from "../../../common/helpers/formatDate";
 
 export const getApplicationInQueueColumnDefinition = (
