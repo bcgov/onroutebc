@@ -65,13 +65,13 @@ export const getApplicationInQueueColumnDefinition = (
   {
     accessorKey: "startDate",
     id: "startDate",
-    enableSorting: true,
+    enableSorting: false,
     header: "Permit Start Date",
     size: 140,
   },
   {
     accessorKey: "timeInQueue",
-    enableSorting: false,
+    enableSorting: true,
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
     size: 200,   

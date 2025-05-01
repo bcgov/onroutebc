@@ -3,7 +3,10 @@ import { Controller } from "react-hook-form";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
-import { Nullable, RequiredOrNull } from "../../../../../../../../common/types/common";
+import {
+  Nullable,
+  RequiredOrNull,
+} from "../../../../../../../../common/types/common";
 import {
   mustBeGreaterThanOrEqualTo,
   requiredMessage,
@@ -15,6 +18,7 @@ export const LoadedDimensionInput = ({
   className,
   value,
   onUpdateValue,
+  minValue,
 }: {
   name: string;
   label: {
@@ -24,15 +28,16 @@ export const LoadedDimensionInput = ({
   className: string;
   value?: Nullable<number>;
   onUpdateValue: (updateValue: RequiredOrNull<number>) => void;
+  minValue: number;
 }) => {
   return (
     <Controller
       name={name}
       rules={{
         required: { value: true, message: requiredMessage() },
-        min: { value: 0.01, message: mustBeGreaterThanOrEqualTo(0.01) },
+        min: { value: minValue, message: mustBeGreaterThanOrEqualTo(minValue) },
       }}
-      render={({ fieldState: {error} }) => (
+      render={({ fieldState: { error } }) => (
         <NumberInput
           label={label}
           classes={{
@@ -56,9 +61,13 @@ export const LoadedDimensionInput = ({
               },
             },
           }}
-          helperText={error?.message ? {
-            errors: [error.message],
-          } : undefined}
+          helperText={
+            error?.message
+              ? {
+                  errors: [error.message],
+                }
+              : undefined
+          }
         />
       )}
     />
