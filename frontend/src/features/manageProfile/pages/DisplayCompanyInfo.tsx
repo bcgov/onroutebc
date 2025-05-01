@@ -21,15 +21,49 @@ export const DisplayInfo = memo(
     companyInfo?: CompanyProfile;
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    const userEmail = getUserEmailFromSession();
+    const doingBusinessAs = companyInfo?.alternateName;
+
+    const mailingAddressLine1 = companyInfo?.mailingAddress?.addressLine1;
     const mailingCountry = getCountryFullName(
       companyInfo?.mailingAddress?.countryCode,
     );
+    const mailingCityAndPostal = `${companyInfo?.mailingAddress?.city} ${companyInfo?.mailingAddress?.postalCode}`;
     const mailingProvince = getProvinceFullName(
       companyInfo?.mailingAddress?.countryCode,
       companyInfo?.mailingAddress?.provinceCode,
     );
+    const shouldShowMailingAddress =
+      mailingAddressLine1 ||
+      mailingCountry ||
+      mailingCityAndPostal ||
+      mailingProvince;
 
+    const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
+      const extDisplay = ext ? `Ext: ${ext}` : "";
+      return `${getFormattedPhoneNumber(phone)} ${extDisplay}`;
+    };
+
+    const userEmail = getUserEmailFromSession();
+    const contactDetailsEmail = getDefaultRequiredVal(
+      "",
+      companyInfo?.email,
+      userEmail,
+    );
+    const contactDetailsPhone = phoneDisplay(
+      getDefaultRequiredVal("", companyInfo?.phone),
+      companyInfo?.extension,
+    );
+    const shouldShowContactDetails = contactDetailsEmail || contactDetailsPhone;
+
+    const primaryContactFullName = `${companyInfo?.primaryContact?.firstName} ${companyInfo?.primaryContact?.lastName}`;
+    const primaryContactEmail = getDefaultRequiredVal(
+      "",
+      companyInfo?.primaryContact?.email,
+    );
+    const primaryContactPhone = phoneDisplay(
+      getDefaultRequiredVal("", companyInfo?.primaryContact?.phone1),
+      companyInfo?.primaryContact?.phone1Extension,
+    );
     const primaryContactCountry = getCountryFullName(
       companyInfo?.primaryContact?.countryCode,
     );
@@ -37,11 +71,15 @@ export const DisplayInfo = memo(
       companyInfo?.primaryContact?.countryCode,
       companyInfo?.primaryContact?.provinceCode,
     );
+    const primaryContactCity = companyInfo?.primaryContact?.city;
 
-    const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
-      const extDisplay = ext ? `Ext: ${ext}` : "";
-      return `${getFormattedPhoneNumber(phone)} ${extDisplay}`;
-    };
+    const shouldShowPrimaryContact =
+      primaryContactFullName ||
+      primaryContactEmail ||
+      primaryContactPhone ||
+      primaryContactCountry ||
+      primaryContactProvince ||
+      primaryContactCity;
 
     const enableEditCompanyInformationButton = usePermissionMatrix({
       permissionMatrixKeys: {
@@ -50,62 +88,79 @@ export const DisplayInfo = memo(
       },
     });
 
+    const EmptyState = () => (
+      <>
+        <br />
+        <br />
+      </>
+    );
+
     return companyInfo ? (
       <div className="display-company-info">
         <Box>
-          {companyInfo.alternateName ? (
-            <>
-              <Typography variant="h3">Doing Business As (DBA)</Typography>
-              <Typography>{companyInfo.alternateName}</Typography>
-            </>
-          ) : null}
+          <Typography variant="h3">Doing Business As (DBA)</Typography>
+
+          {doingBusinessAs ? (
+            <Typography>{doingBusinessAs}</Typography>
+          ) : (
+            <EmptyState />
+          )}
 
           <Typography variant="h3">Company Mailing Address</Typography>
-
-          <Typography>{companyInfo.mailingAddress.addressLine1}</Typography>
-
-          <Typography>{mailingCountry}</Typography>
-
-          {mailingProvince ? <Typography>{mailingProvince}</Typography> : null}
-
-          <Typography>
-            {`${companyInfo.mailingAddress.city} ${companyInfo.mailingAddress.postalCode}`}
-          </Typography>
+          {shouldShowMailingAddress ? (
+            <>
+              {mailingAddressLine1 && (
+                <Typography>{mailingAddressLine1}</Typography>
+              )}
+              {mailingCountry && <Typography>{mailingCountry}</Typography>}
+              {mailingProvince && <Typography>{mailingProvince}</Typography>}
+              {mailingCityAndPostal && (
+                <Typography>{mailingCityAndPostal}</Typography>
+              )}
+            </>
+          ) : (
+            <EmptyState />
+          )}
 
           <Typography variant="h3">Company Contact Details</Typography>
-
-          <Typography>
-            Email: {getDefaultRequiredVal("", companyInfo.email, userEmail)}
-          </Typography>
-
-          <Typography>
-            {`Phone: ${phoneDisplay(companyInfo.phone, companyInfo.extension)}`}
-          </Typography>
+          {shouldShowContactDetails ? (
+            <>
+              {contactDetailsEmail && (
+                <Typography>Email: {contactDetailsEmail}</Typography>
+              )}
+              {contactDetailsPhone && (
+                <Typography>Phone: {contactDetailsPhone}</Typography>
+              )}
+            </>
+          ) : (
+            <EmptyState />
+          )}
 
           <Typography variant="h3">Company Primary Contact</Typography>
-
-          <Typography>
-            {`${companyInfo.primaryContact.firstName} ${companyInfo.primaryContact.lastName}`}
-          </Typography>
-
-          <Typography>
-            Email: {getDefaultRequiredVal("", companyInfo.primaryContact.email)}
-          </Typography>
-
-          <Typography>
-            {`Primary Phone: ${phoneDisplay(
-              companyInfo.primaryContact.phone1,
-              companyInfo.primaryContact.phone1Extension,
-            )}`}
-          </Typography>
-
-          <Typography>{primaryContactCountry}</Typography>
-
-          {primaryContactProvince ? (
-            <Typography>{primaryContactProvince}</Typography>
-          ) : null}
-
-          <Typography>{companyInfo.primaryContact.city}</Typography>
+          {shouldShowPrimaryContact ? (
+            <>
+              {primaryContactFullName && (
+                <Typography>{primaryContactFullName}</Typography>
+              )}
+              {primaryContactEmail && (
+                <Typography>Email: {primaryContactEmail}</Typography>
+              )}
+              {primaryContactPhone && (
+                <Typography>Primary Phone: {primaryContactPhone}</Typography>
+              )}
+              {primaryContactCountry && (
+                <Typography>{primaryContactCountry}</Typography>
+              )}
+              {primaryContactProvince && (
+                <Typography>{primaryContactProvince}</Typography>
+              )}
+              {primaryContactCity && (
+                <Typography>{primaryContactCity}</Typography>
+              )}
+            </>
+          ) : (
+            <EmptyState />
+          )}
         </Box>
 
         <div className="display-company-info__edit">
