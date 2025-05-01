@@ -27,7 +27,15 @@ export const DisplayInfo = memo(
     const mailingCountry = getCountryFullName(
       companyInfo?.mailingAddress?.countryCode,
     );
-    const mailingCityAndPostal = `${companyInfo?.mailingAddress?.city} ${companyInfo?.mailingAddress?.postalCode}`;
+    const mailingCity = getDefaultRequiredVal(
+      "",
+      companyInfo?.mailingAddress?.city,
+    );
+    const mailingPostalCode = getDefaultRequiredVal(
+      "",
+      companyInfo?.mailingAddress?.postalCode,
+    );
+    const mailingCityAndPostalCode = `${mailingCity} ${mailingPostalCode}`;
     const mailingProvince = getProvinceFullName(
       companyInfo?.mailingAddress?.countryCode,
       companyInfo?.mailingAddress?.provinceCode,
@@ -35,7 +43,7 @@ export const DisplayInfo = memo(
     const shouldShowMailingAddress =
       mailingAddressLine1 ||
       mailingCountry ||
-      mailingCityAndPostal ||
+      mailingCityAndPostalCode ||
       mailingProvince;
 
     const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
@@ -54,8 +62,15 @@ export const DisplayInfo = memo(
       companyInfo?.extension,
     );
     const shouldShowContactDetails = contactDetailsEmail || contactDetailsPhone;
-
-    const primaryContactFullName = `${companyInfo?.primaryContact?.firstName} ${companyInfo?.primaryContact?.lastName}`;
+    const primaryContactFirstName = getDefaultRequiredVal(
+      "",
+      companyInfo?.primaryContact?.firstName,
+    );
+    const primaryContactLastName = getDefaultRequiredVal(
+      "",
+      companyInfo?.primaryContact?.lastName,
+    );
+    const primaryContactFullName = `${primaryContactFirstName} ${primaryContactLastName}`;
     const primaryContactEmail = getDefaultRequiredVal(
       "",
       companyInfo?.primaryContact?.email,
@@ -114,8 +129,8 @@ export const DisplayInfo = memo(
               )}
               {mailingCountry && <Typography>{mailingCountry}</Typography>}
               {mailingProvince && <Typography>{mailingProvince}</Typography>}
-              {mailingCityAndPostal && (
-                <Typography>{mailingCityAndPostal}</Typography>
+              {mailingCityAndPostalCode && (
+                <Typography>{mailingCityAndPostalCode}</Typography>
               )}
             </>
           ) : (
