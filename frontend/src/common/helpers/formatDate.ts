@@ -74,9 +74,10 @@ export const toLocal = (
   dateTimeStr: string,
   formatStr?: string,
   isDateTimeStrLocal?: boolean,
-) => isDateTimeStrLocal
-  ? dayjs(dateTimeStr).format(formatStr)
-  : dayjs(dateTimeStr).local().format(formatStr);
+) =>
+  isDateTimeStrLocal
+    ? dayjs(dateTimeStr).format(formatStr)
+    : dayjs(dateTimeStr).local().format(formatStr);
 
 /**
  * Get local DayJS object for a given UTC datetime string
@@ -150,7 +151,12 @@ export const getEndOfDate = (date: Dayjs | string) => {
  * @returns Dayjs object representing the end of the quarter for the datetime (with time 23:59:59 pm)
  */
 export const getEndOfQuarter = (date: Dayjs | string) => {
-  return dayjs(date).endOf("quarter").hour(23).minute(59).second(59).millisecond(999);
+  return dayjs(date)
+    .endOf("quarter")
+    .hour(23)
+    .minute(59)
+    .second(59)
+    .millisecond(999);
 };
 
 /**

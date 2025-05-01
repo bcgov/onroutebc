@@ -74,7 +74,7 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
     enableSorting: false,
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
-    size: 200,
+    size: 200
   },
   {
     accessorKey: "claimedBy",
