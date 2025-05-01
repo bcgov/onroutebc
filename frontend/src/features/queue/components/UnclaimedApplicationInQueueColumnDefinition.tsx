@@ -65,13 +65,13 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
   {
     accessorKey: "startDate",
     id: "startDate",
-    enableSorting: false,
+    enableSorting: true,
     header: "Permit Start Date",
     size: 140,
   },
   {
     accessorKey: "timeInQueue",
-    enableSorting: true,
+    enableSorting: false,
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
     size: 200,

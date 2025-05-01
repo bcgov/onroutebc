@@ -108,7 +108,10 @@ export const useApplicationsInQueueQuery = () => {
  */
 export const useClaimedApplicationsInQueueQuery = () => {
   const { pagination, setPagination, sorting, setSorting, orderBy } =
-    useTableControls({ pageSize: 25 });
+    useTableControls({
+      pageSize: 25,
+      initialSorting: [{ id: "updatedDateTime", desc: false }],
+    });
 
   const claimedApplicationsInQueueQuery = useQuery({
     queryKey: QUEUE_QUERY_KEYS.WITH_PAGINATION(
@@ -146,7 +149,7 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls({
       pageSize: 25,
-      initialSorting: [{ id: "timeInQueue", desc: true }],
+      initialSorting: [{ id: "updatedDateTime", desc: false }],
     });
 
   const unclaimedApplicationsInQueueQuery = useQuery({
