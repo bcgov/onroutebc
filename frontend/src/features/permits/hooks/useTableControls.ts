@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 
-export const useTableControls = ({ pageSize = 10 } = {}) => {
+export const useTableControls = ({
+  pageSize = 10,
+  initialSorting = [{ id: "updatedDateTime", desc: true }],
+} = {}) => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize,
   });
 
-  const [sorting, setSorting] = useState<MRT_SortingState>([
-    {
-      id: "updatedDateTime",
-      desc: true,
-    },
-  ]);
+  const [sorting, setSorting] = useState<MRT_SortingState>(initialSorting);
 
   const orderBy =
     sorting.length > 0

@@ -4,7 +4,6 @@ import { CustomNavLink } from "../../../common/components/links/CustomNavLink";
 import { APPLICATION_QUEUE_ROUTES } from "../../../routes/constants";
 import { ApplicationListItem } from "../../permits/types/application";
 import { getPermitTypeName } from "../../permits/types/PermitType";
-import { convertTimeStrToSeconds } from "../../../common/helpers/formatDate";
 
 export const getUnclaimedApplicationInQueueColumnDefinition = (
   handleFollowApplicationLink: (application: ApplicationListItem) => void,
@@ -66,22 +65,16 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
   {
     accessorKey: "startDate",
     id: "startDate",
-    enableSorting: false,
+    enableSorting: true,
     header: "Permit Start Date",
     size: 140,
   },
   {
     accessorKey: "timeInQueue",
-    enableSorting: true,
+    enableSorting: false,
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
-    size: 200,
-    sortingFn: (rowA, rowB) => {
-      const timeA = convertTimeStrToSeconds(rowA?.original?.timeInQueue);
-      const timeB = convertTimeStrToSeconds(rowB?.original?.timeInQueue);
-      // Sort in descending order (larger times come first)
-      return timeB - timeA;
-    },
+    size: 200
   },
   {
     accessorKey: "claimedBy",
