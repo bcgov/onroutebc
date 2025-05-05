@@ -5,11 +5,11 @@ import { CustomExternalLink } from "../components/links/CustomExternalLink";
 export const VersionMismatchErrorPage = () => {
   return (
     <ErrorPage
-      errorTitle="Unexpected Error"
+      errorTitle="OnRouteBC was updated!"
       msgNode={
         <div className="unexpected-error-msg">
           <span className="unexpected-error-msg__text">
-            Please try reloading the browser. If the error
+            Click <a onClick={() => {}}>here</a> to continue.
           </span>
           <br></br>
           <span className="unexpected-error-msg__text">
