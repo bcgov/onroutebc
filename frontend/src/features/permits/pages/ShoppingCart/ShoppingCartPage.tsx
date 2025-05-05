@@ -273,6 +273,21 @@ export const ShoppingCartPage = () => {
     });
   };
 
+  const handlePayWithCreditAccount = () => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
+      ],
+    });
+  };
+
   // Paying for no-fee permits
   const handlePayForNoFee = () => {
     startTransactionMutation.mutate({
@@ -319,6 +334,8 @@ export const ShoppingCartPage = () => {
       handlePayWithGA(serviceBCOfficeId);
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {
       handlePayWithPayBC();
+    } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ACCOUNT) {
+      handlePayWithCreditAccount();
     }
   };
 
