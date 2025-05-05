@@ -608,7 +608,7 @@ export class PaymentService {
 
       for (const policyValidation of policyValidationDto) {
         if (policyValidation?.violations?.length) {
-          const policyEngineValdiationFailure =
+          const policyEngineValidationFailure =
             policyValidation?.violations?.some(
               (violation) =>
                 violation?.fieldReference !== 'permitData.startDate',
