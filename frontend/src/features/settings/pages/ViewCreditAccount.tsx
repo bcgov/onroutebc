@@ -132,12 +132,7 @@ export const ViewCreditAccount = ({
               component={
                 <UserTable
                   companyId={companyId}
-                  creditAccountMetadata={{
-                    creditAccountId,
-                    userType,
-                    isValidPaymentMethod:
-                      creditAccountMetadata.isValidPaymentMethod,
-                  }}
+                  creditAccountMetadata={creditAccountMetadata}
                 />
               }
               permissionMatrixKeys={
