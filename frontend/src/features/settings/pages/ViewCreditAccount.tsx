@@ -24,7 +24,7 @@ import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 
 export const ViewCreditAccount = ({
   companyId,
-  creditAccountMetadata: { creditAccountId, userType },
+  creditAccountMetadata,
   fromTab,
 }: {
   companyId: number;
@@ -34,6 +34,7 @@ export const ViewCreditAccount = ({
    */
   fromTab: "MANAGE_SETTINGS" | "MANAGE_PROFILE";
 }) => {
+  const { creditAccountId, userType } = creditAccountMetadata;
   const { data: creditAccount, isPending: creditAccountPending } =
     useGetCreditAccountQuery(companyId, creditAccountId);
 
@@ -131,7 +132,12 @@ export const ViewCreditAccount = ({
               component={
                 <UserTable
                   companyId={companyId}
-                  creditAccountMetadata={{ creditAccountId, userType }}
+                  creditAccountMetadata={{
+                    creditAccountId,
+                    userType,
+                    isValidPaymentMethod:
+                      creditAccountMetadata.isValidPaymentMethod,
+                  }}
                 />
               }
               permissionMatrixKeys={
@@ -160,7 +166,7 @@ export const ViewCreditAccount = ({
             component={
               <AccountDetails
                 companyId={companyId}
-                creditAccountMetadata={{ creditAccountId, userType }}
+                creditAccountMetadata={creditAccountMetadata}
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
                 isCreditAccountVerified={creditAccount?.isVerified}
               />
