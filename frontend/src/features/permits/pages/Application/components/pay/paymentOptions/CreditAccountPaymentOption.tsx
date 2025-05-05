@@ -5,6 +5,9 @@ import {
 } from "../../../../../../../common/types/paymentMethods";
 import "./CreditAccountPaymentOption.scss";
 import { RenderIf } from "../../../../../../../common/components/reusable/RenderIf";
+import { useGetCreditAccountMetadataQuery } from "../../../../../../settings/hooks/creditAccount";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../../../../../common/authentication/OnRouteBCContext";
 
 const paymentMethod = PAYMENT_METHOD_TYPE_CODE.ACCOUNT;
 
@@ -17,6 +20,12 @@ export const CreditAccountPaymentOption = ({
     selectedPaymentMethod: PaymentMethodTypeCode,
   ) => void;
 }) => {
+  const { companyId } = useContext(OnRouteBCContext);
+  const {
+    isPending,
+    data: creditAccountMetadata,
+    isError,
+  } = useGetCreditAccountMetadataQuery(companyId as number, true);
   return (
     <RenderIf
       component={
@@ -47,6 +56,11 @@ export const CreditAccountPaymentOption = ({
       permissionMatrixKeys={{
         permissionMatrixFeatureKey: "MISCELLANEOUS",
         permissionMatrixFunctionKey: "PAY_WITH_CREDIT_ACCOUNT",
+      }}
+      additionalConditionToCheck={() => {
+        return (
+          !isPending && !isError && creditAccountMetadata?.isValidPaymentMethod
+        );
       }}
     />
   );
