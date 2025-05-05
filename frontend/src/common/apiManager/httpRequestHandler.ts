@@ -192,6 +192,8 @@ export const httpGETRequestStream = (url: string) => {
     headers: {
       Authorization: getAccessToken(),
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };
@@ -209,6 +211,8 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
       Authorization: getAccessToken(),
       "Content-Type": "application/json",
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };
