@@ -124,6 +124,7 @@ export const PermitForm = () => {
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           selectedConfigSubtypes={selectedVehicleConfigSubtypes}
+          selectedCommodityType={commodityType}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}

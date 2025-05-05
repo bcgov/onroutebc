@@ -102,6 +102,43 @@ services:
     ports:
       - "5000:5000"
 
+  public-api:
+    container_name: public-api
+    build:
+      context: ./public/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_LOG_LEVEL: ${PUBLIC_API_LOG_LEVEL}
+      PUBLIC_API_TYPEORM_LOG_LEVEL: ${PUBLIC_API_TYPEORM_LOG_LEVEL}
+      PUBLIC_API_MAX_QUERY_EXECUTION_TIME_MS: ${PUBLIC_API_MAX_QUERY_EXECUTION_TIME_MS}
+      PUBLIC_API_MSSQL_MAX_CONNECTION: ${PUBLIC_API_MSSQL_MAX_CONNECTION}
+      FRONTEND_URL: "http://frontend:3000"
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      PUBLIC_API_RATE_LIMIT: ${PUBLIC_API_RATE_LIMIT}
+      PUBLIC_API_THROTTLER_TTL_MS: ${PUBLIC_API_THROTTLER_TTL_MS}
+      PUBLIC_API_NOTIFICATION_DB_CACHE_TTL_MS: ${PUBLIC_API_NOTIFICATION_DB_CACHE_TTL_MS}
+    healthcheck:
+      test: "curl --silent --fail http://localhost:5003/ > /dev/null || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: public-api
+    links:
+      - sql-server-db
+    ports:
+      - "5003:5003"
+
   dops-api:
     container_name: dops-api
     build:
@@ -212,6 +249,7 @@ services:
         VITE_BC_GEOCODER_CLIENT_ID: ${VITE_BC_GEOCODER_CLIENT_ID}
         VITE_BC_GEOCODER_API_KEY: ${VITE_BC_GEOCODER_API_KEY}
         VITE_BC_GEOCODER_API_URL: ${VITE_BC_GEOCODER_API_URL}
+        VITE_PUBLIC_API_URL: ${VITE_PUBLIC_API_URL}
     healthcheck:
       test: "curl --silent --fail http://localhost:3000/ > /dev/null || exit 1"
       interval: 1m30s

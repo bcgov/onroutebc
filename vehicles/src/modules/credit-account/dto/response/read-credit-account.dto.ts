@@ -33,6 +33,13 @@ export class ReadCreditAccountDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Indicates whether the account is verified.',
+    example: false,
+  })
+  isVerified: boolean;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'The status of the credit account.',
     example: CreditAccountStatus.ACCOUNT_ACTIVE,
   })

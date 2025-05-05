@@ -20,7 +20,6 @@ import { bcGovTheme } from "./themes/bcGovTheme";
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
 import { Nullable, Optional } from "./common/types/common";
 import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
-import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
 import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
   CustomSnackbar,
@@ -63,7 +62,6 @@ export const SnackBarContext = createContext({
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
-
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({
     showSnackbar: false,
@@ -166,7 +164,6 @@ const App = () => {
                 <CartContextProvider>
                   <Router>
                     <Header />
-                    <SuspendSnackBar />
                     <NavIconSideBar />
                     <AppRoutes />
                   </Router>

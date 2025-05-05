@@ -27,8 +27,8 @@ export const CreateProfileSteps = React.memo(() => {
       legalName: getDefaultRequiredVal(
         "",
         user?.profile?.bceid_business_name as string,
+        user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
         unclaimedClient?.legalName as string,
-        user?.profile?.given_name as string,
       ),
       alternateName: getDefaultRequiredVal("", unclaimedClient?.alternateName),
       mailingAddress: {
@@ -54,7 +54,11 @@ export const CreateProfileSteps = React.memo(() => {
           unclaimedClient?.mailingAddress?.postalCode,
         ),
       },
-      email: getDefaultRequiredVal("", user?.profile?.email),
+      email: getDefaultRequiredVal(
+        "",
+        user?.profile?.email,
+        unclaimedClient?.email,
+      ),
       phone: getDefaultRequiredVal("", unclaimedClient?.phone),
       extension: getDefaultRequiredVal("", unclaimedClient?.extension),
       adminUser: {

@@ -19,7 +19,8 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
-
+import { OutageBanner } from "../../../features/outage/components/OutageBanner";
+import { SuspendSnackBar } from "../snackbar/SuspendSnackBar";
 const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
@@ -104,6 +105,7 @@ const Navbar = ({
             </>
           )}
         </ul>
+        <SuspendSnackBar />
       </div>
     </nav>
   );
@@ -156,6 +158,7 @@ export const Header = () => {
 
   return (
     <div className="header">
+      <OutageBanner />
       <header
         className={`header__main header__main--${getEnv()}`}
         data-testid="header-background"

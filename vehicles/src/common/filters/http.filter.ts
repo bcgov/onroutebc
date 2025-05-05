@@ -37,7 +37,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (
       statusCode === HttpStatus.BAD_REQUEST ||
-      statusCode === HttpStatus.UNPROCESSABLE_ENTITY
+      statusCode === HttpStatus.UNPROCESSABLE_ENTITY ||
+      statusCode === HttpStatus.NOT_ACCEPTABLE
     ) {
       exceptionDto = exception.getResponse() as ExceptionDto;
     } else {

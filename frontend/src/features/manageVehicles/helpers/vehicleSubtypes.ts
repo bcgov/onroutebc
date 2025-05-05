@@ -31,3 +31,7 @@ export const selectedVehicleSubtype = (vehicle: BaseVehicle) => {
       return "";
   }
 };
+
+export const isTrailerSubtypeNone = (trailerSubtype: string) => {
+  return ["NONEXXX", "XXXXXXX"].includes(trailerSubtype);
+};
