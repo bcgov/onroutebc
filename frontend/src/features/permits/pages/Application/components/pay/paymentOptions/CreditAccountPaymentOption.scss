@@ -1,0 +1,12 @@
+@use "./PaymentOptionStyles";
+@import "../../../../../../../themes/orbcStyles";
+
+@include PaymentOptionStyles.payment-option-style(".payment-option");
+
+.payment-option {
+  .label {
+    &__credit-account {
+      margin: 0;
+    }
+  }
+}
