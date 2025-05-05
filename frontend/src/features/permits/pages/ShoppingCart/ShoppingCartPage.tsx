@@ -62,6 +62,7 @@ import { PAYMENT_ERRORS } from "../../../policy/types/PaymentError";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+  PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
   // POS represents all card types + CASH + CHEQUE
   PAYMENT_METHOD_TYPE_CODE.POS,
   PAYMENT_METHOD_TYPE_CODE.GA,
@@ -317,6 +318,21 @@ export const ShoppingCartPage = () => {
     });
   };
 
+  const handlePayWithCreditAccount = () => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
+      ],
+    });
+  };
+
   // Paying for no-fee permits
   const handlePayForNoFee = () => {
     startTransactionMutation.mutate({
@@ -363,6 +379,8 @@ export const ShoppingCartPage = () => {
       handlePayWithGA(serviceBCOfficeId);
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {
       handlePayWithPayBC();
+    } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ACCOUNT) {
+      handlePayWithCreditAccount();
     }
   };
 
