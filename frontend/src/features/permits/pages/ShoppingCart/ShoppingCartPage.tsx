@@ -57,6 +57,7 @@ import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+  PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
   // POS represents all card types + CASH + CHEQUE
   PAYMENT_METHOD_TYPE_CODE.POS,
   PAYMENT_METHOD_TYPE_CODE.GA,
