@@ -346,12 +346,12 @@ export class PaymentService {
         validationResults?.violations?.push(paymentValidationResult);
       }
 
-      const policyEngineValdiationFailure =
+      const policyEngineValidationFailure =
         validationResults?.violations?.some(
           (violation) => violation?.fieldReference !== 'permitData.startDate',
         ) || isCVClient(currentUser.identity_provider);
 
-      if (policyEngineValdiationFailure) {
+      if (policyEngineValidationFailure) {
         throw throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
           validationResults,
@@ -614,7 +614,7 @@ export class PaymentService {
                 violation?.fieldReference !== 'permitData.startDate',
             ) || isCVClient(currentUser.identity_provider);
 
-          if (policyEngineValdiationFailure) {
+          if (policyEngineValidationFailure) {
             throw throwUnprocessableEntityException(
               'Policy Engine Validation Failure',
               policyValidation,
