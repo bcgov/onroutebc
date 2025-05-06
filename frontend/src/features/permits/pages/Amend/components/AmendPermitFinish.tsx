@@ -15,15 +15,11 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
-import {
-  APPLICATIONS_ROUTES,
-  ERROR_ROUTES,
-} from "../../../../../routes/constants";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { useRefundPermitMutation } from "../../Refund/hooks/useRefundPermit";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
-import { PERMIT_TABS } from "../../../types/PermitTabs";
 import {
   mapToRefundRequestData,
   mapToZeroDollarRefundRequestData,
@@ -32,14 +28,20 @@ import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specia
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmount";
 import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
+import { isZeroAmount } from "../../../helpers/feeSummary";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
   const { companyId: companyIdParam } = useParams();
   const companyId = applyWhenNotNullable((id) => Number(id), companyIdParam, 0);
 
-  const { permit, amendmentApplication, permitHistory, getLinks } =
-    useContext(AmendPermitContext);
+  const {
+    permit,
+    amendmentApplication,
+    permitHistory,
+    getLinks,
+    afterFinishAmend,
+  } = useContext(AmendPermitContext);
   const { setSnackBar } = useContext(SnackBarContext);
 
   const validTransactionHistory = permitHistory.filter((history) =>
@@ -92,7 +94,7 @@ export const AmendPermitFinish = () => {
       return;
     }
 
-    if (Math.abs(amountToRefund) <= 0) {
+    if (isZeroAmount(amountToRefund)) {
       startTransactionMutation.mutate(
         mapToZeroDollarRefundRequestData(refundData, permitId),
       );
@@ -151,11 +153,8 @@ export const AmendPermitFinish = () => {
         message: "Permit Amended",
         alertType: "success",
       });
-      navigate(APPLICATIONS_ROUTES.BASE, {
-        state: {
-          selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
-        },
-      });
+      // TODO implement conditional navigation to Active Permits tab or Global permit search screen based on user journey
+      afterFinishAmend();
     }
   }, [issueResults, navigate, setSnackBar]);
 
