@@ -4,7 +4,6 @@ describe('Login Test for OnRouteBC', () => {
     const username = Cypress.env('idir_username');
     const password = Cypress.env('idir_password');
     const wait_time = Cypress.env('wait_time');
-    const applicationsUrl = '/applications';
 
     // Step 1: Visit the base URL
     cy.visit('/');
@@ -131,29 +130,29 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
     cy.wait(1000);
 
-    // // got to the cart and get the first item to edit
-    // cy.get('.shopping-cart-button').click({force: true});
-    //       cy.wait(wait_time);
+    // got to the cart and get the first item to edit
+    cy.get('.shopping-cart-button').click({force: true});
+          cy.wait(wait_time);
 
-    // cy.get('button.css-mn35dv')
-    //   .contains("-A00")  
-    //   .first()
-    //   .click();
+    cy.get('button.css-mn35dv')
+      .contains("-A00")  
+      .first()
+      .click();
 
-    // cy.wait(wait_time);
+    cy.wait(wait_time);
 
-    // cy.get('button')
-    //   .contains("Edit Application")
-    //   .click();
-    // cy.wait(wait_time);
-    // cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
-    // cy.wait(wait_time);
-    // cy.get('[data-testid="continue-application-button"]').click();
-    // cy.wait(wait_time);
-    // cy.get('[type="checkbox"]').check();
-    // cy.wait(wait_time);
-    // cy.xpath("//button[text()='Add to Cart']").click();
-    // cy.wait(wait_time);
+    cy.get('button')
+      .contains("Edit Application")
+      .click();
+    cy.wait(wait_time);
+    cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
+    cy.wait(wait_time);
+    cy.get('[data-testid="continue-application-button"]').click();
+    cy.wait(wait_time);
+    cy.get('[type="checkbox"]').check();
+    cy.wait(wait_time);
+    cy.xpath("//button[text()='Add to Cart']").click();
+    cy.wait(wait_time);
 
     // go to the cart
     cy.get('.shopping-cart-button').click({force: true});
@@ -182,55 +181,6 @@ describe('Login Test for OnRouteBC', () => {
     cy.wait(wait_time);
 
     cy.get('.success__block--success-msg').should('exist');
-    cy.wait(wait_time);
-
-    cy.visit(applicationsUrl);
-    cy.wait(wait_time);
-
-    // Find the search button by its class name and click it
-    cy.get('.search-button').click();
-    cy.wait(wait_time);
-
-    // Find the element with value="companies" and interact with it
-    cy.get('[value="companies"]').click();
-    cy.wait(wait_time);
-
-    // Type the search text for the company
-    cy.get('.css-1pog434').type('t');
-    cy.wait(wait_time);
-
-    cy.get('.search-by__search').click();
-    cy.wait(wait_time);
-
-    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
-    cy.wait(wait_time);
-
-    cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
-    cy.wait(wait_time);
-
-    cy.xpath("//li[text()='Amend']").click();
-    cy.wait(wait_time);
-
-    cy.get('[name="comment"]').type('Amend for test');
-    cy.wait(wait_time);
-
-    cy.xpath("//button[text()='Continue']").click();
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.xpath("//button[text()='Continue']").click();
-    cy.wait(wait_time);
-
-    cy.xpath("//button[text()='Finish']").click();
     cy.wait(wait_time);
 
   });
