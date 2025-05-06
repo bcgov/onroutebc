@@ -21,7 +21,7 @@ export const useRefundPermitMutation = () => {
     },
     onError: (err: unknown) => {
       console.error(err);
-      setTransaction(undefined);
+      setTransaction(null);
     },
   });
 
