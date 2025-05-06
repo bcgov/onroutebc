@@ -31,7 +31,7 @@ GO
 --GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting credit account sequence updates'
+SET @VersionDescription = 'Reverting postal code column change'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (70, @VersionDescription, getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON

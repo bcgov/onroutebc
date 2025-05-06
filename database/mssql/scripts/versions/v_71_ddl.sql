@@ -24,7 +24,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Create outage notification table'
+SET @VersionDescription = 'Update postal code column'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (71, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
