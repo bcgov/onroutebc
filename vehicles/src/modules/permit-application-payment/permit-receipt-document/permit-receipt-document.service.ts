@@ -46,7 +46,7 @@ export class PermitReceiptDocumentService {
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
+    private readonly permitRepository: Repository<Permit>,
     private readonly dopsService: DopsService,
     private readonly paymentService: PaymentService,
     @Inject(CACHE_MANAGER)
