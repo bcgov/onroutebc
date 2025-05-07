@@ -277,3 +277,9 @@
 
  ### Version 70:
 - Add OUTAGE_NOTIFICATION table
+
+ ### Version 71:
+- Update table dbo.ORBC_ADDRESS change column POSTAL_CODE length from 7 to 15 
+
+ ### Version 72:
+- Add Payment Receipt Template v3 

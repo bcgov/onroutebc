@@ -6,6 +6,7 @@ import {
 } from "../../../../../../common/types/paymentMethods";
 import { InPersonPPCPaymentOption } from "./paymentOptions/InPersonPPCPaymentOption";
 import { GAPaymentOption } from "./paymentOptions/GAPaymentOption";
+import { CreditAccountPaymentOption } from "./paymentOptions/CreditAccountPaymentOption";
 
 export const PaymentOption = ({
   paymentMethod,
@@ -43,6 +44,13 @@ export const PaymentOption = ({
     case PAYMENT_METHOD_TYPE_CODE.GA:
       return (
         <GAPaymentOption
+          isSelected={isSelected}
+          handlePaymentMethodChange={handlePaymentMethodChange}
+        />
+      );
+    case PAYMENT_METHOD_TYPE_CODE.ACCOUNT:
+      return (
+        <CreditAccountPaymentOption
           isSelected={isSelected}
           handlePaymentMethodChange={handlePaymentMethodChange}
         />

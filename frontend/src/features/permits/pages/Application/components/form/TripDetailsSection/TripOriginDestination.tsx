@@ -3,7 +3,6 @@ import { Controller } from "react-hook-form";
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import {
-  invalidAddress,
   invalidInput,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
@@ -60,7 +59,7 @@ export const TripOriginDestination = ({
       <Controller
         name="permitData.permittedRoute.manualRoute.origin"
         rules={{
-          required: { value: true, message: invalidAddress() },
+          required: { value: true, message: requiredMessage() },
         }}
         render={({ fieldState: { error } }) => (
           <GeocoderInput
@@ -87,7 +86,7 @@ export const TripOriginDestination = ({
       <Controller
         name="permitData.permittedRoute.manualRoute.destination"
         rules={{
-          required: { value: true, message: invalidAddress() },
+          required: { value: true, message: requiredMessage() },
         }}
         render={({ fieldState: { error } }) => (
           <GeocoderInput
