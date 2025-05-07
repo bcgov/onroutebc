@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
@@ -26,7 +25,6 @@ import {
   useUserContextQuery,
 } from "../../features/manageProfile/apiManager/hooks";
 import { getDefaultRequiredVal } from "../helpers/util";
-import { usePermissionMatrix } from "./PermissionMatrix";
 
 /**
  * Function to determine where to take a basic bceid user.
@@ -262,13 +260,6 @@ export const LoginRedirect = () => {
   const queryClient = useQueryClient();
 
   useUserContext(userContextResponse);
-
-  // const canViewApplicationQueue = usePermissionMatrix({
-  //   permissionMatrixKeys: {
-  //     permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
-  //     permissionMatrixFunctionKey: "VIEW_QUEUE",
-  //   },
-  // });
 
   const permissableIDIRRolesForQueue: IDIRUserRoleType[] = [
     IDIR_USER_ROLE.PPC_CLERK,
