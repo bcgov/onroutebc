@@ -3,7 +3,13 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
-import { BCeIDUserContextType, DIRECTORY, IDIRUserContextType } from "./types";
+import {
+  BCeIDUserContextType,
+  DIRECTORY,
+  IDIR_USER_ROLE,
+  IDIRUserContextType,
+  IDIRUserRoleType,
+} from "./types";
 import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 import { Optional } from "../types/common";
@@ -19,7 +25,6 @@ import {
   useUserContextQuery,
 } from "../../features/manageProfile/apiManager/hooks";
 import { getDefaultRequiredVal } from "../helpers/util";
-import { usePermissionMatrix } from "./PermissionMatrix";
 
 /**
  * Function to determine where to take a basic bceid user.
@@ -256,12 +261,13 @@ export const LoginRedirect = () => {
 
   useUserContext(userContextResponse);
 
-  const canViewApplicationQueue = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
-      permissionMatrixFunctionKey: "VIEW_QUEUE",
-    },
-  });
+  const permissableIDIRRolesForQueue: IDIRUserRoleType[] = [
+    IDIR_USER_ROLE.PPC_CLERK,
+    IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
+    IDIR_USER_ROLE.CTPO,
+  ];
+  const canViewApplicationQueue = (userRole: IDIRUserRoleType) =>
+    permissableIDIRRolesForQueue.includes(userRole);
 
   /**
    * Hook to determine where to navigate to.
@@ -283,7 +289,11 @@ export const LoginRedirect = () => {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
         // only IDIR users with PC, SA, CTPO or TRAIN should redirect to STAFF_HOME
-        if (canViewApplicationQueue) {
+        if (
+          canViewApplicationQueue(
+            userContextData?.user?.userRole as IDIRUserRoleType,
+          )
+        ) {
           navigate(IDIR_ROUTES.STAFF_HOME);
         } else if (userContextData?.user?.userGUID) {
           navigate(IDIR_ROUTES.WELCOME);
