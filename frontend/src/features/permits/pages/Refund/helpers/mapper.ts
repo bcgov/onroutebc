@@ -1,4 +1,3 @@
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import {
@@ -26,16 +25,11 @@ export const mapToRefundRequestData = (refundData: RefundFormData[]) => {
 };
 
 export const mapToZeroDollarRefundRequestData = (
-  refundData: RefundFormData[],
   permitId: string,
 ): StartTransactionRequestData => {
   const reqData: StartTransactionRequestData = {
     transactionTypeId: TRANSACTION_TYPES.P,
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
-    paymentCardTypeCode: getDefaultRequiredVal(
-      refundData[0].paymentCardTypeCode,
-      null,
-    ),
     applicationDetails: [
       {
         applicationId: permitId,
@@ -43,11 +37,6 @@ export const mapToZeroDollarRefundRequestData = (
       },
     ],
   };
-
-  // TODO ask praveen if paymentCardType is necessary in this scenario?
-  if (refundData[0].paymentCardTypeCode) {
-    reqData.paymentCardTypeCode = refundData[0].paymentCardTypeCode;
-  }
 
   return reqData;
 };

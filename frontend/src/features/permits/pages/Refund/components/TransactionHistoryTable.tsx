@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   MRT_Cell,
@@ -29,11 +29,10 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
-import { Controller, useFormContext } from "react-hook-form";
 import { RefundFormData } from "../types/RefundFormData";
-import { Checkbox, FormControlLabel } from "@mui/material";
-import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
+import { RefundAmountInput } from "./RefundAmountInput";
+import { RefundTransactionIdInput } from "./RefundTransactionIdInput";
+import { ChequeRefundCheckbox } from "./ChequeRefundCheckbox";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -50,10 +49,6 @@ export const TransactionHistoryTable = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const formMethods = useFormContext();
-  const { register, getValues, setValue, trigger, control, watch } =
-    formMethods;
-
   const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
     return (
       !isTransactionTypeRefund(row.original.transactionTypeId) &&
@@ -61,8 +56,6 @@ export const TransactionHistoryTable = ({
       totalRefundDue !== 0
     );
   };
-
-  const refundData = watch("refundData");
 
   const columns = useMemo<MRT_ColumnDef<RefundFormData>[]>(
     () => [
@@ -141,50 +134,10 @@ export const TransactionHistoryTable = ({
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
-          const rowIsSelected = cell.row.getIsSelected();
-          const fieldIndex = cell.row.index;
-          const fieldName = `refundData.${fieldIndex}.refundAmount` as const;
-          const fieldValue = refundData[fieldIndex].refundAmount;
-
-          // clear refundAmount when row is unselected
-          useEffect(() => {
-            !rowIsSelected && setValue(fieldName, "");
-          }, [rowIsSelected, setValue, fieldIndex]);
-
           return (
             isRowSelectable(cell.row) && (
               <div className="cell__inner">
-                <Controller
-                  name={fieldName}
-                  control={control}
-                  rules={{
-                    required: false,
-                  }}
-                  render={({ fieldState: { error } }) => (
-                    <NumberInput
-                      classes={{
-                        root: "transaction-history-table__input-container",
-                      }}
-                      inputProps={{
-                        className:
-                          "transaction-history-table__input transaction-history-table__input--refundAmount",
-                        value: fieldValue,
-                        onChange: ({ target: { value } }) => {
-                          setValue(fieldName, value);
-                        },
-                        disabled: !rowIsSelected,
-                        startAdornment: <span>$&nbsp;</span>,
-                      }}
-                      helperText={
-                        error?.message
-                          ? {
-                              errors: [error.message],
-                            }
-                          : undefined
-                      }
-                    />
-                  )}
-                />
+                <RefundAmountInput cell={cell} />
               </div>
             )
           );
@@ -197,78 +150,9 @@ export const TransactionHistoryTable = ({
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
-          const rowIsSelected = cell.row.getIsSelected();
-          const fieldIndex = cell.row.index;
-          const fieldName =
-            `refundData.${fieldIndex}.refundTransactionId` as const;
-          const fieldValue = refundData[fieldIndex].refundTransactionId;
-
-          // must use getValues to access fields outside of the one we are rendering in order to get latest values
-          const refundAmount = getValues(
-            `refundData.${fieldIndex}.refundAmount`,
-          );
-          const chequeRefund = getValues(
-            `refundData.${fieldIndex}.chequeRefund`,
-          );
-
-          // clear refundTransactionId when refundAmount is empty or zero
-          useEffect(() => {
-            if (!refundAmount || Number(refundAmount) <= 0) {
-              setValue(fieldName, "");
-            }
-          }, [refundAmount, fieldIndex, setValue]);
-
-          // re-validate refundTransactionId when chequeRefund is checked/unchecked
-          useEffect(() => {
-            trigger(fieldName);
-          }, [chequeRefund, fieldIndex, trigger]);
-
-          // clear refundTransactionId when row is unselected
-          useEffect(() => {
-            !rowIsSelected && setValue(fieldName, "");
-          }, [rowIsSelected, setValue, fieldIndex]);
-
           return (
             isRowSelectable(cell.row) && (
-              <div>
-                <Controller
-                  name={fieldName}
-                  control={control}
-                  rules={{
-                    required: {
-                      value:
-                        refundAmount !== "" &&
-                        Number(refundAmount) !== 0 &&
-                        !chequeRefund,
-                      message: requiredMessage(),
-                    },
-                  }}
-                  render={({ fieldState: { error } }) => (
-                    <NumberInput
-                      classes={{
-                        root: "transaction-history-table__input-container",
-                      }}
-                      inputProps={{
-                        className: "transaction-history-table__input",
-                        value: fieldValue,
-                        onChange: ({ target: { value } }) =>
-                          setValue(fieldName, value),
-                        disabled:
-                          !refundAmount ||
-                          Number(refundAmount) <= 0 ||
-                          chequeRefund,
-                      }}
-                      helperText={
-                        error?.message
-                          ? {
-                              errors: [error.message],
-                            }
-                          : undefined
-                      }
-                    />
-                  )}
-                />
-              </div>
+              <RefundTransactionIdInput cell={cell} />
             )
           );
         },
@@ -280,61 +164,10 @@ export const TransactionHistoryTable = ({
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
-          const fieldIndex = cell.row.index;
-          const fieldName = `refundData.${fieldIndex}.chequeRefund` as const;
-          const fieldValue = refundData[fieldIndex].chequeRefund;
-          // must use getValues to access fields outside of the one we are rendering in order to get latest values
-          const refundAmount = getValues(
-            `refundData.${fieldIndex}.refundAmount`,
-          );
-          const refundTransactionId = getValues(
-            `refundData.${fieldIndex}.refundTransactionId`,
-          );
-          const rowIsSelected = cell.row.getIsSelected();
-
-          // local state necessary for 'chequeRefund' checkbox column to allow setting it to false when row is unselected
-          const [isChecked, setIsChecked] = useState(fieldValue);
-
-          // sync react-hook-form state when local state changes
-          useEffect(() => {
-            setValue(fieldName, isChecked);
-          }, [setValue, isChecked]);
-
-          // clear chequeRefund when row is unselected
-          useEffect(() => {
-            !rowIsSelected && setIsChecked(false);
-          }, [rowIsSelected]);
-
-          // clear chequeRefund when refundAmount is cleared
-          useEffect(() => {
-            if (refundAmount === "") {
-              setIsChecked(false);
-            }
-          }, [refundAmount]);
-
           return (
             isRowSelectable(cell.row) && (
               <div className="cell__inner">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="cheque-refund-checkbox"
-                      {...register(fieldName)}
-                      checked={isChecked}
-                      onChange={(e) => setIsChecked(e.target.checked)}
-                      disabled={
-                        !rowIsSelected ||
-                        refundAmount === "" ||
-                        refundTransactionId !== ""
-                      }
-                    />
-                  }
-                  label="Cheque Refund"
-                  classes={{
-                    root: "cheque-refund-label",
-                    disabled: "cheque-refund-label--disabled",
-                  }}
-                />
+                <ChequeRefundCheckbox cell={cell} />
               </div>
             )
           );

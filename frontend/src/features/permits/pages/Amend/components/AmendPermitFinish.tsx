@@ -96,7 +96,7 @@ export const AmendPermitFinish = () => {
 
     if (isZeroAmount(amountToRefund)) {
       startTransactionMutation.mutate(
-        mapToZeroDollarRefundRequestData(refundData, permitId),
+        mapToZeroDollarRefundRequestData(permitId),
       );
     } else {
       refundPermitMutation.mutate({
