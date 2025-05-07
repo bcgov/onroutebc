@@ -419,11 +419,13 @@ export class PermitReceiptDocumentService {
           permitIds,
           companyId,
         );
+
         if (permits?.length) {
           try {
             const permit = permits?.at(0);
             const company = permit?.company;
             const permitTransactions = permit?.permitTransactions;
+
             const transaction = permitTransactions?.at(0)?.transaction;
             const receipt = transaction?.receipt;
             if (receipt.receiptDocumentId) {

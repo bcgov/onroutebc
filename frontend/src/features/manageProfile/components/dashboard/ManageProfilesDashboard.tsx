@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -29,13 +28,8 @@ import {
   CreditAccountMetadata,
 } from "../../../settings/types/creditAccount";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { DashboardTab } from "../../../../common/types/common";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
-
-interface ProfileDashboardTab {
-  label: string;
-  component: JSX.Element;
-  componentKey: string;
-}
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -122,7 +116,7 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const { state: stateFromNavigation } = useLocation();
 
-  const tabs: ProfileDashboardTab[] = [
+  const tabs: DashboardTab[] = [
     {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
@@ -164,7 +158,7 @@ export const ManageProfilesDashboard = React.memo(() => {
           componentKey: PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,
-  ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
+  ].filter((tab) => Boolean(tab)) as DashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(
