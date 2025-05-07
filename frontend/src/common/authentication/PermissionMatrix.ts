@@ -450,6 +450,9 @@ const MISCELLANEOUS = {
   BRIDGE_FORMULA_CALCULATION_TOOL: {
     allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
   },
+  PAY_WITH_CREDIT_ACCOUNT: {
+    allowedIDIRRoles: [PC, SA, CTPO],
+  },
 } as const;
 
 /**
