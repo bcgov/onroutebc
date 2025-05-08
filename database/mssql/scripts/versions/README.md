@@ -283,3 +283,6 @@
 
  ### Version 72:
 - Add Payment Receipt Template v3 
+
+### Version 73:
+- Remove NRQCL & NRSCL permit templates and configure NRQCV & NRSCV
