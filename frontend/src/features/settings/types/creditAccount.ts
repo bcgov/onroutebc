@@ -4,6 +4,7 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 export interface CreditAccountMetadata {
   creditAccountId: number;
   userType: CreditAccountUserType;
+  isValidPaymentMethod: boolean;
 }
 
 export interface CreditAccountData {
