@@ -50,7 +50,8 @@ jobs:
           fi
           echo "target=$target" >> $GITHUB_OUTPUT
           echo "environment=$environment" >> $GITHUB_OUTPUT
-          echo "trobct1=${{secrets.IDIR_PASSWORD}}"
+          trobct1="${{secrets.IDIR_PASSWORD}}"
+          echo "trobct1=$trobct1"
 
   e2e-tests:
     name: ${{matrix.test}}
