@@ -1,0 +1,61 @@
+@use "../../../../../../themes/orbcStyles";
+
+.unfinished-amend-modal {
+  &__header {
+    background-color: orbcStyles.$bc-background-light-grey;
+    padding: 1.5rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    color: orbcStyles.$bc-black;
+    font-weight: bold;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  & &__btn {
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+    }
+
+    &--cancel {
+      margin-right: 1.5rem;
+      color: orbcStyles.$bc-black;
+      padding: 0.75rem 1rem;
+      background-color: orbcStyles.$bc-background-light-grey;
+      box-shadow: none;
+
+      &:hover {
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
+        cursor: pointer;
+        box-shadow: none;
+      }
+    }
+
+    &--new {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      font-weight: bold;
+      border-color: orbcStyles.$bc-primary-blue;
+      color: orbcStyles.$bc-primary-blue;
+      background-color: orbcStyles.$white;
+
+      &:hover {
+        background-color: orbcStyles.$bc-text-links-blue;
+        color: orbcStyles.$white;
+      }
+    }
+
+    &--continue {
+      font-weight: bold;
+    }
+  }
+}
