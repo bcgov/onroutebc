@@ -5,9 +5,8 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import { memo, useContext, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -23,9 +22,8 @@ import { CustomNavLink } from "../../../../common/components/links/CustomNavLink
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { useNavigate } from "react-router-dom";
 import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
-import { onCompanyClick } from "../helpers/CompanySelect";
+import { useSetCompanyHandler } from "../hooks/useSetCompanyHandler";
 
 /*
  *
@@ -42,11 +40,6 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-
-    const context = useContext(OnRouteBCContext);
-    console.log(context);
-
-    const navigate = useNavigate();
 
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
@@ -89,12 +82,11 @@ export const IDIRCompanySearchResults = memo(
           minSize: 220,
           Cell: (props: { row: any; cell: any }) => {
             const isCompanySuspended = props.row.original.isSuspended;
+            const setCompany = useSetCompanyHandler();
             return (
               <>
                 <CustomActionLink
-                  onClick={() =>
-                    onCompanyClick(props.row.original, context, navigate)
-                  }
+                  onClick={() => setCompany(props.row.original)}
                 >
                   {props.row.original.legalName}
                 </CustomActionLink>

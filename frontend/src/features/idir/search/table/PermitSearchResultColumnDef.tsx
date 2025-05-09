@@ -1,6 +1,5 @@
 import { Box, Tooltip } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
-import { useNavigate } from "react-router-dom";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { PermitListItem } from "../../../permits/types/permit";
@@ -17,9 +16,12 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
+import * as routes from "../../../../routes/constants";
+import { useSetCompanyHandler } from "../hooks/useSetCompanyHandler";
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,
+  fetchCompanyData?: (CompanyId: number) => Promise<any>,
 ): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
@@ -112,17 +114,23 @@ export const PermitSearchResultColumnDef = (
     sortingFn: "alphanumeric",
     size: 180,
     Cell: (props: { cell: any; row: any }) => {
-      const navigate = useNavigate();
-      const permit = props.row.original as PermitListItem;
-      const { companyId } = permit;
+      const setCompany = useSetCompanyHandler(routes.PROFILE_ROUTES.MANAGE);
       return (
         <CustomActionLink
-          onClick={() => {
-            console.log("clicked");
-            navigate(`/manage-profiles/${companyId}`);
+          onClick={async () => {
+            if (fetchCompanyData) {
+              try {
+                const data = await fetchCompanyData(
+                  props.row.original.companyId,
+                );
+                setCompany(data);
+              } catch (error) {
+                console.error("Failed to fetch company data", error);
+              }
+            }
           }}
         >
-          {props.cell.getValue()}
+          {props.row.original.legalName}
         </CustomActionLink>
       );
     },

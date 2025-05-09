@@ -27,6 +27,8 @@ import {
 import "./IDIRPermitSearchResults.scss";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { useNavigate } from "react-router-dom";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -99,10 +101,27 @@ export const IDIRPermitSearchResults = memo(
 
     const navigate = useNavigate();
 
+    const fetchCompanyData = async (companyId: number) => {
+      const searchURL = new URL(`${VEHICLES_URL}/companies/${companyId}`);
+      searchURL.searchParams.set("page", pagination.pageIndex.toString());
+      searchURL.searchParams.set("take", pagination.pageSize.toString());
+      try {
+        const response = await httpGETRequest(searchURL.toString());
+        return response.data;
+      } catch (err) {
+        console.error("Failed to fetch company data", err);
+        throw err;
+      }
+    };
+
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
-      () => PermitSearchResultColumnDef(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
-      [],
+      () =>
+        PermitSearchResultColumnDef(
+          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+          fetchCompanyData,
+        ),
+      [searchEntity, searchByFilter],
     );
 
     /**
