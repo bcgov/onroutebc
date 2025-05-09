@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAmendmentApplicationQuery, useDeleteApplicationsMutation } from "./hooks";
 import { ERROR_ROUTES, PERMITS_ROUTES } from "../../../routes/constants";
 import { hasPermitsActionFailed } from "../helpers/permitState";
+import { isNull } from "../../../common/types/common";
 
 export const useAttemptAmend = () => {
   const navigate = useNavigate();
@@ -26,11 +27,20 @@ export const useAttemptAmend = () => {
   } = useAmendmentApplicationQuery(companyId, permitId);
 
   const hasExistingApplication = Boolean(existingAmendmentApplication);
+  const noExistingApplication = isNull(existingAmendmentApplication);
   useEffect(() => {
     if (hasExistingApplication && attemptedAmend) {
       setShowUnfinishedModal(true);
+    } else if (noExistingApplication && attemptedAmend) {
+      navigate(PERMITS_ROUTES.AMEND(companyId, permitId));
     }
-  }, [hasExistingApplication, attemptedAmend]);
+  }, [
+    hasExistingApplication,
+    attemptedAmend,
+    noExistingApplication,
+    companyId,
+    permitId,
+  ]);
 
   const handleCloseModal = () => {
     setAttemptedAmend(false);

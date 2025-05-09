@@ -24,6 +24,9 @@ export const UnfinishedAmendModal = ({
       aria-labelledby="unfinished-amend-modal-title"
       aria-describedby="unfinished-amend-modal-desc"
       open={shouldOpen}
+      classes={{
+        paper: "unfinished-amend-modal__paper"
+      }}
     >
       <div className="unfinished-amend-modal__header">
         <h3

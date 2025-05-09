@@ -1,21 +1,54 @@
 @use "../../../../../../themes/orbcStyles";
 
 .unfinished-amend-modal {
+  & &__paper {
+    max-width: 42.6875rem;
+  }
+
   &__header {
     background-color: orbcStyles.$bc-background-light-grey;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
   &__title {
     font-size: 1.5rem;
     color: orbcStyles.$bc-black;
     font-weight: bold;
+    margin-block-start: 0;
+    margin-block-end: 0;
+  }
+
+  &__body {
+    padding: 1.5rem;
+  }
+
+  &__permit-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: orbcStyles.$bc-black;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-bottom: 1.5rem;
+  }
+
+  &__info {
+    font-size: 1rem;
+    color: orbcStyles.$bc-black;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    border-top: 1px solid orbcStyles.$bc-border-grey;
+    padding-top: 1.5rem;
+
+    .staff-name {
+      font-weight: bold;
+      margin-right: 0.25rem;
+    }
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
-    padding: 0 1.5rem 1.5rem 1.5rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
   }
 
   & &__btn {
@@ -47,6 +80,7 @@
       border-color: orbcStyles.$bc-primary-blue;
       color: orbcStyles.$bc-primary-blue;
       background-color: orbcStyles.$white;
+      margin-right: 1.5rem;
 
       &:hover {
         background-color: orbcStyles.$bc-text-links-blue;
