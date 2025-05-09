@@ -16,9 +16,12 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
+import * as routes from "../../../../routes/constants";
+import { useSetCompanyHandler } from "../hooks/useSetCompanyHandler";
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,
+  fetchCompanyData?: (CompanyId: number) => Promise<any>,
 ): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
@@ -110,6 +113,27 @@ export const PermitSearchResultColumnDef = (
     enableSorting: true,
     sortingFn: "alphanumeric",
     size: 180,
+    Cell: (props: { cell: any; row: any }) => {
+      const setCompany = useSetCompanyHandler(routes.PROFILE_ROUTES.MANAGE);
+      return (
+        <CustomActionLink
+          onClick={async () => {
+            if (fetchCompanyData) {
+              try {
+                const data = await fetchCompanyData(
+                  props.row.original.companyId,
+                );
+                setCompany(data);
+              } catch (error) {
+                console.error("Failed to fetch company data", error);
+              }
+            }
+          }}
+        >
+          {props.row.original.legalName}
+        </CustomActionLink>
+      );
+    },
   },
   {
     accessorKey: "startDate",
