@@ -74,6 +74,7 @@ import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
+import { staffAmendSTOS } from 'src/common/helper/policy.helper';
 
 @Injectable()
 export class PaymentService {
@@ -325,7 +326,7 @@ export class PaymentService {
       }
 
       const companyId = existingApplication?.company?.companyId;
-      const validationResults =
+      let validationResults =
         await this.policyService.validateApplicationAndCalculateCost({
           application: existingApplication,
           queryRunner,
@@ -345,7 +346,13 @@ export class PaymentService {
       if (paymentValidationResult) {
         validationResults?.violations?.push(paymentValidationResult);
       }
-
+      console.log('validation result before: ', validationResults);
+      validationResults = staffAmendSTOS(
+        existingApplication,
+        currentUser,
+        validationResults,
+      );
+      console.log('validation result after: ', validationResults);
       const policyEngineValidationFailure =
         validationResults?.violations?.some(
           (violation) => violation?.fieldReference !== 'permitData.startDate',
@@ -581,7 +588,7 @@ export class PaymentService {
           );
 
         const companyId = application?.company?.companyId;
-        const validationResults =
+        let validationResults =
           await this.policyService.validateApplicationAndCalculateCost({
             application,
             queryRunner,
@@ -597,6 +604,16 @@ export class PaymentService {
         if (paymentValidationResult) {
           validationResults?.violations?.push(paymentValidationResult);
         }
+        console.log(
+          'create transaction validation result before: ',
+          validationResults,
+        );
+        validationResults = staffAmendSTOS(
+          application,
+          currentUser,
+          validationResults,
+        );
+        console.log('validation result after: ', validationResults);
 
         policyValidationDto.push({
           id: application.permitId,
