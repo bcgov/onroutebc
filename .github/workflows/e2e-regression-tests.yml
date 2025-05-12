@@ -86,11 +86,12 @@ jobs:
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
-          CYPRESS_user_role: ${{matrix.creds.role}}
-          CYPRESS_username: ${{matrix.creds.username}}
-          CYPRESS_password: ${{matrix.creds.password}}
           CYPRESS_wait_time: 2000
         with:
+          env:
+            CYPRESS_user_role: ${{matrix.creds.role}}
+            CYPRESS_username: ${{matrix.creds.username}}
+            CYPRESS_password: ${{matrix.creds.password}}
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
           spec: cypress/e2e_wip/${{matrix.test}}
