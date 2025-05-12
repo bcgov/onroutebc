@@ -21,11 +21,6 @@
       width: 60%;
 
       .void-input {
-        &--reason {
-          border: 1.5px solid $bc-text-box-border-grey;
-          border-radius: 4px;
-          resize: none;
-        }
 
         &--email {
           max-width: 375px;
