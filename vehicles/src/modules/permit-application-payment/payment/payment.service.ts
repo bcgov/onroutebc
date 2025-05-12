@@ -346,13 +346,11 @@ export class PaymentService {
       if (paymentValidationResult) {
         validationResults?.violations?.push(paymentValidationResult);
       }
-      console.log('validation result before: ', validationResults);
       validationResults = staffAmendSTOS(
         existingApplication,
         currentUser,
         validationResults,
       );
-      console.log('validation result after: ', validationResults);
       const policyEngineValidationFailure =
         validationResults?.violations?.some(
           (violation) => violation?.fieldReference !== 'permitData.startDate',
@@ -604,17 +602,11 @@ export class PaymentService {
         if (paymentValidationResult) {
           validationResults?.violations?.push(paymentValidationResult);
         }
-        console.log(
-          'create transaction validation result before: ',
-          validationResults,
-        );
         validationResults = staffAmendSTOS(
           application,
           currentUser,
           validationResults,
         );
-        console.log('validation result after: ', validationResults);
-
         policyValidationDto.push({
           id: application.permitId,
           ...validationResults,

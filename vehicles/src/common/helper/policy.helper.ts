@@ -15,6 +15,15 @@ export const convertToPolicyApplication = (
   };
 };
 
+/**
+ * This method is written for JIRA ORV2-4020
+ * As per specifications staff user can allow STOS amendments to be equal to or less than 30 days.
+ * so BE will filter our policy engine violation for such scenario.
+ * @param application
+ * @param currentUser
+ * @param validationResults
+ * @returns
+ */
 export const staffAmendSTOS = (
   application: Permit,
   currentUser: IUserJWT,
