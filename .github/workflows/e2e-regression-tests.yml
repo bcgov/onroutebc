@@ -54,6 +54,7 @@ jobs:
   e2e-tests:
     name: ${{matrix.test}}
     needs: [vars]
+    secrets: inherit
     environment: ${{needs.vars.outputs.environment}}
     runs-on: ubuntu-22.04
     defaults:
@@ -83,7 +84,6 @@ jobs:
           ref:  ORV2-3904 
 
       - uses: cypress-io/github-action@v6.7.7
-        secrets: inherit
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
