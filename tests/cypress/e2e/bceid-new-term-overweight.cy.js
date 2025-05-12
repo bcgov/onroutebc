@@ -1,8 +1,8 @@
 describe('Login Test for OnRouteBC', () => {
   it('Should navigate to the login page, find the login button, and enter credentials', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const new_trow_url = '/create-application/TROW';
     const wait_time = Cypress.env('wait_time');
 

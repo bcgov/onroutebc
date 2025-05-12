@@ -1060,8 +1060,8 @@ describe('Manage Permits', () => {
 
 describe('Manage Profile', () => {
   const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
+  const username = Cypress.env('username');
+  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
   const update_trailer_url = Cypress.env('update_trailer_url');
   const manage_vehicle_url = '/manage-vehicles';
@@ -1402,8 +1402,8 @@ describe('Sticky Side Bar', () => {
 
 describe('Reports', () => {
   const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
+  const username = Cypress.env('username');
+  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
   const update_trailer_url = Cypress.env('update_trailer_url');
   const manage_vehicle_url = '/manage-vehicles';
@@ -1424,8 +1424,8 @@ describe('Reports', () => {
 
 describe('Global Search', () => {
   const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
+  const username = Cypress.env('username');
+  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
   const update_trailer_url = Cypress.env('update_trailer_url');
   const manage_vehicle_url = '/manage-vehicles';
@@ -1475,8 +1475,8 @@ describe('Global Search', () => {
 
 describe('Staff Home Screen', () => {
   const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
+  const username = Cypress.env('username');
+  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
   const update_trailer_url = Cypress.env('update_trailer_url');
   const manage_vehicle_url = '/manage-vehicles';
@@ -1497,8 +1497,8 @@ describe('Staff Home Screen', () => {
 
 describe('Miscellaneous', () => {
   const wait_time = Cypress.env('wait_time');
-  const username = Cypress.env('bceid_username');
-  const password = Cypress.env('bceid_password');
+  const username = Cypress.env('username');
+  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
   const update_trailer_url = Cypress.env('update_trailer_url');
   const manage_vehicle_url = '/manage-vehicles';

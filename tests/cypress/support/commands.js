@@ -2,8 +2,8 @@ const wait_time = Cypress.env('wait_time');
 
 Cypress.Commands.add('userLoginBceid', () => {
     const wait_time = Cypress.env('wait_time');
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 
@@ -24,8 +24,8 @@ Cypress.Commands.add('userLoginBceid', () => {
 
   Cypress.Commands.add('userLoginIdir', () => {
     const wait_time = Cypress.env('wait_time');
-    const username = Cypress.env('idir_username');
-    const password = Cypress.env('idir_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 

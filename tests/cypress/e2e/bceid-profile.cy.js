@@ -1,8 +1,8 @@
 describe('Crud for trailer', () => {
   it('Should company info displayed', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const manage_profiles_url = '/manage-profiles';
     const update_trailer_url = Cypress.env('update_trailer_url');
     const manage_vehicle_url = '/manage-vehicles';

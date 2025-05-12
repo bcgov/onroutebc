@@ -54,6 +54,7 @@ jobs:
   e2e-tests:
     name: ${{matrix.test}}
     needs: [vars]
+    secrets: inherit
     environment: ${{needs.vars.outputs.environment}}
     runs-on: ubuntu-22.04
     defaults:
@@ -68,21 +69,30 @@ jobs:
             #- firefox
         test: 
           - 'manage_vehicle_inventory.cy.js'
+        creds: 
+          - role: CA
+            username: ${{vars.USERNAME_CA}}
+            password: ${{secrets.PASSWORD_CA}}
+          - role: PA
+            username: ${{vars.USERNAME_PA}}
+            password: ${{secrets.PASSWORD_PA}}
 
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref:  ORV2-3904 
 
       - uses: cypress-io/github-action@v6.7.7
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
-          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
-          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
-          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
-          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
           CYPRESS_wait_time: 2000
         with:
+          env:
+            CYPRESS_user_role: ${{matrix.creds.role}}
+            CYPRESS_username: ${{matrix.creds.username}}
+            CYPRESS_password: ${{matrix.creds.password}}
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
           spec: cypress/e2e_wip/${{matrix.test}}
