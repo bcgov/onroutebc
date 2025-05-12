@@ -1,8 +1,8 @@
 describe('Crud for power unit', () => {
   it('Should create, update or delete a power unit', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const new_power_unit_url = '/manage-vehicles/add-powerunit';
     const update_power_unit_url = Cypress.env('update_power_unit_url');
     const manage_vehicle_url = '/manage-vehicles';

@@ -1,8 +1,8 @@
 describe('Crud for trailer', () => {
   it('Should create, update or delete a trailer', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const new_trailer_url = '/manage-vehicles/add-trailer';
     const update_trailer_url = Cypress.env('update_trailer_url');
     const manage_vehicle_url = '/manage-vehicles';

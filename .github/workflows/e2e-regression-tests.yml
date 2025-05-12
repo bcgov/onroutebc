@@ -68,6 +68,13 @@ jobs:
             #- firefox
         test: 
           - 'manage_vehicle_inventory.cy.js'
+        creds: 
+          - role: CA
+            username: ${{vars.USERNAME_CA}}
+            password: ${{secrets.PASSWORD_CA}}
+          - role: PA
+            username: ${{vars.USERNAME_PA}}
+            password: ${{secrets.PASSWORD_PA}}
 
     timeout-minutes: 10
     steps:
@@ -79,10 +86,9 @@ jobs:
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
-          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
-          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
-          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
-          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
+          CYPRESS_user_role: ${{matrix.creds.role}}
+          CYPRESS_username: ${{matrix.creds.username}}
+          CYPRESS_password: ${{matrix.creds.password}}
           CYPRESS_wait_time: 2000
         with:
           browser: ${{ matrix.browser }}
