@@ -17,7 +17,7 @@ import {
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
 import * as routes from "../../../../routes/constants";
-import { useSetCompanyHandler } from "../hooks/useSetCompanyHandler";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,

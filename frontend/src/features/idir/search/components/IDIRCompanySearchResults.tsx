@@ -23,7 +23,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
-import { useSetCompanyHandler } from "../hooks/useSetCompanyHandler";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 
 /*
  *
