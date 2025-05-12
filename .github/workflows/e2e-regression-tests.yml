@@ -69,13 +69,9 @@ jobs:
             #- firefox
         test: 
           - 'manage_vehicle_inventory.cy.js'
-        creds: 
-          - role: CA
-            username: ${{vars.USERNAME_CA}}
-            password: ${{secrets.PASSWORD_CA}}
-          - role: PA
-            username: ${{vars.USERNAME_PA}}
-            password: ${{secrets.PASSWORD_PA}}
+        role: 
+          - CA
+          - PA
 
     timeout-minutes: 10
     steps:
@@ -83,16 +79,23 @@ jobs:
         with:
           ref:  ORV2-3904 
 
-      - uses: cypress-io/github-action@v6.7.7
+      - name: Load credentials for ${{ matrix.role }}
+        id: creds
+        run: |
+          # Dynamically fetch secrets using GitHub Actions syntax
+          echo "CYPRESS_USERNAME=${{ vars[format('USERNAME_{0}', matrix.role)] }}" >> $GITHUB_ENV
+          echo "CYPRESS_PASSWORD=${{ secrets[format('PASSWORD_{0}', matrix.role)] }}" >> $GITHUB_ENV
+
+      - name: Run Cypress tests for ${{ matrix.role }}
+        uses: cypress-io/github-action@v6.7.7
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_wait_time: 2000
+          CYPRESS_user_role: ${{matrix.role}}
+          CYPRESS_username: ${{env.CYPRESS_USERNAME}}
+          CYPRESS_password: ${{env.CYPRESS_PASSWORD}}
         with:
-          env:
-            CYPRESS_user_role: ${{matrix.creds.role}}
-            CYPRESS_username: ${{matrix.creds.username}}
-            CYPRESS_password: ${{matrix.creds.password}}
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
           spec: cypress/e2e_wip/${{matrix.test}}
