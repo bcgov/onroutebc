@@ -64,17 +64,14 @@ import {
   throwBadRequestException,
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
-import {
-  isCVClient,
-  isFeatureEnabled,
-} from '../../../common/helper/common.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
 import { PaymentTransactionDto } from './dto/common/payment-transaction.dto';
 import { Nullable } from '../../../common/types/common';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
-import { staffAmendSTOS } from 'src/common/helper/policy.helper';
+import { evaluatePolicyViolations } from 'src/common/helper/policy.helper';
 
 @Injectable()
 export class PaymentService {
@@ -326,7 +323,7 @@ export class PaymentService {
       }
 
       const companyId = existingApplication?.company?.companyId;
-      let validationResults =
+      const validationResults =
         await this.policyService.validateApplicationAndCalculateCost({
           application: existingApplication,
           queryRunner,
@@ -346,15 +343,12 @@ export class PaymentService {
       if (paymentValidationResult) {
         validationResults?.violations?.push(paymentValidationResult);
       }
-      validationResults = staffAmendSTOS(
+
+      const policyEngineValidationFailure = evaluatePolicyViolations(
         existingApplication,
         currentUser,
         validationResults,
       );
-      const policyEngineValidationFailure =
-        validationResults?.violations?.some(
-          (violation) => violation?.fieldReference !== 'permitData.startDate',
-        ) || isCVClient(currentUser.identity_provider);
 
       if (policyEngineValidationFailure) {
         throw throwUnprocessableEntityException(
@@ -586,7 +580,7 @@ export class PaymentService {
           );
 
         const companyId = application?.company?.companyId;
-        let validationResults =
+        const validationResults =
           await this.policyService.validateApplicationAndCalculateCost({
             application,
             queryRunner,
@@ -602,11 +596,6 @@ export class PaymentService {
         if (paymentValidationResult) {
           validationResults?.violations?.push(paymentValidationResult);
         }
-        validationResults = staffAmendSTOS(
-          application,
-          currentUser,
-          validationResults,
-        );
         policyValidationDto.push({
           id: application.permitId,
           ...validationResults,
@@ -617,11 +606,18 @@ export class PaymentService {
 
       for (const policyValidation of policyValidationDto) {
         if (policyValidation?.violations?.length) {
-          const policyEngineValidationFailure =
-            policyValidation?.violations?.some(
-              (violation) =>
-                violation?.fieldReference !== 'permitData.startDate',
-            ) || isCVClient(currentUser.identity_provider);
+          const existingApplication: Permit = await queryRunner.manager.findOne(
+            Permit,
+            {
+              where: { permitId: policyValidation.id },
+              relations: { permitData: true },
+            },
+          );
+          const policyEngineValidationFailure = evaluatePolicyViolations(
+            existingApplication,
+            currentUser,
+            policyValidation,
+          );
 
           if (policyEngineValidationFailure) {
             throw throwUnprocessableEntityException(

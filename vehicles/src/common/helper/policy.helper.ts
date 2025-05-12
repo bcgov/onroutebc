@@ -24,11 +24,11 @@ export const convertToPolicyApplication = (
  * @param validationResults
  * @returns
  */
-export const staffAmendSTOS = (
+export const evaluatePolicyViolations = (
   application: Permit,
   currentUser: IUserJWT,
   validationResults: ValidationResults,
-): ValidationResults => {
+): boolean => {
   const isSTOS = application.permitType === PermitType.SINGLE_TRIP_OVERSIZE;
   const isAllowedDuration =
     differenceBetween(
@@ -37,20 +37,23 @@ export const staffAmendSTOS = (
     ) <= 30;
   const isRevised = application.revision > 0;
   const isCV = isCVClient(currentUser.identity_provider);
+
   const hasDurationViolations = validationResults?.violations?.some(
-    (violation) => violation?.fieldReference == 'permitData.permitDuration',
+    (violation) => violation?.fieldReference === 'permitData.permitDuration',
   );
 
-  if (
-    isSTOS &&
-    isAllowedDuration &&
-    isRevised &&
-    hasDurationViolations &&
-    !isCV
-  ) {
-    validationResults.violations = validationResults.violations.filter(
-      (violation) => violation.fieldReference !== 'permitData.permitDuration',
-    );
+  let staffAmendSTOS: boolean | null = null;
+
+  if (isSTOS) {
+    staffAmendSTOS =
+      isAllowedDuration && isRevised && hasDurationViolations && !isCV;
   }
-  return validationResults;
+  console.log('Staff amending STOS: ', staffAmendSTOS);
+  const notStartDateError = validationResults?.violations?.some(
+    (violation) => violation?.fieldReference !== 'permitData.startDate',
+  );
+
+  return (
+    (staffAmendSTOS !== null && !staffAmendSTOS) || notStartDateError || isCV
+  );
 };
