@@ -195,14 +195,18 @@ export const useApplicationDetailsQuery = ({
  * @param permitId permit id for the permit
  * @returns Query object containing the permit details
  */
-export const usePermitDetailsQuery = (companyId: number, permitId: string) => {
+export const usePermitDetailsQuery = (
+  companyId: number,
+  permitId: string,
+  enabled: boolean = true,
+) => {
   return useQuery({
     queryKey: QUERY_KEYS.PERMIT_DETAIL(permitId, companyId),
     queryFn: async () => {
       const res = await getPermit(companyId, permitId);
       return res ? deserializePermitResponse(res) : res;
     },
-    enabled: isPermitIdNumeric(permitId) && Boolean(companyId),
+    enabled: isPermitIdNumeric(permitId) && Boolean(companyId) && enabled,
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground

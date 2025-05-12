@@ -1,18 +1,15 @@
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import {
-  Button,
-  Dialog,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-} from "@mui/material";
+import { Button, Dialog, FormControl, FormLabel } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 import "./RevokeDialog.scss";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { getErrorMessage } from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+
+const FEATURE = ORBC_FORM_FEATURES.REVOKE_PERMIT;
 
 export const RevokeDialog = ({
   voidPermitData,
@@ -33,13 +30,7 @@ export const RevokeDialog = ({
     reValidateMode: "onChange",
   });
 
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    register,
-    formState: { errors },
-  } = formMethods;
+  const { control, handleSubmit, getValues } = formMethods;
 
   const handleCancel = () => onClose();
 
@@ -75,7 +66,7 @@ export const RevokeDialog = ({
             name="reason"
             control={control}
             rules={revokeReasonRules}
-            render={({ field: { value }, fieldState: { invalid } }) => (
+            render={({ fieldState: { invalid } }) => (
               <FormControl
                 className="revoke-control revoke-control--reason"
                 error={invalid}
@@ -83,19 +74,15 @@ export const RevokeDialog = ({
                 <FormLabel className="revoke-control__label">
                   Reason for revoking
                 </FormLabel>
-                <textarea
-                  className={`revoke-control__input ${
-                    invalid ? "revoke-control__input--err" : ""
-                  }`}
-                  rows={6}
-                  defaultValue={value}
-                  {...register("reason", revokeReasonRules)}
-                ></textarea>
-                {invalid ? (
-                  <FormHelperText className="revoke-control__err" error>
-                    {getErrorMessage(errors, "reason")}
-                  </FormHelperText>
-                ) : null}
+                <CustomFormComponent
+                  type="textarea"
+                  feature={FEATURE}
+                  options={{
+                    name: "reason",
+                    rules: revokeReasonRules,
+                    width: "100%",
+                  }}
+                />
               </FormControl>
             )}
           />
