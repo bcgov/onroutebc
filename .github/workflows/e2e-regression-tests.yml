@@ -87,7 +87,6 @@ jobs:
 
       - name: Run Cypress tests for ${{ matrix.role }}
         uses: cypress-io/github-action@v6.7.7
-        name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_wait_time: 2000
