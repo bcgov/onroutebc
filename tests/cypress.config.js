@@ -8,10 +8,8 @@ module.exports = defineConfig({
     },
     baseUrl: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca',
     env: {
-      idir_username: '', 
-      idir_password: '',
-      bceid_username: '', 
-      bceid_password: '',
+      username: '', 
+      password: '',
       update_term_oversize_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/applications/581', 
       new_tros_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/create-application/TROS', 
       new_trow_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/create-application/TROW', 
