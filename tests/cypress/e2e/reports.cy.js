@@ -1,6 +1,6 @@
 describe('Reports', () => {
   const wait_time = Cypress.env('wait_time');
-  const user_role = Cypress.env('user_role');
+  const user_role = Cypress.env('user_role').toLowerCase();
 
   function viewPaymentAndRefundSummaryReportAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
