@@ -9,6 +9,7 @@ import { USER_ROLE } from "../../../../common/authentication/types";
 import { useResendPermit } from "../../../permits/hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { EmailNotificationType } from "../../../permits/types/EmailNotificationType";
+import { PermitActionOrigin } from "../types/types";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -94,6 +95,7 @@ export const IDIRPermitSearchRowActions = ({
   permitNumber,
   userRole,
   companyId,
+  permitActionOrigin,
 }: {
   /**
    * The permit id.
@@ -112,6 +114,7 @@ export const IDIRPermitSearchRowActions = ({
    */
   userRole?: string;
   companyId: number;
+  permitActionOrigin: PermitActionOrigin;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -132,7 +135,11 @@ export const IDIRPermitSearchRowActions = ({
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(companyId, permitId)}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(companyId, permitId)}`, {
+        state: {
+          permitActionOrigin,
+        },
+      });
     }
   };
 
