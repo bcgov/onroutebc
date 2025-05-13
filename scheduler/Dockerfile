@@ -1,5 +1,5 @@
 #  Build container
-FROM node:22.14.0-alpine AS builder
+FROM node:22.15.0-alpine@sha256:ad1aedbcc1b0575074a91ac146d6956476c1f9985994810e4ee02efd932a68fd AS builder
 
 #install ssh for sending file to GARMS mainframe
 RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass
@@ -21,7 +21,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:22.14.0-alpine
+FROM node:22.15.0-alpine@sha256:ad1aedbcc1b0575074a91ac146d6956476c1f9985994810e4ee02efd932a68fd
 
 #install ssh for sending file to GARMS mainframe
 RUN apk update && apk add --no-cache openssh-client && apk add --no-cache sshpass
