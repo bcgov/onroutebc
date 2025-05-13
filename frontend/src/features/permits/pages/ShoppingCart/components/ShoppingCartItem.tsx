@@ -58,7 +58,9 @@ export const ShoppingCartItem = ({
 
           {cartItemData.permitApplicationOrigin ===
             PERMIT_APPLICATION_ORIGINS.PPC && isBCeIDUser ? (
-            cartItemData.applicationNumber
+            <span className="shopping-cart-item__info shopping-cart-item__info--application-number">
+              {cartItemData.applicationNumber}
+            </span>
           ) : (
             <CustomActionLink
               className="shopping-cart-item__info shopping-cart-item__info--application-number"

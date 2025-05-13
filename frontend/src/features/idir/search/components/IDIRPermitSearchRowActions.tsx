@@ -9,6 +9,9 @@ import { USER_ROLE } from "../../../../common/authentication/types";
 import { useResendPermit } from "../../../permits/hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { EmailNotificationType } from "../../../permits/types/EmailNotificationType";
+import { useAttemptAmend } from "../../../permits/hooks/useAttemptAmend";
+import { UnfinishedAmendModal } from "../../../permits/pages/Amend/components/modal/UnfinishedAmendModal";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -92,7 +95,6 @@ export const IDIRPermitSearchRowActions = ({
   permitId,
   isPermitInactive,
   permitNumber,
-  email,
   userRole,
   companyId,
 }: {
@@ -109,10 +111,6 @@ export const IDIRPermitSearchRowActions = ({
    */
   permitNumber: string;
   /**
-   * The email address (for use in resend dialog)
-   */
-  email?: string;
-  /**
    * The role for the current user (eg. PPCCLERK or EOFFICER)
    */
   userRole?: string;
@@ -122,6 +120,20 @@ export const IDIRPermitSearchRowActions = ({
   const navigate = useNavigate();
   const resendPermitMutation = useResendPermit();
   const { setSnackBar } = useContext(SnackBarContext);
+
+  const {
+    choosePermitToAmend,
+    showUnfinishedModal,
+    existingAmendmentApplication,
+    handleCloseModal,
+    handleStartNewAmendment,
+    handleContinueAmendment,
+  } = useAttemptAmend();
+
+  const existingAmendmentCreatedBy = getDefaultRequiredVal(
+    "",
+    existingAmendmentApplication?.applicant,
+  );
 
   /**
    * Function to handle user selection from the options.
@@ -137,7 +149,10 @@ export const IDIRPermitSearchRowActions = ({
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(companyId, permitId)}`);
+      // Sets the companyId and permitId of the permit to be amended,
+      // which will in turn look for any existing associated amendment applications,
+      // which is used to show info in the modal (or not show the modal at all)
+      choosePermitToAmend(companyId, permitId);
     }
   };
 
@@ -179,9 +194,18 @@ export const IDIRPermitSearchRowActions = ({
         shouldOpen={openResendDialog}
         onCancel={() => setOpenResendDialog(false)}
         onResend={handleResend}
+        companyId={companyId}
         permitId={permitId}
-        email={email}
         permitNumber={permitNumber}
+      />
+
+      <UnfinishedAmendModal
+        shouldOpen={showUnfinishedModal}
+        issuedPermitNumber={permitNumber}
+        unfinishedAmendmentCreatedBy={existingAmendmentCreatedBy}
+        onCancel={handleCloseModal}
+        onStartNewAmendment={handleStartNewAmendment}
+        onContinueAmendment={handleContinueAmendment}
       />
     </>
   );
