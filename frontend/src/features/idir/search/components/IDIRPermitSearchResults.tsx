@@ -1,6 +1,7 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -26,7 +27,6 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { useNavigate } from "react-router-dom";
 
 /**
  * Function to decide whether to show row actions icon or not.
