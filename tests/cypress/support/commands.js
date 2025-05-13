@@ -20,6 +20,29 @@ Cypress.Commands.add('userLoginBceid', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(wait_time);
 
+    cy.get('body').then($body => {
+      const checkbox = '#showCLP';
+    
+      if ($body.find(checkbox).length > 0) {
+        cy.get(checkbox).then($checkbox => {
+          if (!$checkbox.is(':checked')) {
+            cy.wrap($checkbox).check();
+          }
+        });
+      }
+    }).then(() => {
+      cy.get('body').then($body => {
+        const submitSelector = 'input[type="submit"].btn.btn-primary[value="Continue"]';
+      
+        if ($body.find(submitSelector).length > 0) {
+          cy.get(submitSelector).click();
+        } else {
+          cy.log('Submit button not found');
+        }
+      });
+    });
+    cy.wait(wait_time);
+
   });
 
   Cypress.Commands.add('userLoginIdir', () => {

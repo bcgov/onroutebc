@@ -166,7 +166,7 @@ describe('Manage Vehicle Inventory', () => {
     cy.get('.css-15mydm5').first().scrollIntoView().wait(3000).click({ force: true });
     cy.wait(wait_time);
 
-    cy.xpath("//li[text()='Edit']").click();
+    cy.xpath("//li[text()='Edit']").click({force: true});
     cy.wait(wait_time);
 
     cy.get('[name="make"]').clear().type('BMW');
