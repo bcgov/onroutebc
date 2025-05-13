@@ -292,10 +292,28 @@ describe('Global search', () => {
   const expectFailureAmendPermit = () => {
     cy.get('.search-button').should('not.exist');
   }
-    // Void Permit
-    function voidPermitAs(user_role, assertionFn) {
+    // Void/Revoke Permit
+    function voidRevokePermitAs(user_role, assertionFn) {
       if(user_role !== 'ca' && user_role !== 'pa'){
         cy.search(company_name);
+
+        cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
+        cy.wait(wait_time);
+
+        cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
+        cy.wait(wait_time);
+
+        cy.xpath("//li[text()='Void/Revoke']").click();
+        cy.wait(wait_time);
+
+        cy.get('[name="reason"]').type('void it for test');
+        cy.wait(wait_time);
+
+        cy.xpath("//button[text()='Continue']").click();
+        cy.wait(wait_time);
+
+        cy.xpath("//button[text()='Finish']").click();
+        cy.wait(wait_time);
         
       }
   
@@ -303,53 +321,28 @@ describe('Global search', () => {
   
     }
   
-    const expectResultVoidPermit = () => {
+    const expectResultVoidRevokePermit = () => {
       switch (user_role) {
         case 'sa':
-          expectSuccessVoidPermit();
+          expectSuccessVoidRevokePermit();
           break;
         default:
-          expectFailureVoidPermit();
+          expectFailureVoidRevokePermit();
           break;
       }
     }
   
-    const expectSuccessVoidPermit = () => {
-      cy.get('.search-button').should('exist');
+    const expectSuccessVoidRevokePermit = () => {
+      cy.get('span.onroutebc-chip.permit-chip.permit-chip--superseded')
+      .should('exist')
+      .and('have.text', 'Superseded');
+
     }
     
-    const expectFailureVoidPermit = () => {
-      cy.get('.search-button').should('not.exist');
+    const expectFailureVoidRevokePermit = () => {
+      cy.get('span.onroutebc-chip.permit-chip.permit-chip--superseded')
+      .should('not.exist');
     }
-  // Void Permit
-  function revokePermitAs(user_role, assertionFn) {
-    if(user_role !== 'ca' && user_role !== 'pa'){
-      cy.search(company_name);
-      
-    }
-
-    assertionFn();
-
-  }
-
-  const expectResultRevokePermit = () => {
-    switch (user_role) {
-      case 'sa':
-        expectSuccessRevokePermit();
-        break;
-      default:
-        expectFailureRevokePermit();
-        break;
-    }
-  }
-
-  const expectSuccessRevokePermit = () => {
-    cy.get('.search-button').should('exist');
-  }
-  
-  const expectFailureRevokePermit = () => {
-    cy.get('.search-button').should('not.exist');
-  }
 
   // Resend
   function resendAs(user_role, assertionFn) {
@@ -517,10 +510,6 @@ const expectFailureSearchForApplication = () => {
   
   it('Should Void Permit', () => {
     voidPermitAs(user_role, expectResultVoidPermit);
-  });
-  
-  it('Should Revoke Permit', () => {
-    revokePermitAs(user_role, expectResultRevokePermit);
   });
   
   it('Should Resend', () => {
