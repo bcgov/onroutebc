@@ -286,3 +286,10 @@
 
 ### Version 73:
 - Remove NRQCL & NRSCL permit templates and configure NRQCV & NRSCV
+
+### Version 74:
+- DDL changes to dops.ORBC_DOCUMENT_TEMPLATE to align it with BCBOX
+  - Following coulumns are added to dops.ORBC_DOCUMENT_TEMPLATE
+    - IS_ACTIVE Char(1) - Default N - non-nullable
+    - FILE_NAME Varchar(50) - non-nullable
+- Downtime is required for prod deployment
