@@ -71,6 +71,13 @@ jobs:
         role: 
           - CA
           - PA
+          - PC
+          - SA
+          - FIN
+          - EO
+          - HQA
+          - CTPO 
+          - TRAIN
 
     timeout-minutes: 10
     steps:
