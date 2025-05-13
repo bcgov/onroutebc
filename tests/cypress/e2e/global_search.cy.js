@@ -508,8 +508,8 @@ const expectFailureSearchForApplication = () => {
     amendPermitAs(user_role, expectResultAmendPermit);
   });
   
-  it('Should Void Permit', () => {
-    voidPermitAs(user_role, expectResultVoidPermit);
+  it('Should Void/Revoke Permit', () => {
+    voidRevokePermitAs(user_role, expectResultVoidRevokePermit);
   });
   
   it('Should Resend', () => {
