@@ -52,7 +52,7 @@ jobs:
           echo "environment=$environment" >> $GITHUB_OUTPUT
 
   e2e-tests:
-    name: ${{matrix.test}}-${{matrix.browser}}-{{matrix.role}}
+    name: ${{matrix.role}}-${{matrix.test}}-${{matrix.browser}}
     needs: [vars]
     environment: ${{needs.vars.outputs.environment}}
     runs-on: ubuntu-22.04
@@ -102,14 +102,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure() || inputs.show_artifact
         with:
-          name: ${{matrix.test}}-${{matrix.browser}}-{{matrix.role}} screenshot
+          name: ${{matrix.role}}-${{matrix.test}}-${{matrix.browser}} screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: failure() || inputs.show_artifact
         with:
-          name: ${{matrix.test}}-${{matrix.browser}}-{{matrix.role}} video
+          name: ${{matrix.role}}-${{matrix.test}}-${{matrix.browser}} video
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
