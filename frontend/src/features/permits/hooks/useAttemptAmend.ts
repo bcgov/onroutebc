@@ -10,12 +10,10 @@ import { hasPermitsActionFailed } from "../helpers/permitState";
 import { isNull } from "../../../common/types/common";
 import { PermitActionOrigin } from "../../idir/search/types/types";
 
-export const useAttemptAmend = () => {
+export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
   const navigate = useNavigate();
   const [companyId, setCompanyId] = useState<number>(0);
   const [permitId, setPermitId] = useState<string>("");
-  const [permitActionOrigin, setPermitActionOrigin] =
-    useState<PermitActionOrigin>();
   const [attemptedAmend, setAttemptedAmend] = useState<boolean>(false);
   const [showUnfinishedModal, setShowUnfinishedModal] =
     useState<boolean>(false);
@@ -26,11 +24,9 @@ export const useAttemptAmend = () => {
   const choosePermitToAmend = (
     selectedCompanyId: number,
     selectedPermitId: string,
-    permitActionOrigin: PermitActionOrigin,
   ) => {
     setCompanyId(selectedCompanyId);
     setPermitId(selectedPermitId);
-    setPermitActionOrigin(permitActionOrigin);
     setAttemptedAmend(true);
   };
 
@@ -55,6 +51,7 @@ export const useAttemptAmend = () => {
     noExistingApplication,
     companyId,
     permitId,
+    permitActionOrigin,
   ]);
 
   const handleCloseModal = () => {
@@ -103,7 +100,7 @@ export const useAttemptAmend = () => {
         },
       });
     }
-  }, [companyId, permitId, existingAmendmentApplicationId]);
+  }, [companyId, permitId, existingAmendmentApplicationId, permitActionOrigin]);
 
   const handleContinueAmendment = useCallback(() => {
     navigate(PERMITS_ROUTES.AMEND(companyId, permitId), {
@@ -111,7 +108,7 @@ export const useAttemptAmend = () => {
         permitActionOrigin,
       },
     });
-  }, [companyId, permitId]);
+  }, [companyId, permitId, permitActionOrigin]);
 
   return {
     choosePermitToAmend,

@@ -134,7 +134,7 @@ export const IDIRPermitSearchRowActions = ({
     handleCloseModal,
     handleStartNewAmendment,
     handleContinueAmendment,
-  } = useAttemptAmend();
+  } = useAttemptAmend(permitActionOrigin);
 
   const existingAmendmentCreatedBy = getDefaultRequiredVal(
     "",
@@ -158,7 +158,7 @@ export const IDIRPermitSearchRowActions = ({
       // Sets the companyId and permitId of the permit to be amended,
       // which will in turn look for any existing associated amendment applications,
       // which is used to show info in the modal (or not show the modal at all)
-      choosePermitToAmend(companyId, permitId, permitActionOrigin);
+      choosePermitToAmend(companyId, permitId);
     }
   };
 
