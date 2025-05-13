@@ -68,16 +68,26 @@ jobs:
             #- firefox
         test: 
           - 'manage_vehicle_inventory.cy.js'
+          - 'global_search.cy.js'
+          - 'manage_ppc_users.cy.js'
+          - 'manage_settings.cy.js'
+          - 'miscellaneous.cy.js'
+          - 'staff_home_screen.cy.js'
+          - 'manage_permits.cy.js'
+          - 'manage_profile.cy.js'
+          - 'manage_vehicle_inventory.cy.js'
+          - 'reports.cy.js'
+          - 'sticky_side_bar.cy.js'
         role: 
           - CA
           - PA
           - PC
-          - SA
-          - FIN
-          - EO
-          - HQA
-          - CTPO 
-          - TRAIN
+            #- SA
+            #- FIN
+            #- EO
+            #- HQA
+            #- CTPO 
+            #- TRAIN
 
     timeout-minutes: 10
     steps:
