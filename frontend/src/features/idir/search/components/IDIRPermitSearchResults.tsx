@@ -101,7 +101,10 @@ export const IDIRPermitSearchResults = memo(
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
-      () => PermitSearchResultColumnDef(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
+      () =>
+        PermitSearchResultColumnDef(() =>
+          navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+        ),
       [],
     );
 

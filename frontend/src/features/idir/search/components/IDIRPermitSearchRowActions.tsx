@@ -95,7 +95,6 @@ export const IDIRPermitSearchRowActions = ({
   permitId,
   isPermitInactive,
   permitNumber,
-  email,
   userRole,
   companyId,
 }: {
@@ -111,10 +110,6 @@ export const IDIRPermitSearchRowActions = ({
    * The permit number
    */
   permitNumber: string;
-  /**
-   * The email address (for use in resend dialog)
-   */
-  email?: string;
   /**
    * The role for the current user (eg. PPCCLERK or EOFFICER)
    */
@@ -199,8 +194,8 @@ export const IDIRPermitSearchRowActions = ({
         shouldOpen={openResendDialog}
         onCancel={() => setOpenResendDialog(false)}
         onResend={handleResend}
+        companyId={companyId}
         permitId={permitId}
-        email={email}
         permitNumber={permitNumber}
       />
 

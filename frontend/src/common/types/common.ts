@@ -14,6 +14,7 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
+import { VoidPermitFormData } from "../../features/permits/pages/Void/types/VoidPermit";
 
 export interface ApiErrorResponse {
   status: number;
@@ -38,6 +39,7 @@ export const ORBC_FORM_FEATURES = {
   PERMIT_RESEND: "permit-resend",
   POWER_UNIT: "power-unit",
   REJECT_APPLICATION: "reject-application",
+  REVOKE_PERMIT: "revoke-permit",
   SUSPEND_ACCOUNT: "suspend-account",
   TEST_FEATURE: "test-feature",
   TRAILER: "trailer",
@@ -64,7 +66,8 @@ export type ORBC_FormTypes =
   | SearchFields
   | VerifyClientRequest
   | PermitContactDetails
-  | LOAFormData;
+  | LOAFormData
+  | VoidPermitFormData;
 
 /**
  * The options for pagination.
