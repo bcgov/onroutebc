@@ -4,7 +4,7 @@ describe('Manage Vehicle Inventory', () => {
 
   const wait_time = Cypress.env('wait_time');
   const vehicle_inventory_url = '/manage-vehicles';
-  const user_role = Cypress.env('user_role');
+  const user_role = Cypress.env('user_role').toLowerCase();
   const roleCompanies = Cypress.env('rolesToCompanies');
   const company_name = roleCompanies[user_role];
   
