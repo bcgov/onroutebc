@@ -6,7 +6,7 @@ describe('Sticky Side Bar', () => {
   const new_trow_url = '/create-application/TROW';
   
   const wait_time = Cypress.env('wait_time');
-  const user_role = Cypress.env('user_role');
+  const user_role = Cypress.env('user_role').toLowerCase();
   const roleCompanies = Cypress.env('rolesToCompanies');
   const company_name = roleCompanies[user_role];
 
