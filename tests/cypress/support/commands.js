@@ -68,7 +68,8 @@ Cypress.Commands.add('userLoginBceid', () => {
   });
 
   Cypress.Commands.add('loginAs', (user_role) => {
-    if(user_role === 'ca' || user_role === 'pa'){
+    const role = user_role.toLowerCase();
+    if(role === 'ca' || role === 'pa'){
       cy.userLoginBceid();
     }
     else{
