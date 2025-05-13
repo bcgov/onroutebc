@@ -1,11 +1,16 @@
 import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
 import { PermitData } from '../interface/permit.template.interface';
 import { PolicyApplication } from '../interface/policy-application.interface';
-import { ValidationResults } from 'onroute-policy-engine';
+import { ValidationResult, ValidationResults } from 'onroute-policy-engine';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { isCVClient } from './common.helper';
 import { PermitType } from '../enum/permit-type.enum';
 import { differenceBetween } from './date-time.helper';
+import { STOS_MAX_ALLOWED_DURATION_AMEND } from '../constants/permit.constant';
+import {
+  PE_FIELD_REFERENCE_PERMIT_DURATION,
+  PE_FIELD_REFERENCE_START_DATE,
+} from '../constants/policy-engine.constant';
 export const convertToPolicyApplication = (
   application: Permit,
 ): PolicyApplication => {
@@ -16,44 +21,62 @@ export const convertToPolicyApplication = (
 };
 
 /**
- * This method is written for JIRA ORV2-4020
- * As per specifications staff user can allow STOS amendments to be equal to or less than 30 days.
- * so BE will filter our policy engine violation for such scenario.
- * @param application
- * @param currentUser
- * @param validationResults
- * @returns
+ * This method evaluates the policy validation results for a given application.
+ * The method filters out violations based on certain criteria and returns a boolean result.
+ *
+ * @param application - The permit application being evaluated.
+ * @param currentUser - The current user making the evaluation, encapsulating identity provider details.
+ * @param validationResults - The validation results returned by the policy engine, containing potential violations.
+ * @returns A boolean indicating whether the permit's violations comply with the allowed policy criteria.
  */
-export const evaluatePolicyViolations = (
+export const evaluatePolicyValidationResult = (
   application: Permit,
   currentUser: IUserJWT,
   validationResults: ValidationResults,
 ): boolean => {
-  const isSTOS = application.permitType === PermitType.SINGLE_TRIP_OVERSIZE;
-  const isAllowedDuration =
-    differenceBetween(
-      application.permitData.expiryDate,
-      application.permitData.startDate,
-    ) <= 30;
-  const isRevised = application.revision > 0;
-  const isCV = isCVClient(currentUser.identity_provider);
-
-  const hasDurationViolations = validationResults?.violations?.some(
-    (violation) => violation?.fieldReference === 'permitData.permitDuration',
-  );
-
-  let staffAmendSTOS: boolean | null = null;
-
-  if (isSTOS) {
-    staffAmendSTOS =
-      isAllowedDuration && isRevised && hasDurationViolations && !isCV;
+  // Return false if the current user is a CV Client and there are validation violations
+  if (
+    isCVClient(currentUser.identity_provider) &&
+    validationResults?.violations?.length
+  ) {
+    return false;
   }
-  console.log('Staff amending STOS: ', staffAmendSTOS);
-  const notStartDateError = validationResults?.violations?.some(
-    (violation) => violation?.fieldReference !== 'permitData.startDate',
-  );
 
-  return (
-    (staffAmendSTOS !== null && !staffAmendSTOS) || notStartDateError || isCV
+  const { permitType, permitData, revision } = application;
+
+  const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
+  // Check if the application is an amend application
+  const isRevised = revision > 0;
+
+  // Function to check if the permit duration is within the allowed expiration limit
+  const isAllowedDuration = (expirationLimit) =>
+    differenceBetween(permitData.expiryDate, permitData.startDate) <=
+    expirationLimit;
+
+  // Function to check if there is a duration violation
+  const isDurationViolation = (violation: ValidationResult) =>
+    violation?.fieldReference === PE_FIELD_REFERENCE_PERMIT_DURATION;
+
+  // Function to check if there is a start date violation which can be excluded
+  const isStartDateViolation = (violation: ValidationResult) =>
+    violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE;
+
+  // Function to check if there is an STOS amendment duration violation which can be excluded
+  const isSTOSAmendDurationViolation = (violation: ValidationResult) =>
+    isSTOS &&
+    isRevised &&
+    isDurationViolation(violation) &&
+    isAllowedDuration(STOS_MAX_ALLOWED_DURATION_AMEND);
+
+  // Return true only if all violations are either STOS amendment duration or start date violations
+  return !validationResults?.violations?.some(
+    (violation) =>
+      !(
+        //Add violations that need to be skipped
+        (
+          isSTOSAmendDurationViolation(violation) ||
+          isStartDateViolation(violation)
+        )
+      ),
   );
 };

@@ -71,7 +71,7 @@ import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
-import { evaluatePolicyViolations } from 'src/common/helper/policy.helper';
+import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 
 @Injectable()
 export class PaymentService {
@@ -344,13 +344,13 @@ export class PaymentService {
         validationResults?.violations?.push(paymentValidationResult);
       }
 
-      const policyEngineValidationFailure = evaluatePolicyViolations(
+      const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
         existingApplication,
         currentUser,
         validationResults,
       );
 
-      if (policyEngineValidationFailure) {
+      if (isPolicyValidationSuccessful) {
         throw throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
           validationResults,
@@ -601,32 +601,21 @@ export class PaymentService {
           ...validationResults,
         });
 
-        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
-      }
+        const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
+          application,
+          currentUser,
+          validationResults,
+        );
 
-      for (const policyValidation of policyValidationDto) {
-        if (policyValidation?.violations?.length) {
-          const existingApplication: Permit = await queryRunner.manager.findOne(
-            Permit,
-            {
-              where: { permitId: policyValidation.id },
-              relations: { permitData: true },
-            },
+        if (!isPolicyValidationSuccessful) {
+          throw throwUnprocessableEntityException(
+            'Policy Engine Validation Failure',
+            validationResults,
+            'VALIDATION_FAILURE',
           );
-          const policyEngineValidationFailure = evaluatePolicyViolations(
-            existingApplication,
-            currentUser,
-            policyValidation,
-          );
-
-          if (policyEngineValidationFailure) {
-            throw throwUnprocessableEntityException(
-              'Policy Engine Validation Failure',
-              policyValidation,
-              'VALIDATION_FAILURE',
-            );
-          }
         }
+
+        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
       }
 
       const transactionOrderNumber =
