@@ -16,12 +16,10 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
-import { CompanyOrClient } from "../helpers/useSetCompanyHandler";
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,
-  fetchCompanyData: (CompanyId: number) => Promise<any>,
-  handleSelectCompany: (selectedCompany: CompanyOrClient) => void,
+  onClickCompany: (companyId: number) => Promise<void>,
 ): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
@@ -116,18 +114,9 @@ export const PermitSearchResultColumnDef = (
     Cell: (props: { cell: any; row: any }) => {
       return (
         <CustomActionLink
-          onClick={async () => {
-            if (fetchCompanyData && handleSelectCompany) {
-              try {
-                const company = await fetchCompanyData(
-                  props.row.original.companyId,
-                );
-                handleSelectCompany(company);
-              } catch (error) {
-                console.error("Failed to fetch company data", error);
-              }
-            }
-          }}
+          onClick={async () =>
+            await onClickCompany(props.row.original.companyId)
+          }
         >
           {props.row.original.legalName}
         </CustomActionLink>

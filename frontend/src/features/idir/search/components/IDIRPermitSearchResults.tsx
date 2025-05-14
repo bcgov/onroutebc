@@ -117,13 +117,17 @@ export const IDIRPermitSearchResults = memo(
       }
     };
 
+    const handleClickCompany = async (companyId: number) => {
+      const company = await fetchCompanyData(companyId);
+      handleSelectCompany(company);
+    };
+
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
       () =>
         PermitSearchResultColumnDef(
           () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
-          fetchCompanyData,
-          handleSelectCompany,
+          handleClickCompany,
         ),
       [searchEntity, searchByFilter],
     );
