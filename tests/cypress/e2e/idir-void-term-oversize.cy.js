@@ -3,9 +3,8 @@ describe('Login Test for OnRouteBC', () => {
     // Retrieve the environment variables
     const username = Cypress.env('idir_username');
     const password = Cypress.env('idir_password');
-    const void_url = Cypress.env('void_url');
-    const new_tros_url = '/create-application/TROS';
     const wait_time = Cypress.env('wait_time');
+    const applicationsUrl = '/applications';
 
     // Step 1: Visit the base URL
     cy.visit('/');
@@ -23,15 +22,18 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(wait_time);
 
-    // Step 5: Find the search button by its class name and click it
+    cy.visit('/');
+    cy.wait(wait_time);
+
+    // Search to find the search button by its class name and click it
     cy.get('.search-button').click();
     cy.wait(wait_time);
 
-    // Step 6: Find the element with value="companies" and interact with it
+    // Find the element with value="companies" and interact with it
     cy.get('[value="companies"]').click();
     cy.wait(wait_time);
 
-    // Step 7: Find elements to amend application
+    // Find elements to amend application
     cy.get('.css-1pog434').type('t');
     cy.wait(wait_time);
 
@@ -44,11 +46,7 @@ describe('Login Test for OnRouteBC', () => {
       .click();
     cy.wait(wait_time);
 
-    cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
-    cy.wait(wait_time);
-
-    // create a permit first
-    // click select
+    // create a new application in case there is no activate permit over there
     cy.get('[aria-label="Select"]').eq(1).click({ force: true });
     cy.wait(wait_time);
 
@@ -136,29 +134,65 @@ describe('Login Test for OnRouteBC', () => {
     cy.wait(wait_time);
 
     cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+    cy.wait(1000);
+
+    // got to the cart and get the first item to edit
+    cy.get('.shopping-cart-button').click({force: true});
+          cy.wait(wait_time);
+
+    cy.get('button.css-mn35dv')
+      .contains("-A00")  
+      .first()
+      .click();
+
     cy.wait(wait_time);
 
+    cy.get('button')
+      .contains("Edit Application")
+      .click();
+    cy.wait(wait_time);
+    cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
+    cy.wait(wait_time);
+    cy.get('[data-testid="continue-application-button"]').click();
+    cy.wait(wait_time);
+    cy.get('[type="checkbox"]').check();
+    cy.wait(wait_time);
+    cy.xpath("//button[text()='Add to Cart']").click();
+    cy.wait(wait_time);
+
+    // go to the cart
     cy.get('.shopping-cart-button').click({force: true});
     cy.wait(wait_time);
 
-    // Disable idir account payment
-    // cy.get('div[role="combobox"]')
-    // .contains('Select')  
-    // .click(); 
-
-    // cy.contains('li', 'Mastercard (Debit)').first().click();
-    // cy.wait(wait_time);
-
-    // cy.get('[name="additionalPaymentData.icepayTransactionId"]').type(1234);
-    // cy.wait(wait_time);
-
-    // cy.get('button[data-testid="pay-now-btn"]').click({force: true});
-    // cy.wait(wait_time);
-
-    cy.visit('/');
+    // click my applications
+    cy.get('.cart-filter--my')
+      .find('input[type="radio"]')
+      .click();
     cy.wait(wait_time);
 
-    // Search to find the search button by its class name and click it
+    cy.get('.payment-option')
+      .eq(2)
+      .find('input[type="radio"]')
+      .click();
+    cy.wait(wait_time);  
+    // select no fee permit option
+    cy.get('.payment-option')
+      .eq(2)
+      .find('input[name="additionalPaymentData.serviceBCOfficeId"]')
+      .type('1234');
+    cy.wait(wait_time);
+
+    cy.get('button[data-testid="pay-now-btn"]')
+      .click();
+    cy.wait(wait_time);
+
+    cy.get('.success__block--success-msg').should('exist');
+    cy.wait(wait_time);
+
+    cy.visit(applicationsUrl);
+    cy.wait(wait_time);
+
+    // Find the search button by its class name and click it
     cy.get('.search-button').click();
     cy.wait(wait_time);
 
@@ -166,14 +200,13 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[value="companies"]').click();
     cy.wait(wait_time);
 
-    // Find elements to amend application
+    // Type the search text for the company
     cy.get('.css-1pog434').type('t');
     cy.wait(wait_time);
 
     cy.get('.search-by__search').click();
     cy.wait(wait_time);
 
-    // cy.xpath("//button[text()='Test Transport Inc.']").click();
     cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
       .first()
       .click();
