@@ -9,7 +9,7 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
+import * as routes from "../../../../routes/constants";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_ROLE } from "../../../../common/authentication/types";
@@ -27,6 +27,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -98,14 +101,35 @@ export const IDIRPermitSearchResults = memo(
     const { data, isPending, isError } = searchResultsQuery;
 
     const navigate = useNavigate();
+    const { handleSelectCompany } = useSetCompanyHandler(
+      routes.PROFILE_ROUTES.MANAGE,
+    );
+    const fetchCompanyData = async (companyId: number) => {
+      const searchURL = new URL(`${VEHICLES_URL}/companies/${companyId}`);
+      searchURL.searchParams.set("page", pagination.pageIndex.toString());
+      searchURL.searchParams.set("take", pagination.pageSize.toString());
+      try {
+        const response = await httpGETRequest(searchURL.toString());
+        return response.data;
+      } catch (err) {
+        console.error("Failed to fetch company data", err);
+        throw err;
+      }
+    };
+
+    const handleClickCompany = async (companyId: number) => {
+      const company = await fetchCompanyData(companyId);
+      handleSelectCompany(company);
+    };
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
       () =>
-        PermitSearchResultColumnDef(() =>
-          navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+        PermitSearchResultColumnDef(
+          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+          handleClickCompany,
         ),
-      [],
+      [searchEntity, searchByFilter],
     );
 
     /**
