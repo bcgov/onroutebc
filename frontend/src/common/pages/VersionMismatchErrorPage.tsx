@@ -1,27 +1,32 @@
-import "./UniversalUnexpected.scss";
 import { ErrorPage } from "../components/error/ErrorPage";
-import { CustomExternalLink } from "../components/links/CustomExternalLink";
+import "./UniversalUnexpected.scss";
+import "./VersionMismatchErrorPage.scss";
+import { Link } from "react-router-dom";
+import { HOME } from "../../routes/constants";
 
 export const VersionMismatchErrorPage = () => {
   return (
     <ErrorPage
-      errorTitle="OnRouteBC was updated!"
+      errorTitle="onRouteBC has been updated"
+      imgSrc="/New_Update_Graphic.png"
       msgNode={
         <div className="unexpected-error-msg">
           <span className="unexpected-error-msg__text">
-            Click <a onClick={() => {}}>here</a> to continue.
+            Click{" "}
+            <Link
+              className="version-mismatch__link"
+              onClick={() => {
+                // Directly changing the href refreshes the page 
+                // and takes user to home.
+                window.location.href = HOME;
+              }}
+              to={"#"}
+            >
+              here
+            </Link>{" "}
+            to continue.
           </span>
           <br></br>
-          <span className="unexpected-error-msg__text">
-            persists, please email the error reference number
-          </span>
-          <br></br>
-          <span className="unexpected-error-msg__text">
-            below to
-            <CustomExternalLink className="unexpected-error-msg__link">
-              PPCPermit@gov.bc.ca
-            </CustomExternalLink>
-          </span>
         </div>
       }
     />
