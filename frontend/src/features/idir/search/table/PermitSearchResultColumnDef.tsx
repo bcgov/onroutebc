@@ -16,12 +16,12 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
-import * as routes from "../../../../routes/constants";
-import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
+import { CompanyOrClient } from "../helpers/useSetCompanyHandler";
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,
-  fetchCompanyData?: (CompanyId: number) => Promise<any>,
+  fetchCompanyData: (CompanyId: number) => Promise<any>,
+  handleSelectCompany: (selectedCompany: CompanyOrClient) => void,
 ): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
@@ -114,16 +114,15 @@ export const PermitSearchResultColumnDef = (
     sortingFn: "alphanumeric",
     size: 180,
     Cell: (props: { cell: any; row: any }) => {
-      const setCompany = useSetCompanyHandler(routes.PROFILE_ROUTES.MANAGE);
       return (
         <CustomActionLink
           onClick={async () => {
-            if (fetchCompanyData) {
+            if (fetchCompanyData && handleSelectCompany) {
               try {
-                const data = await fetchCompanyData(
+                const company = await fetchCompanyData(
                   props.row.original.companyId,
                 );
-                setCompany(data);
+                handleSelectCompany(company);
               } catch (error) {
                 console.error("Failed to fetch company data", error);
               }

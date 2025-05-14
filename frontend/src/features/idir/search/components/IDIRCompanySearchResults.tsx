@@ -41,6 +41,8 @@ export const IDIRCompanySearchResults = memo(
       searchEntity,
     } = searchParams;
 
+    const { handleSelectCompany } = useSetCompanyHandler();
+
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
@@ -82,11 +84,10 @@ export const IDIRCompanySearchResults = memo(
           minSize: 220,
           Cell: (props: { row: any; cell: any }) => {
             const isCompanySuspended = props.row.original.isSuspended;
-            const setCompany = useSetCompanyHandler();
             return (
               <>
                 <CustomActionLink
-                  onClick={() => setCompany(props.row.original)}
+                  onClick={() => handleSelectCompany(props.row.original)}
                 >
                   {props.row.original.legalName}
                 </CustomActionLink>
