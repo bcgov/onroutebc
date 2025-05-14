@@ -48,6 +48,7 @@ export class AppService {
         };
       }),
     );
+
     await this.cacheManager.set(CacheKey.DOCUMENT_TEMPLATE, templateFiles);
 
     const assetsPath =
