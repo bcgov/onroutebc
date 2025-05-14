@@ -63,6 +63,7 @@ export const useApplicationFormContext = () => {
     onUpdateVehicleConfig,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
   } = useApplicationFormUpdateMethods();
 
   const {
@@ -82,6 +83,7 @@ export const useApplicationFormContext = () => {
     permittedCommodity,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(
@@ -265,6 +267,7 @@ export const useApplicationFormContext = () => {
     selectedVehicleConfigSubtypes,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
     onLeave,
     onSave,
     onCancel,
@@ -285,5 +288,6 @@ export const useApplicationFormContext = () => {
     onChangeCommodityType,
     onUpdateVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
   };
 };

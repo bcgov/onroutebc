@@ -15,6 +15,7 @@ import { ApplicationNotesSection } from "./ApplicationNotesSection";
 import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
+import { ConditionalLicensingFeeSection } from "./ConditionalLicensingFeeSection/ConditionalLicensingFeeSection";
 
 export const PermitForm = () => {
   const {
@@ -50,6 +51,7 @@ export const PermitForm = () => {
     commodityType,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
     onLeave,
     onSave,
     onCancel,
@@ -67,6 +69,7 @@ export const PermitForm = () => {
     onChangeCommodityType,
     onUpdateVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
   } = useApplicationFormContext();
 
   return (
@@ -155,6 +158,12 @@ export const PermitForm = () => {
           permitType={permitType}
           thirdPartyLiability={thirdPartyLiability}
           onChange={onUpdateThirdPartyLiability}
+        />
+
+        <ConditionalLicensingFeeSection
+          permitType={permitType}
+          conditionalLicensingFeeType={conditionalLicensingFee}
+          onChange={onUpdateConditionalLicensingFee}
         />
 
         <ApplicationNotesSection feature={feature} permitType={permitType} />

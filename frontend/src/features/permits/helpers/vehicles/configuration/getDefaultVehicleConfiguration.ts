@@ -17,5 +17,6 @@ export const getDefaultVehicleConfiguration = (
     overallLength: getDefaultRequiredVal(null, vehicleConfiguration?.overallLength),
     trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
+    netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),
   };
 };

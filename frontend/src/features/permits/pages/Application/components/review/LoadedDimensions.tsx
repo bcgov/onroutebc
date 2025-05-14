@@ -42,6 +42,10 @@ export const LoadedDimensions = ({
           vehicleConfiguration?.loadedGVW,
           oldVehicleConfiguration?.loadedGVW,
         ),
+        netWeight: areValuesDifferent(
+          vehicleConfiguration?.netWeight,
+          oldVehicleConfiguration?.netWeight,
+        ),
       }
     : {
         overallWidth: false,
@@ -50,6 +54,7 @@ export const LoadedDimensions = ({
         frontProjection: false,
         rearProjection: false,
         loadedGVW: false,
+        netWeight: false,
       };
 
   return vehicleConfiguration ? (

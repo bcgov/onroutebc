@@ -43,6 +43,13 @@ import {
   MIN_MFP_DURATION,
 } from "../constants/mfp";
 
+import {
+  MAX_NRSCV_DURATION,
+  MIN_NRSCV_DURATION,
+  NRSCV_DURATION_INTERVAL_DAYS,
+  NRSCV_DURATION_OPTIONS,
+} from "../constants/nrscv";
+
 /**
  * Get list of selectable duration options for a given permit type.
  * @param permitType Permit type to get duration options for
@@ -52,6 +59,8 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return STFR_DURATION_OPTIONS;
+    case PERMIT_TYPES.NRSCV:
+      return NRSCV_DURATION_OPTIONS;
     case PERMIT_TYPES.MFP:
       return MFP_DURATION_OPTIONS;
     case PERMIT_TYPES.STOS:
@@ -75,6 +84,8 @@ export const minDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return MIN_STFR_DURATION;
+    case PERMIT_TYPES.NRSCV:
+      return MIN_NRSCV_DURATION;
     case PERMIT_TYPES.MFP:
       return MIN_MFP_DURATION;
     case PERMIT_TYPES.STOS:
@@ -98,6 +109,8 @@ export const maxDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return MAX_STFR_DURATION;
+    case PERMIT_TYPES.NRSCV:
+      return MAX_NRSCV_DURATION;
     case PERMIT_TYPES.MFP:
       return MAX_MFP_DURATION;
     case PERMIT_TYPES.STOS:
@@ -120,6 +133,8 @@ export const getDurationIntervalDays = (permitType: PermitType) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return STFR_DURATION_INTERVAL_DAYS;
+    case PERMIT_TYPES.NRSCV:
+      return NRSCV_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.MFP:
       return MFP_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.STOS:
