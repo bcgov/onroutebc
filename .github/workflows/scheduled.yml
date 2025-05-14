@@ -20,7 +20,7 @@ jobs:
         name: [dops, frontend, vehicles, policy, scheduler, public]
     steps:
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed # v0.12.0
         with:
           allow_issue_writing: true
           artifact_name: "zap_${{ matrix.name }}"
@@ -30,7 +30,7 @@ jobs:
 
   generate-schema-spy:
     name: Generate SchemaSpy Documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres
@@ -47,8 +47,8 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: joshuaavalon/flyway-action@v3.0.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: joshuaavalon/flyway-action@81e2f01520d51d5fb5cb2ef828229adc5820aa2d # v3.0.0
         name: Generate SchemaSpy docs for node backend
         with:
           url: jdbc:postgresql://postgres:5432/default
@@ -67,7 +67,7 @@ jobs:
       - name: Run Schemaspy
         run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql -db default -host 127.0.0.1 -port 5432 -u default -p default -schemas users
       - name: Deploy to Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4
         with:
           folder: output
           target-folder: schemaspy
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: redhat-actions/openshift-tools-installer@v1
+      - uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 # v1
         with:
           oc: "4"
 

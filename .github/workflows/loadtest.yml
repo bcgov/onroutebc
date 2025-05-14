@@ -29,13 +29,13 @@ jobs:
   loadtests:
     name: Loadtests
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Run All JMeter Tests In tests Folder
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        uses: rbhadti94/apache-jmeter-action@f7da1bc9fee0b7c85b421761fa30a6f3e2b95647 # v0.7.0
         with:
           testFilePath: loadtests
           outputReportsFolder: loadtests/results
@@ -48,7 +48,7 @@ jobs:
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
             -JRESULTS_DIR=loadtest/results
 
-      - uses: actions/upload-artifact@v4.3.6
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: jmeter-test-results
           path: loadtests/results

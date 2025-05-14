@@ -115,10 +115,10 @@ jobs:
   deploys:
     name: Helm
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Check Deployment Triggers
         id: triggers
         run: |
@@ -148,7 +148,7 @@ jobs:
           # If here skip deployment
           echo "No triggers have fired, deployment skipped"
 
-      - uses: redhat-actions/openshift-tools-installer@v1
+      - uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 # v1
         if: steps.triggers.outputs.triggered == 'true'
         with:
           oc: "4"
