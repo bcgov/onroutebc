@@ -69,10 +69,12 @@ export class DgenService {
             .select('template_name')
             .addSelect('MAX(template.templateVersion)', 'max_version')
             .from(DocumentTemplate, 'template')
+            .where('template.isActive = :isActive', { isActive: 'Y' })
             .groupBy('template_name'),
         'documentTemplateLatest',
         'documentTemplate.templateName = documentTemplateLatest.template_name AND documentTemplate.templateVersion = documentTemplateLatest.max_version',
       )
+      .where('documentTemplate.isActive = :isActive', { isActive: 'Y' })
       .getMany();
 
     return latestTemplates;
