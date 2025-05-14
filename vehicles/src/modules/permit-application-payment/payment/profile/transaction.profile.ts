@@ -18,6 +18,7 @@ import { Directory } from 'src/common/enum/directory.enum';
 import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 import { isWebTransactionPurchase } from '../../../../common/helper/payment.helper';
+import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -67,8 +68,15 @@ export class TransactionProfile extends AutomapperProfile {
         Transaction,
         forMember(
           (transaction) => transaction.payerName,
+
           mapWithArguments((source, { directory, firstName, lastName }) => {
-            if (source.paymentMethodTypeCode !== PaymentMethodType.WEB) {
+            // Check if the payment method is not WEB or the transaction is not a purchase
+            if (
+              source.paymentMethodTypeCode !== PaymentMethodType.WEB ||
+              source.transactionTypeId !== TransactionType.PURCHASE
+            ) {
+              // Determine the payer name based on the directory type
+              // If the directory is IDIR or SERVICE_ACCOUNT, use PPC_FULL_TEXT; otherwise, use firstName and lastName
               return directory === Directory.IDIR ||
                 directory === Directory.SERVICE_ACCOUNT
                 ? PPC_FULL_TEXT
