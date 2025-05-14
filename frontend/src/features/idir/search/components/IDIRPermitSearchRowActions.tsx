@@ -12,6 +12,7 @@ import { EmailNotificationType } from "../../../permits/types/EmailNotificationT
 import { useAttemptAmend } from "../../../permits/hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../../permits/pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { PermitActionOrigin } from "../types/types";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -97,6 +98,7 @@ export const IDIRPermitSearchRowActions = ({
   permitNumber,
   userRole,
   companyId,
+  permitActionOrigin,
 }: {
   /**
    * The permit id.
@@ -115,6 +117,10 @@ export const IDIRPermitSearchRowActions = ({
    */
   userRole?: string;
   companyId: number;
+  /**
+   * The application location from where the permit action (amend / void / revoke) originated
+   */
+  permitActionOrigin: PermitActionOrigin;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -128,7 +134,7 @@ export const IDIRPermitSearchRowActions = ({
     handleCloseModal,
     handleStartNewAmendment,
     handleContinueAmendment,
-  } = useAttemptAmend();
+  } = useAttemptAmend(permitActionOrigin);
 
   const existingAmendmentCreatedBy = getDefaultRequiredVal(
     "",

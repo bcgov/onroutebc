@@ -31,6 +31,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { DoesUserHaveRole } from "../../../../common/authentication/util";
 import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -169,6 +170,7 @@ export const BasePermitList = ({
                 permitId={row.original.permitId}
                 userRole={idirUserDetails?.userRole}
                 companyId={row.original.companyId}
+                permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
               />
             ) : (
               <PermitRowOptions

@@ -1,5 +1,10 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
@@ -13,9 +18,16 @@ import { USER_ROLE } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  ERROR_ROUTES,
+  IDIR_ROUTES,
+} from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { Application } from "../../types/application";
 import { Nullable } from "../../../../common/types/common";
 import {
@@ -25,9 +37,11 @@ import {
 } from "../../hooks/hooks";
 
 import {
+  PERMIT_ACTION_ORIGINS,
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
+import { PERMIT_TABS } from "../../types/PermitTabs";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -73,12 +87,15 @@ const searchRoute =
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchString=`;
 
 export const AmendPermit = () => {
-  const {
-    permitId: permitIdParam,
-    companyId: companyIdParam,
-  } = useParams();
+  const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
 
-  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const { state: stateFromNavigation } = useLocation();
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
   const permitId = getDefaultRequiredVal("", permitIdParam);
 
   const { idirUserDetails } = useContext(OnRouteBCContext);
@@ -128,8 +145,27 @@ export const AmendPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}${getBasePermitNumber()}`;
 
-  const goHome = () => navigate(-1);
-  const goHomeSuccess = () => navigate(fullSearchRoute);
+  const goHome = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(-1);
+
+  const goHomeSuccess = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(fullSearchRoute);
 
   const allLinks = [
     {

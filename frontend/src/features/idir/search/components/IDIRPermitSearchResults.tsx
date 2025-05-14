@@ -18,7 +18,7 @@ import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { SearchFields } from "../types/types";
+import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
@@ -210,6 +210,7 @@ export const IDIRPermitSearchResults = memo(
                   permitId={row.original.permitId}
                   userRole={idirUserDetails?.userRole}
                   companyId={row.original.companyId}
+                  permitActionOrigin={PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH}
                 />
               </Box>
             );
