@@ -1,6 +1,7 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -17,7 +18,7 @@ import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { SearchFields } from "../types/types";
+import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
@@ -26,7 +27,6 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { useNavigate } from "react-router-dom";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -190,6 +190,7 @@ export const IDIRPermitSearchResults = memo(
                   permitId={row.original.permitId}
                   userRole={idirUserDetails?.userRole}
                   companyId={row.original.companyId}
+                  permitActionOrigin={PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH}
                 />
               </Box>
             );
