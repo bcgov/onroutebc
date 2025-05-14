@@ -64,16 +64,14 @@ import {
   throwBadRequestException,
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
-import {
-  isCVClient,
-  isFeatureEnabled,
-} from '../../../common/helper/common.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
 import { PaymentTransactionDto } from './dto/common/payment-transaction.dto';
 import { Nullable } from '../../../common/types/common';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
+import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 
 @Injectable()
 export class PaymentService {
@@ -346,12 +344,13 @@ export class PaymentService {
         validationResults?.violations?.push(paymentValidationResult);
       }
 
-      const policyEngineValidationFailure =
-        validationResults?.violations?.some(
-          (violation) => violation?.fieldReference !== 'permitData.startDate',
-        ) || isCVClient(currentUser.identity_provider);
+      const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
+        existingApplication,
+        currentUser,
+        validationResults,
+      );
 
-      if (policyEngineValidationFailure) {
+      if (isPolicyValidationSuccessful) {
         throw throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
           validationResults,
@@ -597,31 +596,26 @@ export class PaymentService {
         if (paymentValidationResult) {
           validationResults?.violations?.push(paymentValidationResult);
         }
-
         policyValidationDto.push({
           id: application.permitId,
           ...validationResults,
         });
 
-        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
-      }
+        const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
+          application,
+          currentUser,
+          validationResults,
+        );
 
-      for (const policyValidation of policyValidationDto) {
-        if (policyValidation?.violations?.length) {
-          const policyEngineValidationFailure =
-            policyValidation?.violations?.some(
-              (violation) =>
-                violation?.fieldReference !== 'permitData.startDate',
-            ) || isCVClient(currentUser.identity_provider);
-
-          if (policyEngineValidationFailure) {
-            throw throwUnprocessableEntityException(
-              'Policy Engine Validation Failure',
-              policyValidation,
-              'VALIDATION_FAILURE',
-            );
-          }
+        if (!isPolicyValidationSuccessful) {
+          throw throwUnprocessableEntityException(
+            'Policy Engine Validation Failure',
+            validationResults,
+            'VALIDATION_FAILURE',
+          );
         }
+
+        totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
       }
 
       const transactionOrderNumber =
