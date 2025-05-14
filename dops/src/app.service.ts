@@ -38,13 +38,7 @@ export class AppService {
     const templates = await this.dgenService.getLatestTemplates();
     const templateFiles: TemplateFile[] = await Promise.all(
       templates.map(async (template: DocumentTemplate) => {
-        const templateMetadata = await this.dmsService.findLatest(
-          template.documentId,
-        );
-        //TODO: Temporary stopgap for release 1
-        const templatefile = await this.s3Service.getFile(
-          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId. Using filename as temporary stopgap for release 1 integration with BCBox.
-        );
+        const templatefile = await this.s3Service.getFile(template.fileName);
 
         return {
           ...template,
