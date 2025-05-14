@@ -50,7 +50,7 @@ export const evaluatePolicyValidationResult = (
 
   // Function to check if the permit duration is within the allowed expiration limit
   const isAllowedDuration = (expirationLimit) =>
-    differenceBetween(permitData.expiryDate, permitData.startDate) <=
+    differenceBetween(permitData.startDate, permitData.expiryDate) <=
     expirationLimit;
 
   // Function to check if there is a duration violation
