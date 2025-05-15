@@ -9,7 +9,6 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import * as routes from "../../../../routes/constants";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_ROLE } from "../../../../common/authentication/types";
@@ -101,9 +100,7 @@ export const IDIRPermitSearchResults = memo(
     const { data, isPending, isError } = searchResultsQuery;
 
     const navigate = useNavigate();
-    const { handleSelectCompany } = useSetCompanyHandler(
-      routes.PROFILE_ROUTES.MANAGE,
-    );
+    const { handleSelectCompany } = useSetCompanyHandler();
     const fetchCompanyData = async (companyId: number) => {
       const searchURL = new URL(`${VEHICLES_URL}/companies/${companyId}`);
       searchURL.searchParams.set("page", pagination.pageIndex.toString());
