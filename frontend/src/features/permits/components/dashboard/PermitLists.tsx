@@ -11,11 +11,16 @@ import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { PERMIT_TABS } from "../../types/PermitTabs";
-import { DashboardTab } from "../../../../common/types/common";
 import { useLocation } from "react-router-dom";
 
+interface PermitDashboardTab {
+  label: string;
+  component: JSX.Element;
+  componentKey: string;
+}
+
 export const PermitLists = React.memo(() => {
-  const tabs: DashboardTab[] = [];
+  const tabs: PermitDashboardTab[] = [];
 
   const companyId: number = applyWhenNotNullable(
     (id) => Number(id),
@@ -81,7 +86,6 @@ export const PermitLists = React.memo(() => {
   return (
     <TabLayout
       bannerText="Permits"
-      componentList={tabs}
       selectedTabIndex={initialSelectedTabIndex}
       bannerButton={
         <RenderIf
@@ -92,6 +96,7 @@ export const PermitLists = React.memo(() => {
           }}
         />
       }
+      componentList={tabs}
     />
   );
 });
