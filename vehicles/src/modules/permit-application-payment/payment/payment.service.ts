@@ -350,7 +350,7 @@ export class PaymentService {
         validationResults,
       );
 
-      if (isPolicyValidationSuccessful) {
+      if (!isPolicyValidationSuccessful) {
         throw throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
           validationResults,
