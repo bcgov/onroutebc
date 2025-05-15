@@ -7,9 +7,7 @@ import { VerifiedClient } from "../../../../common/authentication/types";
 
 export type CompanyOrClient = CompanyProfile | VerifiedClient;
 
-export const useSetCompanyHandler = (
-  redirectRoute: string = routes.APPLICATIONS_ROUTES.BASE,
-) => {
+export const useSetCompanyHandler = () => {
   const navigate = useNavigate();
 
   const context = useContext(OnRouteBCContext);
@@ -32,7 +30,7 @@ export const useSetCompanyHandler = (
       setOnRouteBCClientNumber?.(() => clientNumber);
       setIsCompanySuspended?.(() => isSuspended);
       sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
-      navigate(redirectRoute);
+      navigate(routes.APPLICATIONS_ROUTES.BASE);
     } else {
       const {
         migratedClientHash,
