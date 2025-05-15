@@ -1,0 +1,5 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".vehicle-weight-section");
+@include orbcStyles.permit-left-box-style(".vehicle-weight-section__header");
+@include orbcStyles.permit-right-box-style(".vehicle-weight-section__body");
