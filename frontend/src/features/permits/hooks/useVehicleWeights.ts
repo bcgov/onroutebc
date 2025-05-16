@@ -19,7 +19,7 @@ export const useVehicleWeights = (
   ] as PermitType[]).includes(permitType);
 
   const { enableLoadedGVW, enableNetWeight } = getVehicleWeightStatusForCLF(
-    Boolean(selectedVehicleSubtype),
+    !selectedVehicleSubtype,
     selectedCLF,
   );
 
