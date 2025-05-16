@@ -54,7 +54,9 @@ export const ConditionalLicensingFeeSection = ({
               >
                 <FormControlLabel
                   className="conditional-licensing-fee-type__label"
-                  label="None"
+                  label={
+                    <span className="clf-description">None</span>
+                  }
                   value={CONDITIONAL_LICENSING_FEE_TYPES.NONE}
                   control={
                     <Radio
@@ -80,7 +82,10 @@ export const ConditionalLicensingFeeSection = ({
                   className="conditional-licensing-fee-type__label"
                   label={
                     <div className="conditional-licensing-fee-type__description">
-                      Conditional license fee rate in accordance with
+                      <span className="clf-description">
+                        Conditional license fee rate in accordance with
+                      </span>
+
                       <CustomExternalLink
                         href={CONDITIONAL_LICENSING_FEE_LINKS.CONDITIONAL_LICENSING_FEE_RATE.URL}
                         className="conditional-licensing-fee-type__link"
@@ -117,7 +122,10 @@ export const ConditionalLicensingFeeSection = ({
                   className="conditional-licensing-fee-type__label"
                   label={
                     <div className="conditional-licensing-fee-type__description">
-                      Industrial (X-Plate Type) fee rate in accordance with
+                      <span className="clf-description">
+                        Industrial (X-Plate Type) fee rate in accordance with
+                      </span>
+
                       <CustomExternalLink
                         href={CONDITIONAL_LICENSING_FEE_LINKS.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE.URL}
                         className="conditional-licensing-fee-type__link"
@@ -154,7 +162,10 @@ export const ConditionalLicensingFeeSection = ({
                   className="conditional-licensing-fee-type__label"
                   label={
                     <div className="conditional-licensing-fee-type__description">
-                      Farm Vehicle fee rate in accordance with
+                      <span className="clf-description">
+                        Farm Vehicle fee rate in accordance with
+                      </span>
+
                       <CustomExternalLink
                         href={CONDITIONAL_LICENSING_FEE_LINKS.FARM_VEHICLE_FEE_RATE.URL}
                         className="conditional-licensing-fee-type__link"
@@ -191,7 +202,10 @@ export const ConditionalLicensingFeeSection = ({
                   className="conditional-licensing-fee-type__label"
                   label={
                     <div className="conditional-licensing-fee-type__description">
-                      Farm Tractor fee rate in accordance with
+                      <span className="clf-description">
+                        Farm Tractor fee rate in accordance with
+                      </span>
+                      
                       <CustomExternalLink
                         href={CONDITIONAL_LICENSING_FEE_LINKS.FARM_TRACTOR_FEE_RATE.URL}
                         className="conditional-licensing-fee-type__link"

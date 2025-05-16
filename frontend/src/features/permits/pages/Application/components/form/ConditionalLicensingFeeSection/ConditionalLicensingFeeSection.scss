@@ -19,6 +19,10 @@
 
       &__label {
         margin: 0;
+
+        .clf-description {
+          color: orbcStyles.$bc-black;
+        }
       }
 
       &__radio {
@@ -37,6 +41,10 @@
 
         &--disabled {
           color: orbcStyles.$disabled-colour;
+
+          .clf-description {
+            color: orbcStyles.$bc-black;
+          }
         }
       }
 
