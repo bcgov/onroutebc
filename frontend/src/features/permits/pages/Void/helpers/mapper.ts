@@ -24,6 +24,7 @@ export const mapToVoidRequestData = (
     transactionTypeId: isRefundZeroAmount
       ? TRANSACTION_TYPES.P
       : TRANSACTION_TYPES.R,
+    comment: voidPermitFormData.reason,
   };
 
   if (voidPermitFormData.additionalEmail) {
