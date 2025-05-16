@@ -20,10 +20,10 @@ export const VehicleWeightSection = ({
   enableNetWeight: boolean;
   netWeight?: Nullable<number>;
   onUpdateLoadedGVW: (
-    updatedLoadedGVW?: RequiredOrNull<number>,
+    updatedLoadedGVW: RequiredOrNull<number>,
   ) => void;
   onUpdateNetWeight: (
-    updatedNetWeight?: RequiredOrNull<number>,
+    updatedNetWeight: RequiredOrNull<number>,
   ) => void;
 }) => {
   const showSection = ([

@@ -192,6 +192,26 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateLoadedGVW = useCallback(
+    (updatedLoadedGVW: RequiredOrNull<number>) => {
+      setValue(
+        "permitData.vehicleConfiguration.loadedGVW",
+        updatedLoadedGVW,
+      );
+    },
+    [setValue],
+  );
+
+  const onUpdateNetWeight = useCallback(
+    (updatedNetWeight: RequiredOrNull<number>) => {
+      setValue(
+        "permitData.vehicleConfiguration.netWeight",
+        updatedNetWeight,
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -221,5 +241,7 @@ export const useApplicationFormUpdateMethods = () => {
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   };
 };

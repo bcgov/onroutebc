@@ -65,6 +65,8 @@ export const VehicleWeightInput = ({
                 step: 1,
               },
             },
+            disabled: !isEnabled,
+            readOnly: !isEnabled,
           }}
           helperText={
             error?.message

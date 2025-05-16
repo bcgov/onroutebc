@@ -16,6 +16,7 @@ import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 import { ConditionalLicensingFeeSection } from "./ConditionalLicensingFeeSection/ConditionalLicensingFeeSection";
+import { VehicleWeightSection } from "./VehicleWeightSection/VehicleWeightSection";
 
 export const PermitForm = () => {
   const {
@@ -52,6 +53,9 @@ export const PermitForm = () => {
     vehicleConfiguration,
     thirdPartyLiability,
     conditionalLicensingFee,
+    availableCLFs,
+    enableLoadedGVW,
+    enableNetWeight,
     onLeave,
     onSave,
     onCancel,
@@ -70,6 +74,8 @@ export const PermitForm = () => {
     onUpdateVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   } = useApplicationFormContext();
 
   return (
@@ -163,7 +169,18 @@ export const PermitForm = () => {
         <ConditionalLicensingFeeSection
           permitType={permitType}
           conditionalLicensingFeeType={conditionalLicensingFee}
+          availableCLFs={availableCLFs}
           onChange={onUpdateConditionalLicensingFee}
+        />
+
+        <VehicleWeightSection
+          permitType={permitType}
+          enableLoadedGVW={enableLoadedGVW}
+          loadedGVW={vehicleConfiguration?.loadedGVW}
+          enableNetWeight={enableNetWeight}
+          netWeight={vehicleConfiguration?.netWeight}
+          onUpdateLoadedGVW={onUpdateLoadedGVW}
+          onUpdateNetWeight={onUpdateNetWeight}
         />
 
         <ApplicationNotesSection feature={feature} permitType={permitType} />

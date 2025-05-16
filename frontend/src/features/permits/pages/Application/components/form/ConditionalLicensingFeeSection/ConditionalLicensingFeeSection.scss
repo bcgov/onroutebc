@@ -34,6 +34,10 @@
             background-color: transparent;
           }
         }
+
+        &--disabled {
+          color: orbcStyles.$disabled-colour;
+        }
       }
 
       &__link {

@@ -11,10 +11,12 @@ import { CONDITIONAL_LICENSING_FEE_LINKS } from "../../../../../constants/consta
 export const ConditionalLicensingFeeSection = ({
   permitType,
   conditionalLicensingFeeType,
+  availableCLFs,
   onChange,
 }: {
   permitType: PermitType;
   conditionalLicensingFeeType?: Nullable<ConditionalLicensingFeeType>;
+  availableCLFs: ConditionalLicensingFeeType[];
   onChange: (updatedConditionalLicensingFeeType: ConditionalLicensingFeeType) => void;
 }) => {
   const showSection = ([
@@ -59,8 +61,10 @@ export const ConditionalLicensingFeeSection = ({
                       key="none"
                       className="conditional-licensing-fee-type__radio"
                       classes={{
-                        checked: "conditional-licensing-fee-type__radio--checked"
+                        checked: "conditional-licensing-fee-type__radio--checked",
+                        disabled: "conditional-licensing-fee-type__radio--disabled",
                       }}
+                      disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.NONE)}
                     />}
                 />
               </div>
@@ -93,8 +97,10 @@ export const ConditionalLicensingFeeSection = ({
                       key="conditional"
                       className="conditional-licensing-fee-type__radio"
                       classes={{
-                        checked: "conditional-licensing-fee-type__radio--checked"
+                        checked: "conditional-licensing-fee-type__radio--checked",
+                        disabled: "conditional-licensing-fee-type__radio--disabled",
                       }}
+                      disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE)}
                     />
                   }
                 />
@@ -128,8 +134,10 @@ export const ConditionalLicensingFeeSection = ({
                       key="conditional"
                       className="conditional-licensing-fee-type__radio"
                       classes={{
-                        checked: "conditional-licensing-fee-type__radio--checked"
+                        checked: "conditional-licensing-fee-type__radio--checked",
+                        disabled: "conditional-licensing-fee-type__radio--disabled",
                       }}
+                      disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE)}
                     />
                   }
                 />
@@ -163,8 +171,10 @@ export const ConditionalLicensingFeeSection = ({
                       key="conditional"
                       className="conditional-licensing-fee-type__radio"
                       classes={{
-                        checked: "conditional-licensing-fee-type__radio--checked"
+                        checked: "conditional-licensing-fee-type__radio--checked",
+                        disabled: "conditional-licensing-fee-type__radio--disabled",
                       }}
+                      disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE)}
                     />
                   }
                 />
@@ -198,8 +208,10 @@ export const ConditionalLicensingFeeSection = ({
                       key="conditional"
                       className="conditional-licensing-fee-type__radio"
                       classes={{
-                        checked: "conditional-licensing-fee-type__radio--checked"
+                        checked: "conditional-licensing-fee-type__radio--checked",
+                        disabled: "conditional-licensing-fee-type__radio--disabled",
                       }}
+                      disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE)}
                     />
                   }
                 />
