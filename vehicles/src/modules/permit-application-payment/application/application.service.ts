@@ -93,6 +93,7 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class ApplicationService {
@@ -623,6 +624,16 @@ export class ApplicationService {
         throwUnprocessableEntityException(
           'CV Client cannot edit an application in-queue.',
         );
+      }
+      const permitData = JSON.parse(
+        existingApplication?.permitData?.permitData,
+      ) as PermitData;
+      const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      if (
+        !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+        differenceBetween(permitData?.startDate, currentDate, 'days') > 0
+      ) {
+        throwUnprocessableEntityException('Start Date is in the past.');
       } else if (existingCase.assignedUser !== currentUser.userName) {
         throwUnprocessableEntityException(
           `Application no longer available. This application is claimed by ${existingCase.assignedUser}`,
