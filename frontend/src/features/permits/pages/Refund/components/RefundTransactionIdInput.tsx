@@ -55,7 +55,7 @@ export const RefundTransactionIdInput = ({
           message: requiredMessage(),
         },
         maxLength: {
-          value: 11,
+          value: 15,
           message: invalidTranactionIdLength(15),
         },
       }}
