@@ -56,7 +56,7 @@ export const RefundTransactionIdInput = ({
         },
         maxLength: {
           value: 11,
-          message: invalidTranactionIdLength(11),
+          message: invalidTranactionIdLength(15),
         },
       }}
       render={({ fieldState: { error } }) => (
