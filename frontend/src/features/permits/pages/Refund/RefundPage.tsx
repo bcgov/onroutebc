@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider, useForm } from "react-hook-form";
 import { Button, Typography } from "@mui/material";
 import "./RefundPage.scss";
