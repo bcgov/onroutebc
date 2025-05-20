@@ -6,12 +6,33 @@
   flex-direction: column;
   margin-bottom: 3rem;
 
-  .button {
+  &__header {
+    color: $bc-black;
+    margin-top: 0;
+    &--main {
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid $bc-border-grey;
+    }
+  }
+
+  &__section {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid $bc-border-grey;
+  }
+
+  &__info {
+    color: $bc-black;
+
+  }
+
+  & &__button {
     align-self: flex-start;
     font-size: 1rem;
     padding: .5rem 2rem;
     box-shadow: none;
     min-width: fit-content;
+    margin-top: 2.5rem;
 
     &:hover, &:focus {
       box-shadow: none; 

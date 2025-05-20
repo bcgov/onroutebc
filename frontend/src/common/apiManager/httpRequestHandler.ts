@@ -2,7 +2,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { Nullable, RequiredOrNull } from "../types/common";
-import { GEOCODER_URL } from "./endpoints/endpoints";
+import { GEOCODER_URL, VEHICLES_URL, POLICY_URL } from "./endpoints/endpoints";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
@@ -30,27 +30,33 @@ axios.interceptors.request.use(
   },
 );
 
-// Response interceptor to handle errors globally
 axios.interceptors.response.use(
-  (response) => response, // Return response if successful
+  (response) => response,
   (error) => {
-    if (!error.response || error.response.status === 503) {
-      console.error("CORS or 503 Error:", error);
-      if (window.location.pathname !== "/service-unavailable") {
-        //prevent infinite loop
-        window.location.href = "/service-unavailable";
-      }
-    } else if (error.response.status === 406) {
-      if (window.location.pathname !== "/version-mismatch") {
-        //prevent infinite loop
-        window.location.href = "/version-mismatch";
+    const url = error.config?.url || '';
+    const isVehiclesOrPolicyAPI = url.includes(VEHICLES_URL) || url.includes(POLICY_URL);
+
+    if (isVehiclesOrPolicyAPI) {
+      if (!error.response || error.response.status === 503) {
+        console.error("503 or CORS error from Vehicles or Policy API:", error);
+        if (window.location.pathname !== "/service-unavailable") {
+          //prevent infinite loop
+          window.location.href = "/service-unavailable";
+        }
+      } else if (error.response.status === 406) {
+        if (window.location.pathname !== "/version-mismatch") {
+          //prevent infinite loop
+          window.location.href = "/version-mismatch";
+        }
+      } else {
+        return Promise.reject(error);
       }
     } else {
-      console.log("Error Details:", error);
-      return Promise.reject(error); // Reject other errors
+      return Promise.reject(error);
     }
-  },
+  }
 );
+
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}

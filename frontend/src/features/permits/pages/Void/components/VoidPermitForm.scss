@@ -6,26 +6,21 @@
     flex-direction: row;
     padding: 2em 0;
     border-bottom: 1px solid $bc-border-grey;
-
+    
     &--reason {
       margin-top: 0.5em;
     }
-
+    
     &__label {
       font-weight: 600;
       font-size: 1.2rem;
       width: 40%;
     }
-
+    
     &__input-area {
       width: 60%;
 
       .void-input {
-        &--reason {
-          border: 1.5px solid $bc-text-box-border-grey;
-          border-radius: 4px;
-          resize: none;
-        }
 
         &--email {
           max-width: 375px;

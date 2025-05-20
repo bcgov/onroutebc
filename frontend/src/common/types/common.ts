@@ -15,6 +15,7 @@ import {
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
 import { RefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
+import { VoidPermitFormData } from "../../features/permits/pages/Void/types/VoidPermit";
 
 export interface ErrorResponseData<T = any> {
   error: T[];
@@ -40,6 +41,7 @@ export const ORBC_FORM_FEATURES = {
   PERMIT_RESEND: "permit-resend",
   POWER_UNIT: "power-unit",
   REJECT_APPLICATION: "reject-application",
+  REVOKE_PERMIT: "revoke-permit",
   SUSPEND_ACCOUNT: "suspend-account",
   TEST_FEATURE: "test-feature",
   TRAILER: "trailer",
@@ -67,6 +69,7 @@ export type ORBC_FormTypes =
   | VerifyClientRequest
   | PermitContactDetails
   | LOAFormData
+  | VoidPermitFormData
   | { refundData: RefundFormData[] };
 
 /**

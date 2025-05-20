@@ -20,6 +20,7 @@ export interface VoidPermitRequestData {
   status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
   transactions: RefundTransactionItem[];
   transactionTypeId: TransactionType;
+  comment: string;
   additionalEmail?: Nullable<string>;
 }
 

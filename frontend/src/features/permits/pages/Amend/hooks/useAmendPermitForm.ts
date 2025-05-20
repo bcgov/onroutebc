@@ -5,7 +5,7 @@ import { Policy } from "onroute-policy-engine";
 import { Nullable } from "../../../../../common/types/common";
 import { Permit } from "../../../types/permit";
 import { Application } from "../../../types/application";
-import { applyWhenNotNullable } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
 import { applyLCVToApplicationData } from "../../../helpers/permitLCV";
 import { LOADetail } from "../../../../settings/types/LOADetail";
@@ -50,7 +50,7 @@ export const useAmendPermitForm = (
         policyEngine,
       );
 
-      return applyUpToDateLOAsToApplication(
+      const formDataFromApplication = applyUpToDateLOAsToApplication(
         applyLCVToApplicationData(
           getDefaultFormDataFromApplication(
             companyInfo,
@@ -62,6 +62,12 @@ export const useAmendPermitForm = (
         inventoryVehicles,
         eligibleSubtypes,
       );
+
+      return {
+        ...formDataFromApplication,
+        // show permit number for amendment application
+        permitNumber: getDefaultRequiredVal("", permit?.permitNumber),
+      };
     }
 
     // Permit doesn't have existing amendment application

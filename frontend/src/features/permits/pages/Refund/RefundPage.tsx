@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import "./RefundPage.scss";
 import { RefundFormData } from "./types/RefundFormData";
 import { PermitHistory } from "../../types/PermitHistory";
@@ -115,17 +115,15 @@ export const RefundPage = ({
 
   return (
     <div className="refund-page">
-      <Typography variant="h2" className="refund-info__header">
+      <h2 className="refund-page__header refund-page__header--main">
         {permitActionText(permitAction)} Permit #: {permitNumber}
-      </Typography>
+      </h2>
       <RefundDetails
         totalRefundDue={amountToRefund}
         currentPermitValue={currentPermitValue}
         newPermitValue={newPermitValue}
       />
-      <Typography variant="h2" className="refund-info__header">
-        Transaction History
-      </Typography>
+      <h2 className="refund-page__header">Transaction History</h2>
       <FormProvider {...formMethods}>
         <TransactionHistoryTable
           permitHistory={validTransactionHistory}
@@ -136,23 +134,23 @@ export const RefundPage = ({
         {(permitAction === PERMIT_REFUND_ACTIONS.VOID ||
           permitAction === PERMIT_REFUND_ACTIONS.REVOKE) && (
           <div>
-            <div className="refund-info refund-info--send">
-              <div className="refund-info__header">
+            <div className="refund-page__section">
+              <h2 className="refund-page__header">
                 Send Permit and Receipt to
-              </div>
+              </h2>
               {email && (
-                <div className="refund-info__info">
-                  <span className="info-label">Company Email: </span>
-                  <span className="info-value" data-testid="send-to-email">
+                <div className="refund-page__info">
+                  <span className="info__label">Company Email: </span>
+                  <span className="info__value" data-testid="send-to-email">
                     {email}
                   </span>
                 </div>
               )}
               {additionalEmail && (
-                <div className="refund-info__info">
-                  <span className="info-label">Additional Email: </span>
+                <div className="refund-page__info">
+                  <span className="info__label">Additional Email: </span>
                   <span
-                    className="info-value"
+                    className="info__value"
                     data-testid="send-to-additional-email"
                   >
                     {additionalEmail}
@@ -160,12 +158,15 @@ export const RefundPage = ({
                 </div>
               )}
             </div>
+
             {reason && (
-              <div className="refund-info refund-info--reason">
-                <div className="refund-info__header">
+              <div className="refund-page__section">
+                <h2 className="refund-page__header">
                   Reason for {permitActionText(permitAction)}
+                </h2>
+                <div className="refund-page__info">
+                  <div className="info__value">{reason}</div>
                 </div>
-                <div className="refund-info__info">{reason}</div>
               </div>
             )}
           </div>
@@ -176,7 +177,7 @@ export const RefundPage = ({
           color="primary"
           onClick={handleSubmit(onSubmit)}
           disabled={disableSubmitButton}
-          className="button button--finish"
+          className="refund-page__button"
         >
           Finish
         </Button>

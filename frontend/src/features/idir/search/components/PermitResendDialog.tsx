@@ -27,6 +27,7 @@ import {
   EMAIL_NOTIFICATION_TYPES,
   EmailNotificationType,
 } from "../../../permits/types/EmailNotificationType";
+import { usePermitDetailsQuery } from "../../../permits/hooks/hooks";
 
 interface PermitResendFormData {
   permitId: string;
@@ -59,9 +60,9 @@ export default function PermitResendDialog({
   shouldOpen,
   onResend,
   onCancel,
+  companyId,
   permitId,
   permitNumber,
-  email,
 }: Readonly<{
   shouldOpen: boolean;
   onResend: (
@@ -70,10 +71,19 @@ export default function PermitResendDialog({
     notificationTypes: EmailNotificationType[],
   ) => Promise<void>;
   onCancel: () => void;
+  companyId: number;
   permitId: string;
   permitNumber: string;
-  email?: string;
 }>) {
+  const { data: permit } = usePermitDetailsQuery(
+    companyId,
+    permitId,
+    // only make request when dialog is open, preventing multiple requests being made when permit search results are rendered
+    shouldOpen,
+  );
+
+  const additionalEmail = permit?.permitData.contactDetails.additionalEmail;
+
   const [notificationTypes, setNotificationTypes] = useState({
     EMAIL_PERMIT: false,
     EMAIL_RECEIPT: false,
@@ -82,7 +92,7 @@ export default function PermitResendDialog({
   const formMethods = useForm<PermitResendFormData>({
     defaultValues: {
       permitId,
-      email: getDefaultRequiredVal("", email),
+      email: getDefaultRequiredVal("", additionalEmail),
       notificationTypes,
     },
     mode: "onSubmit",
@@ -103,6 +113,10 @@ export default function PermitResendDialog({
       clearErrors();
     }
   }, [notificationTypes]);
+
+  useEffect(() => {
+    additionalEmail && setValue("email", additionalEmail);
+  }, [additionalEmail]);
 
   const handleCancel = () => {
     onCancel();

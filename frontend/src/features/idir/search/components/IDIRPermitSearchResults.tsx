@@ -1,6 +1,7 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -8,7 +9,6 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_ROLE } from "../../../../common/authentication/types";
@@ -17,7 +17,7 @@ import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { SearchFields } from "../types/types";
+import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
@@ -26,7 +26,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { useNavigate } from "react-router-dom";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -98,11 +100,33 @@ export const IDIRPermitSearchResults = memo(
     const { data, isPending, isError } = searchResultsQuery;
 
     const navigate = useNavigate();
+    const { handleSelectCompany } = useSetCompanyHandler();
+    const fetchCompanyData = async (companyId: number) => {
+      const searchURL = new URL(`${VEHICLES_URL}/companies/${companyId}`);
+      searchURL.searchParams.set("page", pagination.pageIndex.toString());
+      searchURL.searchParams.set("take", pagination.pageSize.toString());
+      try {
+        const response = await httpGETRequest(searchURL.toString());
+        return response.data;
+      } catch (err) {
+        console.error("Failed to fetch company data", err);
+        throw err;
+      }
+    };
+
+    const handleClickCompany = async (companyId: number) => {
+      const company = await fetchCompanyData(companyId);
+      handleSelectCompany(company);
+    };
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
-      () => PermitSearchResultColumnDef(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
-      [],
+      () =>
+        PermitSearchResultColumnDef(
+          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+          handleClickCompany,
+        ),
+      [searchEntity, searchByFilter],
     );
 
     /**
@@ -187,6 +211,7 @@ export const IDIRPermitSearchResults = memo(
                   permitId={row.original.permitId}
                   userRole={idirUserDetails?.userRole}
                   companyId={row.original.companyId}
+                  permitActionOrigin={PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH}
                 />
               </Box>
             );
