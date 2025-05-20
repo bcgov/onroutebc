@@ -3,7 +3,10 @@ import { RefundFormData } from "../types/RefundFormData";
 import { Controller, useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
-import { requiredMessage } from "../../../../../common/helpers/validationMessages";
+import {
+  invalidTranactionIdLength,
+  requiredMessage,
+} from "../../../../../common/helpers/validationMessages";
 
 export const RefundTransactionIdInput = ({
   cell,
@@ -50,6 +53,10 @@ export const RefundTransactionIdInput = ({
           value:
             refundAmount !== "" && Number(refundAmount) !== 0 && !chequeRefund,
           message: requiredMessage(),
+        },
+        maxLength: {
+          value: 11,
+          message: invalidTranactionIdLength(11),
         },
       }}
       render={({ fieldState: { error } }) => (
