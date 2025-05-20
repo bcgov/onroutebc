@@ -82,11 +82,11 @@ jobs:
           - CA
           - PA
           - PC
-            #- SA
-            #- FIN
-            #- EO
-            #- HQA
-            #- CTPO 
+          - SA
+          - FIN
+          - EO
+          - HQA
+          - CTPO 
             #- TRAIN
 
     timeout-minutes: 10
