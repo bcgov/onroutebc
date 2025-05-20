@@ -42,11 +42,9 @@ export const evaluatePolicyValidationResult = (
     return false;
   }
 
-  const { permitType, permitData, revision } = application;
+  const { permitType, permitData } = application;
 
   const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
-  // Check if the application is an amend application
-  const isRevised = revision > 0;
 
   // Function to check if the permit duration is within the allowed expiration limit
   const isAllowedDuration = (expirationLimit) =>
@@ -61,22 +59,18 @@ export const evaluatePolicyValidationResult = (
   const isStartDateViolation = (violation: ValidationResult) =>
     violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE;
 
-  // Function to check if there is an STOS amendment duration violation which can be excluded
-  const isSTOSAmendDurationViolation = (violation: ValidationResult) =>
+  // Function to check if there is an STOS duration violation which can be excluded
+  const isSTOSDurationViolation = (violation: ValidationResult) =>
     isSTOS &&
-    isRevised &&
     isDurationViolation(violation) &&
     isAllowedDuration(STOS_MAX_ALLOWED_DURATION_AMEND);
 
-  // Return true only if all violations are either STOS amendment duration or start date violations
+  // Return true only if all violations are either STOS duration or start date violations
   return !validationResults?.violations?.some(
     (violation) =>
       !(
         //Add violations that need to be skipped
-        (
-          isSTOSAmendDurationViolation(violation) ||
-          isStartDateViolation(violation)
-        )
+        (isSTOSDurationViolation(violation) || isStartDateViolation(violation))
       ),
   );
 };
