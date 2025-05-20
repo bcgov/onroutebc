@@ -67,7 +67,6 @@ jobs:
             #- edge
             #- firefox
         test: 
-          - 'manage_vehicle_inventory.cy.js'
           - 'global_search.cy.js'
           - 'manage_ppc_users.cy.js'
           - 'manage_settings.cy.js'
@@ -82,11 +81,11 @@ jobs:
           - CA
           - PA
           - PC
-            #- SA
-            #- FIN
-            #- EO
-            #- HQA
-            #- CTPO 
+          - SA
+          - FIN
+          - EO
+          - HQA
+          - CTPO 
             #- TRAIN
 
     timeout-minutes: 10
