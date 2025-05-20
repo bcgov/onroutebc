@@ -8,49 +8,49 @@
   & &__radio-group {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start;    
+  }
 
-    .conditional-licensing-fee-type {
-      margin-top: 1.5rem;
+  .conditional-licensing-fee-type {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0 0 0;
 
-      &--none {
-        margin-top: 0;
+    &--none {
+      margin-top: 0.25rem;
+    }
+
+    &__radio {
+      padding: 0;
+      margin-right: 0.5rem;
+
+      &:hover {
+        background-color: orbcStyles.$bc-border-grey;
       }
 
-      &__label {
-        margin: 0;
-
-        .clf-description {
-          color: orbcStyles.$bc-black;
-        }
-      }
-
-      &__radio {
-        padding: 0;
-        margin-right: 0.5rem;
-
+      &--checked {
         &:hover {
-          background-color: orbcStyles.$bc-border-grey;
-        }
-
-        &--checked {
-          &:hover {
-            background-color: transparent;
-          }
-        }
-
-        &--disabled {
-          color: orbcStyles.$disabled-colour;
-
-          .clf-description {
-            color: orbcStyles.$bc-black;
-          }
+          background-color: transparent;
         }
       }
+    }
 
-      &__link {
-        margin-left: 0.25rem;
+    &--disabled {
+      .conditional-licensing-fee-type__radio {
+        color: orbcStyles.$disabled-colour;
       }
+
+      .conditional-licensing-fee-type__label {
+        color: orbcStyles.$bc-black;
+      }
+    }
+
+    &__label-row {
+      margin: 0;
+    }
+
+    &__link {
+      margin-left: 0.25rem;
     }
   }
 }
