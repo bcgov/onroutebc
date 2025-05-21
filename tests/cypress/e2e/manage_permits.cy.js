@@ -265,7 +265,7 @@ describe('Manage Permits', () => {
         .click();
           cy.wait(wait_time);
       }
-      else if(user_role === 'fin' || user_role === 'eo' || user_role === 'hqa') {
+      else {
         cy.search(company_name);
       }
 

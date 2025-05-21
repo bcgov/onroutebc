@@ -1,21 +1,10 @@
 import { checkRoleAndSearch } from '../support/common';
 
-describe('Manage Settings', () => {
-  const permits_url = '/applications';
-  const new_tros_url = '/create-application/TROS';
-  const new_trow_url = '/create-application/TROW';
-  
+describe('Manage Settings', () => {  
   const wait_time = Cypress.env('wait_time');
   const user_role = Cypress.env('user_role').toLowerCase();
   const roleCompanies = Cypress.env('rolesToCompanies');
   const company_name = roleCompanies[user_role];
-
-  const username = Cypress.env('username');
-  const password = Cypress.env('password');
-  const manage_profiles_url = '/manage-profiles';
-  const update_trailer_url = Cypress.env('update_trailer_url');
-  const manage_vehicle_url = '/manage-vehicles';
-  const company_sa = 'Test Transport Inc.';
 
   function viewSpecialAuthorizationsAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
@@ -26,7 +15,6 @@ describe('Manage Settings', () => {
 
       cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
-
     }
 
     assertionFn();
@@ -58,19 +46,10 @@ describe('Manage Settings', () => {
   }
 
   function addNoFeeFlagAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
+    if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .first()
-      .click({ force: true })
-      .should('be.checked');
       cy.wait(wait_time);
 
     }
@@ -91,21 +70,8 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessAddNoFeeFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
-  }
-  
-  const expectFailureAddNoFeeFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
-  }
-
-  function updateNoFeeFlagAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
-      cy.search(company_name);
-      
-      cy.get('a[href="/settings"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
+    cy.contains('.tab__label', 'Special Authorizations').should('exist');
+    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
 
       cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
@@ -113,10 +79,24 @@ describe('Manage Settings', () => {
       .click({ force: true })
       .should('be.checked');
       cy.wait(wait_time);
+  }
+  
+  const expectFailureAddNoFeeFlag = () => {
+    cy.contains('.tab__label', 'Special Authorizations').should('exist');
+    cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
+    cy.wait(wait_time);
+    cy.contains('input.PrivateSwitchBase-input.MuiSwitch-input').should('not.exist');
 
-      cy.get('input.PrivateSwitchBase-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true });
+  }
+
+  function updateNoFeeFlagAs(user_role, assertionFn) {
+    if(user_role !== 'ca' && user_role !== 'pa'){
+      cy.search(company_name);
+      
+      cy.get('a[href="/settings"]').click({ force: true });
+      cy.wait(wait_time);
+
+      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
 
     }
@@ -138,26 +118,30 @@ describe('Manage Settings', () => {
 
   const expectSuccessUpdateNoFeeFlag = () => {
     cy.contains('.tab__label', 'Special Authorizations').should('exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .first()
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
+
+      cy.get('input.PrivateSwitchBase-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true });
+      cy.wait(wait_time);
   }
   
   const expectFailureUpdateNoFeeFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
+    cy.contains('input.PrivateSwitchBase-input.MuiSwitch-input').should('not.exist');
   }
 
   function addLcvFlagAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
+    if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
       cy.wait(wait_time);
 
       cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true })
-      .should('be.checked');
       cy.wait(wait_time);
 
     }
@@ -178,33 +162,26 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessAddLcvFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input').should('exist');
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
   }
   
   const expectFailureAddLcvFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
+    cy.contains('input.PrivateSwitchBase-input.MuiSwitch-input').eq(1).should('not.exist');
   }
 
   function removeLcvFlagAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
+    if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
       cy.wait(wait_time);
 
       cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true })
-      .should('be.checked');
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true })
-      .should('be.checked');
       cy.wait(wait_time);
 
     }
@@ -225,41 +202,31 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessRemoveLcvFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
+
+      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
   }
   
   const expectFailureRemoveLcvFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input').should('not.exist');
   }
 
   function addLoaAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
+    if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
       cy.wait(wait_time);
 
       cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('button.add-loa-btn')
-      .click({ force: true });
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input[type="checkbox"]')
-      .first()
-      .click();
-      cy.wait(wait_time);
-
-      cy.get('div[data-testid="select-vehicleSubtype"]')
-      .click({ force: true });
-      cy.wait(wait_time);
-      
-      cy.get('[data-value="BUSCRUM"]').click();
-      cy.wait(wait_time);
-
-      cy.get('button[data-testid="loa-next-button"]')
-      .click();
       cy.wait(wait_time);
 
     }
@@ -280,24 +247,8 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessAddLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
-  }
-  
-  const expectFailureAddLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
-  }
-
-  function editLoaAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
-      cy.search(company_name);
-      
-      cy.get('a[href="/settings"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('button.add-loa-btn')
+    cy.get('button.add-loa-btn').should('exist');
+    cy.get('button.add-loa-btn')
       .click({ force: true });
       cy.wait(wait_time);
 
@@ -316,6 +267,21 @@ describe('Manage Settings', () => {
       cy.get('button[data-testid="loa-next-button"]')
       .click();
       cy.wait(wait_time);
+  }
+  
+  const expectFailureAddLoa = () => {
+    cy.get('button.add-loa-btn').should('not.exist');
+  }
+
+  function editLoaAs(user_role, assertionFn) {
+    if(user_role !== 'ca' && user_role !== 'pa'){
+      cy.search(company_name);
+      
+      cy.get('a[href="/settings"]').click({ force: true });
+      cy.wait(wait_time);
+
+      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
+      cy.wait(wait_time);  
 
     }
 
@@ -335,24 +301,8 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessEditLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
-  }
-  
-  const expectFailureEditLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
-  }
-
-  function downloadLoaLetterPdfAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
-      cy.search(company_name);
-      
-      cy.get('a[href="/settings"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('button.add-loa-btn')
+    cy.get('button.add-loa-btn').should('exist');
+    cy.get('button.add-loa-btn')
       .click({ force: true });
       cy.wait(wait_time);
 
@@ -370,6 +320,21 @@ describe('Manage Settings', () => {
 
       cy.get('button[data-testid="loa-next-button"]')
       .click();
+      cy.wait(wait_time);
+  }
+  
+  const expectFailureEditLoa = () => {
+    cy.get('button.add-loa-btn').should('not.exist');
+  }
+
+  function downloadLoaLetterPdfAs(user_role, assertionFn) {
+    if(user_role !== 'ca' && user_role !== 'pa'){
+      cy.search(company_name);
+      
+      cy.get('a[href="/settings"]').click({ force: true });
+      cy.wait(wait_time);
+
+      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
 
     }
@@ -390,15 +355,34 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessDownloadLoaLetterPdf = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
+    cy.get('button.add-loa-btn').should('exist');
+    cy.get('button.add-loa-btn')
+      .click({ force: true });
+      cy.wait(wait_time);
+
+      cy.get('input.PrivateSwitchBase-input[type="checkbox"]')
+      .first()
+      .click();
+      cy.wait(wait_time);
+
+      cy.get('div[data-testid="select-vehicleSubtype"]')
+      .click({ force: true });
+      cy.wait(wait_time);
+      
+      cy.get('[data-value="BUSCRUM"]').click();
+      cy.wait(wait_time);
+
+      cy.get('button[data-testid="loa-next-button"]')
+      .click();
+      cy.wait(wait_time);
   }
   
   const expectFailureDownloadLoaLetterPdf = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
+    cy.get('button.add-loa-btn').should('not.exist')
   }
 
   function removeLoaAs(user_role, assertionFn) {
-    if(user_role === 'sa' || user_role !== 'hqa'){
+    if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
@@ -406,18 +390,7 @@ describe('Manage Settings', () => {
 
       cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true })
-      .should('be.checked');
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
-      .eq(1)    // Selects the second radio button
-      .click({ force: true })
-      .should('be.checked');
-      cy.wait(wait_time);
+  
     }
 
     assertionFn();
@@ -436,11 +409,22 @@ describe('Manage Settings', () => {
   }
 
   const expectSuccessRemoveLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input').should('exist');
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
+
+      cy.get('input.PrivateSwitchBase-input.MuiSwitch-input')
+      .eq(1)    // Selects the second radio button
+      .click({ force: true })
+      .should('be.checked');
+      cy.wait(wait_time);
   }
   
   const expectFailureRemoveLoa = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist')
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input').should('not.exist')
   }
 
   function viewCreditAccountAs(user_role, assertionFn) {
@@ -490,9 +474,6 @@ describe('Manage Settings', () => {
       cy.get('a[href="/settings"]').click({ force: true });
       cy.wait(wait_time);
 
-      cy.contains('.tab__label', 'Suspend').should('exist').click();
-      cy.wait(wait_time);
-
     }
 
     assertionFn();
@@ -514,6 +495,8 @@ describe('Manage Settings', () => {
 
   const expectSuccessViewSuspendCompanyInfo = () => {
     cy.contains('.tab__label', 'Suspend').should('exist');
+    cy.contains('.tab__label', 'Suspend').should('exist').click();
+    cy.wait(wait_time);
   }
   
   const expectFailureViewSuspendCompanyInfo = () => {
@@ -525,9 +508,6 @@ describe('Manage Settings', () => {
       cy.search(company_name);
       
       cy.get('a[href="/settings"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Suspend').should('exist').click();
       cy.wait(wait_time);
 
     }
@@ -550,6 +530,8 @@ describe('Manage Settings', () => {
 
   const expectSuccessUpdateSuspendCompanyFlag = () => {
     cy.contains('.tab__label', 'Suspend').should('exist');
+    cy.contains('.tab__label', 'Suspend').should('exist').click();
+      cy.wait(wait_time);
   }
   
   const expectFailureUpdateSuspendCompanyFlag = () => {
