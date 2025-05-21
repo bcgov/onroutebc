@@ -1,4 +1,9 @@
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useState, useEffect, useContext, useMemo } from "react";
 
 import { VoidPermitForm } from "./components/VoidPermitForm";
@@ -7,20 +12,29 @@ import { Loading } from "../../../../common/pages/Loading";
 import "./VoidPermit.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  ERROR_ROUTES,
+  IDIR_ROUTES,
+} from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_ROLE } from "../../../../common/authentication/types";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 import { hasPermitExpired } from "../../helpers/permitState";
 import {
+  PERMIT_ACTION_ORIGINS,
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
+import { PERMIT_TABS } from "../../types/PermitTabs";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
@@ -35,12 +49,15 @@ const isVoidable = (permit: Permit) => {
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
-  const {
-    permitId: permitIdParam,
-    companyId: companyIdParam,
-  } = useParams();
+  const { state: stateFromNavigation } = useLocation();
 
-  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
   const permitId = getDefaultRequiredVal("", permitIdParam);
   const [currentLink, setCurrentLink] = useState(0);
   const getBannerText = () =>
@@ -77,8 +94,27 @@ export const VoidPermit = () => {
   };
 
   const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
-  const goHome = () => navigate(-1);
-  const goHomeSuccess = () => navigate(fullSearchRoute);
+  const goHome = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(-1);
+
+  const goHomeSuccess = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(fullSearchRoute);
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>
