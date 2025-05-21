@@ -19,6 +19,7 @@ export const VehicleWeightInput = ({
   label,
   className,
   isEnabled,
+  shouldValidateWhenEmpty,
   value,
   onUpdateValue,
 }: {
@@ -29,11 +30,15 @@ export const VehicleWeightInput = ({
   };
   className: string;
   isEnabled: boolean;
+  shouldValidateWhenEmpty: boolean;
   value?: Nullable<number>;
   onUpdateValue: (updateValue: RequiredOrNull<number>) => void;
 }) => {
   const validationRules = {
-    required: isEnabled ? { value: true, message: requiredMessage() } : false,
+    required: (isEnabled || shouldValidateWhenEmpty) ? {
+      value: true,
+      message: requiredMessage(),
+    } : false,
     min: { value: 0, message: mustBeGreaterThanOrEqualTo(0) },
     max: { value: 63500, message: mustBeLessThanOrEqualTo(63500) },
   };

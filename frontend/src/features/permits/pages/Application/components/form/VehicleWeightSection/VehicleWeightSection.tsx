@@ -7,6 +7,7 @@ import { VehicleWeightInput } from "./components/VehicleWeightInput";
 
 export const VehicleWeightSection = ({
   permitType,
+  isVehicleSubtypeEmpty,
   enableLoadedGVW,
   loadedGVW,
   enableNetWeight,
@@ -15,6 +16,7 @@ export const VehicleWeightSection = ({
   onUpdateNetWeight,
 }: {
   permitType: PermitType;
+  isVehicleSubtypeEmpty: boolean;
   enableLoadedGVW: boolean;
   loadedGVW?: Nullable<number>;
   enableNetWeight: boolean;
@@ -52,6 +54,7 @@ export const VehicleWeightSection = ({
           }}
           className={loadedGVWInputClassName}
           isEnabled={enableLoadedGVW}
+          shouldValidateWhenEmpty={isVehicleSubtypeEmpty}
           value={loadedGVW}
           onUpdateValue={onUpdateLoadedGVW}
         />
@@ -64,6 +67,7 @@ export const VehicleWeightSection = ({
           }}
           className={netWeightInputClassName}
           isEnabled={enableNetWeight}
+          shouldValidateWhenEmpty={isVehicleSubtypeEmpty}
           value={netWeight}
           onUpdateValue={onUpdateNetWeight}
         />

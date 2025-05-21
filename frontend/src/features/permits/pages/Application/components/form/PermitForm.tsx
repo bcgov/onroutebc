@@ -17,6 +17,7 @@ import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensi
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 import { ConditionalLicensingFeeSection } from "./ConditionalLicensingFeeSection/ConditionalLicensingFeeSection";
 import { VehicleWeightSection } from "./VehicleWeightSection/VehicleWeightSection";
+import { isVehicleSubtypeEmpty } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 
 export const PermitForm = () => {
   const {
@@ -175,6 +176,7 @@ export const PermitForm = () => {
 
         <VehicleWeightSection
           permitType={permitType}
+          isVehicleSubtypeEmpty={isVehicleSubtypeEmpty(vehicleFormData.vehicleSubType)}
           enableLoadedGVW={enableLoadedGVW}
           loadedGVW={vehicleConfiguration?.loadedGVW}
           enableNetWeight={enableNetWeight}
