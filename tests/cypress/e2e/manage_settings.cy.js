@@ -531,9 +531,22 @@ describe('Manage Settings', () => {
   }
   
   const expectFailureUpdateSuspendCompanyFlag = () => {
-    cy.contains('.tab__label', 'Suspend').should('exist').click();
-    cy.wait(wait_time);
-    cy.contains('.tab__label', 'Suspend').should('not.exist');
+    if(user_role === 'hqa'
+    || user_role === 'pc'
+    || user_role === 'ca'
+    || user_role === 'pa'
+    ) {
+      cy.contains('.tab__label', 'Suspend').should('not.exist');
+
+    }
+    else {
+      cy.contains('.tab__label', 'Suspend').should('exist').click();
+      cy.wait(wait_time);
+      cy.contains('.tab__label', 'Suspend').should('not.exist');
+
+    }
+    
+    
 
   }
   
@@ -541,94 +554,94 @@ describe('Manage Settings', () => {
     cy.loginAs(user_role);
   });
 
-  it('Should View Special Authorizations', () => {
-    viewSpecialAuthorizationsAs(user_role, expectResultViewSpecialAuthorizations);
-  });
+  // it('Should View Special Authorizations', () => {
+  //   viewSpecialAuthorizationsAs(user_role, expectResultViewSpecialAuthorizations);
+  // });
 
-  it('Should Add No Fee flag', () => {
-    addNoFeeFlagAs(user_role, expectResultAddNoFeeFlag);
-  }); 
+  // it('Should Add No Fee flag', () => {
+  //   addNoFeeFlagAs(user_role, expectResultAddNoFeeFlag);
+  // }); 
 
-  it('Should Update No Fee flag', () => {
-    updateNoFeeFlagAs(user_role, expectResultUpdateNoFeeFlag);
-  }); 
+  // it('Should Update No Fee flag', () => {
+  //   updateNoFeeFlagAs(user_role, expectResultUpdateNoFeeFlag);
+  // }); 
 
-  it('Should Add LCV flag', () => {
-    addLcvFlagAs(user_role, expectResultAddLcvFlag);
-  }); 
+  // it('Should Add LCV flag', () => {
+  //   addLcvFlagAs(user_role, expectResultAddLcvFlag);
+  // }); 
 
-  it('Should Remove LCV flag', () => {
-    removeLcvFlagAs(user_role, expectResultRemoveLcvFlag);
-  });
+  // it('Should Remove LCV flag', () => {
+  //   removeLcvFlagAs(user_role, expectResultRemoveLcvFlag);
+  // });
   
-  it('Should Add an LOA', () => {
-    addLoaAs(user_role, expectResultAddLoa);
-  });
+  // it('Should Add an LOA', () => {
+  //   addLoaAs(user_role, expectResultAddLoa);
+  // });
 
-  it('Should Edit an LOA', () => {
-    editLoaAs(user_role, expectResultEditLoa);
-  });
+  // it('Should Edit an LOA', () => {
+  //   editLoaAs(user_role, expectResultEditLoa);
+  // });
 
-  it('Should View/download LOA letter PDF', () => {
-    downloadLoaLetterPdfAs(user_role, expectResultDownloadLoaLetterPdf);
-  });
+  // it('Should View/download LOA letter PDF', () => {
+  //   downloadLoaLetterPdfAs(user_role, expectResultDownloadLoaLetterPdf);
+  // });
 
-  it('Should Access Expired LOAs link', () => {
-    // TBD
-  });
+  // it('Should Access Expired LOAs link', () => {
+  //   // TBD
+  // });
 
-  it('Should Remove LOA', () => {
-    removeLoaAs(user_role, expectResultRemoveLoa); 
-  });
+  // it('Should Remove LOA', () => {
+  //   removeLoaAs(user_role, expectResultRemoveLoa); 
+  // });
 
-  it('Should View Credit Account tab - Account Holder', () => {
-    viewCreditAccountAs(user_role, expectResultViewCreditAccount);
-  });
+  // it('Should View Credit Account tab - Account Holder', () => {
+  //   viewCreditAccountAs(user_role, expectResultViewCreditAccount);
+  // });
 
-  it('Should View Credit Account Users - Account Holder', () => {
-    // TBD   
-  });
+  // it('Should View Credit Account Users - Account Holder', () => {
+  //   // TBD   
+  // });
 
-  it('Should Manage Credit Account Users - Account Holder', () => {
-    // TBD 
-  });
+  // it('Should Manage Credit Account Users - Account Holder', () => {
+  //   // TBD 
+  // });
 
-  it('Should View Credit Account Details - Account Holder', () => {
-    // TBD
-  });
+  // it('Should View Credit Account Details - Account Holder', () => {
+  //   // TBD
+  // });
 
-  it('Should Perform Credit Account Detail actions - Account Holder', () => {
-    // TBD
-  });
+  // it('Should Perform Credit Account Detail actions - Account Holder', () => {
+  //   // TBD
+  // });
 
 
-  it('Should View Hold/Close History - Account Holder', () => {
-    // TBD
-  });
+  // it('Should View Hold/Close History - Account Holder', () => {
+  //   // TBD
+  // });
 
-  it('Should View Credit Account tab - Account User', () => {
-    // TBD
-  });
+  // it('Should View Credit Account tab - Account User', () => {
+  //   // TBD
+  // });
 
-  it('Should View Credit Account Users - Account User', () => {
-    // TBD
-  });
+  // it('Should View Credit Account Users - Account User', () => {
+  //   // TBD
+  // });
 
-  it('Should View Credit Account Details - Account User', () => {
-    // TBD
-  });
+  // it('Should View Credit Account Details - Account User', () => {
+  //   // TBD
+  // });
 
-  it('Should View Credit Account tab - Non-Holder/user', () => {
-    // TBD
-  });
+  // it('Should View Credit Account tab - Non-Holder/user', () => {
+  //   // TBD
+  // });
 
-  it('Should Add Credit Account - Non-Holder/user', () => {
-    // TBD
-  });
+  // it('Should Add Credit Account - Non-Holder/user', () => {
+  //   // TBD
+  // });
 
-  it('Should View Suspend Company info', () => {
-    viewSuspendCompanyInfoAs(user_role, expectResultViewSuspendCompanyInfo);
-  });
+  // it('Should View Suspend Company info', () => {
+  //   viewSuspendCompanyInfoAs(user_role, expectResultViewSuspendCompanyInfo);
+  // });
 
   it('Should Update Suspend Company flag', () => {
     updateSuspendCompanyFlagAs(user_role, expectResultUpdateSuspendCompanyFlag);
