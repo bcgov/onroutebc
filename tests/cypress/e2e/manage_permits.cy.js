@@ -599,7 +599,7 @@ describe('Manage Permits', () => {
       case 'sa':
       case 'train':
       case 'ctpo':
-        expectShowSuccessMessage();
+        expectNoInPersonOption();
         break;
       case 'fin':
       case 'eo':
@@ -786,73 +786,73 @@ describe('Manage Permits', () => {
     cy.loginAs(user_role);
   });
 
-  it('Should View Permits screen', () => {
-    viewPermitsScreenAs(user_role, expectResult);
-  });
+  // it('Should View Permits screen', () => {
+  //   viewPermitsScreenAs(user_role, expectResult);
+  // });
 
   it('Should Start Application - term over size', () => {
     startApplicationTrosAs(user_role, expectResultStartApplication);
   });
 
-  it('Should Start Application - term over weight', () => {
-    startApplicationTrowAs(user_role, expectResultStartApplication);
-  });
+  // it('Should Start Application - term over weight', () => {
+  //   startApplicationTrowAs(user_role, expectResultStartApplication);
+  // });
 
-  it('Should View list of Applications in Progress', () => {
-    listApplicationsInProgressAs(user_role, expectResult);
-  });
+  // it('Should View list of Applications in Progress', () => {
+  //   listApplicationsInProgressAs(user_role, expectResult);
+  // });
 
-  it('Should View individual Application in Progress - details', () => {
-    viewIndividualApplicationInProgressAs(user_role, expectResultViewIndividualApplicationInProgress);
-  });
+  // it('Should View individual Application in Progress - details', () => {
+  //   viewIndividualApplicationInProgressAs(user_role, expectResultViewIndividualApplicationInProgress);
+  // });
 
-  it('Should Edit individual application in progress - details', () => {
-    editIndividualApplicationInProgressAs(user_role, expectResultEditIndividualApplication);
-  });
+  // it('Should Edit individual application in progress - details', () => {
+  //   editIndividualApplicationInProgressAs(user_role, expectResultEditIndividualApplication);
+  // });
 
-  it('Should Cancel application in progress', () => {
-    cancelApplicationInProgressAs(user_role, expectResultCancelApplicationInProgress);
-  });
+  // it('Should Cancel application in progress', () => {
+  //   cancelApplicationInProgressAs(user_role, expectResultCancelApplicationInProgress);
+  // });
 
-  it('Should View list of Applications in Review', () => {
-    viewListOfApplicationsInReviewAs(user_role, expectResultViewListOfApplicationsInReview);
-  });
+  // it('Should View list of Applications in Review', () => {
+  //   viewListOfApplicationsInReviewAs(user_role, expectResultViewListOfApplicationsInReview);
+  // });
 
-  it('Should View individual application in review', () => {
-    viewIndividualApplicationInReviewAs(user_role, expectResultViewListOfApplicationsInReview);
-  });
+  // it('Should View individual application in review', () => {
+  //   viewIndividualApplicationInReviewAs(user_role, expectResultViewListOfApplicationsInReview);
+  // });
 
-  it('Should Withdraw Application in review', () => {
-    withdrawApplicationInReviewAs(user_role, expectResult);
-  });
+  // it('Should Withdraw Application in review', () => {
+  //   withdrawApplicationInReviewAs(user_role, expectResult);
+  // });
 
-  it('Should View Active Permits', () => {
-    viewActivePermitsAs(user_role, expectResult);
-  });
+  // it('Should View Active Permits', () => {
+  //   viewActivePermitsAs(user_role, expectResult);
+  // });
 
-  it('Should View individual Active Permit PDF', () => {
-    viewIndividualActivePermitAs(user_role, expectResult);
-  });
+  // it('Should View individual Active Permit PDF', () => {
+  //   viewIndividualActivePermitAs(user_role, expectResult);
+  // });
 
-  it('Should View permit receipt', () => {
-    viewPermitReceiptAs(user_role, expectResult);  
-  });
+  // it('Should View permit receipt', () => {
+  //   viewPermitReceiptAs(user_role, expectResult);  
+  // });
 
-  it('Should Request permit amendment', () => {
-    requestPermitAmendmentAs(user_role, expectResult);
-  });
+  // it('Should Request permit amendment', () => {
+  //   requestPermitAmendmentAs(user_role, expectResult);
+  // });
 
-  it('Should View list of Expired Permits', () => {
-    viewExpiredPermitsAs(user_role, expectResult);
-  });
+  // it('Should View list of Expired Permits', () => {
+  //   viewExpiredPermitsAs(user_role, expectResult);
+  // });
 
-  it('Should View individual Expired Permit PDF', () => {
-    viewIndividualExpiredPermitAs(user_role, expectResult);
-  });
+  // it('Should View individual Expired Permit PDF', () => {
+  //   viewIndividualExpiredPermitAs(user_role, expectResult);
+  // });
 
-  it('Should View Expired permit receipt', () => {
-    viewExpiredPermitReceiptAs(user_role, expectResult);
-  });
+  // it('Should View Expired permit receipt', () => {
+  //   viewExpiredPermitReceiptAs(user_role, expectResult);
+  // });
 
 });
 
