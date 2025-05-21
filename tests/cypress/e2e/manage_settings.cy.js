@@ -82,7 +82,7 @@ describe('Manage Settings', () => {
   }
   
   const expectFailureAddNoFeeFlag = () => {
-    cy.contains('.tab__label', 'Special Authorizations').should('not.exist');
+    cy.get('input.PrivateSwitchBase-input.MuiSwitch-input').should('not.exist');
   }
 
   function updateNoFeeFlagAs(user_role, assertionFn) {
@@ -430,8 +430,7 @@ describe('Manage Settings', () => {
       cy.get('a[href="/settings"]').click({ force: true });
       cy.wait(wait_time);
 
-      cy.contains('.tab__label', 'Credit Account').should('exist').click();
-      cy.wait(wait_time);
+      
 
     }
 
@@ -445,22 +444,23 @@ describe('Manage Settings', () => {
       case 'train':
       case 'ctpo':
       case 'fin':
-      case 'eo':
       case 'hqa':
         expectSuccessViewCreditAccount();
         break;
-      default:
+      case 'ca':
+      case 'eo':
         expectFailureViewCreditAccount();
         break;
     }
   }
 
   const expectSuccessViewCreditAccount = () => {
-    cy.get('.non-finance-container__banner').should('exist');
+    cy.contains('.tab__label', 'Credit Account').should('exist').click();
+    cy.wait(wait_time);
   }
   
   const expectFailureViewCreditAccount = () => {
-    cy.get('.non-finance-container__banner').should('not.exist');
+    cy.contains('.tab__label', 'Credit Account').should('not.exist');
   }
 
   function viewSuspendCompanyInfoAs(user_role, assertionFn) {
@@ -531,16 +531,19 @@ describe('Manage Settings', () => {
   }
   
   const expectFailureUpdateSuspendCompanyFlag = () => {
+    cy.contains('.tab__label', 'Suspend').should('exist').click();
+    cy.wait(wait_time);
     cy.contains('.tab__label', 'Suspend').should('not.exist');
+
   }
   
   beforeEach(() => {
     cy.loginAs(user_role);
   });
 
-  // it('Should View Special Authorizations', () => {
-  //   viewSpecialAuthorizationsAs(user_role, expectResultViewSpecialAuthorizations);
-  // });
+  it('Should View Special Authorizations', () => {
+    viewSpecialAuthorizationsAs(user_role, expectResultViewSpecialAuthorizations);
+  });
 
   it('Should Add No Fee flag', () => {
     addNoFeeFlagAs(user_role, expectResultAddNoFeeFlag);
