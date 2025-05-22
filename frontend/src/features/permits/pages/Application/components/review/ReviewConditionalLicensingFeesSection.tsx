@@ -46,12 +46,13 @@ export const ReviewConditionalLicensingFeesSection = ({
         >
           <ConditionalLicensingFeeOption
             classes={{
-              root: "conditional-licensing-fee-type conditional-licensing-fee-type--none",
+              root: "conditional-licensing-fee-type",
               radio: "conditional-licensing-fee-type__radio",
               disabled: "conditional-licensing-fee-type--disabled",
               label: {
                 root: "conditional-licensing-fee-type__label-row",
                 label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link",
               },
             }}
             disabled={true}

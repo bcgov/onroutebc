@@ -34,8 +34,7 @@ export const StartApplicationAction = () => {
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
-  const enableNRSCV = true;
-  // const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
 
   const showNonResident = (enableSTFR || enableQRFR || enableNRSCV);
   

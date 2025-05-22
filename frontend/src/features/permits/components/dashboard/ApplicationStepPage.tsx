@@ -65,8 +65,7 @@ export const ApplicationStepPage = ({
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
-  const enableNRSCV = true;
-  // const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   
   // Query for the application data whenever this page is rendered
   const {

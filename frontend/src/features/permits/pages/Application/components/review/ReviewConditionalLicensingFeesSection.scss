@@ -9,6 +9,24 @@
     display: flex;
     align-items: flex-start;
   }
+
+  & &__radio-group {
+    .conditional-licensing-fee-type {
+      &__radio {
+        padding: 0;
+        margin-right: 0.5rem;
+        color: orbcStyles.$disabled-colour;
+      }
+
+      &__label {
+        color: orbcStyles.$bc-black;
+      }
+
+      &__link {
+        margin-left: 0.25rem;
+      }
+    }
+  }  
 }
 
 @media (width < 370px) {
