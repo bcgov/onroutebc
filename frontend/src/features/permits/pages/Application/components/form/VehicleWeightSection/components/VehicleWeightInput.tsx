@@ -3,11 +3,7 @@ import { Controller } from "react-hook-form";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
-import {
-  Nullable,
-  RequiredOrNull,
-} from "../../../../../../../../common/types/common";
-
+import { Nullable } from "../../../../../../../../common/types/common";
 import {
   mustBeGreaterThanOrEqualTo,
   mustBeLessThanOrEqualTo,
@@ -32,7 +28,7 @@ export const VehicleWeightInput = ({
   isEnabled: boolean;
   shouldValidateWhenEmpty: boolean;
   value?: Nullable<number>;
-  onUpdateValue: (updateValue: RequiredOrNull<number>) => void;
+  onUpdateValue: (updateValue: Nullable<number>) => void;
 }) => {
   const validationRules = {
     required: (isEnabled || shouldValidateWhenEmpty) ? {

@@ -7,15 +7,24 @@ export const getDefaultVehicleConfiguration = (
   permitType: PermitType,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>,
 ) => {
-  if (permitType !== PERMIT_TYPES.STOS) return null;
+  if (!([
+    PERMIT_TYPES.STOS,
+    PERMIT_TYPES.NRQCV,
+    PERMIT_TYPES.NRSCV,
+  ] as PermitType[]).includes(permitType)) return null;
+
+  if (permitType === PERMIT_TYPES.STOS) {
+    return {
+      frontProjection: getDefaultRequiredVal(null, vehicleConfiguration?.frontProjection),
+      rearProjection: getDefaultRequiredVal(null, vehicleConfiguration?.rearProjection),
+      overallWidth: getDefaultRequiredVal(null, vehicleConfiguration?.overallWidth),
+      overallHeight: getDefaultRequiredVal(null, vehicleConfiguration?.overallHeight),
+      overallLength: getDefaultRequiredVal(null, vehicleConfiguration?.overallLength),
+      trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    };
+  }
 
   return {
-    frontProjection: getDefaultRequiredVal(null, vehicleConfiguration?.frontProjection),
-    rearProjection: getDefaultRequiredVal(null, vehicleConfiguration?.rearProjection),
-    overallWidth: getDefaultRequiredVal(null, vehicleConfiguration?.overallWidth),
-    overallHeight: getDefaultRequiredVal(null, vehicleConfiguration?.overallHeight),
-    overallLength: getDefaultRequiredVal(null, vehicleConfiguration?.overallLength),
-    trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
     netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),
   };

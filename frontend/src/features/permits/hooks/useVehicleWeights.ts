@@ -1,43 +1,43 @@
 import { useEffect } from "react";
-import { isNull, Nullable, RequiredOrNull } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import { getVehicleWeightStatusForCLF } from "../helpers/vehicles/configuration/getVehicleWeightStatusForCLF";
 import { ConditionalLicensingFeeType } from "../types/ConditionalLicensingFee";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { PermitType } from "../types/PermitType";
+import { getUpdatedVehicleWeights } from "../helpers/vehicles/configuration/getUpdatedVehicleWeights";
 
 export const useVehicleWeights = (
   permitType: PermitType,
-  onUpdateLoadedGVW: (updatedLoadedGVW: RequiredOrNull<number>) => void,
-  onUpdateNetWeight: (updatedNetWeight: RequiredOrNull<number>) => void,
+  onUpdateLoadedGVW: (updatedLoadedGVW: Nullable<number>) => void,
+  onUpdateNetWeight: (updatedNetWeight: Nullable<number>) => void,
   selectedVehicleSubtype?: Nullable<string>,
   selectedCLF?: Nullable<ConditionalLicensingFeeType>,
   currentLoadedGVW?: Nullable<number>,
   currentNetWeight?: Nullable<number>,
 ) => {
-  const isNonResidentPermitType = ([
-    PERMIT_TYPES.NRSCV,
-    PERMIT_TYPES.NRQCV,
-  ] as PermitType[]).includes(permitType);
-
   const { enableLoadedGVW, enableNetWeight } = getVehicleWeightStatusForCLF(
     !selectedVehicleSubtype,
     selectedCLF,
   );
 
-  useEffect(() => {
-    if (isNonResidentPermitType) {
-      if (!enableLoadedGVW && !isNull(currentLoadedGVW)) {
-        onUpdateLoadedGVW(null);
-      }
-    }
-  }, [isNonResidentPermitType, currentLoadedGVW, enableLoadedGVW]);
+  const { updatedLoadedGVW, updatedNetWeight } = getUpdatedVehicleWeights(
+    permitType,
+    enableLoadedGVW,
+    enableNetWeight,
+    currentLoadedGVW,
+    currentNetWeight,
+  );
 
   useEffect(() => {
-    if (isNonResidentPermitType) {
-      if (!enableNetWeight && !isNull(currentNetWeight)) {
-        onUpdateNetWeight(null);
-      }
+    if (currentLoadedGVW !== updatedLoadedGVW) {
+      onUpdateLoadedGVW(updatedLoadedGVW);
     }
-  }, [isNonResidentPermitType, currentNetWeight, enableNetWeight]);
+  }, [currentLoadedGVW, updatedLoadedGVW]);
+
+  useEffect(() => {
+    if (currentNetWeight !== updatedNetWeight) {
+      onUpdateNetWeight(updatedNetWeight);
+    }
+  }, [currentNetWeight, updatedNetWeight]);
 
   return {
     enableLoadedGVW,

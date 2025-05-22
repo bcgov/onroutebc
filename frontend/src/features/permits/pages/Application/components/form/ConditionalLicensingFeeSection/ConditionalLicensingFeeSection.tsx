@@ -1,10 +1,13 @@
 import { Box, RadioGroup } from "@mui/material";
 
 import "./ConditionalLicensingFeeSection.scss";
-import { Nullable } from "../../../../../../../common/types/common";
-import { CONDITIONAL_LICENSING_FEE_TYPES, ConditionalLicensingFeeType } from "../../../../../types/ConditionalLicensingFee";
+import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { ConditionalLicensingFeeOption } from "../../common/ConditionalLicensingFeeOption";
+import {
+  CONDITIONAL_LICENSING_FEE_TYPES,
+  ConditionalLicensingFeeType,
+} from "../../../../../types/ConditionalLicensingFee";
 
 export const ConditionalLicensingFeeSection = ({
   permitType,
@@ -15,7 +18,7 @@ export const ConditionalLicensingFeeSection = ({
   permitType: PermitType;
   conditionalLicensingFeeType?: Nullable<ConditionalLicensingFeeType>;
   availableCLFs: ConditionalLicensingFeeType[];
-  onChange: (updatedConditionalLicensingFeeType: ConditionalLicensingFeeType) => void;
+  onChange: (updatedConditionalLicensingFeeType: RequiredOrNull<ConditionalLicensingFeeType>) => void;
 }) => {
   const showSection = ([
     PERMIT_TYPES.NRSCV,

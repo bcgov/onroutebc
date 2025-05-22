@@ -183,7 +183,7 @@ export const useApplicationFormUpdateMethods = () => {
   );
 
   const onUpdateConditionalLicensingFee = useCallback(
-    (updatedConditionalLicensingFee: ConditionalLicensingFeeType) => {
+    (updatedConditionalLicensingFee: RequiredOrNull<ConditionalLicensingFeeType>) => {
       setValue(
         "permitData.conditionalLicensingFee",
         updatedConditionalLicensingFee,
@@ -193,7 +193,7 @@ export const useApplicationFormUpdateMethods = () => {
   );
 
   const onUpdateLoadedGVW = useCallback(
-    (updatedLoadedGVW: RequiredOrNull<number>) => {
+    (updatedLoadedGVW: Nullable<number>) => {
       setValue(
         "permitData.vehicleConfiguration.loadedGVW",
         updatedLoadedGVW,
@@ -203,7 +203,7 @@ export const useApplicationFormUpdateMethods = () => {
   );
 
   const onUpdateNetWeight = useCallback(
-    (updatedNetWeight: RequiredOrNull<number>) => {
+    (updatedNetWeight: Nullable<number>) => {
       setValue(
         "permitData.vehicleConfiguration.netWeight",
         updatedNetWeight,

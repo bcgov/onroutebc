@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 
 import "./VehicleWeightSection.scss";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
+import { Nullable } from "../../../../../../../common/types/common";
 import { VehicleWeightInput } from "./components/VehicleWeightInput";
 
 export const VehicleWeightSection = ({
@@ -22,10 +22,10 @@ export const VehicleWeightSection = ({
   enableNetWeight: boolean;
   netWeight?: Nullable<number>;
   onUpdateLoadedGVW: (
-    updatedLoadedGVW: RequiredOrNull<number>,
+    updatedLoadedGVW: Nullable<number>,
   ) => void;
   onUpdateNetWeight: (
-    updatedNetWeight: RequiredOrNull<number>,
+    updatedNetWeight: Nullable<number>,
   ) => void;
 }) => {
   const showSection = ([
