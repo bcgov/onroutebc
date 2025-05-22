@@ -23,14 +23,14 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
       - name: Get PR Number From Event
         if: github.event_name == 'push'
         id: pr_no
-        uses: bcgov/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@21f9351425cd55a98e869ee28919a512aa30647d # v0.0.1
       - name: PR Number
         id: pr
         run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
@@ -49,7 +49,7 @@ jobs:
   promote-images-test:
     name: Promote Images - Test
     needs: [deploys-test, vars]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       packages: write
     strategy:
@@ -57,7 +57,7 @@ jobs:
         package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}

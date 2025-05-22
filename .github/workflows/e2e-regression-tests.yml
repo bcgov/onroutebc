@@ -35,7 +35,7 @@ jobs:
     outputs:
       target: ${{ steps.env.outputs.target }}
       environment: ${{ steps.env.outputs.environment }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: env
         id: env
@@ -55,7 +55,7 @@ jobs:
     name: ${{matrix.test}}
     needs: [vars]
     environment: ${{needs.vars.outputs.environment}}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: tests/
@@ -82,9 +82,9 @@ jobs:
 
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - uses: cypress-io/github-action@v6.7.7
+      - uses: cypress-io/github-action@0ee1130f05f69098ab5c560bd198fecf5a14d75b # v6.9.0
         name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
@@ -99,14 +99,14 @@ jobs:
           spec: cypress/e2e/${{matrix.test}}
           working-directory: tests
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.browser}} screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.browser}} video

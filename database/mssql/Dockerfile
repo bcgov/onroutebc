@@ -1,5 +1,5 @@
 # Taken largely from https://github.com/microsoft/mssql-docker/blob/master/linux/preview/examples/mssql-customize/Dockerfile
-FROM mcr.microsoft.com/mssql/server:2017-latest
+FROM mcr.microsoft.com/mssql/server:2017-latest@sha256:0ee8b0ae2e442b7f58a2813456d9d9e6e8923c140200672cf8683bbc6b88386d
 
 USER root
 
