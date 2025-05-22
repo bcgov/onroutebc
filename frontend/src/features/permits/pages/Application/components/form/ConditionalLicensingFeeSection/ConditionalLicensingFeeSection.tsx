@@ -1,11 +1,10 @@
-import { Box, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Box, RadioGroup } from "@mui/material";
 
 import "./ConditionalLicensingFeeSection.scss";
 import { Nullable } from "../../../../../../../common/types/common";
 import { CONDITIONAL_LICENSING_FEE_TYPES, ConditionalLicensingFeeType } from "../../../../../types/ConditionalLicensingFee";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { CustomExternalLink } from "../../../../../../../common/components/links/CustomExternalLink";
-import { CONDITIONAL_LICENSING_FEE_LINKS } from "../../../../../constants/constants";
+import { ConditionalLicensingFeeOption } from "../../common/ConditionalLicensingFeeOption";
 
 export const ConditionalLicensingFeeSection = ({
   permitType,
@@ -38,153 +37,78 @@ export const ConditionalLicensingFeeSection = ({
           value={conditionalLicensingFeeType}
           onChange={(e) => onChange(e.target.value as ConditionalLicensingFeeType)}
         >
-          <FormControlLabel
-            key={CONDITIONAL_LICENSING_FEE_TYPES.NONE}
-            className="conditional-licensing-fee-type conditional-licensing-fee-type--none"
+          <ConditionalLicensingFeeOption
+            classes={{
+              root: "conditional-licensing-fee-type conditional-licensing-fee-type--none",
+              radio: "conditional-licensing-fee-type__radio",
+              disabled: "conditional-licensing-fee-type--disabled",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+              },
+            }}
             disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.NONE)}
-            classes={{
-              disabled: "conditional-licensing-fee-type--disabled",
-              label: "conditional-licensing-fee-type__label-row",
-            }}
-            label={
-              <span className="conditional-licensing-fee-type__label">
-                None
-              </span>
-            }
-            value={CONDITIONAL_LICENSING_FEE_TYPES.NONE}
-            control={
-              <Radio
-                key={CONDITIONAL_LICENSING_FEE_TYPES.NONE}
-                className="conditional-licensing-fee-type__radio"
-              />}
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.NONE}
           />
 
-          <FormControlLabel
-            key={CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE}
-            className="conditional-licensing-fee-type"
+          <ConditionalLicensingFeeOption
+            classes={{
+              root: "conditional-licensing-fee-type",
+              radio: "conditional-licensing-fee-type__radio",
+              disabled: "conditional-licensing-fee-type--disabled",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link"
+              },
+            }}
             disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE)}
-            classes={{
-              disabled: "conditional-licensing-fee-type--disabled",
-              label: "conditional-licensing-fee-type__label-row",
-            }}
-            label={
-              <>
-                <span className="conditional-licensing-fee-type__label">
-                  Conditional license fee rate in accordance with
-                </span>
-
-                <CustomExternalLink
-                  href={CONDITIONAL_LICENSING_FEE_LINKS.CONDITIONAL_LICENSING_FEE_RATE.URL}
-                  className="conditional-licensing-fee-type__link"
-                  data-testid="conditional-licensing-fee-link"
-                  withLinkIcon={true}
-                >
-                  {CONDITIONAL_LICENSING_FEE_LINKS.CONDITIONAL_LICENSING_FEE_RATE.LINK_TEXT}
-                </CustomExternalLink>
-              </>
-            }
-            value={CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE}
-            control={
-              <Radio
-                key={CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE}
-                className="conditional-licensing-fee-type__radio"
-              />}
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE}
           />
 
-          <FormControlLabel
-            key={CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE}
-            className="conditional-licensing-fee-type"
+          <ConditionalLicensingFeeOption
+            classes={{
+              root: "conditional-licensing-fee-type",
+              radio: "conditional-licensing-fee-type__radio",
+              disabled: "conditional-licensing-fee-type--disabled",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link"
+              },
+            }}
             disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE)}
-            classes={{
-              disabled: "conditional-licensing-fee-type--disabled",
-              label: "conditional-licensing-fee-type__label-row",
-            }}
-            label={
-              <>
-                <span className="conditional-licensing-fee-type__label">
-                  Industrial (X-Plate Type) fee rate in accordance with
-                </span>
-
-                <CustomExternalLink
-                  href={CONDITIONAL_LICENSING_FEE_LINKS.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE.URL}
-                  className="conditional-licensing-fee-type__link"
-                  data-testid="conditional-licensing-fee-link"
-                  withLinkIcon={true}
-                >
-                  {CONDITIONAL_LICENSING_FEE_LINKS.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE.LINK_TEXT}
-                </CustomExternalLink>
-              </>
-            }
-            value={CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE}
-            control={
-              <Radio
-                key={CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE}
-                className="conditional-licensing-fee-type__radio"
-              />}
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE}
           />
 
-          <FormControlLabel
-            key={CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE}
-            className="conditional-licensing-fee-type"
+          <ConditionalLicensingFeeOption
+            classes={{
+              root: "conditional-licensing-fee-type",
+              radio: "conditional-licensing-fee-type__radio",
+              disabled: "conditional-licensing-fee-type--disabled",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link"
+              },
+            }}
             disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE)}
-            classes={{
-              disabled: "conditional-licensing-fee-type--disabled",
-              label: "conditional-licensing-fee-type__label-row",
-            }}
-            label={
-              <>
-                <span className="conditional-licensing-fee-type__label">
-                  Farm Vehicle fee rate in accordance with
-                </span>
-
-                <CustomExternalLink
-                  href={CONDITIONAL_LICENSING_FEE_LINKS.FARM_VEHICLE_FEE_RATE.URL}
-                  className="conditional-licensing-fee-type__link"
-                  data-testid="conditional-licensing-fee-link"
-                  withLinkIcon={true}
-                >
-                  {CONDITIONAL_LICENSING_FEE_LINKS.FARM_VEHICLE_FEE_RATE.LINK_TEXT}
-                </CustomExternalLink>
-              </>
-            }
-            value={CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE}
-            control={
-              <Radio
-                key={CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE}
-                className="conditional-licensing-fee-type__radio"
-              />}
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.FARM_VEHICLE_FEE_RATE}
           />
 
-          <FormControlLabel
-            key={CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE}
-            className="conditional-licensing-fee-type"
-            disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE)}
+          <ConditionalLicensingFeeOption
             classes={{
+              root: "conditional-licensing-fee-type",
+              radio: "conditional-licensing-fee-type__radio",
               disabled: "conditional-licensing-fee-type--disabled",
-              label: "conditional-licensing-fee-type__label-row",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link"
+              },
             }}
-            label={
-              <>
-                <span className="conditional-licensing-fee-type__label">
-                  Farm Tractor fee rate in accordance with
-                </span>
-
-                <CustomExternalLink
-                  href={CONDITIONAL_LICENSING_FEE_LINKS.FARM_TRACTOR_FEE_RATE.URL}
-                  className="conditional-licensing-fee-type__link"
-                  data-testid="conditional-licensing-fee-link"
-                  withLinkIcon={true}
-                >
-                  {CONDITIONAL_LICENSING_FEE_LINKS.FARM_TRACTOR_FEE_RATE.LINK_TEXT}
-                </CustomExternalLink>
-              </>
-            }
-            value={CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE}
-            control={
-              <Radio
-                key={CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE}
-                className="conditional-licensing-fee-type__radio"
-              />}
+            disabled={!availableCLFs.includes(CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE)}
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE}
           />
         </RadioGroup>
       </Box>

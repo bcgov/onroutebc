@@ -1,0 +1,30 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-vehicle-weight-section");
+@include orbcStyles.permit-left-box-style(".review-vehicle-weight-section__header");
+@include orbcStyles.permit-right-box-style(".review-vehicle-weight-section__body");
+
+.review-vehicle-weight-section {
+  &__body {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__info {
+    margin-top: 0;
+  }
+
+  &__label {
+    font-weight: bold;
+  }
+}
+
+@media (width < 370px) {
+  .review-vehicle-weight-section {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+      display: block;
+    }
+  }
+}
