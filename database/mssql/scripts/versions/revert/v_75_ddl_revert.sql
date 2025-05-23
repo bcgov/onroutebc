@@ -20,7 +20,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting updates to policy validation rules for NRQCV and NRSCV'
+SET @VersionDescription = 'Reverting updates to policy validation rules for NRQCV and NRSCV, MFP cost updates'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (74, @VersionDescription, getutcdate())
 GO
