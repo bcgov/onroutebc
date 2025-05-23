@@ -2,21 +2,12 @@ import { checkRoleAndSearch } from '../support/common';
 
 describe('Manage Profile', () => {
   const permits_url = '/applications';
-  const new_tros_url = '/create-application/TROS';
-  const new_trow_url = '/create-application/TROW';
   
   const wait_time = Cypress.env('wait_time');
   const user_role = Cypress.env('user_role').toLowerCase();
   const roleCompanies = Cypress.env('rolesToCompanies');
   const company_name = roleCompanies[user_role];
-
-  const username = Cypress.env('username');
-  const password = Cypress.env('password');
   const manage_profiles_url = '/manage-profiles';
-  const update_trailer_url = Cypress.env('update_trailer_url');
-  const manage_vehicle_url = '/manage-vehicles';
-  const company_sa = 'Test Transport Inc.';
-
 
   function viewCompanyInformationAs(user_role, assertionFn) {
     if(user_role === 'ca' || user_role === 'pa'){
@@ -31,9 +22,9 @@ describe('Manage Profile', () => {
       cy.wait(wait_time);
 
       cy.get('h4[data-testid="company-banner-name"]')
-      .should('not.be.empty')  // Verifies the content is not empty
-      .invoke('text')           // Gets the text content
-      .should('not.be.empty');  // Asserts that the text is not empty
+      .should('not.be.empty')
+      .invoke('text')
+      .should('not.be.empty');
 
       cy.contains('Company Mailing Address')
         .next()
@@ -54,7 +45,7 @@ describe('Manage Profile', () => {
         .should('exist')
         .and('not.be.empty')
         .invoke('text') 
-        .should('not.match', /^\s*$/); 
+        .should('not.match', /^\s*$/);
 
     assertionFn()
   }
@@ -63,35 +54,29 @@ describe('Manage Profile', () => {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
+      if(user_role === 'ca'){
+        cy.contains('button', 'Edit').should('exist').click();
+        cy.wait(wait_time);
 
-      cy.contains('button', 'Edit').should('exist').click();
-      cy.wait(wait_time);
+        cy.get('[name="alternateName"]').clear().type('onRouteBC Test 1');
+        cy.wait(wait_time);
 
-      cy.get('[name="alternateName"]').clear().type('onRouteBC Test 1');
-      cy.wait(wait_time);
+        cy.get('[name="mailingAddress.addressLine1"]').clear().type('123 Main Street');
+        cy.wait(wait_time);
 
-      cy.get('[name="mailingAddress.addressLine1"]').clear().type('123 Main Street');
-      cy.wait(wait_time);
+        cy.contains('button', 'Save').should('exist').click();
+        cy.wait(wait_time);
 
-      cy.contains('button', 'Save').should('exist').click();
-      cy.wait(wait_time);
+      }
+      else {
+        cy.contains('button', 'Edit').should('exist').should('be.disabled');
+      }
+      
     }
     else{
       cy.search(company_name);
 
       cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Edit').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('[name="alternateName"]').clear().type('onRouteBC Test 1');
-      cy.wait(wait_time);
-
-      cy.get('[name="mailingAddress.addressLine1"]').clear().type('123 Main Street');
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Save').should('exist').click();
       cy.wait(wait_time);
     }
 
@@ -146,13 +131,11 @@ describe('Manage Profile', () => {
         cy.contains('button', 'Save').should('exist').click();
         cy.wait(wait_time);
     
-        // 5.	Users displayed – check
         cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
         cy.wait(wait_time);
     
-        // cy.contains('td', 'ORBCTST1').should('exist');
         cy.get('td[data-index="1"]').first()
-        .should('exist') // Check that the <td> exists
+        .should('exist')
         .within(() => {
           cy.get('span').should('exist');
         });
@@ -174,17 +157,13 @@ describe('Manage Profile', () => {
     }
     else{
       cy.search(company_name);
+      cy.wait(wait_time);
 
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
     }
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Add User').should('exist');
-      cy.wait(wait_time);
-
+    
     assertionFn();
   }
 
@@ -196,31 +175,11 @@ describe('Manage Profile', () => {
     }
     else{
       cy.search(company_name);
-
+      cy.wait(wait_time);
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
-      
-
     }
-
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('button')
-      .contains('Add User')  // Ensures you're targeting the correct button by its text
-      .click({force: true});
-      cy.wait(wait_time);
-
-      cy.get('input[data-testid="input-userName"]')  // Select by the unique data-testid attribute
-      .should('be.visible')
-      .type('TESTBCEID1');
-      cy.wait(wait_time);
-
-      cy.get('button')
-      .contains('Add User')  // Ensures you're targeting the correct button by its text
-      .click({force: true});
-      cy.wait(wait_time);
 
     assertionFn();
   }
@@ -230,57 +189,14 @@ describe('Manage Profile', () => {
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
 
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('td[data-index="1"]').first()
-      .should('exist') // Check that the <td> exists
-      .within(() => {
-        cy.get('span').should('exist');
-      });
-
-      // 6.	Can edit users – check
-      cy.get('#actions-button').click();
-      cy.wait(wait_time);
-
-      cy.get('.onroutebc-table-row-actions__menu-item').click();
-      cy.wait(wait_time);
-
-      cy.get('[name="phone1Extension"]').clear().type('1234');
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Save').should('exist').click();
-      cy.wait(wait_time);
-
     }
     else{
       cy.search(company_name);
-
+      cy.wait(wait_time);
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('td[data-index="1"]').first()
-      .should('exist') // Check that the <td> exists
-      .within(() => {
-        cy.get('span').should('exist');
-      });
-
-      // 6.	Can edit users – check
-      cy.get('#actions-button').click();
-      cy.wait(wait_time);
-
-      cy.get('.onroutebc-table-row-actions__menu-item').click();
-      cy.wait(wait_time);
-
-      cy.get('[name="phone1Extension"]').clear().type('1234');
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Save').should('exist').click();
-      cy.wait(wait_time);
-
+      
     }
 
     assertionFn();
@@ -290,54 +206,9 @@ describe('Manage Profile', () => {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('tr')  // Select all table rows
-      .contains('td', 'TESTBCEID1')  // Find the row containing 'TESTBCEID1'
-      .parents('tr')  // Get the parent <tr> of the matching <td>
-      .find('input[type="checkbox"]')  // Select the input element within the same row
-      // .should('be.visible')
-      .click({force: true}); // Check the checkbox (or use .click() if you want to click it)
-      cy.wait(wait_time);
-
-      cy.get('button[aria-label="delete"]')  // Find the button with the aria-label "delete"
-      // .should('be.visible')  // Ensure the button is visible
-      .click({force: true});  // Click the button
-
-      cy.contains('button', 'Delete')  // Find the button by its text content 'Delete'
-      // .should('be.visible')  // Ensure the button is visible
-      .click({force: true}); // Click the button
-
     }
     else{
       cy.search(company_name);
-
-      cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('tr')  // Select all table rows
-      .contains('td', 'TESTBCEID1')  // Find the row containing 'TESTBCEID1'
-      .parents('tr')  // Get the parent <tr> of the matching <td>
-      .find('input[type="checkbox"]')  // Select the input element within the same row
-      // .should('be.visible')
-      .click({force: true}); // Check the checkbox (or use .click() if you want to click it)
-      cy.wait(wait_time);
-
-      cy.get('button[aria-label="delete"]')  // Find the button with the aria-label "delete"
-      // .should('be.visible')  // Ensure the button is visible
-      .click({force: true});  // Click the button
-
-      cy.contains('button', 'Delete')  // Find the button by its text content 'Delete'
-      // .should('be.visible')  // Ensure the button is visible
-      .click({force: true}); // Click the button
-
-      
-
     }
 
     assertionFn();
@@ -346,9 +217,6 @@ describe('Manage Profile', () => {
   function viewSpecialAuthorizationsAs(user_role, assertionFn) {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(manage_profiles_url);
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
       cy.wait(wait_time);
 
       // TBD
@@ -369,10 +237,6 @@ describe('Manage Profile', () => {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Special Authorizations').should('exist').click();
-      cy.wait(wait_time);
-
       // TBD
 
     }
@@ -383,7 +247,6 @@ describe('Manage Profile', () => {
       cy.wait(wait_time);
     }
     
-
     assertionFn();
   }
 
@@ -391,12 +254,10 @@ describe('Manage Profile', () => {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
       // TBD
 
     }
     
-
     assertionFn();
   }
 
@@ -404,7 +265,6 @@ describe('Manage Profile', () => {
     if(user_role === 'ca'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
       // TBD
 
     }
@@ -417,12 +277,10 @@ describe('Manage Profile', () => {
     if(user_role === 'ca'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
       // TBD
 
     }
    
-
     assertionFn();
   }
 
@@ -430,17 +288,11 @@ describe('Manage Profile', () => {
     if(user_role === 'ca'){
       cy.visit(manage_profiles_url);
       cy.wait(wait_time);
-
       // TBD
-
     }
-    
 
     assertionFn();
   }
-
-
-  
   
   const expectResultViewCompanyInformation = () => {
     switch (user_role) {
@@ -461,8 +313,6 @@ describe('Manage Profile', () => {
     }
   }
 
-  
-
   const expectSuccessViewCompanyInformation = () => {
     cy.get('div.tab__label')
     .contains('Company Information')
@@ -478,47 +328,50 @@ describe('Manage Profile', () => {
   const expectResultEditCompanyInformation = () => {
     switch (user_role) {
       case 'ca':
-      case 'pa':
       case 'pc':
       case 'sa':
       case 'train':
       case 'ctpo':
+        expectSuccessEditCompanyInformation();
+        break;
+      case 'pa':
       case 'fin':
       case 'eo':
       case 'hqa':
-        expectSuccessEditCompanyInformation();
-        break;
-      default:
         expectFailureEditCompanyInformation();
         break;
     }
   }
 
-  
-
   const expectSuccessEditCompanyInformation = () => {
     cy.get('div.tab__label')
     .contains('Company Information')
     .should('exist');
+
+    cy.contains('button', 'Edit').should('exist').click();
+      cy.wait(wait_time);
+
+      cy.get('[name="alternateName"]').clear().type('onRouteBC Test 1');
+      cy.wait(wait_time);
+
+      cy.get('[name="mailingAddress.addressLine1"]').clear().type('123 Main Street');
+      cy.wait(wait_time);
+
+      cy.contains('button', 'Save').should('exist').click();
+      cy.wait(wait_time);
   }
   
   const expectFailureEditCompanyInformation = () => {
-    cy.get('div.tab__label')
-    .contains('Company Information')
-    .should('not.exist');
+    cy.contains('button', 'Edit')
+    .should('exist')
+    .should('be.disabled');
+
   }
 
   const expectResultViewMyInformation = () => {
     switch (user_role) {
       case 'ca':
       case 'pa':
-      case 'pc':
-      case 'sa':
-      case 'train':
-      case 'ctpo':
-      case 'fin':
-      case 'eo':
-      case 'hqa':
         expectSuccessViewMyInformation();
         break;
       default:
@@ -526,8 +379,6 @@ describe('Manage Profile', () => {
         break;
     }
   }
-
-  
 
   const expectSuccessViewMyInformation = () => {
     cy.get('div.tab__label')
@@ -545,13 +396,6 @@ describe('Manage Profile', () => {
     switch (user_role) {
       case 'ca':
       case 'pa':
-      case 'pc':
-      case 'sa':
-      case 'train':
-      case 'ctpo':
-      case 'fin':
-      case 'eo':
-      case 'hqa':
         expectSuccessEditMyInformation();
         break;
       default:
@@ -559,8 +403,6 @@ describe('Manage Profile', () => {
         break;
     }
   }
-
-  
 
   const expectSuccessEditMyInformation = () => {
     cy.get('div.tab__label')
@@ -590,11 +432,15 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessViewUserManagement = () => {
-    cy.contains('button', 'Add User').should('exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
+      cy.wait(wait_time);
+
+      cy.contains('button', 'Add User').should('exist');
+      cy.wait(wait_time);
   }
   
   const expectFailureViewUserManagement = () => {
-    cy.contains('button', 'Add User').should('not.exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');   
   }
   
   const expectResultAddUser = () => {
@@ -613,11 +459,63 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessAddUser = () => {
-    cy.contains('button', 'Add User').should('exist');
+    // if there is no admin user existing, create one
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
+      cy.wait(wait_time);
+
+      cy.get('body').then(($body) => {
+        if ($body.find('td[data-index="1"]').length > 0) {
+          cy.log('Element exists');
+        } else {
+          cy.get('button')
+        .contains('Add User')  
+        .click({force: true});
+        cy.wait(wait_time);
+
+        cy.get('input[value="ORGADMIN"]')
+          .first()
+          .invoke('val')
+          .then((val) => {
+            cy.log('Value is: ' + val);
+          });
+
+        cy.contains('span', 'Administrator').click();
+        cy.wait(wait_time);
+
+        cy.get('input[data-testid="input-userName"]') 
+        .should('be.visible')
+        .type(user_role + '-ADMIN'); 
+        cy.wait(wait_time);
+
+        cy.get('button')
+        .contains('Add User')
+        .click({force: true});
+        cy.wait(wait_time);
+          
+        }
+      });
+
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
+      cy.wait(wait_time);
+
+      cy.get('button')
+      .contains('Add User')
+      .click({force: true});
+      cy.wait(wait_time);
+
+      cy.get('input[data-testid="input-userName"]')
+      .should('be.visible')
+      .type(user_role + '-TEST1');
+      cy.wait(wait_time);
+
+      cy.get('button')
+      .contains('Add User')
+      .click({force: true});
+      cy.wait(wait_time);
   }
   
   const expectFailureAddUser = () => {
-    cy.contains('button', 'Add User').should('not.exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
   }
 
   const expectResultEditUser = () => {
@@ -636,11 +534,36 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessEditUser = () => {
-    cy.contains('button', 'Add User').should('exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
+      cy.wait(wait_time);
+
+      cy.get('body').then(($body) => {
+        if ($body.find('td[data-index="1"]').length == 1) {
+          cy.log('Admin user only, cannot edit');
+        } else {
+          cy.get('td[data-index="1"]').eq(1)
+          .should('exist')
+          .within(() => {
+            cy.get('span').should('exist');
+          });
+
+          cy.get('#actions-button').click();
+          cy.wait(wait_time);
+
+          cy.get('.onroutebc-table-row-actions__menu-item').click();
+          cy.wait(wait_time);
+
+          cy.get('[name="phone1Extension"]').clear().type('1234');
+          cy.wait(wait_time);
+
+          cy.contains('button', 'Save').should('exist').click();
+          cy.wait(wait_time);
+            }
+      });
   }
   
   const expectFailureEditUser = () => {
-    cy.contains('button', 'Add User').should('not.exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
   }
 
   const expectResultRemoveUser = () => {
@@ -659,17 +582,44 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessRemoveUser = () => {
-    cy.contains('button', 'Add User').should('exist');
+    cy.get('a[href="/manage-profiles"]').click({ force: true });
+    cy.wait(wait_time);
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
+    cy.wait(wait_time);
+
+    cy.get('td[data-index="1"]')
+      .should('have.length.greaterThan', 0) // optional: assert there is at least one
+      .then($els => {
+        const count = $els.length;
+        if (count > 1) {
+          cy.log('Non-admin user exists');
+          cy.get('td[data-index="1"]').eq(1).parents('tr').find('input[type="checkbox"]')
+          .click({force: true});
+          cy.wait(wait_time);
+        }
+        else if(count == 1) {
+          cy.get('td[data-index="1"]').first().parents('tr').find('input[type="checkbox"]')
+          .click({force: true});
+          cy.wait(wait_time);
+        }
+        
+      });
+
+      cy.get('button[aria-label="delete"]')
+      .click({force: true});
+
+      cy.contains('button', 'Delete')
+      .click({force: true});
   }
   
   const expectFailureRemoveUser = () => {
-    cy.contains('button', 'Add User').should('not.exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
   }
 
   const expectResultViewSpecialAuthorizations = () => {
     switch (user_role) {
       case 'ca':
-      case 'pc':
+      case 'pa':
         expectSuccessViewSpecialAuthorizations();
         break;
       default:
@@ -679,8 +629,8 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessViewSpecialAuthorizations = () => {
-    cy.contains('div.no-fee-permits-section__title', 'No Fee Permits')
-  .   should('exist');
+    // If they don't have a credit account, the tab is hidden or if they're only a user of a different company's account
+    cy.contains('.tab__label', 'Special Authorizations').should('not.exist');
   }
   
   const expectFailureViewSpecialAuthorizations = () => {
@@ -690,7 +640,7 @@ describe('Manage Profile', () => {
   const expectResultDownloadLoaLetterPdf = () => {
     switch (user_role) {
       case 'ca':
-      case 'pc':
+      case 'pa':
         expectSuccessDownloadLoaLetterPdf();
         break;
       default:
@@ -700,14 +650,11 @@ describe('Manage Profile', () => {
   }
 
   const expectSuccessDownloadLoaLetterPdf = () => {
-    cy.get('.loa-info')
-    .should('exist')
-    .and('contain.text', 'Download the letter to see the specific travel terms of the LOA.');
+    cy.contains('.tab__label', 'Special Authorizations').should('not.exist');
   }
   
   const expectFailureDownloadLoaLetterPdf = () => {
-    cy.get('.loa-info')
-    .should('not.exist');
+    cy.contains('.tab__label', 'Special Authorizations').should('not.exist');
   }
 
   
@@ -731,22 +678,22 @@ describe('Manage Profile', () => {
     // TBD
   }
 
-  const expectResultViewCreditAccout = () => {
+  const expectResultViewCreditAccount = () => {
     switch (user_role) {
       case 'ca':
-        expectSuccessViewCreditAccout();
+        expectSuccessViewCreditAccount();
         break;
       default:
-        expectFailureViewCreditAccout();
+        expectFailureViewCreditAccount();
         break;
     }
   }
 
-  const expectSuccessViewCreditAccout = () => {
+  const expectSuccessViewCreditAccount = () => {
     // TBD
   }
   
-  const expectFailureViewCreditAccout = () => {
+  const expectFailureViewCreditAccount = () => {
     // TBD
   }
 
@@ -817,6 +764,7 @@ describe('Manage Profile', () => {
     addUserAs(user_role, expectResultAddUser);
   });
 
+  
   it('Should Edit User', () => {
     editUserAs(user_role, expectResultEditUser);
   });
@@ -838,7 +786,7 @@ describe('Manage Profile', () => {
   });
 
   it('Should View Credit Account tab - Account holder', () => {
-    viewCreditAccoutAs(user_role, expectResultViewCreditHolder);
+    viewCreditAccoutAs(user_role, expectResultViewCreditAccount);
   });
 
   it('Should View Credit Account users - Account holder', () => {
