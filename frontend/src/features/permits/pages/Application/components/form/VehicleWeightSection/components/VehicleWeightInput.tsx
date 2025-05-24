@@ -1,12 +1,13 @@
+import { useContext } from "react";
 import { Controller } from "react-hook-form";
 
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { Nullable } from "../../../../../../../../common/types/common";
+import { ApplicationFormContext } from "../../../../../../context/ApplicationFormContext";
 import {
   mustBeGreaterThanOrEqualTo,
-  mustBeLessThanOrEqualTo,
   requiredMessage,
 } from "../../../../../../../../common/helpers/validationMessages";
 
@@ -30,13 +31,16 @@ export const VehicleWeightInput = ({
   value?: Nullable<number>;
   onUpdateValue: (updateValue: Nullable<number>) => void;
 }) => {
+  // Display any violation messages thrown by policy engine
+  const { policyViolations, clearViolation } = useContext(ApplicationFormContext);
+  const policyViolationMsg = (name in policyViolations) ? policyViolations[name] : null;
+
   const validationRules = {
     required: (isEnabled || shouldValidateWhenEmpty) ? {
       value: true,
       message: requiredMessage(),
     } : false,
     min: { value: 0, message: mustBeGreaterThanOrEqualTo(0) },
-    max: { value: 63500, message: mustBeLessThanOrEqualTo(63500) },
   };
 
   return (
@@ -59,6 +63,7 @@ export const VehicleWeightInput = ({
                   convertToNumberIfValid(e.target.value, null),
                 ),
               );
+              clearViolation(name);
             },
             slotProps: {
               input: {
@@ -74,7 +79,12 @@ export const VehicleWeightInput = ({
               ? {
                   errors: [error.message],
                 }
-              : undefined
+              : (
+                policyViolationMsg
+                  ? {
+                    errors: [policyViolationMsg],
+                  } : undefined
+              )
           }
         />
       )}
