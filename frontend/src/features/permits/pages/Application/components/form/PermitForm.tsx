@@ -15,6 +15,9 @@ import { ApplicationNotesSection } from "./ApplicationNotesSection";
 import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
+import { ConditionalLicensingFeeSection } from "./ConditionalLicensingFeeSection/ConditionalLicensingFeeSection";
+import { VehicleWeightSection } from "./VehicleWeightSection/VehicleWeightSection";
+import { isVehicleSubtypeEmpty } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 
 export const PermitForm = () => {
   const {
@@ -50,6 +53,10 @@ export const PermitForm = () => {
     commodityType,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
+    availableCLFs,
+    enableLoadedGVW,
+    enableNetWeight,
     onLeave,
     onSave,
     onCancel,
@@ -67,6 +74,9 @@ export const PermitForm = () => {
     onChangeCommodityType,
     onUpdateVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   } = useApplicationFormContext();
 
   return (
@@ -155,6 +165,24 @@ export const PermitForm = () => {
           permitType={permitType}
           thirdPartyLiability={thirdPartyLiability}
           onChange={onUpdateThirdPartyLiability}
+        />
+
+        <ConditionalLicensingFeeSection
+          permitType={permitType}
+          conditionalLicensingFeeType={conditionalLicensingFee}
+          availableCLFs={availableCLFs}
+          onChange={onUpdateConditionalLicensingFee}
+        />
+
+        <VehicleWeightSection
+          permitType={permitType}
+          isVehicleSubtypeEmpty={isVehicleSubtypeEmpty(vehicleFormData.vehicleSubType)}
+          enableLoadedGVW={enableLoadedGVW}
+          loadedGVW={vehicleConfiguration?.loadedGVW}
+          enableNetWeight={enableNetWeight}
+          netWeight={vehicleConfiguration?.netWeight}
+          onUpdateLoadedGVW={onUpdateLoadedGVW}
+          onUpdateNetWeight={onUpdateNetWeight}
         />
 
         <ApplicationNotesSection feature={feature} permitType={permitType} />

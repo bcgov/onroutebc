@@ -12,6 +12,7 @@ import { PermitType } from "../../types/PermitType";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
 import { VehicleType } from "../../../manageVehicles/types/Vehicle";
+import { ConditionalLicensingFeeType } from "../../types/ConditionalLicensingFee";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -181,6 +182,36 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateConditionalLicensingFee = useCallback(
+    (updatedConditionalLicensingFee: RequiredOrNull<ConditionalLicensingFeeType>) => {
+      setValue(
+        "permitData.conditionalLicensingFee",
+        updatedConditionalLicensingFee,
+      );
+    },
+    [setValue],
+  );
+
+  const onUpdateLoadedGVW = useCallback(
+    (updatedLoadedGVW: Nullable<number>) => {
+      setValue(
+        "permitData.vehicleConfiguration.loadedGVW",
+        updatedLoadedGVW,
+      );
+    },
+    [setValue],
+  );
+
+  const onUpdateNetWeight = useCallback(
+    (updatedNetWeight: Nullable<number>) => {
+      setValue(
+        "permitData.vehicleConfiguration.netWeight",
+        updatedNetWeight,
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -209,5 +240,8 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateVehicleConfig,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   };
 };

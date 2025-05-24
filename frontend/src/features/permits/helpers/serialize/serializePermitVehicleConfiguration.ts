@@ -36,5 +36,9 @@ export const serializePermitVehicleConfiguration = (
       vehicleConfiguration.loadedGVW,
       null,
     ),
+    netWeight: convertToNumberIfValid(
+      vehicleConfiguration.netWeight,
+      null,
+    ),
   } : null;
 };

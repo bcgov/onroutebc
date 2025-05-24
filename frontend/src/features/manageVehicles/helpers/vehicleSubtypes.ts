@@ -1,3 +1,5 @@
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../common/constants/constants";
+import { Nullable } from "../../../common/types/common";
 import { LCV_VEHICLE_SUBTYPES } from "../../permits/constants/constants";
 import {
   BaseVehicle,
@@ -19,6 +21,10 @@ export const EMPTY_VEHICLE_SUBTYPE = {
   typeCode: "",
   type: "",
   description: "",
+};
+
+export const isVehicleSubtypeEmpty = (subtype?: Nullable<string>) => {
+  return !subtype || subtype === DEFAULT_EMPTY_SELECT_VALUE;
 };
 
 export const selectedVehicleSubtype = (vehicle: BaseVehicle) => {

@@ -48,7 +48,7 @@ export const PermitDetails = ({
 }) => {
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
-  const showSTFRInfoBanner = permitType === PERMIT_TYPES.STFR;
+  const showSTFRInfoBanner = permitType === PERMIT_TYPES.STFR || permitType === PERMIT_TYPES.NRSCV;
   const showQRFRInfoBanner = permitType === PERMIT_TYPES.QRFR;
 
   return (

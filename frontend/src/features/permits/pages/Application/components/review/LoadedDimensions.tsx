@@ -38,10 +38,6 @@ export const LoadedDimensions = ({
           vehicleConfiguration?.rearProjection,
           oldVehicleConfiguration?.rearProjection,
         ),
-        loadedGVW: areValuesDifferent(
-          vehicleConfiguration?.loadedGVW,
-          oldVehicleConfiguration?.loadedGVW,
-        ),
       }
     : {
         overallWidth: false,
@@ -49,10 +45,15 @@ export const LoadedDimensions = ({
         overallLength: false,
         frontProjection: false,
         rearProjection: false,
-        loadedGVW: false,
       };
 
-  return vehicleConfiguration ? (
+  const showLoadedDimensions = vehicleConfiguration?.overallWidth
+    || vehicleConfiguration?.overallHeight
+    || vehicleConfiguration?.overallLength
+    || vehicleConfiguration?.frontProjection
+    || vehicleConfiguration?.rearProjection;
+
+  return showLoadedDimensions ? (
     <Box className="review-loaded-dimensions">
       <Box className="review-loaded-dimensions__header">
         <Typography variant={"h3"} className="review-loaded-dimensions__title">

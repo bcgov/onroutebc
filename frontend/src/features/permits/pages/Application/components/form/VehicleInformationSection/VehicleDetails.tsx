@@ -83,7 +83,13 @@ export const VehicleDetails = ({
 }) => {
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
   const disableVehicleType = (
-    [PERMIT_TYPES.MFP, PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+    [
+      PERMIT_TYPES.MFP,
+      PERMIT_TYPES.STFR,
+      PERMIT_TYPES.QRFR,
+      PERMIT_TYPES.NRSCV,
+      PERMIT_TYPES.NRQCV,
+    ] as PermitType[]
   ).includes(permitType);
 
   const showGVW = (
@@ -96,7 +102,12 @@ export const VehicleDetails = ({
   ).includes(permitType);
 
   const shouldValidateProvince = (
-    [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+    [
+      PERMIT_TYPES.STFR,
+      PERMIT_TYPES.QRFR,
+      PERMIT_TYPES.NRSCV,
+      PERMIT_TYPES.NRQCV,
+    ] as PermitType[]
   ).includes(permitType);
 
   const vehicleType = vehicleFormData.vehicleType;

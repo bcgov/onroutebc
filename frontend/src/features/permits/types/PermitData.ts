@@ -10,6 +10,7 @@ import { PermitVehicleConfiguration } from "./PermitVehicleConfiguration";
 import { PermittedRoute } from "./PermittedRoute";
 import { PermitLOA } from "./PermitLOA";
 import { ThirdPartyLiability } from "./ThirdPartyLiability";
+import { ConditionalLicensingFeeType } from "./ConditionalLicensingFee";
 
 export interface PermitData {
   startDate: Dayjs;
@@ -29,5 +30,5 @@ export interface PermitData {
   permittedRoute?: Nullable<PermittedRoute>;
   applicationNotes?: Nullable<string>;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
-  conditionalLicensingFee?: Nullable<string>;
+  conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
 }
