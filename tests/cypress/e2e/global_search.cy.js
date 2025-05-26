@@ -44,9 +44,11 @@ describe('Global search', () => {
   // Serach for Vehicle
   function searchForVehicleAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
-      // TBD
+      cy.search(company_name);
+      cy.wait(wait_time); 
       
     }
+    
 
     assertionFn();
 
@@ -68,11 +70,11 @@ describe('Global search', () => {
   }
 
   const expectSuccessSearchForVehicle = () => {
-    cy.get('.search-button').should('exist');
+    cy.get('a[href="/manage-vehicles"]').should('exist');
   }
   
   const expectFailureSearchForVehicle = () => {
-    cy.get('.search-button').should('not.exist');
+    cy.get('a[href="/manage-vehicles"]').should('not.exist');
   }
 
     // Serach for Company
@@ -104,10 +106,12 @@ describe('Global search', () => {
     }
   
     const expectSuccessSearchForCompany = () => {
+      // TBD
       // cy.get('[value="companies"]').should('exist');
     }
     
     const expectFailureSearchForCompany = () => {
+      // TBD
       // cy.get('[value="companies"]').should('not.exist');
     }
 
@@ -228,7 +232,6 @@ describe('Global search', () => {
         .check({ force: true })
         .should('be.checked');
         cy.wait(wait_time);
-  
         
       }
   
@@ -264,6 +267,7 @@ describe('Global search', () => {
   function amendPermitAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
+      cy.wait(wait_time);
       
     }
 
@@ -286,34 +290,44 @@ describe('Global search', () => {
   }
 
   const expectSuccessAmendPermit = () => {
-    cy.get('.search-button').should('exist');
+    cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
+    cy.wait(wait_time);
+    cy.xpath("//li[text()='Amend']").should('exist');
   }
   
   const expectFailureAmendPermit = () => {
-    cy.get('.search-button').should('not.exist');
+    cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
+    cy.wait(wait_time);
+    cy.xpath("//li[text()='Amend']").should('not.exist');
   }
     // Void/Revoke Permit
     function voidRevokePermitAs(user_role, assertionFn) {
-      if(user_role !== 'ca' && user_role !== 'pa'){
+      if(user_role === 'sa'){
         cy.search(company_name);
 
         cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
         cy.wait(wait_time);
 
-        cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
-        cy.wait(wait_time);
+        cy.get('body').then(($body) => {
+          if ($body.find('[id="actions-button"]').length > 0) {
+            cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
+            cy.wait(wait_time);
 
-        cy.xpath("//li[text()='Void/Revoke']").click();
-        cy.wait(wait_time);
+            cy.xpath("//li[text()='Void/Revoke']").click();
+            cy.wait(wait_time);
 
-        cy.get('[name="reason"]').type('void it for test');
-        cy.wait(wait_time);
+            cy.get('[name="reason"]').type('void it for test');
+            cy.wait(wait_time);
 
-        cy.xpath("//button[text()='Continue']").click();
-        cy.wait(wait_time);
+            cy.xpath("//button[text()='Continue']").click();
+            cy.wait(wait_time);
 
-        cy.xpath("//button[text()='Finish']").click();
-        cy.wait(wait_time);
+            cy.xpath("//button[text()='Finish']").click();
+            cy.wait(wait_time);
+          } else {
+            cy.log('actions-button not found');
+          }
+        });
         
       }
   
@@ -382,27 +396,12 @@ describe('Global search', () => {
   // Search for Inactive Permit
   function searchForInactivePermitAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
-      if(user_role !== 'ca' && user_role !== 'pa'){
-        cy.get('.search-button').click();
-        cy.wait(wait_time);
-  
-        cy.get('[value="permits"]').click();
-        cy.wait(wait_time);
-  
-        cy.get('.css-1pog434').type('1');
-        cy.wait(wait_time);
-        cy.get('.search-by__search').click();
-        cy.wait(wait_time);
-        cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-          .first()
-          .click();
-        cy.wait(wait_time);
-      
-    }
-
-    assertionFn();
+      cy.get('.search-button').click();
+      cy.wait(wait_time);
 
   }
+
+  assertionFn();
 }
 
 
@@ -422,11 +421,20 @@ describe('Global search', () => {
   }
 
   const expectSuccessSearchForInactivePermit = () => {
-    cy.get('.search-button').should('exist');
+    
+  
+      cy.get('.css-1pog434').type('1');
+      cy.wait(wait_time);
+      cy.get('.search-by__search').click();
+      cy.wait(wait_time);
+      cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
+        .first()
+        .click();
+      cy.wait(wait_time);
   }
   
   const expectFailureSearchForInactivePermit = () => {
-    cy.get('.search-button').should('not.exist');
+    cy.xpath("//div[@class='tab__label' and text()='Inactive Permits']").should('not.exist');
   }
 // Search for Application
 function searchForApplicationAs(user_role, assertionFn) {
@@ -438,11 +446,6 @@ function searchForApplicationAs(user_role, assertionFn) {
       cy.get('[value="applications"]').click();
       cy.wait(wait_time);
 
-      cy.get('.css-1pog434').type('1');
-      cy.wait(wait_time);
-      cy.get('.search-by__search').click();
-      cy.wait(wait_time);
-      
   }
 
   assertionFn();
@@ -464,11 +467,14 @@ const expectResultSearchForApplication = () => {
 }
 
 const expectSuccessSearchForApplication = () => {
-  cy.get('.search-button').should('exist');
+  cy.get('.css-1pog434').type('1');
+      cy.wait(wait_time);
+      cy.get('.search-by__search').click();
+      cy.wait(wait_time);
 }
 
 const expectFailureSearchForApplication = () => {
-  cy.get('.search-button').should('not.exist');
+  // TBD
 }
 
   

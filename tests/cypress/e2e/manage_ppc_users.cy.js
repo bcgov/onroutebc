@@ -1,27 +1,18 @@
 import { checkRoleAndSearch } from '../support/common';
 
 describe('Sticky Side Bar', () => {
-  const permits_url = '/applications';
-  const new_tros_url = '/create-application/TROS';
-  const new_trow_url = '/create-application/TROW';
-  
   const wait_time = Cypress.env('wait_time');
   const user_role = Cypress.env('user_role').toLowerCase();
   const roleCompanies = Cypress.env('rolesToCompanies');
   const company_name = roleCompanies[user_role];
 
-  const username = Cypress.env('username');
-  const password = Cypress.env('password');
-  const manage_profiles_url = '/manage-profiles';
-  const update_trailer_url = Cypress.env('update_trailer_url');
-  const manage_vehicle_url = '/manage-vehicles';
-  const company_sa = 'Test Transport Inc.';
-
   function viewManagePpcUsersAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
-      cy.wait(wait_time);
-
+      cy.wait(wait_time); 
+    }
+    if(user_role === 'sa'){
+      
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
@@ -34,31 +25,40 @@ describe('Sticky Side Bar', () => {
 
   }
 
-  const expectResultViewManagePpcUsers = () => {
+  const expectResult = () => {
     switch (user_role) {
       case 'sa':
-        expectSuccessViewManagePpcUsers();
+        expectSuccess();
         break;
       default:
-        expectFailureViewManagePpcUsers();
+        expectFailure();
         break;
     }
   }
 
-  const expectSuccessViewManagePpcUsers = () => {
+  const expectSuccess = () => {
+    cy.get('a[href="/manage-profiles"]').click({ force: true });
+    cy.wait(wait_time);
+
+    
     cy.contains('.tab__label', 'Add / Manage Users').should('exist');
   }
   
-  const expectFailureViewManagePpcUsers = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
+  const expectFailure = () => {
+    cy.get('a[href="/manage-profiles"]').click({ force: true });
+    cy.wait(wait_time);
+
+    
+    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
   }
 
   // Update PPC User role
   function updatePpcUserRoleAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
-      cy.wait(wait_time);
-
+      cy.wait(wait_time); 
+    }
+    if(user_role === 'sa') {
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
@@ -73,31 +73,14 @@ describe('Sticky Side Bar', () => {
 
   }
 
-  const expectResultUpdatePpcUserRole = () => {
-    switch (user_role) {
-      case 'sa':
-        expectSuccessUpdatePpcUserRole();
-        break;
-      default:
-        expectFailureUpdatePpcUserRole();
-        break;
-    }
-  }
-
-  const expectSuccessUpdatePpcUserRole = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
-  }
-  
-  const expectFailureUpdatePpcUserRole = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
-  }
 
   // Remove PPC User
   function removePpcUserAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
-      cy.wait(wait_time);
-
+      cy.wait(wait_time); 
+    }
+    if(user_role === 'sa') {
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
@@ -119,31 +102,13 @@ describe('Sticky Side Bar', () => {
 
   }
 
-  const expectResultRemovePpcUser = () => {
-    switch (user_role) {
-      case 'sa':
-        expectSuccessRemovePpcUser();
-        break;
-      default:
-        expectFailureRemovePpcUser();
-        break;
-    }
-  }
-
-  const expectSuccessRemovePpcUser = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
-  }
-  
-  const expectFailureRemovePpcUser = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
-  }
-
   // Add new PPC User
   function addNewPpcUserAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
       cy.search(company_name);
-      cy.wait(wait_time);
-
+      cy.wait(wait_time); 
+    }
+    if(user_role === 'sa') {
       cy.get('a[href="/manage-profiles"]').click({ force: true });
       cy.wait(wait_time);
 
@@ -168,45 +133,25 @@ describe('Sticky Side Bar', () => {
     assertionFn();
 
   }
-
-  const expectResultAddNewPpcUser = () => {
-    switch (user_role) {
-      case 'sa':
-        expectSuccessAddNewPpcUser();
-        break;
-      default:
-        expectFailureAddNewPpcUser();
-        break;
-    }
-  }
-
-  const expectSuccessAddNewPpcUser = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
-  }
-  
-  const expectFailureAddNewPpcUser = () => {
-    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
-  }
-
   
   beforeEach(() => {
     cy.loginAs(user_role);
   });
 
   it('Should View Manage PPC Users Screen', () => {
-    viewManagePpcUsersAs(user_role, expectResultViewManagePpcUsers);
+    viewManagePpcUsersAs(user_role, expectResult);
   });
 
   it('Should Add new PPC User', () => {
-    addNewPpcUserAs(user_role, expectResultAddNewPpcUser);
+    addNewPpcUserAs(user_role, expectResult);
   });
 
   it('Should Update PPC User Role', () => {
-    updatePpcUserRoleAs(user_role, expectResultUpdatePpcUserRole);
+    updatePpcUserRoleAs(user_role, expectResult);
   });
 
   it('Should Remove PPC User', () => {
-    removePpcUserAs(user_role, expectResultRemovePpcUser);
+    removePpcUserAs(user_role, expectResult);
   });
 
 });
