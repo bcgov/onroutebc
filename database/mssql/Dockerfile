@@ -27,6 +27,8 @@ COPY ./test/ /usr/config/test/
 EXPOSE ${MSSQL_PORT}
 RUN mkdir -p -m 770 /var/opt/mssql && chown -R mssql: /var/opt/mssql
 
+RUN chmod -R 0777 /usr/config
+
 # Create tmp dir for scripts when reverting
 RUN mkdir -p -m 700 /usr/config/tmp && chown -R mssql: /usr/config/tmp
 USER mssql
