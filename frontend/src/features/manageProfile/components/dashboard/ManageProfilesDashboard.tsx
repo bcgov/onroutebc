@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
