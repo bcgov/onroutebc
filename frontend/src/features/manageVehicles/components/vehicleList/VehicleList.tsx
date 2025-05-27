@@ -25,7 +25,7 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import "./List.scss";
+import "./VehicleList.scss";
 import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
@@ -57,6 +57,7 @@ import {
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { TableRowActionsOption } from "../../../../common/components/table/types/TableRowActionsOption";
 
 /**
  * Dynamically set the column definitions based on the vehicle type.
@@ -71,7 +72,7 @@ const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
 };
 
 /* eslint-disable react/prop-types */
-export const List = memo(
+export const VehicleList = memo(
   ({
     vehicleType,
     query,
@@ -89,30 +90,66 @@ export const List = memo(
       isPending: vehiclesPending,
     } = query;
 
-    const canEditVehicles = usePermissionMatrix({
+    const canUpdatePowerUnit = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
         permissionMatrixFunctionKey: "UPDATE_POWER_UNIT",
       },
     });
 
-    const canDeleteVehicles = usePermissionMatrix({
+    const canUpdateTrailer = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+        permissionMatrixFunctionKey: "UPDATE_TRAILER",
+      },
+    });
+
+    const canUpdateVehicle =
+      vehicleType === VEHICLE_TYPES.POWER_UNIT
+        ? canUpdatePowerUnit
+        : canUpdateTrailer;
+
+    const canDeletePowerUnit = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
         permissionMatrixFunctionKey: "DELETE_POWER_UNIT",
       },
     });
-    const vehicleActionOptions = [
-      canEditVehicles
+
+    const canDeleteTrailer = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+        permissionMatrixFunctionKey: "DELETE_TRAILER",
+      },
+    });
+
+    const canDeleteVehicle =
+      vehicleType === VEHICLE_TYPES.POWER_UNIT
+        ? canDeletePowerUnit
+        : canDeleteTrailer;
+
+    const powerUnitActionOptions = [
+      canUpdatePowerUnit
         ? {
             label: "Edit",
             value: "edit",
           }
         : null,
-    ].filter((action) => Boolean(action)) as {
-      label: string;
-      value: string;
-    }[];
+    ].filter((action) => Boolean(action)) as TableRowActionsOption[];
+
+    const trailerActionOptions = [
+      canUpdateTrailer
+        ? {
+            label: "Edit",
+            value: "edit",
+          }
+        : null,
+    ].filter((action) => Boolean(action)) as TableRowActionsOption[];
+
+    const vehicleActionOptions =
+      vehicleType === VEHICLE_TYPES.POWER_UNIT
+        ? powerUnitActionOptions
+        : trailerActionOptions;
 
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
@@ -124,8 +161,20 @@ export const List = memo(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-    const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery();
-    const { data: trailerSubtypesData } = useTrailerSubTypesQuery();
+    const shouldFetchPowerUnitSubtypesData =
+      vehicleType === VEHICLE_TYPES.POWER_UNIT;
+
+    const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery(
+      shouldFetchPowerUnitSubtypesData,
+    );
+
+    const shouldFetchTrailerSubtypesData =
+      vehicleType === VEHICLE_TYPES.TRAILER;
+
+    const { data: trailerSubtypesData } = useTrailerSubTypesQuery(
+      shouldFetchTrailerSubtypesData,
+    );
+
     const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
     const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
 
@@ -281,10 +330,10 @@ export const List = memo(
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<Vehicle> }) =>
-          canEditVehicles ? (
+          canUpdateVehicle ? (
             <OnRouteBCTableRowActions
               onSelectOption={() => {
-                if (!canEditVehicles) return;
+                if (!canUpdateVehicle) return;
 
                 if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
                   navigate(
@@ -301,10 +350,10 @@ export const List = memo(
                 }
               }}
               options={vehicleActionOptions}
-              disabled={!canEditVehicles}
+              disabled={!canUpdateVehicle}
             />
           ) : null,
-        [canEditVehicles, vehicleActionOptions, vehicleType],
+        [canUpdateVehicle, vehicleActionOptions, vehicleType],
       ),
       filterFns: {
         defaultSearchFilter: (row, columnId, filterValue) => {
@@ -358,15 +407,15 @@ export const List = memo(
               />
             </div>
 
-            {canDeleteVehicles ? (
+            {canDeleteVehicle && (
               <DeleteButton
                 onClick={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
               />
-            ) : null}
+            )}
           </Box>
         ),
-        [canDeleteVehicles, hasNoRowsSelected, searchFilterValue],
+        [canDeleteVehicle, hasNoRowsSelected, searchFilterValue],
       ),
     });
 
@@ -384,4 +433,4 @@ export const List = memo(
   },
 );
 
-List.displayName = "List";
+VehicleList.displayName = "VehicleList";
