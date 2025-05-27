@@ -42,6 +42,7 @@ import {
   getApplicationsInProgress,
   resendPermit,
   getPendingPermits,
+  deleteApplications,
 } from "../apiManager/permitsAPI";
 
 const QUERY_KEYS = {
@@ -195,14 +196,18 @@ export const useApplicationDetailsQuery = ({
  * @param permitId permit id for the permit
  * @returns Query object containing the permit details
  */
-export const usePermitDetailsQuery = (companyId: number, permitId: string) => {
+export const usePermitDetailsQuery = (
+  companyId: number,
+  permitId: string,
+  enabled: boolean = true,
+) => {
   return useQuery({
     queryKey: QUERY_KEYS.PERMIT_DETAIL(permitId, companyId),
     queryFn: async () => {
       const res = await getPermit(companyId, permitId);
       return res ? deserializePermitResponse(res) : res;
     },
-    enabled: isPermitIdNumeric(permitId) && Boolean(companyId),
+    enabled: isPermitIdNumeric(permitId) && Boolean(companyId) && enabled,
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
@@ -479,6 +484,30 @@ export const useAmendmentApplicationQuery = (
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+  });
+};
+
+/**
+ * Hook that is used when needing to delete applications.
+ * @returns Mutation object for deleting applications
+ */
+export const useDeleteApplicationsMutation = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: async (data: {
+      applicationIds: string[];
+      companyId: number;
+    }) => {
+      return await deleteApplications(data.companyId, data.applicationIds);
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
+    },
   });
 };
 

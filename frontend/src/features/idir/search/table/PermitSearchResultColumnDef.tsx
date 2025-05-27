@@ -19,6 +19,7 @@ import {
 
 export const PermitSearchResultColumnDef = (
   onDocumentUnavailable: () => void,
+  onClickCompany: (companyId: number) => Promise<void>,
 ): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
@@ -110,6 +111,17 @@ export const PermitSearchResultColumnDef = (
     enableSorting: true,
     sortingFn: "alphanumeric",
     size: 180,
+    Cell: (props: { cell: any; row: any }) => {
+      return (
+        <CustomActionLink
+          onClick={async () =>
+            await onClickCompany(props.row.original.companyId)
+          }
+        >
+          {props.row.original.legalName}
+        </CustomActionLink>
+      );
+    },
   },
   {
     accessorKey: "startDate",

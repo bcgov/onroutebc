@@ -11,6 +11,7 @@ export class VersionMatchMiddleware implements NestMiddleware {
   use(request: Request, _response: Response, next: NextFunction): void {
     const { headers } = request;
     const origin = request.get('origin');
+    const isProduction = process.env.NODE_ENV === 'production';
     /**
      * origin is available only when the request is coming from the browser.
      * Interaction between backend pods does not have origin header. 
@@ -27,6 +28,7 @@ export class VersionMatchMiddleware implements NestMiddleware {
     if (
       origin &&
       origin === process.env.FRONTEND_URL &&
+      isProduction &&
       (!headers['x-onroutebc-version'] ||
         headers['x-onroutebc-version'] !== process.env.RELEASE_NUM)
     ) {
