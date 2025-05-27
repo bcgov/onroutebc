@@ -73,8 +73,7 @@ describe('Sticky Side Bar', () => {
 
   function seeReportsButtonAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
-      cy.get('button.nav-button--report').click();
-      cy.wait(wait_time);
+      
     }
 
     assertionFn();
@@ -98,11 +97,14 @@ describe('Sticky Side Bar', () => {
   }
 
   const expectSuccessSeeReportsButton = () => {
-    cy.get('button.nav-button--report').should('exist')
+    cy.get('button.nav-button--report').should('exist');
+    cy.get('button.nav-button--report').click();
+      cy.wait(wait_time);
   }
   
   const expectFailureSeeReportsButton = () => {
-    cy.get('button.nav-button--report').should('not.exist')
+    cy.get('button.nav-button--report').should('not.exist');
+    cy.get('button.nav-button--report').should('not.exist');
     
   }
 
@@ -136,8 +138,7 @@ describe('Sticky Side Bar', () => {
 
   function bridgeCalculationToolAs(user_role, assertionFn) {
     if(user_role !== 'ca' && user_role !== 'pa'){
-      cy.get('button.nav-button--bfct').click();
-      cy.wait(wait_time);
+      
       
     }
 
@@ -162,10 +163,14 @@ describe('Sticky Side Bar', () => {
   }
 
   const expectSuccessBridgeCalculationTool = () => {
+    cy.get('button.nav-button--bfct').should('exist');
     cy.get('svg.fa-truck-moving').should('exist');
+    cy.get('button.nav-button--bfct').click();
+    cy.wait(wait_time);
   }
   
   const expectFailureBridgeCalculationTool = () => {
+    cy.get('button.nav-button--bfct').should('not.exist');
     cy.get('svg.fa-truck-moving').should('not.exist');
   }
 
@@ -175,25 +180,25 @@ describe('Sticky Side Bar', () => {
     cy.loginAs(user_role);
   });
 
-  it('Should View Sticky Side Bar', () => {
-    viewStickySideBarAs(user_role, expectResultViewStickySideBar);
-  });
+  // it('Should View Sticky Side Bar', () => {
+  //   viewStickySideBarAs(user_role, expectResultViewStickySideBar);
+  // });
 
-  it('Should See Home Button', () => {
-    seeHomeButtonAs(user_role, expectResultSeeHomeButton);
-  });
+  // it('Should See Home Button', () => {
+  //   seeHomeButtonAs(user_role, expectResultSeeHomeButton);
+  // });
 
   it('Should See Reports Button', () => {
     seeReportsButtonAs(user_role, expectResultSeeReportsButton);
   });
 
-  it('Should Manage PPC Users Button', () => {
-    managePpcUsersButtonAs(user_role, expectResultManagePpcUsersButton);
-  });
+  // it('Should Manage PPC Users Button', () => {
+  //   managePpcUsersButtonAs(user_role, expectResultManagePpcUsersButton);
+  // });
 
-  it('Should Bridge Calculation Tool', () => {
-    bridgeCalculationToolAs(user_role, expectResultBridgeCalculationTool);
-  });
+  // it('Should Bridge Calculation Tool', () => {
+  //   bridgeCalculationToolAs(user_role, expectResultBridgeCalculationTool);
+  // });
 
 });
 

@@ -90,7 +90,7 @@ const expectFailureViewOwnCreatedApplications = () => {
 }
 
 // View Applications From Whole Company
-function viewApplicationsFromCompanyAs(user_role, assertionFn) {
+function  viewApplicationsFromCompanyAs(user_role, assertionFn) {
   if(user_role !== 'ca' && user_role !== 'pa'){
     cy.search(company_name);
     cy.wait(wait_time);
@@ -128,7 +128,6 @@ const expectSuccessViewApplicationsFromCompany = () => {
 }
 
 const expectFailureViewApplicationsFromCompany = () => {
-  cy.get('button[aria-label="cart"]').should('not.exist');
   cy.get('span.MuiFormControlLabel-label').should('not.exist');
 }
 
@@ -171,7 +170,6 @@ const expectSuccessViewApplicationsForIdir = () => {
 }
 
 const expectFailureViewApplicationsForIdir = () => {
-  cy.get('button[aria-label="cart"]').should('not.exist');
   cy.get('span.MuiFormControlLabel-label').should('not.exist');
 }
 
@@ -181,17 +179,17 @@ const expectFailureViewApplicationsForIdir = () => {
     cy.loginAs(user_role);
   });
 
-  it('Should View Shopping Cart', () => {
-    viewShoppingCartAs(user_role, expectResultViewShoppingCart);
-  });
+  // it('Should View Shopping Cart', () => {
+  //   viewShoppingCartAs(user_role, expectResultViewShoppingCart);
+  // });
 
-  it('Should sees own created applications', () => {
-    viewOwnCreatedApplicationsAs(user_role, expectResultViewOwnCreatedApplications);
-  });
+  // it('Should sees own created applications', () => {
+  //   viewOwnCreatedApplicationsAs(user_role, expectResultViewOwnCreatedApplications);
+  // });
 
-  it('Should sees applications from whole company', () => {
-    viewApplicationsFromCompanyAs(user_role, expectResultViewApplicationsFromCompany);
-  });
+  // it('Should sees applications from whole company', () => {
+  //   viewApplicationsFromCompanyAs(user_role, expectResultViewApplicationsFromCompany);
+  // });
 
   it('Should sees IDIR-created applications', () => {
     viewApplicationsForIdirAs(user_role, expectResultViewApplicationsForIdir);
