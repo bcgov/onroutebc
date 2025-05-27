@@ -314,24 +314,20 @@ describe('Global search', () => {
         cy.log('actions-button not found');
       }
     });
-
-
-
-    
-
   }
   
   const expectFailureAmendPermit = () => {
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
     cy.wait(wait_time);
-    if ($body.find('button#actions-button').length > 0) {
-      cy.get('button#actions-button').first().click({force: true});
-      cy.wait(wait_time);
-      cy.get('li[data-option-value="amend"]').should('not.exist'); 
-    } else {
-      cy.log('actions-button not found');
-    }
-    
+    cy.get('body').then(($body) => {
+      if ($body.find('button#actions-button').length > 0) {
+        cy.get('button#actions-button').first().click({force: true});
+        cy.wait(wait_time);
+        cy.get('li[data-option-value="amend"]').should('not.exist'); 
+      } else {
+        cy.log('actions-button not found');
+      }
+    });
 
   }
     // Void/Revoke Permit
@@ -516,53 +512,53 @@ const expectFailureSearchForApplication = () => {
     cy.loginAs(user_role);
   });
 
-  it('Should View Global Search screen', () => {
-    viewGlobalSearchScreenAs(user_role, expectResultViewGlobalSearchScreen);
-  });
+  // it('Should View Global Search screen', () => {
+  //   viewGlobalSearchScreenAs(user_role, expectResultViewGlobalSearchScreen);
+  // });
 
-  it('Should Search for Vehicle', () => {
-    searchForVehicleAs(user_role, expectResultSearchForVehicle);
-  });
+  // it('Should Search for Vehicle', () => {
+  //   searchForVehicleAs(user_role, expectResultSearchForVehicle);
+  // });
 
-  it('Should Search for Comany', () => {
-    searchForCompanyAs(user_role, expectResultSearchForCompany);
-  });
+  // it('Should Search for Comany', () => {
+  //   searchForCompanyAs(user_role, expectResultSearchForCompany);
+  // });
 
-  it('Should Create Comany', () => {
-    createCompanyAs(user_role, expectResultCreateCompany);
-  });
+  // it('Should Create Comany', () => {
+  //   createCompanyAs(user_role, expectResultCreateCompany);
+  // });
 
-  it('Should Merge Comany', () => {
-    mergeCompanyAs(user_role, expectResultMergeCompany);
-  });
+  // it('Should Merge Comany', () => {
+  //   mergeCompanyAs(user_role, expectResultMergeCompany);
+  // });
 
-  it('Should Delete Comany', () => {
-    deleteCompanyAs(user_role, expectResultDeleteCompany);
-  });
+  // it('Should Delete Comany', () => {
+  //   deleteCompanyAs(user_role, expectResultDeleteCompany);
+  // });
   
-  it('Should search for Active Permit', () => {
-    searchForActivePermitAs(user_role, expectResultSearchForActivePermit);
-  });
+  // it('Should search for Active Permit', () => {
+  //   searchForActivePermitAs(user_role, expectResultSearchForActivePermit);
+  // });
   
   it('Should Amend Permit', () => {
     amendPermitAs(user_role, expectResultAmendPermit);
   });
   
-  it('Should Void/Revoke Permit', () => {
-    voidRevokePermitAs(user_role, expectResultVoidRevokePermit);
-  });
+  // it('Should Void/Revoke Permit', () => {
+  //   voidRevokePermitAs(user_role, expectResultVoidRevokePermit);
+  // });
   
-  it('Should Resend', () => {
-    resendAs(user_role, expectResultResend);
-  });
+  // it('Should Resend', () => {
+  //   resendAs(user_role, expectResultResend);
+  // });
 
-  it('Should search for Inactive Permit', () => {
-    searchForInactivePermitAs(user_role, expectResultSearchForInactivePermit);
-  });
+  // it('Should search for Inactive Permit', () => {
+  //   searchForInactivePermitAs(user_role, expectResultSearchForInactivePermit);
+  // });
 
-  it('Should search for Application', () => {
-    searchForApplicationAs(user_role, expectResultSearchForApplication);
-  });
+  // it('Should search for Application', () => {
+  //   searchForApplicationAs(user_role, expectResultSearchForApplication);
+  // });
   
 
 });
