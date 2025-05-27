@@ -102,7 +102,7 @@ jobs:
           echo "CYPRESS_PASSWORD=${{ secrets[format('PASSWORD_{0}', matrix.role)] }}" >> $GITHUB_ENV
 
       - name: Run Cypress tests for ${{ matrix.role }}
-        uses: cypress-io/github-action@v6.7.7
+        uses: cypress-io/github-action@v6.9.2
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_wait_time: 2000
