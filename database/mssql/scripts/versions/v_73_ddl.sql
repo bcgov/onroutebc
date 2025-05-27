@@ -262,6 +262,31 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- Update COMPANY_ID for if the owner of a credit account has switched
+    -- to a different company.
+    UPDATE p
+    SET p.COMPANY_ID = newC.NEW_COMPANY_ID
+    FROM permit.ORBC_CREDIT_ACCOUNT p
+    INNER JOIN tps.ORBC_TPS_MIGRATED_CREDIT_ACCOUNT t ON p.CREDIT_ACCOUNT_NUMBER = t.ACCOUNT_NUMBER
+    INNER JOIN dbo.ORBC_COMPANY c ON p.COMPANY_ID = c.COMPANY_ID
+	INNER JOIN (
+		SELECT cc.COMPANY_ID AS NEW_COMPANY_ID, tt.CLIENT_HASH 
+		FROM dbo.ORBC_COMPANY cc 
+		INNER JOIN tps.ORBC_TPS_MIGRATED_CREDIT_ACCOUNT tt ON tt.CLIENT_HASH = cc.TPS_CLIENT_HASH
+	) newC ON newC.CLIENT_HASH = t.CLIENT_HASH
+    WHERE t.IS_PROCESSED = 0
+    AND t.CLIENT_HASH <> c.TPS_CLIENT_HASH;
+
+    -- Update CREDIT_ACCOUNT_NUMBER for if the credit account number has been
+    -- changed in TPS but the pkey and company have remained the same
+    UPDATE p
+    SET p.CREDIT_ACCOUNT_NUMBER = t.ACCOUNT_NUMBER
+    FROM permit.ORBC_CREDIT_ACCOUNT p
+    INNER JOIN dbo.ORBC_COMPANY c ON p.COMPANY_ID = c.COMPANY_ID
+    INNER JOIN tps.ORBC_TPS_MIGRATED_CREDIT_ACCOUNT t ON c.TPS_CLIENT_HASH = t.CLIENT_HASH
+    WHERE t.IS_PROCESSED = 0
+    AND t.ACCOUNT_NUMBER <> p.CREDIT_ACCOUNT_NUMBER;
+
     -- Temporary table to store status updates before modification
     DECLARE @UpdatedAccounts TABLE (CREDIT_ACCOUNT_ID INT, OLD_STATUS VARCHAR(50), NEW_STATUS VARCHAR(50));
 
