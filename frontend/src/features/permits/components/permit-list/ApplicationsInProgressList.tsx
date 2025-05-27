@@ -92,11 +92,11 @@ export const ApplicationsInProgressList = ({
   const [showPendingPermitsModal, setShowPendingPermitsModal] =
     useState<boolean>(false);
 
-  const canViewIndividualApplicationInProgressDetails = usePermissionMatrix({
+  const canEditIndividualApplicationInProgressDetails = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey:
-        "VIEW_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+        "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
     },
   });
 
@@ -104,7 +104,7 @@ export const ApplicationsInProgressList = ({
     userRole?: Nullable<UserRoleType>,
   ): MRT_ColumnDef<ApplicationListItem>[] => {
     return ApplicationInProgressColumnDefinition(
-      canViewIndividualApplicationInProgressDetails,
+      canEditIndividualApplicationInProgressDetails,
       userRole,
     );
   };

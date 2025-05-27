@@ -10,7 +10,7 @@ import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
 
 export const ApplicationInProgressColumnDefinition = (
-  canViewIndividualApplicationInProgressDetails: boolean,
+  canEditIndividualApplicationInProgressDetails: boolean,
   userRole?: Nullable<UserRoleType>,
 ): MRT_ColumnDef<ApplicationListItem>[] => [
   {
@@ -25,7 +25,7 @@ export const ApplicationInProgressColumnDefinition = (
       return canUserAccessApplication(
         props.row.original.permitApplicationOrigin,
         userRole,
-      ) && canViewIndividualApplicationInProgressDetails ? (
+      ) && canEditIndividualApplicationInProgressDetails ? (
         <CustomNavLink
           to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
           className="column-link column-link--application-details"
