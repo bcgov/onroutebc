@@ -18,12 +18,13 @@ import {
  * Hook for fetching a list of power unit subtypes.
  * @returns Query object for fetching power unit subtypess
  */
-export const usePowerUnitSubTypesQuery = () => {
+export const usePowerUnitSubTypesQuery = (enabled: boolean = true) => {
   return useQuery({
     queryKey: QUERY_KEYS.POWER_UNIT_SUBTYPES(),
     queryFn: getPowerUnitSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
+    enabled,
   });
 };
 
@@ -36,13 +37,14 @@ export const usePowerUnitSubTypesQuery = () => {
 export const usePowerUnitsQuery = (
   companyId: number,
   staleTime?: number,
+  enabled: boolean = true,
 ) => {
   return useQuery({
     queryKey: QUERY_KEYS.POWER_UNITS(),
     queryFn: () => getAllPowerUnits(companyId),
     placeholderData: (prev) => keepPreviousData(prev),
     staleTime,
-    enabled: Boolean(companyId),
+    enabled: enabled && Boolean(companyId),
   });
 };
 
