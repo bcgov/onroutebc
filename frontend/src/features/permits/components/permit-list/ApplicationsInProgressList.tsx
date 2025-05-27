@@ -13,7 +13,7 @@ import { SnackBarContext } from "../../../../App";
 import { ApplicationListItem } from "../../types/application";
 import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { canUserAccessApplication } from "../../helpers/mappers";
+import { canUserAccessApplication } from "../../helpers/canUserAccessApplication";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   getDefaultNullableVal,
@@ -35,12 +35,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-
-const getColumns = (
-  userRole?: Nullable<UserRoleType>,
-): MRT_ColumnDef<ApplicationListItem>[] => {
-  return ApplicationInProgressColumnDefinition(userRole);
-};
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export const ApplicationsInProgressList = ({
   companyId,
@@ -96,6 +91,23 @@ export const ApplicationsInProgressList = ({
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
   const [showPendingPermitsModal, setShowPendingPermitsModal] =
     useState<boolean>(false);
+
+  const canEditIndividualApplicationInProgressDetails = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey:
+        "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+    },
+  });
+
+  const getColumns = (
+    userRole?: Nullable<UserRoleType>,
+  ): MRT_ColumnDef<ApplicationListItem>[] => {
+    return ApplicationInProgressColumnDefinition(
+      canEditIndividualApplicationInProgressDetails,
+      userRole,
+    );
+  };
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(userRole),
