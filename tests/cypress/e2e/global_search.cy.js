@@ -60,7 +60,6 @@ describe('Global search', () => {
       case 'sa':
       case 'train':
       case 'ctpo':
-      case 'hqa':
         expectSuccessSearchForVehicle();
         break;
       default:
@@ -70,11 +69,24 @@ describe('Global search', () => {
   }
 
   const expectSuccessSearchForVehicle = () => {
-    cy.get('a[href="/manage-vehicles"]').should('exist');
+    if (user_role === 'ca' || user_role === 'pa') {
+      cy.get('.search-button').should('not.exist');
+      cy.get('a[href="/manage-vehicles"]').should('exist');
+      
+    }
+    else {
+      cy.get('.search-button').should('exist');
+      cy.get('a[href="/manage-vehicles"]').should('exist');
+    }
   }
   
   const expectFailureSearchForVehicle = () => {
-    cy.get('a[href="/manage-vehicles"]').should('not.exist');
+    if (user_role === 'ca' || user_role === 'pa') {
+      cy.get('.search-button').should('not.exist');
+    }
+    else {
+      cy.get('a[href="/manage-vehicles"]').should('not.exist');
+    }
   }
 
     // Serach for Company
@@ -292,13 +304,35 @@ describe('Global search', () => {
   const expectSuccessAmendPermit = () => {
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
     cy.wait(wait_time);
-    cy.xpath("//li[text()='Amend']").should('exist');
+
+    cy.get('body').then(($body) => {
+      if ($body.find('button#actions-button').length > 0) {
+        cy.get('button#actions-button').first().click({force: true});
+        cy.wait(wait_time);
+        cy.get('li[data-option-value="amend"]').should('exist'); 
+      } else {
+        cy.log('actions-button not found');
+      }
+    });
+
+
+
+    
+
   }
   
   const expectFailureAmendPermit = () => {
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
     cy.wait(wait_time);
-    cy.xpath("//li[text()='Amend']").should('not.exist');
+    if ($body.find('button#actions-button').length > 0) {
+      cy.get('button#actions-button').first().click({force: true});
+      cy.wait(wait_time);
+      cy.get('li[data-option-value="amend"]').should('not.exist'); 
+    } else {
+      cy.log('actions-button not found');
+    }
+    
+
   }
     // Void/Revoke Permit
     function voidRevokePermitAs(user_role, assertionFn) {

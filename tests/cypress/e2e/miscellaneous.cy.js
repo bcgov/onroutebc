@@ -12,15 +12,11 @@ function viewShoppingCartAs(user_role, assertionFn) {
     cy.search(company_name);
     cy.wait(wait_time);
 
-    cy.get('button[aria-label="cart"]').click();
-    cy.wait(wait_time);
+    
 
 
   }
-  else{
-    cy.get('button[aria-label="cart"]').click();
-    cy.wait(wait_time);
-  }
+  
 
   assertionFn();
 }
@@ -43,6 +39,8 @@ const expectResultViewShoppingCart = () => {
 
 const expectSuccessViewShoppingCart = () => {
   cy.get('button[aria-label="cart"]').should('exist');
+  cy.get('button[aria-label="cart"]').click();
+  cy.wait(wait_time);
 }
 
 const expectFailureViewShoppingCart = () => {
@@ -56,11 +54,7 @@ function viewOwnCreatedApplicationsAs(user_role, assertionFn) {
     cy.wait(wait_time);
 
   }
-  cy.get('button[aria-label="cart"]').click();
-    cy.wait(wait_time);
-
-    cy.contains('span', 'My applications').click();
-    cy.wait(wait_time);
+  
 
   assertionFn();
   
@@ -83,11 +77,16 @@ const expectResultViewOwnCreatedApplications = () => {
 }
 
 const expectSuccessViewOwnCreatedApplications = () => {
-  cy.get('span.MuiFormControlLabel-label').contains('My applications').should('exist');
+  // cy.get('span.MuiFormControlLabel-label').contains('My applications').should('exist');
+  cy.get('button[aria-label="cart"]').click();
+  cy.wait(wait_time);
+  cy.get('[data-testid="pay-now-btn"]').should('exist');
+
 }
 
 const expectFailureViewOwnCreatedApplications = () => {
-  cy.get('span.MuiFormControlLabel-label').contains('My applications').should('not.exist');
+  cy.get('button[aria-label="cart"]').should('not.exist');
+  cy.get('[data-testid="pay-now-btn"]').should('not.exist');
 }
 
 // View Applications From Whole Company
@@ -97,11 +96,8 @@ function viewApplicationsFromCompanyAs(user_role, assertionFn) {
     cy.wait(wait_time);
 
   }
-  cy.get('button[aria-label="cart"]').click();
-    cy.wait(wait_time);
-
-    cy.contains('span', 'All applications').click();
-    cy.wait(wait_time);
+  
+    
 
   
   assertionFn();
@@ -123,11 +119,17 @@ const expectResultViewApplicationsFromCompany = () => {
 }
 
 const expectSuccessViewApplicationsFromCompany = () => {
+  cy.get('button[aria-label="cart"]').click();
+  cy.wait(wait_time);
+
   cy.get('span.MuiFormControlLabel-label').contains('All applications').should('exist');
+  cy.contains('span', 'All applications').click();
+  cy.wait(wait_time);
 }
 
 const expectFailureViewApplicationsFromCompany = () => {
-  cy.get('span.MuiFormControlLabel-label').contains('All applications').should('not.exist');
+  cy.get('button[aria-label="cart"]').should('not.exist');
+  cy.get('span.MuiFormControlLabel-label').should('not.exist');
 }
 
 // View IDIR-created applications
@@ -138,11 +140,9 @@ function viewApplicationsForIdirAs(user_role, assertionFn) {
   }
   
 
-  cy.get('button[aria-label="cart"]').click();
-    cy.wait(wait_time);
+ 
 
-    cy.contains('span', 'My applications').click();
-    cy.wait(wait_time);
+    
 
   assertionFn();
 }
@@ -163,11 +163,16 @@ const expectResultViewApplicationsForIdir = () => {
 }
 
 const expectSuccessViewApplicationsForIdir = () => {
+  cy.get('button[aria-label="cart"]').click();
+  cy.wait(wait_time);
   cy.get('span.MuiFormControlLabel-label').contains('My applications').should('exist');
+  cy.contains('span', 'My applications').click();
+  cy.wait(wait_time);
 }
 
 const expectFailureViewApplicationsForIdir = () => {
-  cy.get('span.MuiFormControlLabel-label').contains('My applications').should('not.exist');
+  cy.get('button[aria-label="cart"]').should('not.exist');
+  cy.get('span.MuiFormControlLabel-label').should('not.exist');
 }
 
 

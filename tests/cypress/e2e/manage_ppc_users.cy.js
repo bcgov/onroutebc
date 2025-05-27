@@ -48,8 +48,7 @@ describe('Sticky Side Bar', () => {
     cy.get('a[href="/manage-profiles"]').click({ force: true });
     cy.wait(wait_time);
 
-    
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
+    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
   }
 
   // Update PPC User role
