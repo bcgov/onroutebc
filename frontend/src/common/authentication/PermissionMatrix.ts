@@ -121,7 +121,7 @@ const MANAGE_PERMITS = {
   /**
    * Active Permits tab
    */
-  VIEW_ACTIVE_PERMITS: {
+  VIEW_LIST_OF_ACTIVE_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: ALL_IDIR_ROLES,
   },
