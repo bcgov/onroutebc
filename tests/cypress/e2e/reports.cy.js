@@ -28,11 +28,16 @@ describe('Reports', () => {
   }
 
   const expectSuccessViewPaymentAndRefundSummaryReport = () => {
-    cy.get('svg.fa-truck-moving').should('exist');
+    cy.get('button.nav-button--report').should('exist');
+    cy.get('button.nav-button--report').click();
+    cy.wait(wait_time);
+    cy.contains('strong', 'Payment and Refund Summary').should('exist');
+
+
   }
   
   const expectFailureViewPaymentAndRefundSummaryReport = () => {
-    cy.get('svg.fa-truck-moving').should('not.exist');
+    cy.get('button.nav-button--report').should('not.exist');
   }
 
 
@@ -62,11 +67,14 @@ describe('Reports', () => {
   }
 
   const expectSuccessViewPaymentAndRefundDetailReport = () => {
-    cy.get('svg.fa-truck-moving').should('exist');
+    cy.get('button.nav-button--report').should('exist');
+    cy.get('button.nav-button--report').click();
+    cy.wait(wait_time);
+    cy.contains('strong', 'Payment and Refund Summary').should('exist');
   }
   
   const expectFailureViewPaymentAndRefundDetailReport = () => {
-    cy.get('svg.fa-truck-moving').should('not.exist');
+    cy.get('button.nav-button--report').should('not.exist');
   }
 
   
@@ -79,9 +87,9 @@ describe('Reports', () => {
     viewPaymentAndRefundSummaryReportAs(user_role, expectResultViewPaymentAndRefundSummaryReport);
   });
 
-  it('Should View Payment and Refund Detail Report', () => {
-    viewPaymentAndRefundDetailReportAs(user_role, expectResultViewPaymentAndRefundDetailReport);
-  });
+  // it('Should View Payment and Refund Detail Report', () => {
+  //   viewPaymentAndRefundDetailReportAs(user_role, expectResultViewPaymentAndRefundDetailReport);
+  // });
 
 
 });

@@ -8,10 +8,7 @@ describe('Staff Home Screen', () => {
 function viewQueueAs(user_role, assertionFn) {
   if(user_role !== 'ca' && user_role !== 'pa'){
     if(user_role !== 'ca' && user_role !== 'pa'){
-      // cy.search(company_name);
-      // cy.wait(wait_time);
-      // cy.contains('.tab__label', 'Applications In Queue').should('exist').click();
-      // cy.wait(wait_time);
+      // TBD
       
   }
 
@@ -44,8 +41,7 @@ const expectFailureViewQueue = () => {
   // Manage Queue
   function manageQueueAs(user_role, assertionFn) {
     if (user_role !== 'ca' && user_role !== 'pa') {
-      // cy.search(company_name);
-      // cy.wait(wait_time);
+      // TBD
 
     }
     assertionFn();
@@ -73,10 +69,8 @@ const expectSuccessManageQueue = () => {
       cy.wait(wait_time);
 
       cy.get('.custom-link__link').each(($el, index, $list) => {
-        cy.wrap($el).click(); // Click the current link
-
-        // Add a wait if needed for modal or UI update
-        cy.wait(500); // Adjust as appropriate for your app
+        cy.wrap($el).click();
+        cy.wait(wait_time);
 
         // Check if the Cancel button exists
         cy.get('body').then(($body) => {
@@ -92,12 +86,15 @@ const expectSuccessManageQueue = () => {
 
             cy.get('[data-testid="save-application-button"]').click();
             cy.wait(wait_time);
+
+            cy.contains('div.MuiAlert-message', /Application.*updated\./).should('exist');
+            cy.wait(wait_time);
           }
         });
 
       });
-      
-  cy.contains('div.MuiAlert-message', /Application.*updated\./).should('exist');
+
+  
 
 }
 
