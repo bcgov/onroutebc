@@ -4,12 +4,13 @@ import { ApplicationListItem } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 import { UserRoleType } from "../../../../common/authentication/types";
-import { canUserAccessApplication } from "../../helpers/mappers";
+import { canUserAccessApplication } from "../../helpers/canUserAccessApplication";
 import { Nullable } from "../../../../common/types/common";
 import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
 
 export const ApplicationInProgressColumnDefinition = (
+  canViewIndividualApplicationInProgressDetails: boolean,
   userRole?: Nullable<UserRoleType>,
 ): MRT_ColumnDef<ApplicationListItem>[] => [
   {
@@ -24,7 +25,7 @@ export const ApplicationInProgressColumnDefinition = (
       return canUserAccessApplication(
         props.row.original.permitApplicationOrigin,
         userRole,
-      ) ? (
+      ) && canViewIndividualApplicationInProgressDetails ? (
         <CustomNavLink
           to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
           className="column-link column-link--application-details"

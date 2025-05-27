@@ -28,14 +28,14 @@ export const PermitLists = React.memo(() => {
     0,
   );
 
-  const showApplicationsInProgressTab = usePermissionMatrix({
+  const canViewListOfApplicationsInProgress = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_PROGRESS",
     },
   });
 
-  if (showApplicationsInProgressTab) {
+  if (canViewListOfApplicationsInProgress) {
     tabs.push({
       label: "Applications in Progress",
       component: <ApplicationsInProgressList companyId={companyId} />,
@@ -43,14 +43,14 @@ export const PermitLists = React.memo(() => {
     });
   }
 
-  const showApplicationsInReviewTab = usePermissionMatrix({
+  const canViewListOfApplicationsInReview = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_REVIEW",
     },
   });
 
-  if (showApplicationsInReviewTab) {
+  if (canViewListOfApplicationsInReview) {
     tabs.push({
       label: "Applications in Review",
       component: <ApplicationsInReviewList />,
