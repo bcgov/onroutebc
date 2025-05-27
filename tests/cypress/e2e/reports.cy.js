@@ -17,6 +17,7 @@ describe('Reports', () => {
       case 'pc':
       case 'sa':
       case 'train':
+      case 'fin':
       case 'ctpo':
       case 'hqa':
         expectSuccessViewPaymentAndRefundSummaryReport();
@@ -32,6 +33,8 @@ describe('Reports', () => {
     cy.get('button.nav-button--report').click();
     cy.wait(wait_time);
     cy.contains('strong', 'Payment and Refund Summary').should('exist');
+    cy.get('button[aria-label="View Report"]').click();
+    cy.wait(wait_time);
 
 
   }
@@ -56,6 +59,7 @@ describe('Reports', () => {
       case 'pc':
       case 'sa':
       case 'train':
+      case 'fin':
       case 'ctpo':
       case 'hqa':
         expectSuccessViewPaymentAndRefundDetailReport();
@@ -70,7 +74,11 @@ describe('Reports', () => {
     cy.get('button.nav-button--report').should('exist');
     cy.get('button.nav-button--report').click();
     cy.wait(wait_time);
-    cy.contains('strong', 'Payment and Refund Summary').should('exist');
+    cy.contains('strong', 'Payment and Refund Detail').should('exist');
+    cy.get('input[type="radio"].PrivateSwitchBase-input').eq(1).click({ force: true });
+    cy.wait(wait_time);
+    cy.get('button[aria-label="View Report"]').click();
+    cy.wait(wait_time);
   }
   
   const expectFailureViewPaymentAndRefundDetailReport = () => {
@@ -87,9 +95,9 @@ describe('Reports', () => {
     viewPaymentAndRefundSummaryReportAs(user_role, expectResultViewPaymentAndRefundSummaryReport);
   });
 
-  // it('Should View Payment and Refund Detail Report', () => {
-  //   viewPaymentAndRefundDetailReportAs(user_role, expectResultViewPaymentAndRefundDetailReport);
-  // });
+  it('Should View Payment and Refund Detail Report', () => {
+    viewPaymentAndRefundDetailReportAs(user_role, expectResultViewPaymentAndRefundDetailReport);
+  });
 
 
 });
