@@ -623,7 +623,10 @@ export class ApplicationService {
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
-      if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
+      if (
+        !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+        differenceBetween(permitData?.startDate, currentDate, 'days') > 0
+      ) {
         throwUnprocessableEntityException('Start Date is in the past.');
       } else if (existingCase.assignedUser !== currentUser.userName) {
         throwUnprocessableEntityException(

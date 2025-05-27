@@ -10,12 +10,20 @@ import { usePermissionMatrix } from "../../../../common/authentication/Permissio
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { PERMIT_TABS } from "../../types/PermitTabs";
+import { useLocation } from "react-router-dom";
+
+interface PermitDashboardTab {
+  label: string;
+  component: JSX.Element;
+  componentKey: string;
+}
 
 export const PermitLists = React.memo(() => {
-  const tabs = [];
+  const tabs: PermitDashboardTab[] = [];
 
   const companyId: number = applyWhenNotNullable(
-    id => Number(id),
+    (id) => Number(id),
     getCompanyIdFromSession(),
     0,
   );
@@ -31,6 +39,7 @@ export const PermitLists = React.memo(() => {
     tabs.push({
       label: "Applications in Progress",
       component: <ApplicationsInProgressList companyId={companyId} />,
+      componentKey: PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
     });
   }
 
@@ -45,6 +54,7 @@ export const PermitLists = React.memo(() => {
     tabs.push({
       label: "Applications in Review",
       component: <ApplicationsInReviewList />,
+      componentKey: PERMIT_TABS.APPLICATIONS_IN_REVIEW,
     });
   }
 
@@ -52,16 +62,31 @@ export const PermitLists = React.memo(() => {
     {
       label: "Active Permits",
       component: <ActivePermitList />,
+      componentKey: PERMIT_TABS.ACTIVE_PERMITS,
     },
     {
       label: "Expired Permits",
       component: <ExpiredPermitList />,
+      componentKey: PERMIT_TABS.EXPIRED_PERMITS,
     },
   );
+
+  const { state: stateFromNavigation } = useLocation();
+
+  const getSelectedTabFromNavigation = (): number => {
+    const tabIndex = tabs.findIndex(
+      ({ componentKey }) => componentKey === stateFromNavigation?.selectedTab,
+    );
+    if (tabIndex < 0) return 0;
+    return tabIndex;
+  };
+
+  const initialSelectedTabIndex = getSelectedTabFromNavigation();
 
   return (
     <TabLayout
       bannerText="Permits"
+      selectedTabIndex={initialSelectedTabIndex}
       bannerButton={
         <RenderIf
           component={<StartApplicationAction />}
