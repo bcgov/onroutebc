@@ -29,6 +29,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
 import { PermitRowOptions } from "./PermitRowOptions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -96,10 +97,46 @@ export const BasePermitList = ({
 
   const { data, isError, isPending, isRefetching } = permitsQuery;
 
+  const canViewIndividualActivePermitPDF = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF",
+    },
+  });
+
+  const canResendPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "RESEND_PERMIT",
+    },
+  });
+
+  const canViewPermitReceipt = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
+    },
+  });
+
+  const canAmendPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "AMEND_PERMIT",
+    },
+  });
+
+  const canVoidPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "VOID_PERMIT",
+    },
+  });
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: PermitsColumnDefinition(() =>
-      navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+    columns: PermitsColumnDefinition(
+      () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+      canViewIndividualActivePermitPDF,
     ),
     data: data?.items ?? [],
     enableRowSelection: false,
@@ -159,6 +196,12 @@ export const BasePermitList = ({
               permitId={row.original.permitId}
               companyId={row.original.companyId}
               permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
+              permissions={{
+                canAmendPermit,
+                canResendPermit,
+                canViewPermitReceipt,
+                canVoidPermit,
+              }}
             />
           </Box>
         );

@@ -8,21 +8,14 @@ import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelpe
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * The column definition for Permits.
  */
 export const PermitsColumnDefinition = (
   onDocumentUnavailable: () => void,
+  enableLink: boolean,
 ): MRT_ColumnDef<PermitListItem>[] => {
-  const canViewIndividualActivePermitPDF = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_PERMITS",
-      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF",
-    },
-  });
-
   return [
     {
       accessorKey: "permitNumber",
@@ -34,7 +27,7 @@ export const PermitsColumnDefinition = (
       Cell: (props: { row: any; cell: any }) => {
         return (
           <>
-            {canViewIndividualActivePermitPDF ? (
+            {enableLink ? (
               <CustomActionLink
                 onClick={() =>
                   viewPermitPdf(

@@ -12,32 +12,8 @@ import { useAttemptAmend } from "../../hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { PermitActionOrigin } from "../../../idir/search/types/types";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-
-const PERMIT_ACTION_TYPES = {
-  RESEND: "resend",
-  VIEW_RECEIPT: "viewReceipt",
-  AMEND: "amend",
-  VOID_REVOKE: "voidRevoke",
-} as const;
-
-type PermitActionType =
-  (typeof PERMIT_ACTION_TYPES)[keyof typeof PERMIT_ACTION_TYPES];
-
-const permitActionLabel = (actionType: PermitActionType) => {
-  switch (actionType) {
-    case PERMIT_ACTION_TYPES.RESEND:
-      return "Resend";
-    case PERMIT_ACTION_TYPES.VIEW_RECEIPT:
-      return "View Receipt";
-    case PERMIT_ACTION_TYPES.AMEND:
-      return "Amend";
-    case PERMIT_ACTION_TYPES.VOID_REVOKE:
-      return "Void/Revoke";
-    default:
-      return "";
-  }
-};
+import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
+import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
 
 /**
  * Component for row actions on IDIR Search Permit.
@@ -48,6 +24,7 @@ export const PermitRowOptions = ({
   permitNumber,
   companyId,
   permitActionOrigin,
+  permissions,
 }: {
   /**
    * The permit id.
@@ -69,6 +46,15 @@ export const PermitRowOptions = ({
    * The application location from where the permit action (amend / void / revoke) originated
    */
   permitActionOrigin: PermitActionOrigin;
+  /**
+   * An object containing the relevant permission matrix checks for each action
+   */
+  permissions: {
+    canResendPermit: boolean;
+    canViewPermitReceipt: boolean;
+    canAmendPermit: boolean;
+    canVoidPermit: boolean;
+  };
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -136,40 +122,14 @@ export const PermitRowOptions = ({
     }
   };
 
-  const canResendPermit = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-      permissionMatrixFunctionKey: "RESEND_PERMIT",
-    },
-  });
+  const {
+    canResendPermit,
+    canViewPermitReceipt,
+    canAmendPermit,
+    canVoidPermit,
+  } = permissions;
 
-  const canViewPermitReceipt = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_PERMITS",
-      permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
-    },
-  });
-
-  const canAmendPermit = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-      permissionMatrixFunctionKey: "AMEND_PERMIT",
-    },
-  });
-
-  const canVoidPermit = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-      permissionMatrixFunctionKey: "VOID_PERMIT",
-    },
-  });
-
-  interface PermitAction {
-    action: PermitActionType;
-    isAuthorized: (isExpired: boolean) => boolean;
-  }
-
-  const PERMIT_ACTIONS: PermitAction[] = [
+  const permitActions = [
     {
       action: PERMIT_ACTION_TYPES.RESEND,
       isAuthorized: () => canResendPermit,
@@ -188,25 +148,11 @@ export const PermitRowOptions = ({
     },
   ];
 
-  /**
-   * Returns options for the row actions.
-   * @param isExpired Has the permit expired?
-   * @returns Action options that can be performed for the permit.
-   */
-  const getOptions = (isExpired: boolean) => {
-    return PERMIT_ACTIONS.filter((action) =>
-      action.isAuthorized(isExpired),
-    ).map(({ action }) => ({
-      label: permitActionLabel(action),
-      value: action,
-    }));
-  };
-
   return (
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getOptions(isPermitInactive)}
+        options={getPermitActionOptions(permitActions, isPermitInactive)}
         key={`idir-search-row-${permitNumber}`}
       />
 
