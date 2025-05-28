@@ -86,8 +86,10 @@ export const formatTemplateData = (
   template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
     fullNames.mailingProvinceName;
-  template.permitData.vehicleConfiguration.trailers =
-    fullNames.vehicleConfigurationTrailers;
+  if (template.permitData?.vehicleConfiguration?.trailers?.length) {
+    template.permitData.vehicleConfiguration.trailers =
+      fullNames.vehicleConfigurationTrailers;
+  }
 
   // Format Mailing Address
   template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryName;

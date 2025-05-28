@@ -87,16 +87,19 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     permit.permitType,
   );
 
-  const vehicleConfigurationTrailers = await Promise.all(
-    permitData?.vehicleConfiguration?.trailers?.map(async (trailer) => {
-      const trailerType = await getFromCache(
-        cacheManager,
-        CacheKey.TRAILER_TYPE,
-        trailer?.vehicleSubType,
-      );
-      return { ...trailer, trailerType } as VehicleDetails;
-    }),
-  );
+  const vehicleConfigurationTrailers = permitData?.vehicleConfiguration
+    ?.trailers?.length
+    ? await Promise.all(
+        permitData.vehicleConfiguration.trailers?.map(async (trailer) => {
+          const trailerType = await getFromCache(
+            cacheManager,
+            CacheKey.TRAILER_TYPE,
+            trailer?.vehicleSubType,
+          );
+          return { ...trailer, trailerType } as VehicleDetails;
+        }),
+      )
+    : [];
 
   return {
     vehicleTypeName,
