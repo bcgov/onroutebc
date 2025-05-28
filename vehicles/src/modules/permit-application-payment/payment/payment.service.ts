@@ -255,9 +255,10 @@ export class PaymentService {
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
     );
+
     const isStaffCanPayEnabled =
-      featureFlags?.['STAFF-CAN-PAY'] &&
-      (featureFlags['STAFF-CAN-PAY'] as FeatureFlagValue) ===
+      featureFlags?.has('STAFF-CAN-PAY') &&
+      (featureFlags?.get('STAFF-CAN-PAY') as FeatureFlagValue) ===
         FeatureFlagValue.ENABLED;
     const isRefundOrNoPayment =
       createTransactionDto.transactionTypeId == TransactionType.REFUND ||
