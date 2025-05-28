@@ -14,6 +14,7 @@ import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
 import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
+import { DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE } from "../types/ConditionalLicensingFee";
 import {
   getDefaultVehicleConfiguration
 } from "./vehicles/configuration/getDefaultVehicleConfiguration";
@@ -259,10 +260,12 @@ export const getDefaultValues = (
         : null,
       conditionalLicensingFee: ([
         PERMIT_TYPES.NRSCV,
-        PERMIT_TYPES.QNRBS,
+        PERMIT_TYPES.NRQCV,
       ] as PermitType[]).includes(permitType)
-        ? getDefaultRequiredVal("", applicationData?.permitData?.conditionalLicensingFee)
-        : null,
+        ? getDefaultRequiredVal(
+          DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
+          applicationData?.permitData?.conditionalLicensingFee,
+        ) : null,
     },
   };
 };
