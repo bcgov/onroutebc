@@ -70,6 +70,7 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
     case PERMIT_TYPES.TROS:
       return TROS_DURATION_OPTIONS;
     case PERMIT_TYPES.QRFR:
+    case PERMIT_TYPES.NRQCV:
     default:
       return [];
   }
@@ -95,6 +96,7 @@ export const minDurationForPermitType = (permitType: PermitType) => {
     case PERMIT_TYPES.TROS:
       return MIN_TROS_DURATION;
     case PERMIT_TYPES.QRFR:
+    case PERMIT_TYPES.NRQCV:
     default:
       return 0;
   }
@@ -103,7 +105,7 @@ export const minDurationForPermitType = (permitType: PermitType) => {
 /**
  * Get the maximum allowable duration for a given permit type.
  * @param permitType Permit type to get max duration for
- * @returns Maxinum allowable duration for the permit type
+ * @returns Maximum allowable duration for the permit type
  */
 export const maxDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
