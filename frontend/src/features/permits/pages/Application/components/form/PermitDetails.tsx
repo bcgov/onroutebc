@@ -48,8 +48,13 @@ export const PermitDetails = ({
 }) => {
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
-  const showSTFRInfoBanner = permitType === PERMIT_TYPES.STFR || permitType === PERMIT_TYPES.NRSCV;
-  const showQRFRInfoBanner = permitType === PERMIT_TYPES.QRFR;
+  const showSingleRoundTripInfoBanner = ([
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.NRSCV,
+    PERMIT_TYPES.NRQCV,
+  ] as PermitType[]).includes(permitType);
+
+  const showValidQuarterInfoBanner = permitType === PERMIT_TYPES.QRFR;
 
   return (
     <Box className="permit-details">
@@ -58,14 +63,14 @@ export const PermitDetails = ({
       </Box>
 
       <Box className="permit-details__body">
-        {showSTFRInfoBanner ? (
+        {showSingleRoundTripInfoBanner ? (
           <InfoBcGovBanner
             className="permit-details__info-banner--top"
             msg={BANNER_MESSAGES.PERMIT_SINGLE_ROUND_TRIP}
           />
         ) : null}
 
-        {showQRFRInfoBanner ? (
+        {showValidQuarterInfoBanner ? (
           <InfoBcGovBanner
             className="permit-details__info-banner--top"
             msg={BANNER_MESSAGES.PERMIT_START_DATE_VALID_QUARTER}
