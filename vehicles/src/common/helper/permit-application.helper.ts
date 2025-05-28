@@ -1,5 +1,8 @@
 import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
-import { PermitData } from '../interface/permit.template.interface';
+import {
+  PermitData,
+  VehicleDetails,
+} from '../interface/permit.template.interface';
 import { getFromCache } from './cache.helper';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { Cache } from 'cache-manager';
@@ -84,6 +87,20 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     permit.permitType,
   );
 
+  const vehicleConfigurationTrailers = permitData?.vehicleConfiguration
+    ?.trailers?.length
+    ? await Promise.all(
+        permitData.vehicleConfiguration.trailers?.map(async (trailer) => {
+          const trailerType = await getFromCache(
+            cacheManager,
+            CacheKey.TRAILER_TYPE,
+            trailer?.vehicleSubType,
+          );
+          return { ...trailer, trailerType } as VehicleDetails;
+        }),
+      )
+    : [];
+
   return {
     vehicleTypeName,
     vehicleSubTypeName,
@@ -92,6 +109,7 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     vehicleCountryName,
     vehicleProvinceName,
     permitName,
+    vehicleConfigurationTrailers,
   };
 };
 
