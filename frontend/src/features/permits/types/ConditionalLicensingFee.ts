@@ -1,0 +1,13 @@
+export const CONDITIONAL_LICENSING_FEE_TYPES = {
+  NONE: "none",
+  CONDITIONAL_LICENSING_FEE_RATE: "conditional",
+  INDUSTRIAL_X_PLATE_TYPE_FEE_RATE: "x-plated",
+  FARM_VEHICLE_FEE_RATE: "farm-vehicle",
+  FARM_TRACTOR_FEE_RATE: "farm-tractor",
+} as const;
+
+export type ConditionalLicensingFeeType
+  = typeof CONDITIONAL_LICENSING_FEE_TYPES[keyof typeof CONDITIONAL_LICENSING_FEE_TYPES];
+
+export const DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE
+  = CONDITIONAL_LICENSING_FEE_TYPES.NONE;
