@@ -21,11 +21,7 @@ import { SpecialAuth } from '../special-auth/entities/special-auth.entity';
 import { Permit } from '../permit-application-payment/permit/entities/permit.entity';
 import { PolicyConfiguration } from '../../common/interface/policy-configuration-report.interface';
 import { CacheKey } from '../../common/enum/cache-key.enum';
-import {
-  addToCache,
-  getFromCache,
-  getMapFromCache,
-} from '../../common/helper/cache.helper';
+import { addToCache, getMapFromCache } from '../../common/helper/cache.helper';
 import { convertToPolicyApplication } from '../../common/helper/policy.helper';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
@@ -147,36 +143,15 @@ export class PolicyService {
     permitApplication: Permit,
     specialAuth?: Nullable<SpecialAuth>,
   ): Promise<ValidationResults> {
-    const activePolicyDefintion: PolicyConfiguration =
-      await this.getActivePolicyDefinition();
-
     const specialAuthorizations: SpecialAuthorizations = {
       companyId: specialAuth?.company?.companyId,
       isLcvAllowed: specialAuth?.isLcvAllowed,
       noFeeType: specialAuth?.noFeeType,
     };
 
-    const policy = new Policy(
-      activePolicyDefintion.policy,
+    const policy = await this.initPolicyEngineAndLoadCache(
       specialAuthorizations,
     );
-
-    if (
-      !(
-        await getMapFromCache(
-          this.cacheManager,
-          CacheKey.POLICY_ENGINE_COMMODITIES,
-        )
-      )?.size
-    ) {
-      const commodities = policy.getCommodities();
-
-      await addToCache(
-        this.cacheManager,
-        CacheKey.POLICY_ENGINE_COMMODITIES,
-        commodities,
-      );
-    }
 
     const validationResults: ValidationResults = await policy.validate(
       convertToPolicyApplication(permitApplication),
@@ -193,6 +168,51 @@ export class PolicyService {
   }
 
   /**
+   * Initializes the policy engine with special authorizations and loads attributes to cache.
+   *
+   * This method retrieves active policy definitions, optionally applies special authorizations,
+   * loads necessary policy attributes to the cache, and returns a configured policy object.
+   *
+   * @param {SpecialAuthorizations} [specialAuthorizations] - Optional special authorizations to apply.
+   * @returns {Promise<Policy>} - The configured policy object.
+   * @throws {InternalServerErrorException} - If unable to retrieve policy configurations.
+   */
+  @LogAsyncMethodExecution()
+  public async initPolicyEngineAndLoadCache(
+    specialAuthorizations?: SpecialAuthorizations,
+  ) {
+    const activePolicyDefintion: PolicyConfiguration =
+      await this.getActivePolicyDefinition();
+
+    const policy = new Policy(
+      activePolicyDefintion.policy,
+      specialAuthorizations,
+    );
+
+    await this.loadPolicyEngineAttributesToCache(policy);
+    return policy;
+  }
+
+  private async loadPolicyEngineAttributesToCache(policy: Policy) {
+    if (
+      !(
+        await getMapFromCache(
+          this.cacheManager,
+          CacheKey.POLICY_ENGINE_COMMODITIES,
+        )
+      )?.size
+    ) {
+      const commodities = policy.getCommodities();
+
+      await addToCache(
+        this.cacheManager,
+        CacheKey.POLICY_ENGINE_COMMODITIES,
+        commodities,
+      );
+    }
+  }
+
+  /**
    * Retrieves active policy definitions that are cached or fetched from the policy service if not cached.
    *
    * This method first attempts to retrieve the active policy definitions from the cache. If not found,
@@ -202,8 +222,7 @@ export class PolicyService {
    * @returns {Promise<PolicyConfiguration>} - The active policy configuration.
    * @throws {InternalServerErrorException} - If the policy engine is unavailable.
    */
-  @LogAsyncMethodExecution()
-  public async getActivePolicyDefinition() {
+  private async getActivePolicyDefinition() {
     let activePolicyDefintion: PolicyConfiguration =
       await this.cacheManager.get(CacheKey.POLICY_CONFIGURATIONS);
     if (!activePolicyDefintion) {
