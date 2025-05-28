@@ -16,7 +16,6 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { getPermits } from "../../apiManager/permitsAPI";
 import { PermitListItem } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
-import { PermitRowOptions } from "./PermitRowOptions";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
@@ -24,14 +23,12 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { IDIRPermitSearchRowActions } from "../../../idir/search/components/IDIRPermitSearchRowActions";
 import { hasPermitExpired } from "../../helpers/permitState";
 import { isPermitInactive } from "../../types/PermitStatus";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { DoesUserHaveRole } from "../../../../common/authentication/util";
-import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
+import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -42,8 +39,7 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
-  const { idirUserDetails, companyId: companyIdFromContext } =
-    useContext(OnRouteBCContext);
+  const { companyId: companyIdFromContext } = useContext(OnRouteBCContext);
 
   const companyId: number = applyWhenNotNullable(
     (id) => Number(id),
@@ -157,31 +153,13 @@ export const BasePermitList = ({
           isPermitInactive(row.original.permitStatus);
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {DoesUserHaveRole({
-              userRole: idirUserDetails?.userRole,
-              allowedRoles: [
-                IDIR_USER_ROLE.PPC_CLERK,
-                IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
-              ],
-            }) ? (
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userRole={idirUserDetails?.userRole}
-                companyId={row.original.companyId}
-                permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
-              />
-            ) : (
-              <PermitRowOptions
-                isExpired={isExpired}
-                companyId={row.original.companyId}
-                permitId={row.original.permitId}
-                onDocumentUnavailable={() => {
-                  navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE);
-                }}
-              />
-            )}
+            <PermitRowOptions
+              isPermitInactive={isInactive}
+              permitNumber={row.original.permitNumber}
+              permitId={row.original.permitId}
+              companyId={row.original.companyId}
+              permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
+            />
           </Box>
         );
       },

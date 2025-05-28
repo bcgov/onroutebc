@@ -8,87 +8,109 @@ import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelpe
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * The column definition for Permits.
  */
 export const PermitsColumnDefinition = (
   onDocumentUnavailable: () => void,
-): MRT_ColumnDef<PermitListItem>[] => [
-  {
-    accessorKey: "permitNumber",
-    id: "permitNumber",
-    header: "Permit #",
-    enableSorting: true,
-    size: 500,
-    accessorFn: (row) => row.permitNumber,
-    Cell: (props: { row: any; cell: any }) => {
-      return (
-        <>
-          <CustomActionLink
-            onClick={() => viewPermitPdf(
-              props.row.original.companyId,
-              props.row.original.permitId, 
-              () => onDocumentUnavailable(),
+): MRT_ColumnDef<PermitListItem>[] => {
+  const canViewIndividualActivePermitPDF = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF",
+    },
+  });
+
+  return [
+    {
+      accessorKey: "permitNumber",
+      id: "permitNumber",
+      header: "Permit #",
+      enableSorting: true,
+      size: 500,
+      accessorFn: (row) => row.permitNumber,
+      Cell: (props: { row: any; cell: any }) => {
+        return (
+          <>
+            {canViewIndividualActivePermitPDF ? (
+              <CustomActionLink
+                onClick={() =>
+                  viewPermitPdf(
+                    props.row.original.companyId,
+                    props.row.original.permitId,
+                    () => onDocumentUnavailable(),
+                  )
+                }
+              >
+                {props.cell.getValue()}
+              </CustomActionLink>
+            ) : (
+              <>{props.cell.getValue()}</>
             )}
-          >
-            {props.cell.getValue()}
-          </CustomActionLink>
-          <PermitChip permitStatus={props.row.original.permitStatus} />
-        </>
-      );
+            <PermitChip permitStatus={props.row.original.permitStatus} />
+          </>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "permitType",
-    id: "permitType",
-    header: "Permit Type",
-    enableSorting: true,
-    Cell: (props: { cell: any; }) => {
-      const permitTypeName = getPermitTypeName(props.cell.getValue())
-      return <Tooltip title={permitTypeName}>
-        <Box>
-          {props.cell.getValue()}
-        </Box>
-      </Tooltip>
-    }
-  },
-  {
-    accessorFn: (row) => getDefaultRequiredVal("", row.unitNumber),
-    id: "unitNumber",
-    header: "Unit #",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "plate",
-    header: "Plate",
-    id: "plate",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "startDate",
-    id: "startDate",
-    header: "Permit Start Date",
-    enableSorting: true,
-    Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
-      return formattedDate;
+    {
+      accessorKey: "permitType",
+      id: "permitType",
+      header: "Permit Type",
+      enableSorting: true,
+      Cell: (props: { cell: any }) => {
+        const permitTypeName = getPermitTypeName(props.cell.getValue());
+        return (
+          <Tooltip title={permitTypeName}>
+            <Box>{props.cell.getValue()}</Box>
+          </Tooltip>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "expiryDate",
-    header: "Permit End Date",
-    id: "expiryDate",
-    enableSorting: true,
-    Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
-      return formattedDate;
+    {
+      accessorFn: (row) => getDefaultRequiredVal("", row.unitNumber),
+      id: "unitNumber",
+      header: "Unit #",
+      enableSorting: true,
     },
-  },
-  {
-    accessorKey: "issuer",
-    id: "issuer",
-    header: "Issued By",
-    enableSorting: false,
-  },
-];
+    {
+      accessorKey: "plate",
+      header: "Plate",
+      id: "plate",
+      enableSorting: true,
+    },
+    {
+      accessorKey: "startDate",
+      id: "startDate",
+      header: "Permit Start Date",
+      enableSorting: true,
+      Cell: (props: { cell: any }) => {
+        const formattedDate = formatCellValuetoDatetime(
+          props.cell.getValue(),
+          true,
+        );
+        return formattedDate;
+      },
+    },
+    {
+      accessorKey: "expiryDate",
+      header: "Permit End Date",
+      id: "expiryDate",
+      enableSorting: true,
+      Cell: (props: { cell: any }) => {
+        const formattedDate = formatCellValuetoDatetime(
+          props.cell.getValue(),
+          true,
+        );
+        return formattedDate;
+      },
+    },
+    {
+      accessorKey: "issuer",
+      id: "issuer",
+      header: "Issued By",
+      enableSorting: false,
+    },
+  ];
+};
