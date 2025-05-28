@@ -181,6 +181,7 @@ export const AmendPermitReview = () => {
         loas={amendmentApplication?.permitData?.loas}
         isStaffUser={true}
         thirdPartyLiability={amendmentApplication?.permitData?.thirdPartyLiability}
+        conditionalLicensingFee={amendmentApplication?.permitData?.conditionalLicensingFee}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />

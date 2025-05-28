@@ -18,6 +18,10 @@ import {
   getMinPermitExpiryDate,
   handleUpdateDurationIfNeeded,
 } from "./dateSelection";
+import { getUpdatedCLF } from "./conditionalLicensingFee/getUpdatedCLF";
+import { getAvailableCLFs } from "./conditionalLicensingFee/getAvailableCLFs";
+import { getVehicleWeightStatusForCLF } from "./vehicles/configuration/getVehicleWeightStatusForCLF";
+import { getUpdatedVehicleWeights } from "./vehicles/configuration/getUpdatedVehicleWeights";
 
 /**
  * Filter valid LOAs for a given permit type.
@@ -265,6 +269,27 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     ],
   );
 
+  // Update conditional licensing fee and vehicle weights if vehicle subtype changed
+  const availableCLFs = getAvailableCLFs(updatedVehicle.vehicleSubType);
+  const updatedCLF = getUpdatedCLF(
+    applicationData.permitType,
+    availableCLFs,
+    applicationData.permitData.conditionalLicensingFee,
+  );
+  
+  const { enableLoadedGVW, enableNetWeight } = getVehicleWeightStatusForCLF(
+    !updatedVehicle.vehicleSubType,
+    updatedCLF,
+  );
+  
+  const { updatedLoadedGVW, updatedNetWeight } = getUpdatedVehicleWeights(
+    applicationData.permitType,
+    enableLoadedGVW,
+    enableNetWeight,
+    applicationData.permitData.vehicleConfiguration?.loadedGVW,
+    applicationData.permitData.vehicleConfiguration?.netWeight,
+  );
+
   return {
     ...applicationData,
     permitData: {
@@ -272,6 +297,13 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
       permitDuration: updatedDuration,
       loas: newSelectedLOAs,
       vehicleDetails: updatedVehicle,
+      conditionalLicensingFee: updatedCLF,
+      vehicleConfiguration: applicationData.permitData.vehicleConfiguration ?
+        {
+          ...applicationData.permitData.vehicleConfiguration,
+          loadedGVW: updatedLoadedGVW,
+          netWeight: updatedNetWeight,
+        } : null,
     },
   };
 };

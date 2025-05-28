@@ -4,6 +4,7 @@ import { IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import { useState, useCallback, MouseEvent } from "react";
 
 import "./OnRouteBCTableRowActions.scss";
+import { TableRowActionsOption } from "./types/TableRowActionsOption";
 
 /**
  * A reusable component meant to be used in table components for row actions.
@@ -14,10 +15,7 @@ export const OnRouteBCTableRowActions = ({
   disabled = false,
 }: {
   onSelectOption: (selectedOption: string) => void;
-  options: {
-    label: string;
-    value: string;
-  }[];
+  options: TableRowActionsOption[];
   disabled?: boolean;
 }) => {
   // Used to determine the anchor element to position the actions menu to

@@ -33,10 +33,13 @@ import { ApplicationNotes } from "./ApplicationNotes";
 import { TripDetails } from "./TripDetails";
 import { ThirdPartyLiability } from "../../../../types/ThirdPartyLiability";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
+import { ReviewConditionalLicensingFeesSection } from "./ReviewConditionalLicensingFeesSection";
+import { ReviewVehicleWeightSection } from "./ReviewVehicleWeightSection";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
+import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -83,6 +86,7 @@ interface PermitReviewProps {
   applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
   isStaffUser: boolean;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
+  conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -185,6 +189,20 @@ export const PermitReview = (props: PermitReviewProps) => {
         <ThirdPartyLiabilitySection
           thirdPartyLiability={props.thirdPartyLiability}
           oldThirdPartyLiability={props.oldFields?.permitData?.thirdPartyLiability}
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ReviewConditionalLicensingFeesSection
+          selectedCLF={props.conditionalLicensingFee}
+          oldCLF={props.oldFields?.permitData?.conditionalLicensingFee}
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ReviewVehicleWeightSection
+          loadedGVW={props.vehicleConfiguration?.loadedGVW}
+          oldLoadedGVW={props.oldFields?.permitData?.vehicleConfiguration?.loadedGVW}
+          netWeight={props.vehicleConfiguration?.netWeight}
+          oldNetWeight={props.oldFields?.permitData?.vehicleConfiguration?.netWeight}
           showChangedFields={props.showChangedFields}
         />
 
