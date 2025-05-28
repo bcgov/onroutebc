@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -57,7 +58,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
   const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<number>>(null);
 
-  const canEditNoFeePermits = usePermissionMatrix({
+  const canUpdateNoFeeFlag = usePermissionMatrix({
     featureFlag: "NO-FEE",
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
@@ -78,7 +79,15 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
         },
   });
 
-  const canUpdateLCV = usePermissionMatrix({
+  const canAddLCVFlag = usePermissionMatrix({
+    featureFlag: "LCV",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "ADD_LCV_FLAG",
+    },
+  });
+
+  const canRemoveLCVFlag = usePermissionMatrix({
     featureFlag: "LCV",
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
@@ -130,7 +139,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
 
   const handleToggleEnableNoFee = async (enable: boolean) => {
-    if (!canEditNoFeePermits) return;
+    if (!canUpdateNoFeeFlag) return;
 
     const { status } = await updateNoFeeMutation.mutateAsync({
       companyId,
@@ -143,7 +152,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   };
 
   const handleUpdateNoFee = async (noFee: RequiredOrNull<NoFeePermitType>) => {
-    if (!canEditNoFeePermits) return;
+    if (!canUpdateNoFeeFlag) return;
     const { status } = await updateNoFeeMutation.mutateAsync({
       companyId,
       noFee,
@@ -155,7 +164,6 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   };
 
   const handleUpdateLCV = async (enableLCV: boolean) => {
-    if (!canUpdateLCV) return;
     const { status } = await updateLCVMutation.mutateAsync({
       companyId,
       isLcvAllowed: enableLCV,
@@ -255,17 +263,18 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
           onUpdateEnableNoFee={handleToggleEnableNoFee}
           noFeePermitType={noFeeType}
           onUpdateNoFee={handleUpdateNoFee}
-          isEditable={canEditNoFeePermits}
+          isEditable={canUpdateNoFeeFlag}
         />
       ) : null}
 
-      {canViewLCV ? (
-        <LCVSection
-          enableLCV={isLcvAllowed}
-          onUpdateLCV={handleUpdateLCV}
-          isEditable={canUpdateLCV}
-        />
-      ) : null}
+      {/* {canViewLCV ? ( */}
+      <LCVSection
+        LCVEnabled={isLcvAllowed}
+        onUpdateLCV={handleUpdateLCV}
+        canEnableLCV={canAddLCVFlag}
+        canDisableLCV={canRemoveLCVFlag}
+      />
+      {/* ) : null} */}
 
       {canReadLOA ? (
         <div className="special-authorizations__loa">

@@ -1,18 +1,26 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Switch } from "@mui/material";
 
 import "./LCVSection.scss";
 import { AllowedIndicator } from "../AllowedIndicator/AllowedIndicator";
 
 export const LCVSection = ({
-  enableLCV,
+  LCVEnabled,
   onUpdateLCV,
-  isEditable = false,
+  // isEditable = false,
+  canEnableLCV,
+  canDisableLCV,
 }: {
-  enableLCV: boolean;
+  LCVEnabled: boolean;
   onUpdateLCV: (enable: boolean) => void;
-  isEditable?: boolean;
+  // isEditable?: boolean;
+  canEnableLCV: boolean;
+  canDisableLCV: boolean;
 }) => {
-  return isEditable || enableLCV ? (
+  const isEditable =
+    (LCVEnabled && canDisableLCV) || (!LCVEnabled && canEnableLCV);
+
+  return isEditable || LCVEnabled ? (
     <div className={`lcv-section ${isEditable ? "" : "lcv-section--readonly"}`}>
       <div className="lcv-section__header">
         <div className="lcv-section__title">Long Combination Vehicle (LCV)</div>
@@ -20,7 +28,7 @@ export const LCVSection = ({
         {isEditable ? (
           <Switch
             className="lcv-section__enable-switch"
-            checked={enableLCV}
+            checked={LCVEnabled}
             onChange={async (_, checked) => onUpdateLCV(checked)}
           />
         ) : (
