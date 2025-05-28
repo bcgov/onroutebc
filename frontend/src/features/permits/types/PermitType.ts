@@ -31,7 +31,7 @@ export const PERMIT_TYPES = {
   // Quarterly ICBC Basic Insurance (FR)
   QRFR: "QRFR",
   // Quarterly Non-Resident
-  QNRBS: "QNRBS",
+  NRQCV: "NRQCV",
   // Single Trip ICBC Basic Insurance (FR)
   STFR: "STFR",
   // Single Trip Non-Resident
@@ -64,7 +64,7 @@ export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
 ];
 
 export const NON_RESIDENT_PERMIT_LIST: PermitType[] = [
-  PERMIT_TYPES.QNRBS,
+  PERMIT_TYPES.NRQCV,
   PERMIT_TYPES.QRFR,
   PERMIT_TYPES.NRSCV,
   PERMIT_TYPES.STFR,
@@ -104,7 +104,7 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
     /* NON-RESIDENT */
     case PERMIT_TYPES.NRSCV:
       return "Single Trip Non-Resident";
-    case PERMIT_TYPES.QNRBS:
+    case PERMIT_TYPES.NRQCV:
       return "Quarterly Non-Resident";
     case PERMIT_TYPES.QRFR:
       return "Quarterly ICBC Basic Insurance (FR)";
@@ -154,7 +154,7 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
     /* NON RESIDENT */
     case PERMIT_TYPES.QRFR:
       return "Quarterly ICBC Basic Insurance (FR)";
-    case PERMIT_TYPES.QNRBS:
+    case PERMIT_TYPES.NRQCV:
       return "Quarterly";
     case PERMIT_TYPES.STFR:
       return "Single Trip ICBC Basic Insurance (FR)";
@@ -210,5 +210,8 @@ export const isTermPermitType = (permitType: PermitType) => {
  */
 export const isQuarterlyPermit = (permitType?: Nullable<PermitType>) => {
   if (!permitType) return false;
-  return ([PERMIT_TYPES.QRFR] as PermitType[]).includes(permitType);
+  return ([
+    PERMIT_TYPES.QRFR,
+    PERMIT_TYPES.NRQCV,
+  ] as PermitType[]).includes(permitType);
 };

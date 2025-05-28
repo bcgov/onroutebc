@@ -17,6 +17,8 @@ import { usePermittedCommodity } from "../usePermittedCommodity";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequence";
+import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
+import { useVehicleWeights } from "../useVehicleWeights";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -63,6 +65,9 @@ export const useApplicationFormContext = () => {
     onUpdateVehicleConfig,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   } = useApplicationFormUpdateMethods();
 
   const {
@@ -82,6 +87,7 @@ export const useApplicationFormContext = () => {
     permittedCommodity,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(
@@ -189,6 +195,14 @@ export const useApplicationFormContext = () => {
     selectedCommodity: permittedCommodity?.commodityType,
   });
 
+  // Update conditional licensing fee selection if necessary
+  const { availableCLFs } = useConditionalLicensingFees(
+    permitType,
+    onUpdateConditionalLicensingFee,
+    conditionalLicensingFee,
+    vehicleFormData.vehicleSubType,
+  );
+
   const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
@@ -207,6 +221,18 @@ export const useApplicationFormContext = () => {
     selectedVehicleConfigSubtypes,
     vehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
+  );
+
+  // Get the enable status of Loaded GVW and Net Weight,
+  // and update the vehicle weights if necessary
+  const { enableLoadedGVW, enableNetWeight } = useVehicleWeights(
+    permitType,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
+    vehicleFormData.vehicleSubType,
+    conditionalLicensingFee,
+    vehicleConfiguration?.loadedGVW,
+    vehicleConfiguration?.netWeight,
   );
 
   const memoizedCompanyLOAs = useMemoizedArray(
@@ -265,6 +291,10 @@ export const useApplicationFormContext = () => {
     selectedVehicleConfigSubtypes,
     vehicleConfiguration,
     thirdPartyLiability,
+    conditionalLicensingFee,
+    availableCLFs,
+    enableLoadedGVW,
+    enableNetWeight,
     onLeave,
     onSave,
     onCancel,
@@ -285,5 +315,8 @@ export const useApplicationFormContext = () => {
     onChangeCommodityType,
     onUpdateVehicleConfig,
     onUpdateThirdPartyLiability,
+    onUpdateConditionalLicensingFee,
+    onUpdateLoadedGVW,
+    onUpdateNetWeight,
   };
 };

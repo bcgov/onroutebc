@@ -91,6 +91,7 @@ const MANAGE_PERMITS = {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
+  // Currently there is no way of simply viewing an individual application in progress, navigating to an individual application takes the user to the edit step. Therefore this key will remain unused for now
   VIEW_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],

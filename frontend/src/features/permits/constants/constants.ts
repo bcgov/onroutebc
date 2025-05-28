@@ -60,6 +60,10 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
         value: PERMIT_TYPES.STFR,
         label: getPermitTypeShortName(PERMIT_TYPES.STFR),
       },
+      {
+        value: PERMIT_TYPES.NRSCV,
+        label: getPermitTypeShortName(PERMIT_TYPES.NRSCV),
+      },
     ],
     // items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
     //   value: permitType,
@@ -118,3 +122,22 @@ export const LCV_VEHICLE_SUBTYPES = [
     description: "LCV vehicles for approved carriers and routes only."
   },
 ];
+
+export const CONDITIONAL_LICENSING_FEE_LINKS = {
+  CONDITIONAL_LICENSING_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 3(b)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  INDUSTRIAL_X_PLATE_TYPE_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(c)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  FARM_VEHICLE_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(d)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  FARM_TRACTOR_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(b)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+};
