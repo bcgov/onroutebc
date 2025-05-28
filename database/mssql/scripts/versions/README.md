@@ -293,3 +293,7 @@
     - IS_ACTIVE Char(1) - Default N - non-nullable
     - FILE_NAME Varchar(50) - non-nullable
 - Downtime is required for prod deployment
+
+
+### Version 75:
+- Configure STOS v4 template (bugfixes)
