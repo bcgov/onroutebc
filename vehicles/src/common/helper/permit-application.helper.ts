@@ -102,6 +102,14 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
       )
     : [];
 
+  const commodityTypeName = permitData?.permittedCommodity?.commodityType
+    ? await getFromCache(
+        cacheManager,
+        CacheKey.POLICY_ENGINE_COMMODITIES,
+        permitData?.permittedCommodity?.commodityType,
+      )
+    : null;
+
   return {
     vehicleTypeName,
     vehicleSubTypeName,
@@ -111,6 +119,7 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     vehicleProvinceName,
     permitName,
     vehicleConfigurationTrailers,
+    commodityTypeName,
   };
 };
 
