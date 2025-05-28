@@ -8,6 +8,7 @@ import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
 import { MANDATORY_TROW_CONDITIONS, TROW_CONDITIONS } from "../constants/trow";
 import { PermitCondition } from "../types/PermitCondition";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { MANDATORY_NRSCV_CONDITIONS, NRSCV_CONDITIONS } from "../constants/nrscv";
 
 /**
  * Get mandatory conditions that must be selected for a permit type.
@@ -25,6 +26,8 @@ export const getMandatoryConditions = (
       return MANDATORY_QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return MANDATORY_STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRSCV:
+      return MANDATORY_NRSCV_CONDITIONS;
     case PERMIT_TYPES.MFP:
       return MANDATORY_MFP_CONDITIONS; // MFP never allows additional conditions
     case PERMIT_TYPES.STOS:
@@ -48,6 +51,8 @@ const getConditionsByPermitType = (
       return QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRSCV:
+      return NRSCV_CONDITIONS;
     case PERMIT_TYPES.MFP:
       return MFP_CONDITIONS; // MFP never allows additional conditions
     case PERMIT_TYPES.STOS:

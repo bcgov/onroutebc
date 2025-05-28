@@ -166,6 +166,7 @@ export const ApplicationInQueueReview = ({
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={true}
           thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}
+          conditionalLicensingFee={applicationData?.permitData?.conditionalLicensingFee}
         />
       </FormProvider>
 
