@@ -67,6 +67,7 @@ export const ApplicationStepPage = ({
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   
   // Query for the application data whenever this page is rendered
   const {
@@ -113,7 +114,8 @@ export const ApplicationStepPage = ({
       .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
       .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
       .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : [])
-      .concat(enableNRSCV ? [PERMIT_TYPES.NRSCV] : []);
+      .concat(enableNRSCV ? [PERMIT_TYPES.NRSCV] : [])
+      .concat(enableNRQCV ? [PERMIT_TYPES.NRQCV] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };
