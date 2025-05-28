@@ -42,7 +42,7 @@ VALUES (
     N'dops',
     GETUTCDATE(),
     N'Y',
-    N'stos-template-v1.docx'
+    N'stos-template-v4.docx'
 )
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -69,7 +69,7 @@ VALUES (
     N'dops',
     GETUTCDATE(),
     N'Y',
-    N'stos-void-template-v1.docx'
+    N'stos-void-template-v4.docx'
 )
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -96,7 +96,7 @@ VALUES (
     N'dops',
     GETUTCDATE(),
     N'Y',
-    N'stos-revoked-template-v1.docx'
+    N'stos-revoked-template-v4.docx'
 )
 
 IF @@ERROR <> 0 SET NOEXEC ON
