@@ -17,7 +17,7 @@ import { Directory } from 'src/common/enum/directory.enum';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { getFromCache } from 'src/common/helper/cache.helper';
+import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 
 import {
@@ -39,6 +39,7 @@ import { validateEmailList } from '../../../common/helper/notification.helper';
 import { getPermitTemplateName } from '../../../common/helper/template.helper';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { Nullable } from '../../../common/types/common';
+import { PolicyService } from '../../policy/policy.service';
 
 @Injectable()
 export class PermitReceiptDocumentService {
@@ -51,6 +52,7 @@ export class PermitReceiptDocumentService {
     private readonly paymentService: PaymentService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly policyService: PolicyService,
   ) {}
 
   /**
@@ -264,6 +266,20 @@ export class PermitReceiptDocumentService {
             throw new BadRequestException(
               'Application must be in ISSUED/VOIDED/REVOKED status for document Generation!',
             );
+          }
+
+          // Check if the cache has attributes loaded from the policy engine. If
+          // not, fetch the policy configuration, initialize the policy engine,
+          // and load the attributes into the cache.
+          if (
+            !(
+              await getMapFromCache(
+                this.cacheManager,
+                CacheKey.POLICY_ENGINE_COMMODITIES,
+              )
+            )?.size
+          ) {
+            await this.policyService.initPolicyEngineAndLoadCache();
           }
 
           const fullNames = await fetchPermitDataDescriptionValuesFromCache(
