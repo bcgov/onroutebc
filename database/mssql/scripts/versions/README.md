@@ -295,5 +295,5 @@
 - Downtime is required for prod deployment
 
 
-### Version 77:
+### Version 76:
 - Configure STOS v4 template (bugfixes)
