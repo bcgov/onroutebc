@@ -662,7 +662,13 @@ export class PermitService {
    */
   @LogAsyncMethodExecution()
   async getPermitType(): Promise<Record<string, string>> {
-    return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
+    const permitTypeMap = await getMapFromCache(
+      this.cacheManager,
+      CacheKey.PERMIT_TYPE,
+    );
+    return permitTypeMap?.size
+      ? (Object.fromEntries(permitTypeMap) as Record<string, string>)
+      : undefined;
   }
 
   @LogAsyncMethodExecution()

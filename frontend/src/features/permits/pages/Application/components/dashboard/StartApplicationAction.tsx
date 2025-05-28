@@ -35,8 +35,9 @@ export const StartApplicationAction = () => {
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
 
-  const showNonResident = (enableSTFR || enableQRFR || enableNRSCV);
+  const showNonResident = (enableSTFR || enableQRFR || enableNRSCV || enableNRQCV);
   
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
