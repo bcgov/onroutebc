@@ -32,6 +32,7 @@ import {
 } from "../types/manageProfile.d";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import "./UserManagement.scss";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 /**
  * User Management Component for CV Client.
@@ -129,6 +130,20 @@ export const UserManagement = () => {
     }
   }, [isError]);
 
+  const canRemoveUser = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "REMOVE_USER",
+    },
+  });
+
+  const canEditUser = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "EDIT_USER",
+    },
+  });
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: UserManagementColumnsDefinition,
@@ -149,6 +164,9 @@ export const UserManagement = () => {
     enableRowSelection: (
       row: MRT_Row<ReadUserInformationResponse>,
     ): boolean => {
+      if (!canRemoveUser) {
+        return false;
+      }
       if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
         return false;
       }
@@ -170,7 +188,10 @@ export const UserManagement = () => {
     },
     renderRowActions: useCallback(
       ({ row }: { row: MRT_Row<ReadUserInformationResponse> }) => {
-        if (row.original.statusCode === BCeID_USER_STATUS.ACTIVE) {
+        if (
+          row.original.statusCode === BCeID_USER_STATUS.ACTIVE &&
+          canEditUser
+        ) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <UserManagementTableRowActions userGUID={row.original.userGUID} />
@@ -187,7 +208,7 @@ export const UserManagement = () => {
         <Box className="table-container__toolbar-internal-actions">
           <TrashButton
             onClickTrash={onClickTrashIcon}
-            disabled={hasNoRowsSelected}
+            disabled={hasNoRowsSelected || !canRemoveUser}
           />
         </Box>
       ),
