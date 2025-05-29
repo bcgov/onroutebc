@@ -112,7 +112,7 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
-          spec: cypress/e2e/${{matrix.test}}
+          spec: cypress/e2e/rbac/${{matrix.test}}
           working-directory: tests
 
       - uses: actions/upload-artifact@v4

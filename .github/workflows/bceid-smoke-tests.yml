@@ -67,13 +67,13 @@ jobs:
             #- edge
             #- firefox
         test: 
-          - 'bceid-crud-power-units.cy.js'
-          - 'bceid-crud-trailers.cy.js'
-          - 'bceid-new-term-oversize.cy.js'
-          - 'bceid-new-term-overweight.cy.js'
-          - 'bceid-update-term-oversize.cy.js'
-          - 'bceid-new-term-oversize-check-price.cy.js'
-          - 'bceid-profile.cy.js'
+          - 'crud-power-units.cy.js'
+          - 'crud-trailers.cy.js'
+          - 'new-term-oversize.cy.js'
+          - 'new-term-overweight.cy.js'
+          - 'update-term-oversize.cy.js'
+          - 'new-term-oversize-check-price.cy.js'
+          - 'profile.cy.js'
         role: 
           - CA
 
