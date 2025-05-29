@@ -104,6 +104,13 @@ export const BasePermitList = ({
     },
   });
 
+  const canViewIndividualExpiredPermitPDF = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_EXPIRED_PERMIT_PDF",
+    },
+  });
+
   const canResendPermit = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "GLOBAL_SEARCH",
@@ -115,6 +122,13 @@ export const BasePermitList = ({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
+    },
+  });
+
+  const canViewExpiredPermitReceipt = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_EXPIRED_PERMIT_RECEIPT",
     },
   });
 
@@ -136,7 +150,9 @@ export const BasePermitList = ({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition(
       () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+      isExpired,
       canViewIndividualActivePermitPDF,
+      canViewIndividualExpiredPermitPDF,
     ),
     data: data?.items ?? [],
     enableRowSelection: false,
@@ -200,6 +216,7 @@ export const BasePermitList = ({
                 canAmendPermit,
                 canResendPermit,
                 canViewPermitReceipt,
+                canViewExpiredPermitReceipt,
                 canVoidPermit,
               }}
             />
