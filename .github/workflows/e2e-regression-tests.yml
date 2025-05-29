@@ -11,7 +11,7 @@ on:
         type: string
       show_artifact:
         description: 'boolean to show artifacts on run (default is on failure)'
-        default: 'false'
+        default: false
         required: true
         type: boolean
   workflow_dispatch:
@@ -24,7 +24,7 @@ on:
         type: string
       show_artifact:
         description: 'boolean to show artifacts on run (default is on failure)'
-        default: 'false'
+        default: false
         required: true
         type: boolean
         
@@ -70,5 +70,5 @@ jobs:
     uses: ./.github/workflows/idir-smoke-tests.yml
     secrets: inherit
     with:
-      target: "${{inputs.target}}"
-      show_artifact: "${{inputs.show_artifact}}"
+      target: ${{inputs.target}}
+      show_artifact: ${{inputs.show_artifact}}
