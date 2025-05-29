@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Navigate,
   useLocation,
@@ -13,8 +13,6 @@ import { Banner } from "../../../../common/components/dashboard/components/banne
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
 import { Loading } from "../../../../common/pages/Loading";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_ROLE } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
@@ -42,6 +40,7 @@ import {
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -76,12 +75,6 @@ const isAmendable = (permit: Permit) => {
   );
 };
 
-const isAmendableByUser = (role?: string) => {
-  return (
-    role === USER_ROLE.PPC_CLERK || role === USER_ROLE.SYSTEM_ADMINISTRATOR
-  );
-};
-
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchString=`;
@@ -98,7 +91,6 @@ export const AmendPermit = () => {
   );
   const permitId = getDefaultRequiredVal("", permitIdParam);
 
-  const { idirUserDetails } = useContext(OnRouteBCContext);
   const navigate = useNavigate();
 
   // Query for permit data whenever this page is rendered, for the permit id
@@ -232,7 +224,14 @@ export const AmendPermit = () => {
     return <Loading />;
   }
 
-  if (!isAmendableByUser(idirUserDetails?.userRole)) {
+  const canAmendPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "AMEND_PERMIT",
+    },
+  });
+
+  if (!canAmendPermit) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

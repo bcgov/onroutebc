@@ -31,6 +31,7 @@ import {
 } from "../../../../../common/helpers/util";
 
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
@@ -93,6 +94,13 @@ export const VoidPermitForm = ({
     setVoidPermitData(formValues);
     next();
   };
+
+  const canRevokePermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "REVOKE_PERMIT",
+    },
+  });
 
   const handleOpenRevokeDialog = () => {
     setOpenRevokeDialog(true);
@@ -196,30 +204,32 @@ export const VoidPermitForm = ({
                 />
               </div>
 
-              <div className="reason-container__right">
-                <div className="revoke">
-                  <div className="revoke__header">Revoke this permit?</div>
+              {canRevokePermit && (
+                <div className="reason-container__right">
+                  <div className="revoke">
+                    <div className="revoke__header">Revoke this permit?</div>
 
-                  <div className="revoke__body">
-                    <div className="revoke__msg">
-                      Revoking a permit is a severe action that{" "}
-                      <span className="revoke__msg--bold">
-                        cannot be reversed.
-                      </span>{" "}
-                      There are{" "}
-                      <span className="revoke__msg--bold">no refunds</span> for
-                      revoked permits.
+                    <div className="revoke__body">
+                      <div className="revoke__msg">
+                        Revoking a permit is a severe action that{" "}
+                        <span className="revoke__msg--bold">
+                          cannot be reversed.
+                        </span>{" "}
+                        There are{" "}
+                        <span className="revoke__msg--bold">no refunds</span>{" "}
+                        for revoked permits.
+                      </div>
+
+                      <Button
+                        className="revoke__btn"
+                        onClick={handleOpenRevokeDialog}
+                      >
+                        Revoke Permit
+                      </Button>
                     </div>
-
-                    <Button
-                      className="revoke__btn"
-                      onClick={handleOpenRevokeDialog}
-                    >
-                      Revoke Permit
-                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

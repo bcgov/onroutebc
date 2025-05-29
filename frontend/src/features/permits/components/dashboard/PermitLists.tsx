@@ -53,18 +53,35 @@ export const PermitLists = React.memo(() => {
     });
   }
 
-  tabs.push(
-    {
+  const canViewListOfActivePermits = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_ACTIVE_PERMITS",
+    },
+  });
+
+  if (canViewListOfActivePermits) {
+    tabs.push({
       label: "Active Permits",
       component: <ActivePermitList />,
       componentKey: PERMIT_TABS.ACTIVE_PERMITS,
+    });
+  }
+
+  const canViewListOfExpiredPermits = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_EXPIRED_PERMITS",
     },
-    {
+  });
+
+  if (canViewListOfExpiredPermits) {
+    tabs.push({
       label: "Expired Permits",
       component: <ExpiredPermitList />,
       componentKey: PERMIT_TABS.EXPIRED_PERMITS,
-    },
-  );
+    });
+  }
 
   const { state: stateFromNavigation } = useLocation();
 

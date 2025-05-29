@@ -370,7 +370,7 @@ export const AppRoutes = () => {
           <BCeIDAuthWall
             permissionMatrixKeys={{
               permissionMatrixFeatureKey: "MANAGE_PERMITS",
-              permissionMatrixFunctionKey: "VIEW_ACTIVE_PERMITS",
+              permissionMatrixFunctionKey: "VIEW_LIST_OF_ACTIVE_PERMITS",
             }}
           />
         }

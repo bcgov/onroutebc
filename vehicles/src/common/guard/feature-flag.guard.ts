@@ -53,9 +53,10 @@ export class FeatureFlagGuard implements CanActivate {
       CacheKey.FEATURE_FLAG_TYPE,
     );
     const isFeatureEnabled =
-      featureFlags?.[featureFlagKey] &&
-      (featureFlags[featureFlagKey] as FeatureFlagValue) ===
+      featureFlags?.has(featureFlagKey) &&
+      (featureFlags?.get(featureFlagKey) as FeatureFlagValue) ===
         FeatureFlagValue.ENABLED;
+
     return isFeatureEnabled;
   }
 }
