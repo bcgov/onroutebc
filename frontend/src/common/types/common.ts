@@ -14,11 +14,13 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
+import { RefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
 import { VoidPermitFormData } from "../../features/permits/pages/Void/types/VoidPermit";
 
-export interface ApiErrorResponse {
+export interface ErrorResponseData<T = any> {
+  error: T[];
+  message: string;
   status: number;
-  errorMessage: string; // array?
 }
 
 /**
@@ -67,7 +69,8 @@ export type ORBC_FormTypes =
   | VerifyClientRequest
   | PermitContactDetails
   | LOAFormData
-  | VoidPermitFormData;
+  | VoidPermitFormData
+  | { refundData: RefundFormData[] };
 
 /**
  * The options for pagination.
@@ -179,6 +182,15 @@ export type Nullable<T> = Optional<RequiredOrNull<T>>;
 export type NullableFields<T> = {
   [P in keyof T]?: Nullable<T[P]>;
 };
+
+/**
+ * The type of item provided as a list to the TabLayout component
+ */
+export interface DashboardTab {
+  label: string;
+  component: JSX.Element;
+  componentKey: string;
+}
 
 export const isNull = <T>(val?: Nullable<T>) => {
   return !val && typeof val !== "undefined" && val == null;
