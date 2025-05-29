@@ -4,8 +4,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { useState, useEffect, useContext, useMemo } from "react";
-
+import { useState, useEffect, useMemo } from "react";
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { usePermitDetailsQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
@@ -19,8 +18,6 @@ import {
 } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_ROLE } from "../../../../common/authentication/types";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
 import {
@@ -35,6 +32,7 @@ import {
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
@@ -62,9 +60,6 @@ export const VoidPermit = () => {
   const [currentLink, setCurrentLink] = useState(0);
   const getBannerText = () =>
     currentLink === 0 ? "Void Permit" : "Finish Voiding";
-
-  // Must be SYSADMIN to access this page
-  const { idirUserDetails } = useContext(OnRouteBCContext);
 
   const permitQuery = usePermitDetailsQuery(companyId, permitId);
   const permit = permitQuery.data;
@@ -152,8 +147,15 @@ export const VoidPermit = () => {
     [voidPermitData],
   );
 
+  const canVoidPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "VOID_PERMIT",
+    },
+  });
+
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userRole !== USER_ROLE.SYSTEM_ADMINISTRATOR) {
+  if (!canVoidPermit) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
