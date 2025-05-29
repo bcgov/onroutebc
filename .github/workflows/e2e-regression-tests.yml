@@ -52,7 +52,7 @@ jobs:
           echo "environment=$environment" >> $GITHUB_OUTPUT
 
   e2e-tests:
-    name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
+    name: ${{matrix.test}}
     needs: [vars]
     environment: ${{needs.vars.outputs.environment}}
     runs-on: ubuntu-22.04
@@ -67,48 +67,32 @@ jobs:
             #- edge
             #- firefox
         test: 
-          - 'global_search.cy.js'
-          - 'manage_ppc_users.cy.js'
-          - 'manage_settings.cy.js'
-          - 'miscellaneous.cy.js'
-          - 'staff_home_screen.cy.js'
-          - 'manage_permits.cy.js'
-          - 'manage_profile.cy.js'
-          - 'manage_vehicle_inventory.cy.js'
-          - 'reports.cy.js'
-          - 'sticky_side_bar.cy.js'
-        role: 
-          - CA
-          - PA
-          - PC
-          - SA
-          - FIN
-          - EO
-          - HQA
-          - CTPO 
-            #- TRAIN
+          - 'bceid-crud-power-units.cy.js'
+          - 'bceid-crud-trailers.cy.js'
+          - 'bceid-new-term-oversize.cy.js'
+          - 'bceid-new-term-overweight.cy.js'
+          - 'bceid-update-term-oversize.cy.js'
+          - 'bceid-new-term-oversize-check-price.cy.js'
+          - 'bceid-profile.cy.js'
+          - 'idir-amend-term-oversize.cy.js'
+          # - 'idir-void-term-oversize.cy.js'
+          - 'idir-general.cy.js'
+          - 'idir-global-search.cy.js'
+          - 'idir-settings.cy.js'
 
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref:  ORV2-3904 
 
-      - name: Load credentials for ${{ matrix.role }}
-        id: creds
-        run: |
-          # Dynamically fetch secrets using GitHub Actions syntax
-          echo "CYPRESS_USERNAME=${{ vars[format('USERNAME_{0}', matrix.role)] }}" >> $GITHUB_ENV
-          echo "CYPRESS_PASSWORD=${{ secrets[format('PASSWORD_{0}', matrix.role)] }}" >> $GITHUB_ENV
-
-      - name: Run Cypress tests for ${{ matrix.role }}
-        uses: cypress-io/github-action@v6.9.2
+      - uses: cypress-io/github-action@v6.9.2
+        name: Cypress run
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
+          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
           CYPRESS_wait_time: 2000
-          CYPRESS_user_role: ${{matrix.role}}
-          CYPRESS_username: ${{env.CYPRESS_USERNAME}}
-          CYPRESS_password: ${{env.CYPRESS_PASSWORD}}
         with:
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
@@ -118,14 +102,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure() || inputs.show_artifact
         with:
-          name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} screenshot
+          name: ${{matrix.test}}-${{matrix.browser}} screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: failure() || inputs.show_artifact
         with:
-          name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} video
+          name: ${{matrix.test}}-${{matrix.browser}} video
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`

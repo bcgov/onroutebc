@@ -18,7 +18,6 @@ import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
 import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
-import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -29,6 +28,8 @@ import { ERROR_ROUTES } from "../../../../routes/constants";
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
+import { PermitRowOptions } from "../../../permits/components/permit-list/PermitRowOptions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -148,6 +149,34 @@ export const IDIRPermitSearchResults = memo(
       return initialData;
     };
 
+    const canResendPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "RESEND_PERMIT",
+      },
+    });
+
+    const canViewPermitReceipt = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PERMITS",
+        permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
+      },
+    });
+
+    const canAmendPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "AMEND_PERMIT",
+      },
+    });
+
+    const canVoidPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "VOID_PERMIT",
+      },
+    });
+
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: getFilteredData(data?.items ?? []),
@@ -205,13 +234,18 @@ export const IDIRPermitSearchResults = memo(
           if (shouldShowRowActions(idirUserDetails?.userRole)) {
             return (
               <Box className="idir-search-results__row-actions">
-                <IDIRPermitSearchRowActions
+                <PermitRowOptions
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
                   permitId={row.original.permitId}
-                  userRole={idirUserDetails?.userRole}
                   companyId={row.original.companyId}
                   permitActionOrigin={PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH}
+                  permissions={{
+                    canAmendPermit,
+                    canResendPermit,
+                    canViewPermitReceipt,
+                    canVoidPermit,
+                  }}
                 />
               </Box>
             );

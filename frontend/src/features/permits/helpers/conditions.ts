@@ -8,6 +8,22 @@ import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
 import { MANDATORY_TROW_CONDITIONS, TROW_CONDITIONS } from "../constants/trow";
 import { PermitCondition } from "../types/PermitCondition";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { MANDATORY_NRSCV_CONDITIONS, NRSCV_CONDITIONS } from "../constants/nrscv";
+import { MANDATORY_NRQCV_CONDITIONS, NRQCV_CONDITIONS } from "../constants/nrqcv";
+import { Nullable } from "../../../common/types/common";
+
+/**
+ * Determine whether or not a permit with given permit type can have LCV conditions attached to it.
+ * @param permitType Permit type
+ * @returns Whether or not a permit with given permit type can have LCV conditions attached to it
+ */
+export const canPermitTypeIncludeLCVCondition = (permitType?: Nullable<PermitType>) => {
+  if (!permitType) return false;
+  return ([
+    PERMIT_TYPES.TROS,
+    PERMIT_TYPES.STOS,
+  ] as PermitType[]).includes(permitType);
+};
 
 /**
  * Get mandatory conditions that must be selected for a permit type.
@@ -19,14 +35,22 @@ export const getMandatoryConditions = (
   permitType: PermitType,
   includeLcvCondition?: boolean,
 ) => {
-  const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
+  const additionalConditions =
+    includeLcvCondition && canPermitTypeIncludeLCVCondition(permitType)
+      ? [LCV_CONDITION]
+      : [];
+
   switch (permitType) {
     case PERMIT_TYPES.QRFR:
       return MANDATORY_QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return MANDATORY_STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRSCV:
+      return MANDATORY_NRSCV_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRQCV:
+      return MANDATORY_NRQCV_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
-      return MANDATORY_MFP_CONDITIONS; // MFP never allows additional conditions
+      return MANDATORY_MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return MANDATORY_STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
@@ -42,14 +66,22 @@ const getConditionsByPermitType = (
   permitType: PermitType,
   includeLcvCondition?: boolean,
 ) => {
-  const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
+  const additionalConditions =
+    includeLcvCondition && canPermitTypeIncludeLCVCondition(permitType)
+      ? [LCV_CONDITION]
+      : [];
+  
   switch (permitType) {
     case PERMIT_TYPES.QRFR:
       return QRFR_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STFR:
       return STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRSCV:
+      return NRSCV_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.NRQCV:
+      return NRQCV_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.MFP:
-      return MFP_CONDITIONS; // MFP never allows additional conditions
+      return MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
@@ -110,12 +142,14 @@ export const getDefaultConditions = (
  * @param isLcvDesignated Whether or not the LCV designation is to be used
  * @param prevSelectedConditions Previously selected permit conditions
  * @param vehicleSubtype Selected vehicle subtype
+ * @param permitType Permit type
  * @returns Updated permit conditions
  */
 export const getUpdatedConditionsForLCV = (
   isLcvDesignated: boolean,
   prevSelectedConditions: PermitCondition[],
   vehicleSubtype: string,
+  permitType: PermitType,
 ) => {
   if (!isLcvDesignated) {
     // If LCV not designated, remove LCV condition
@@ -136,10 +170,11 @@ export const getUpdatedConditionsForLCV = (
   }
 
   // If LCV is designated, and vehicle subtype is LCV but conditions don't have LCV,
-  // then add that LCV condition
+  // then add that LCV condition if the permit type allows it
   if (
     isVehicleSubtypeLCV(vehicleSubtype)
     && !prevSelectedConditions.some(({ condition }) => condition === LCV_CONDITION.condition)
+    && canPermitTypeIncludeLCVCondition(permitType)
   ) {
     return sortConditions([...prevSelectedConditions, LCV_CONDITION]);
   }
@@ -171,6 +206,7 @@ export const getPermitConditionSelectionState = (
     isLcvDesignated,
     prevSelectedConditions,
     vehicleSubtype,
+    permitType,
   );
 
   return defaultConditionsForPermitType.map((defaultCondition) => {
