@@ -70,5 +70,5 @@ jobs:
     uses: ./.github/workflows/idir-smoke-tests.yml
     secrets: inherit
     with:
-      target: ${{inputs.target}}
-      show_artifact: ${{inputs.show_artifact}}
+      target: "${{inputs.target}}"
+      show_artifact: "${{inputs.show_artifact}}"
