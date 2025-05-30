@@ -30,6 +30,7 @@ import {
   ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -65,6 +66,8 @@ export const ApplicationStepPage = ({
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
+  const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   
   // Query for the application data whenever this page is rendered
   const {
@@ -104,11 +107,15 @@ export const ApplicationStepPage = ({
   // Currently onRouteBC only handles TROS and TROW permits
   // other permit types are only allowed if its feature flag is enabled
   const isPermitTypeAllowed = () => {
-    const allowedPermitTypes: string[] = ([PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[])
+    const allowedPermitTypes: string[] = (
+      [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[]
+    )
       .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
       .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
       .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
-      .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : []);
+      .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : [])
+      .concat(enableNRSCV ? [PERMIT_TYPES.NRSCV] : [])
+      .concat(enableNRQCV ? [PERMIT_TYPES.NRQCV] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };
@@ -123,6 +130,14 @@ export const ApplicationStepPage = ({
         applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
     );
   };
+
+  const canEditIndividualApplicationInProgressDetails = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey:
+        "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+    },
+  });
 
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
@@ -140,10 +155,12 @@ export const ApplicationStepPage = ({
   };
 
   if (
+    // add permissions matrix check here
     isInvalidApplication ||
     !isValidApplicationStatus() ||
     !companyId ||
-    !isPermitTypeAllowed()
+    !isPermitTypeAllowed() ||
+    !canEditIndividualApplicationInProgressDetails
   ) {
     console.error("The application cannot be displayed or edited");
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;

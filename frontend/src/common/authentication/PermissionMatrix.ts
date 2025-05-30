@@ -91,6 +91,7 @@ const MANAGE_PERMITS = {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
+  // Currently there is no way of simply viewing an individual application in progress, navigating to an individual application takes the user to the edit step. Therefore this key will remain unused for now
   VIEW_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
@@ -121,7 +122,7 @@ const MANAGE_PERMITS = {
   /**
    * Active Permits tab
    */
-  VIEW_ACTIVE_PERMITS: {
+  VIEW_LIST_OF_ACTIVE_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: ALL_IDIR_ROLES,
   },
@@ -409,7 +410,7 @@ const GLOBAL_SEARCH = {
   AMEND_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO] },
   VOID_PERMIT: { allowedIDIRRoles: [SA] },
   REVOKE_PERMIT: { allowedIDIRRoles: [SA] },
-  RESEND: { allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA] },
+  RESEND_PERMIT: { allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA] },
 
   /** Search for Inactive Permit */
   SEARCH_FOR_INACTIVE_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO, EO] },

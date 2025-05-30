@@ -5,6 +5,7 @@ import {
 } from "../types/PermitCategory";
 
 import {
+  NON_RESIDENT_PERMIT_LIST,
   PERMIT_TYPES,
   PermitType,
   TERM_PERMIT_LIST,
@@ -47,24 +48,13 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
     //   label: getPermitTypeShortName(permitType),
     // })),
   },
-  /* TODO uncomment these when required */
   {
     value: PERMIT_CATEGORIES.NON_RESIDENT,
     label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
-    items: [
-      {
-        value: PERMIT_TYPES.QRFR,
-        label: getPermitTypeShortName(PERMIT_TYPES.QRFR),
-      },
-      {
-        value: PERMIT_TYPES.STFR,
-        label: getPermitTypeShortName(PERMIT_TYPES.STFR),
-      },
-    ],
-    // items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
-    //   value: permitType,
-    //   label: getPermitTypeShortName(permitType),
-    // })),
+    items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
+      value: permitType,
+      label: getPermitTypeShortName(permitType),
+    })),
   },
   {
     value: PERMIT_TYPES.MFP,
@@ -118,3 +108,22 @@ export const LCV_VEHICLE_SUBTYPES = [
     description: "LCV vehicles for approved carriers and routes only."
   },
 ];
+
+export const CONDITIONAL_LICENSING_FEE_LINKS = {
+  CONDITIONAL_LICENSING_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 3(b)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  INDUSTRIAL_X_PLATE_TYPE_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(c)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  FARM_VEHICLE_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(d)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+  FARM_TRACTOR_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation Item 2(b)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
+};

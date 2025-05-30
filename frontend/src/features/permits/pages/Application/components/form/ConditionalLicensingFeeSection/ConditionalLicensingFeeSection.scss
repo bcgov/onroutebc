@@ -1,0 +1,56 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".conditional-licensing-fee-section");
+@include orbcStyles.permit-left-box-style(".conditional-licensing-fee-section__header");
+@include orbcStyles.permit-right-box-style(".conditional-licensing-fee-section__body");
+
+.conditional-licensing-fee-section {
+  & &__radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;    
+  }
+
+  .conditional-licensing-fee-type {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0 0 0;
+
+    &--none {
+      margin-top: 0.25rem;
+    }
+
+    &__radio {
+      padding: 0;
+      margin-right: 0.5rem;
+
+      &:hover {
+        background-color: orbcStyles.$bc-border-grey;
+      }
+
+      &--checked {
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+
+    &--disabled {
+      .conditional-licensing-fee-type__radio {
+        color: orbcStyles.$disabled-colour;
+      }
+
+      .conditional-licensing-fee-type__label {
+        color: orbcStyles.$bc-black;
+      }
+    }
+
+    &__label-row {
+      margin: 0;
+    }
+
+    &__link {
+      margin-left: 0.25rem;
+    }
+  }
+}

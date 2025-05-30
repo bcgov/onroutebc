@@ -13,13 +13,13 @@ import { Nullable } from "../../../common/types/common";
 import { getFormattedPhoneNumber } from "../../../common/helpers/phone/getFormattedPhoneNumber";
 import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
-export const DisplayInfo = memo(
+export const DisplayCompanyInfo = memo(
   ({
     companyInfo,
-    setIsEditting,
+    setIsEditing,
   }: {
     companyInfo?: CompanyProfile;
-    setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const doingBusinessAs = companyInfo?.alternateName;
 
@@ -96,7 +96,7 @@ export const DisplayInfo = memo(
       primaryContactProvince ||
       primaryContactCity;
 
-    const enableEditCompanyInformationButton = usePermissionMatrix({
+    const canEditCompanyInformation = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MANAGE_PROFILE",
         permissionMatrixFunctionKey: "EDIT_COMPANY_INFORMATION",
@@ -183,8 +183,8 @@ export const DisplayInfo = memo(
             variant="contained"
             color="tertiary"
             sx={{ marginTop: "20px" }}
-            onClick={() => setIsEditting(true)}
-            disabled={!enableEditCompanyInformationButton}
+            onClick={() => setIsEditing(true)}
+            disabled={!canEditCompanyInformation}
           >
             <FontAwesomeIcon icon={faPencil} style={{ marginRight: "7px" }} />
             Edit
@@ -195,4 +195,4 @@ export const DisplayInfo = memo(
   },
 );
 
-DisplayInfo.displayName = "DisplayInfo";
+DisplayCompanyInfo.displayName = "DisplayCompanyInfo";

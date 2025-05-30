@@ -101,7 +101,7 @@ interface ContactDetails {
   additionalEmail?: string;
 }
 
-interface VehicleDetails {
+export interface VehicleDetails {
   vehicleId: string;
   vin: string;
   plate: string;
