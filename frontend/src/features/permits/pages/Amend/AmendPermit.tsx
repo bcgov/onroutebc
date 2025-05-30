@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import {
   Navigate,
   useLocation,
@@ -40,7 +40,8 @@ import {
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { USER_ROLE } from "../../../../common/authentication/types";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -224,14 +225,16 @@ export const AmendPermit = () => {
     return <Loading />;
   }
 
-  const canAmendPermit = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-      permissionMatrixFunctionKey: "AMEND_PERMIT",
-    },
-  });
+  const { idirUserDetails } = useContext(OnRouteBCContext);
 
-  if (!canAmendPermit) {
+  // unable to use permission matrix in this component, using manual role check instead
+  const canAmendPermit = (role?: string) => {
+    return (
+      role === USER_ROLE.PPC_CLERK || role === USER_ROLE.SYSTEM_ADMINISTRATOR
+    );
+  };
+
+  if (!canAmendPermit(idirUserDetails?.userRole)) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
