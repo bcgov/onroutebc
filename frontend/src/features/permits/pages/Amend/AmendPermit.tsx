@@ -230,7 +230,9 @@ export const AmendPermit = () => {
   // unable to use permission matrix in this component, using manual role check instead
   const canAmendPermit = (role?: string) => {
     return (
-      role === USER_ROLE.PPC_CLERK || role === USER_ROLE.SYSTEM_ADMINISTRATOR
+      role === USER_ROLE.PPC_CLERK ||
+      role === USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      role === USER_ROLE.CTPO
     );
   };
 
