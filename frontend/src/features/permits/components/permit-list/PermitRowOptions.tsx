@@ -52,6 +52,7 @@ export const PermitRowOptions = ({
   permissions: {
     canResendPermit: boolean;
     canViewPermitReceipt: boolean;
+    canViewExpiredPermitReceipt: boolean;
     canAmendPermit: boolean;
     canVoidPermit: boolean;
   };
@@ -125,6 +126,7 @@ export const PermitRowOptions = ({
   const {
     canResendPermit,
     canViewPermitReceipt,
+    canViewExpiredPermitReceipt,
     canAmendPermit,
     canVoidPermit,
   } = permissions;
@@ -136,7 +138,9 @@ export const PermitRowOptions = ({
     },
     {
       action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
-      isAuthorized: () => canViewPermitReceipt,
+      isAuthorized: (isExpired: boolean) =>
+        (!isExpired && canViewPermitReceipt) ||
+        (isExpired && canViewExpiredPermitReceipt),
     },
     {
       action: PERMIT_ACTION_TYPES.AMEND,

@@ -14,8 +14,13 @@ import { getPermitTypeName } from "../../types/PermitType";
  */
 export const PermitsColumnDefinition = (
   onDocumentUnavailable: () => void,
-  enableLink: boolean,
+  isExpired: boolean,
+  canViewIndividualActivePermitPDF: boolean,
+  canViewIndividualExpiredPermitPDF: boolean,
 ): MRT_ColumnDef<PermitListItem>[] => {
+  const enableLink =
+    (!isExpired && canViewIndividualActivePermitPDF) ||
+    (isExpired && canViewIndividualExpiredPermitPDF);
   return [
     {
       accessorKey: "permitNumber",
