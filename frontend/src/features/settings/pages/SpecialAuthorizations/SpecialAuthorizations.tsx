@@ -267,14 +267,14 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
         />
       ) : null}
 
-      {/* {canViewLCV ? ( */}
-      <LCVSection
-        LCVEnabled={isLcvAllowed}
-        onUpdateLCV={handleUpdateLCV}
-        canEnableLCV={canAddLCVFlag}
-        canDisableLCV={canRemoveLCVFlag}
-      />
-      {/* ) : null} */}
+      {canViewLCV ? (
+        <LCVSection
+          LCVEnabled={isLcvAllowed}
+          onUpdateLCV={handleUpdateLCV}
+          canEnableLCV={canAddLCVFlag}
+          canDisableLCV={canRemoveLCVFlag}
+        />
+      ) : null}
 
       {canReadLOA ? (
         <div className="special-authorizations__loa">

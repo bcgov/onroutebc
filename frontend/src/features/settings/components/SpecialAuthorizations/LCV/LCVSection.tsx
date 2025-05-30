@@ -7,13 +7,11 @@ import { AllowedIndicator } from "../AllowedIndicator/AllowedIndicator";
 export const LCVSection = ({
   LCVEnabled,
   onUpdateLCV,
-  // isEditable = false,
   canEnableLCV,
   canDisableLCV,
 }: {
   LCVEnabled: boolean;
   onUpdateLCV: (enable: boolean) => void;
-  // isEditable?: boolean;
   canEnableLCV: boolean;
   canDisableLCV: boolean;
 }) => {
