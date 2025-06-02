@@ -121,11 +121,9 @@ export const CommodityDetailsSection = ({
                 isOptionEqualToValue: (option, value) =>
                   option.value === value.value && option.label === value.label,
 
-                ListboxProps: { //List length
-                  style: {
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                  },
+                ListboxProps: {
+                  className:
+                    "commodity-details-section__listbox MuiAutocomplete-listbox",
                 },
               }}
               helperText={

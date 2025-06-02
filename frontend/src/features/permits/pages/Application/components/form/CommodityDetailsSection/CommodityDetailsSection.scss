@@ -5,6 +5,10 @@
 @include orbcStyles.permit-right-box-style(".commodity-details-section__body");
 
 .commodity-details-section {
+  &__listbox.MuiAutocomplete-listbox {
+    max-height: 300px;
+    overflow-y: auto;
+  }
   & &__input {
     max-width: 55.625rem;
 
