@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Switch } from "@mui/material";
 
 import "./LCVSection.scss";
