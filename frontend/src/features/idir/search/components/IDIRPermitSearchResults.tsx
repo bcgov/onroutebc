@@ -163,6 +163,13 @@ export const IDIRPermitSearchResults = memo(
       },
     });
 
+    const canViewExpiredPermitReceipt = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PERMITS",
+        permissionMatrixFunctionKey: "VIEW_EXPIRED_PERMIT_RECEIPT",
+      },
+    });
+
     const canAmendPermit = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "GLOBAL_SEARCH",
@@ -244,6 +251,7 @@ export const IDIRPermitSearchResults = memo(
                     canAmendPermit,
                     canResendPermit,
                     canViewPermitReceipt,
+                    canViewExpiredPermitReceipt,
                     canVoidPermit,
                   }}
                 />
