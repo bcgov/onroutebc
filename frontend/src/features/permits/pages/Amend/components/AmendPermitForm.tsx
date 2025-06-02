@@ -279,6 +279,7 @@ export const AmendPermitForm = () => {
 
   const durationOptions = durationOptionsForPermitType(
     formData.permitType,
+    true,
   ).filter((duration) => duration.value <= permitOldDuration);
 
   const applicationFormContextData = useMemo(

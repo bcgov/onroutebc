@@ -23,10 +23,12 @@ import {
 } from "../constants/trow";
 
 import {
-  MAX_STOS_DURATION,
+  MAX_STOS_CV_DURATION,
+  MAX_STOS_STAFF_DURATION,
   MIN_STOS_DURATION,
+  STOS_CV_DURATION_OPTIONS,
   STOS_DURATION_INTERVAL_DAYS,
-  STOS_DURATION_OPTIONS,
+  STOS_STAFF_DURATION_OPTIONS,
 } from "../constants/stos";
 
 import {
@@ -53,9 +55,13 @@ import {
 /**
  * Get list of selectable duration options for a given permit type.
  * @param permitType Permit type to get duration options for
+ * @param isStaff Whether or not the user who manages the permit is staff
  * @returns List of selectable duration options for the given permit type
  */
-export const durationOptionsForPermitType = (permitType: PermitType) => {
+export const durationOptionsForPermitType = (
+  permitType: PermitType,
+  isStaff: boolean,
+) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return STFR_DURATION_OPTIONS;
@@ -64,7 +70,7 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
     case PERMIT_TYPES.MFP:
       return MFP_DURATION_OPTIONS;
     case PERMIT_TYPES.STOS:
-      return STOS_DURATION_OPTIONS;
+      return isStaff ? STOS_STAFF_DURATION_OPTIONS : STOS_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:
@@ -105,9 +111,13 @@ export const minDurationForPermitType = (permitType: PermitType) => {
 /**
  * Get the maximum allowable duration for a given permit type.
  * @param permitType Permit type to get max duration for
+ * @param isStaff Whether or not the user who manages the permit is staff
  * @returns Maximum allowable duration for the permit type
  */
-export const maxDurationForPermitType = (permitType: PermitType) => {
+export const maxDurationForPermitType = (
+  permitType: PermitType,
+  isStaff: boolean,
+) => {
   switch (permitType) {
     case PERMIT_TYPES.STFR:
       return MAX_STFR_DURATION;
@@ -116,7 +126,7 @@ export const maxDurationForPermitType = (permitType: PermitType) => {
     case PERMIT_TYPES.MFP:
       return MAX_MFP_DURATION;
     case PERMIT_TYPES.STOS:
-      return MAX_STOS_DURATION;
+      return isStaff ? MAX_STOS_STAFF_DURATION : MAX_STOS_CV_DURATION;
     case PERMIT_TYPES.TROW:
       return MAX_TROW_DURATION;
     case PERMIT_TYPES.TROS:

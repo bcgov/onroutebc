@@ -39,7 +39,7 @@ const permitType = DEFAULT_PERMIT_TYPE;
 export const conditions = getDefaultConditions(permitType);
 export const defaultDuration = minDurationForPermitType(permitType);
 export const emptyConditions: PermitCondition[] = [];
-export const allDurations = durationOptionsForPermitType(permitType).map(
+export const allDurations = durationOptionsForPermitType(permitType, false).map(
   (durationOption) => ({
     text: durationOption.label,
     days: durationOption.value,
