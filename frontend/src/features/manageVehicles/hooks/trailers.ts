@@ -1,4 +1,9 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { QUERY_KEYS } from "./queryKeys";
 import {
@@ -13,12 +18,13 @@ import {
  * Hook that fetches a list of trailer subtypes.
  * @returns Query object for fetching trailer subtypes
  */
-export const useTrailerSubTypesQuery = () => {
+export const useTrailerSubTypesQuery = (enabled: boolean = true) => {
   return useQuery({
     queryKey: QUERY_KEYS.TRAILER_SUBTYPES(),
     queryFn: getTrailerSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
+    enabled,
   });
 };
 
@@ -31,13 +37,14 @@ export const useTrailerSubTypesQuery = () => {
 export const useTrailersQuery = (
   companyId: number,
   staleTime?: number,
+  enabled: boolean = true,
 ) => {
   return useQuery({
     queryKey: QUERY_KEYS.TRAILERS(),
     queryFn: () => getAllTrailers(companyId),
     placeholderData: (prev) => keepPreviousData(prev),
     staleTime,
-    enabled: Boolean(companyId),
+    enabled: enabled && Boolean(companyId),
   });
 };
 

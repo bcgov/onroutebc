@@ -86,6 +86,10 @@ export const formatTemplateData = (
   template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
     fullNames.mailingProvinceName;
+  if (template.permitData?.vehicleConfiguration?.trailers?.length) {
+    template.permitData.vehicleConfiguration.trailers =
+      fullNames.vehicleConfigurationTrailers;
+  }
 
   // Format Mailing Address
   template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryName;
@@ -97,12 +101,15 @@ export const formatTemplateData = (
   template.clientNumber = companyInfo.clientNumber;
   template.companyAlternateName = companyInfo.alternateName;
 
-  // Format Fee Summary
   const transcation = permit.permitTransactions?.at(0)?.transaction;
 
+  // Format Fee Summary
   template.permitData.feeSummary = formatAmount(
     transcation.transactionTypeId,
-    permit.permitTransactions?.at(0)?.transactionAmount,
+    permit.permitTransactions?.reduce(
+      (accumulator, item) => accumulator + item.transactionAmount,
+      0,
+    ),
   ).toString();
 
   if (permit.revision > 0) {

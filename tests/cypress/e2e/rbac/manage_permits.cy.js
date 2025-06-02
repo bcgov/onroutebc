@@ -1,4 +1,4 @@
-import { checkRoleAndSearch } from '../support/common';
+import { checkRoleAndSearch } from '../../support/common';
 
 describe('Manage Permits', () => {
   const permits_url = '/applications';

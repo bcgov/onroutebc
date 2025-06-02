@@ -1,6 +1,6 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
-import { Button, FormControl, FormHelperText } from "@mui/material";
+import { Button, FormControl } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -30,10 +30,8 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 
-import {
-  CustomFormComponent,
-  getErrorMessage,
-} from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
@@ -89,19 +87,20 @@ export const VoidPermitForm = ({
     }
   }, [voidResults]);
 
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = formMethods;
+  const { control, getValues, handleSubmit } = formMethods;
 
   const handleContinue = () => {
     const formValues = getValues();
     setVoidPermitData(formValues);
     next();
   };
+
+  const canRevokePermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "REVOKE_PERMIT",
+    },
+  });
 
   const handleOpenRevokeDialog = () => {
     setOpenRevokeDialog(true);
@@ -184,21 +183,17 @@ export const VoidPermitForm = ({
                   name="reason"
                   control={control}
                   rules={voidReasonRules}
-                  render={({ field: { value }, fieldState: { invalid } }) => (
+                  render={({ fieldState: { invalid } }) => (
                     <FormControl error={invalid}>
-                      <textarea
-                        className={`void-input void-input--reason ${
-                          invalid ? "void-input--err" : ""
-                        }`}
-                        rows={6}
-                        defaultValue={value}
-                        {...register("reason", voidReasonRules)}
-                      ></textarea>
-                      {invalid ? (
-                        <FormHelperText className="void-input__err" error>
-                          {getErrorMessage(errors, "reason")}
-                        </FormHelperText>
-                      ) : null}
+                      <CustomFormComponent
+                        type="textarea"
+                        feature={FEATURE}
+                        options={{
+                          name: "reason",
+                          rules: voidReasonRules,
+                          width: "100%",
+                        }}
+                      />
                     </FormControl>
                   )}
                 />
@@ -209,30 +204,32 @@ export const VoidPermitForm = ({
                 />
               </div>
 
-              <div className="reason-container__right">
-                <div className="revoke">
-                  <div className="revoke__header">Revoke this permit?</div>
+              {canRevokePermit && (
+                <div className="reason-container__right">
+                  <div className="revoke">
+                    <div className="revoke__header">Revoke this permit?</div>
 
-                  <div className="revoke__body">
-                    <div className="revoke__msg">
-                      Revoking a permit is a severe action that{" "}
-                      <span className="revoke__msg--bold">
-                        cannot be reversed.
-                      </span>{" "}
-                      There are{" "}
-                      <span className="revoke__msg--bold">no refunds</span> for
-                      revoked permits.
+                    <div className="revoke__body">
+                      <div className="revoke__msg">
+                        Revoking a permit is a severe action that{" "}
+                        <span className="revoke__msg--bold">
+                          cannot be reversed.
+                        </span>{" "}
+                        There are{" "}
+                        <span className="revoke__msg--bold">no refunds</span>{" "}
+                        for revoked permits.
+                      </div>
+
+                      <Button
+                        className="revoke__btn"
+                        onClick={handleOpenRevokeDialog}
+                      >
+                        Revoke Permit
+                      </Button>
                     </div>
-
-                    <Button
-                      className="revoke__btn"
-                      onClick={handleOpenRevokeDialog}
-                    >
-                      Revoke Permit
-                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

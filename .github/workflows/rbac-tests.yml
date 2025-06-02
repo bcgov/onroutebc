@@ -1,0 +1,132 @@
+name: Role Based Access Control Tests
+
+on:
+  workflow_call:
+    inputs:
+      ### Required
+      target:
+        description: 'PR number, test, uat or prod.'
+        default: 'test'
+        required: true
+        type: string
+      show_artifact:
+        description: 'boolean to show artifacts on run (default is on failure)'
+        default: false
+        required: true
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      ### Required
+      target:
+        description: 'PR number, test, uat or prod.'
+        default: 'test'
+        required: true
+        type: string
+      show_artifact:
+        description: 'boolean to show artifacts on run (default is on failure)'
+        default: false
+        required: true
+        type: boolean
+        
+
+jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      target: ${{ steps.env.outputs.target }}
+      environment: ${{ steps.env.outputs.environment }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: env
+        id: env
+        run: |
+          pr="${{inputs.target}}"
+          if [[ $pr != 'test' && $pr != 'demo' && $pr != 'uat' && $pr != 'prod'  ]]; then
+            target="$pr"
+            environment="dev"
+          else
+            target=${{inputs.target}}
+            environment=${{inputs.target}}
+          fi
+          echo "target=$target" >> $GITHUB_OUTPUT
+          echo "environment=$environment" >> $GITHUB_OUTPUT
+
+  rbac-tests:
+    name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
+    needs: [vars]
+    environment: ${{needs.vars.outputs.environment}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chrome
+            #- edge
+            #- firefox
+        test: 
+          - 'global_search.cy.js'
+          - 'manage_ppc_users.cy.js'
+          - 'manage_settings.cy.js'
+          - 'miscellaneous.cy.js'
+          - 'staff_home_screen.cy.js'
+          - 'manage_permits.cy.js'
+          - 'manage_profile.cy.js'
+          - 'manage_vehicle_inventory.cy.js'
+          - 'reports.cy.js'
+          - 'sticky_side_bar.cy.js'
+        role: 
+          - CA
+          - PA
+          - PC
+          - SA
+          - FIN
+          - EO
+          - HQA
+          - CTPO 
+            #- TRAIN
+
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref:  ORV2-3904 
+
+      - name: Load credentials for ${{ matrix.role }}
+        id: creds
+        run: |
+          # Dynamically fetch secrets using GitHub Actions syntax
+          echo "CYPRESS_USERNAME=${{ vars[format('USERNAME_{0}', matrix.role)] }}" >> $GITHUB_ENV
+          echo "CYPRESS_PASSWORD=${{ secrets[format('PASSWORD_{0}', matrix.role)] }}" >> $GITHUB_ENV
+
+      - name: Run Cypress tests for ${{ matrix.role }}
+        uses: cypress-io/github-action@v6.9.2
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_wait_time: 2000
+          CYPRESS_user_role: ${{matrix.role}}
+          CYPRESS_username: ${{env.CYPRESS_USERNAME}}
+          CYPRESS_password: ${{env.CYPRESS_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/rbac/${{matrix.test}}
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || inputs.show_artifact
+        with:
+          name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: failure() || inputs.show_artifact
+        with:
+          name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+  

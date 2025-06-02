@@ -1,4 +1,4 @@
-import { checkRoleAndSearch } from '../support/common';
+import { checkRoleAndSearch } from '../../support/common';
 
 describe('Staff Home Screen', () => {
   const wait_time = Cypress.env('wait_time');
