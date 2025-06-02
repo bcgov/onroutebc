@@ -123,7 +123,7 @@ export const CommodityDetailsSection = ({
 
                 ListboxProps: {
                   className:
-                    "commodity-details-section__listbox MuiAutocomplete-listbox",
+                    "commodity-details-section__listbox custom-listbox",
                 },
               }}
               helperText={
