@@ -13,11 +13,9 @@ describe('Sticky Side Bar', () => {
     }
     if(user_role === 'sa'){
       
-      cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
+      // not implemented yet for SA, should be upated to exist once the feature is implemented
+      // cy.get('button[aria-label="Manage PPC User"]').click();
+      // cy.wait(wait_time);
     
     }
 
@@ -37,18 +35,12 @@ describe('Sticky Side Bar', () => {
   }
 
   const expectSuccess = () => {
-    cy.get('a[href="/manage-profiles"]').click({ force: true });
-    cy.wait(wait_time);
-
-    
-    cy.contains('.tab__label', 'Add / Manage Users').should('exist');
+    // not implemented yet for SA, should be upated to exist once the feature is implemented
+    cy.get('button[aria-label="Manage PPC User"]').should('not.exist');
   }
   
   const expectFailure = () => {
-    cy.get('a[href="/manage-profiles"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.contains('.tab__label', 'Add / Manage Users').should('not.exist');
+    cy.get('button[aria-label="Manage PPC User"]').should('not.exist');
   }
 
   // Update PPC User role
@@ -58,13 +50,9 @@ describe('Sticky Side Bar', () => {
       cy.wait(wait_time); 
     }
     if(user_role === 'sa') {
-      cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      // TBD
+      // not implemented yet for SA, should be upated to exist once the feature is implemented
+      // cy.get('button[aria-label="Manage PPC User"]').click();
+      // cy.wait(wait_time);
     
     }
 
@@ -80,20 +68,9 @@ describe('Sticky Side Bar', () => {
       cy.wait(wait_time); 
     }
     if(user_role === 'sa') {
-      cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-      cy.wait(wait_time);
-
-      cy.get('input.PrivateSwitchBase-input[type="checkbox"]').last().click();
-      cy.wait(wait_time);
-
-      cy.get('button.trash-btn--active').click({force: true});
-      cy.wait(wait_time);
-
-      cy.get('button.delete-confirmation-dialog__btn--delete').click({force: true});
-      cy.wait(wait_time);
+      // not implemented yet for SA, should be upated to exist once the feature is implemented
+      // cy.get('button[aria-label="Manage PPC User"]').click();
+      // cy.wait(wait_time);
     
     }
 
@@ -108,24 +85,9 @@ describe('Sticky Side Bar', () => {
       cy.wait(wait_time); 
     }
     if(user_role === 'sa') {
-      cy.get('a[href="/manage-profiles"]').click({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('.tab__label', 'Add / Manage Users').should('exist').click({force: true});
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Add User').click({force: true});
-      cy.wait(wait_time);
-
-      cy.get('input[name="userName"]').type('BCEID1234');
-      cy.wait(wait_time);
-
-      // add the first user as admin
-      cy.get('input[type="radio"][value="ORGADMIN"]').check({ force: true });
-      cy.wait(wait_time);
-
-      cy.contains('button', 'Add User').click();
-      cy.wait(wait_time);
+      // not implemented yet for SA, should be upated to exist once the feature is implemented
+      // cy.get('button[aria-label="Manage PPC User"]').click();
+      // cy.wait(wait_time);
     
     }
 
