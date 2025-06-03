@@ -5,8 +5,13 @@
 @include orbcStyles.permit-right-box-style(".commodity-details-section__body");
 
 .commodity-details-section {
+  &__listbox.custom-listbox {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+
   & &__input {
-    max-width: 30.625rem;
+    max-width: 55.625rem;
 
     .custom-form-control {
       margin: 1.5rem 0 0 0;

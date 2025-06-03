@@ -183,15 +183,6 @@ export type NullableFields<T> = {
   [P in keyof T]?: Nullable<T[P]>;
 };
 
-/**
- * The type of item provided as a list to the TabLayout component
- */
-export interface DashboardTab {
-  label: string;
-  component: JSX.Element;
-  componentKey: string;
-}
-
 export const isNull = <T>(val?: Nullable<T>) => {
   return !val && typeof val !== "undefined" && val == null;
 };
