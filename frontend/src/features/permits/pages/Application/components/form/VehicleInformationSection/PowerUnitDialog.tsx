@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import "./AddPowerUnitDialog.scss";
+import "./PowerUnitDialog.scss";
 import { VehicleDetails } from "./VehicleDetails";
 import {
   EMPTY_VEHICLE_DETAILS,
@@ -24,7 +24,7 @@ import { PermitType } from "../../../../../types/PermitType";
 import { serializePermitVehicleDetails } from "../../../../../helpers/serialize/serializePermitVehicleDetails";
 import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
 
-export const AddPowerUnitDialog = ({
+export const PowerUnitDialog = ({
   open,
   feature,
   vehicleFormData,
@@ -34,7 +34,7 @@ export const AddPowerUnitDialog = ({
   isSelectedLOAVehicle,
   permitType,
   onCancel,
-  onAddPowerUnit,
+  onSavePowerUnit,
 }: {
   open: boolean;
   feature: ORBCFormFeatureType;
@@ -45,7 +45,7 @@ export const AddPowerUnitDialog = ({
   isSelectedLOAVehicle: boolean;
   permitType: PermitType;
   onCancel: () => void;
-  onAddPowerUnit: (powerUnit: PermitVehicleDetails) => void;
+  onSavePowerUnit: (powerUnit: PermitVehicleDetails) => void;
 }) => {
   const formMethods = useForm<{
     permitData: {
@@ -89,34 +89,36 @@ export const AddPowerUnitDialog = ({
     [setValue],
   );
 
-  const handleAdd = () => {
+  const handleSave = () => {
     const powerUnit = serializePermitVehicleDetails(selectedVehicle);
-    onAddPowerUnit(powerUnit);
+    onSavePowerUnit(powerUnit);
   };
 
   return (
     <Dialog
-      className="add-power-unit-dialog"
+      className="power-unit-dialog"
       open={open}
       onClose={onCancel}
       classes={{
-        paper: "add-power-unit-dialog__container",
+        paper: "power-unit-dialog__container",
       }}
     >
       <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(handleAdd)}>
+        <form onSubmit={handleSubmit(handleSave)}>
           <DialogTitle
             component="div"
-            className="add-power-unit-dialog__header"
+            className="power-unit-dialog__header"
           >
-            <div className="add-power-unit-dialog__icon">
+            <div className="power-unit-dialog__icon">
               <FontAwesomeIcon className="icon" icon={faPlus} />
             </div>
 
-            <span className="add-power-unit-dialog__title">Add Power Unit</span>
+            <span className="power-unit-dialog__title">
+              {vehicleFormData.vin ? "Edit" : "Add"} Power Unit
+            </span>
           </DialogTitle>
 
-          <DialogContent className="add-power-unit-dialog__body">
+          <DialogContent className="power-unit-dialog__body">
             <VehicleDetails
               feature={feature}
               vehicleFormData={selectedVehicle}
@@ -131,13 +133,13 @@ export const AddPowerUnitDialog = ({
             />
           </DialogContent>
 
-          <DialogActions className="add-power-unit-dialog__btns">
+          <DialogActions className="power-unit-dialog__btns">
             <Button
               key="cancel-button"
               aria-label="Cancel"
               variant="contained"
               color="tertiary"
-              className="add-power-unit-dialog__btn add-power-unit-dialog__btn--cancel"
+              className="power-unit-dialog__btn power-unit-dialog__btn--cancel"
               onClick={onCancel}
               data-testid="cancel-button"
             >
@@ -145,13 +147,13 @@ export const AddPowerUnitDialog = ({
             </Button>
 
             <Button
-              key="add-power-unit-button"
-              aria-label="Add"
+              key="power-unit-button"
+              aria-label="Done"
               type="submit"
-              className="add-power-unit-dialog__btn add-power-unit-dialog__btn--add"
-              data-testid="add-power-unit-button"
+              className="power-unit-dialog__btn power-unit-dialog__btn--done"
+              data-testid="save-power-unit-button"
             >
-              Add
+              Done
             </Button>
           </DialogActions>
         </form>
