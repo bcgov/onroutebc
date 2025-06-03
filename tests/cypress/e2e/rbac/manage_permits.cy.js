@@ -107,9 +107,6 @@ describe('Manage Permits', () => {
     cy.get('.shopping-cart-button').click({force: true});
     cy.wait(wait_time);
 
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
-
   }
 
   function startApplicationTrosAs(user_role, assertionFn) {
@@ -214,8 +211,7 @@ describe('Manage Permits', () => {
     cy.get('.shopping-cart-button').click({force: true});
     cy.wait(wait_time);
 
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
+    
 
   }
 
@@ -268,9 +264,16 @@ describe('Manage Permits', () => {
       else {
         cy.search(company_name);
       }
-      
-      cy.get('a.custom-link.column-link.column-link--application-details').first().click();
-      cy.wait(wait_time);      
+
+      cy.get('h3.no-records-found__msg').then(($el) => {
+        if ($el.length > 0) {
+          cy.log('No Records Found message is displayed.');
+        } else {
+          cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+          cy.wait(wait_time);    
+        }
+      });
+        
 
     assertionFn();
   }
@@ -284,20 +287,29 @@ describe('Manage Permits', () => {
       cy.search(company_name);
     }
 
-    cy.get('a.custom-link.column-link.column-link--application-details').first().click();
-    cy.wait(wait_time);
-
-    cy.get('body').then($body => {
-      if ($body.find('div.error-page__title').length == 0) {
-        cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
-        cy.wait(wait_time);
-              
-        cy.get('[data-testid="save-application-button"]').click();
-        cy.wait(wait_time);
+    cy.get('h3.no-records-found__msg').then(($el) => {
+      if ($el.length > 0) {
+        cy.log('No Records Found message is displayed.');
       } else {
-        cy.log('Unexpected Error element not found');
+        cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+        cy.wait(wait_time);
+
+        cy.get('body').then($body => {
+          if ($body.find('div.error-page__title').length == 0) {
+            cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+            cy.wait(wait_time);
+                  
+            cy.get('[data-testid="save-application-button"]').click();
+            cy.wait(wait_time);
+          } else {
+            cy.log('Unexpected Error element not found');
+          }
+        });
       }
     });
+    
+
+    
           
     assertionFn();
   }
@@ -667,6 +679,8 @@ describe('Manage Permits', () => {
   
   const expectSeePayNow = () => {
     cy.get('[data-testid="pay-now-btn"]').should('exist');
+    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
+    cy.wait(wait_time);
 
   }
 
