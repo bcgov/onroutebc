@@ -11,7 +11,10 @@ import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
@@ -21,7 +24,11 @@ import { serializePermitData } from "../../../helpers/serialize/serializePermitD
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
   const { companyId: companyIdParam } = useParams();
-  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
 
   const {
     permit,
@@ -42,7 +49,8 @@ export const AmendPermitFinish = () => {
     permit?.permitType,
   );
 
-  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const { data: specialAuthorizations } =
+    useFetchSpecialAuthorizations(companyId);
   const policyEngine = usePolicyEngine(specialAuthorizations);
   const calculatedRefundAmount = useCalculateRefundAmount(
     validTransactionHistory,
@@ -60,8 +68,7 @@ export const AmendPermitFinish = () => {
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
 
-  const { mutation: issuePermitMutation, issueResults } =
-    useIssuePermits();
+  const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
   useEffect(() => {
     if (typeof transaction !== "undefined") {

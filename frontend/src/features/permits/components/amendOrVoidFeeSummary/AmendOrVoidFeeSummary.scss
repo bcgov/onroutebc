@@ -1,0 +1,44 @@
+@import "../../../../themes/orbcStyles";
+
+.void-fee-summary {
+  display: flex;
+  flex-direction: column;
+  background-color: $banner-grey;
+  color: $bc-primary-blue;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 0.25rem;
+
+  &__title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  &__table {
+    display: flex;
+    flex-direction: column;
+
+    .table-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      font-size: 1rem;
+      padding: 1rem 0;
+
+      &--header {
+        font-weight: bold;
+        padding: 0 0 1rem 0;
+        border-bottom: 1px solid $bc-fee-summary-line-separator;
+      }
+
+      &--total {
+        border-top: 1px solid $bc-fee-summary-line-separator;
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 1.5rem;
+        padding: 1.5rem 0 0 0;
+      }
+    }
+  }
+}
