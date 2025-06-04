@@ -79,22 +79,6 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
         },
   });
 
-  const canAddLCVFlag = usePermissionMatrix({
-    featureFlag: "LCV",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "ADD_LCV_FLAG",
-    },
-  });
-
-  const canRemoveLCVFlag = usePermissionMatrix({
-    featureFlag: "LCV",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "REMOVE_LCV_FLAG",
-    },
-  });
-
   const canViewLCV = usePermissionMatrix({
     featureFlag: "LCV",
     permissionMatrixKeys: isStaffUser
@@ -106,6 +90,14 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
           permissionMatrixFeatureKey: "MANAGE_PROFILE",
           permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
         },
+  });
+
+  const canUpdateLCVFlag = usePermissionMatrix({
+    featureFlag: "LCV",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "UPDATE_LCV_FLAG",
+    },
   });
 
   const canReadLOA = usePermissionMatrix({
@@ -271,8 +263,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
         <LCVSection
           LCVEnabled={isLcvAllowed}
           onUpdateLCV={handleUpdateLCV}
-          canEnableLCV={canAddLCVFlag}
-          canDisableLCV={canRemoveLCVFlag}
+          canUpdateLCV={canUpdateLCVFlag}
         />
       ) : null}
 
