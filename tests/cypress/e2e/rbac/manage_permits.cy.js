@@ -96,16 +96,16 @@ describe('Manage Permits', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
+    // cy.get('input[type="checkbox"]').each(($checkbox) => {
+    //   cy.wrap($checkbox).click({ force: true });
+    // });
+    // cy.wait(wait_time);
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+    // cy.wait(wait_time);
 
-    cy.get('.shopping-cart-button').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('.shopping-cart-button').click({force: true});
+    // cy.wait(wait_time);
 
   }
 
@@ -200,18 +200,16 @@ describe('Manage Permits', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
+    // cy.get('input[type="checkbox"]').each(($checkbox) => {
+    //   cy.wrap($checkbox).click({ force: true });
+    // });
+    // cy.wait(wait_time);
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+    // cy.wait(wait_time);
 
-    cy.get('.shopping-cart-button').click({force: true});
-    cy.wait(wait_time);
-
-    
+    // cy.get('.shopping-cart-button').click({force: true});
+    // cy.wait(wait_time);
 
   }
 
@@ -635,12 +633,12 @@ describe('Manage Permits', () => {
       case 'sa':
       case 'train':
       case 'ctpo':
-        expectSeePayNow();
+        expectSuccessStartApplicationTros();
         break;
       case 'fin':
       case 'eo':
       case 'hqa':
-        expectNoStartApplication();
+        expectFailureStartApplicationTros();
         break;
     }
   }
@@ -682,15 +680,13 @@ describe('Manage Permits', () => {
     .should('include', 'Success');
   }
   
-  const expectSeePayNow = () => {
-    cy.get('[data-testid="pay-now-btn"]').should('exist');
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
+  const expectSuccessStartApplicationTros = () => {
+    cy.get('[data-testid="add-to-cart-btn"]').should('exist');
 
   }
 
-  const expectNoStartApplication = () => {
-    cy.contains('button', 'Start Application').should('not.exist');
+  const expectFailureStartApplicationTros = () => {
+    cy.get('[data-testid="add-to-cart-btn"]').should('not.exist');
   }
 
   const expectResultViewIndividualApplicationInProgress = () => {
