@@ -4,23 +4,25 @@ import "./LCVSection.scss";
 import { AllowedIndicator } from "../AllowedIndicator/AllowedIndicator";
 
 export const LCVSection = ({
-  enableLCV,
+  LCVEnabled,
   onUpdateLCV,
-  isEditable = false,
+  canUpdateLCV,
 }: {
-  enableLCV: boolean;
+  LCVEnabled: boolean;
   onUpdateLCV: (enable: boolean) => void;
-  isEditable?: boolean;
+  canUpdateLCV: boolean;
 }) => {
-  return isEditable || enableLCV ? (
-    <div className={`lcv-section ${isEditable ? "" : "lcv-section--readonly"}`}>
+  return canUpdateLCV || LCVEnabled ? (
+    <div
+      className={`lcv-section ${canUpdateLCV ? "" : "lcv-section--readonly"}`}
+    >
       <div className="lcv-section__header">
         <div className="lcv-section__title">Long Combination Vehicle (LCV)</div>
 
-        {isEditable ? (
+        {canUpdateLCV ? (
           <Switch
             className="lcv-section__enable-switch"
-            checked={enableLCV}
+            checked={LCVEnabled}
             onChange={async (_, checked) => onUpdateLCV(checked)}
           />
         ) : (
