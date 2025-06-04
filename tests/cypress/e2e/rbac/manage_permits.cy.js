@@ -254,29 +254,12 @@ describe('Manage Permits', () => {
       if(user_role === 'ca' || user_role === 'pa'){
         cy.visit(permits_url);
         cy.wait(wait_time);
-
-        cy.get('a.custom-link.column-link.column-link--application-details')
-        .first()
-        .should('be.visible')
-        .click();
-          cy.wait(wait_time);
       }
       else {
         cy.search(company_name);
       }
 
-      // const selector = 'h3.no-records-found__msg';
-      // const selector = 'a.custom-link.column-link.column-link--application-details';
-      // const elements = Cypress.$(selector);
-      // if (elements.length > 0) {
-      //   cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
-      //     cy.get('a.custom-link.column-link.column-link--application-details').first().click();
-      //     cy.wait(wait_time);
-      //   });       
-      // } else {
-      //   cy.log('No Records Found message is displayed.');
-      // }
-
+      if(user_role !== 'fin' && user_role !== 'eo' && user_role !== 'hqa') {
       cy.get('a.custom-link.column-link.column-link--application-details').then(($els) => {
         if ($els.length > 0) {
           cy.log('Element exists');
@@ -286,6 +269,7 @@ describe('Manage Permits', () => {
           cy.log('Element does NOT exist');
         }
       });
+    }
 
       
 
@@ -310,23 +294,27 @@ describe('Manage Permits', () => {
     else {
       cy.search(company_name);
     }
+    if(user_role !== 'fin' && user_role !== 'eo' && user_role !== 'hqa') {
+      cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
+        cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+          cy.wait(wait_time);
+  
+          cy.get('body').then($body => {
+            if ($body.find('div.error-page__title').length == 0) {
+              cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+              cy.wait(wait_time);
+                    
+              cy.get('[data-testid="save-application-button"]').click();
+              cy.wait(wait_time);
+            } else {
+              cy.log('Unexpected Error element not found');
+            }
+          });
+      });
 
-    cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
-      cy.get('a.custom-link.column-link.column-link--application-details').first().click();
-        cy.wait(wait_time);
+    }
 
-        cy.get('body').then($body => {
-          if ($body.find('div.error-page__title').length == 0) {
-            cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
-            cy.wait(wait_time);
-                  
-            cy.get('[data-testid="save-application-button"]').click();
-            cy.wait(wait_time);
-          } else {
-            cy.log('Unexpected Error element not found');
-          }
-        });
-    });
+    
     
     assertionFn();
   }
