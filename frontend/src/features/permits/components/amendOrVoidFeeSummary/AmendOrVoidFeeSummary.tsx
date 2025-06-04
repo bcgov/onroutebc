@@ -15,9 +15,9 @@ export const AmendOrVoidFeeSummary = ({
   newPermitValue = feeSummaryDisplayText(newPermitValue);
 
   return (
-    <div className="void-fee-summary">
-      <div className="void-fee-summary__title">Fee Summary</div>
-      <div className="void-fee-summary__table">
+    <div className="amend-or-void-fee-summary">
+      <div className="amend-or-void-fee-summary__title">Fee Summary</div>
+      <div className="amend-or-void-fee-summary__table">
         <div className="table-row table-row--header">
           <div className="table-row__th">Description</div>
           <div className="table-row__th">Amount</div>
