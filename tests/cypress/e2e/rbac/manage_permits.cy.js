@@ -265,14 +265,38 @@ describe('Manage Permits', () => {
         cy.search(company_name);
       }
 
-      cy.get('h3.no-records-found__msg').then(($el) => {
-        if ($el.length > 0) {
-          cy.log('No Records Found message is displayed.');
-        } else {
+      // const selector = 'h3.no-records-found__msg';
+      // const selector = 'a.custom-link.column-link.column-link--application-details';
+      // const elements = Cypress.$(selector);
+      // if (elements.length > 0) {
+      //   cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
+      //     cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+      //     cy.wait(wait_time);
+      //   });       
+      // } else {
+      //   cy.log('No Records Found message is displayed.');
+      // }
+
+      cy.get('a.custom-link.column-link.column-link--application-details').then(($els) => {
+        if ($els.length > 0) {
+          cy.log('Element exists');
           cy.get('a.custom-link.column-link.column-link--application-details').first().click();
-          cy.wait(wait_time);    
+          cy.wait(wait_time); 
+        } else {
+          cy.log('Element does NOT exist');
         }
       });
+
+      
+
+      // cy.get('h3.no-records-found__msg').then(($el) => {
+      //   if ($el.length > 0) {
+      //     cy.log('No Records Found message is displayed.');
+      //   } else {
+      //     cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+      //     cy.wait(wait_time);    
+      //   }
+      // });
         
 
     assertionFn();
@@ -287,11 +311,8 @@ describe('Manage Permits', () => {
       cy.search(company_name);
     }
 
-    cy.get('h3.no-records-found__msg').then(($el) => {
-      if ($el.length > 0) {
-        cy.log('No Records Found message is displayed.');
-      } else {
-        cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+    cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
+      cy.get('a.custom-link.column-link.column-link--application-details').first().click();
         cy.wait(wait_time);
 
         cy.get('body').then($body => {
@@ -305,12 +326,8 @@ describe('Manage Permits', () => {
             cy.log('Unexpected Error element not found');
           }
         });
-      }
     });
     
-
-    
-          
     assertionFn();
   }
 
@@ -707,7 +724,7 @@ describe('Manage Permits', () => {
   }
 
   const expectSuccessViewIndividualApplicationInProgress = () => {
-    cy.get('h2.layout-banner__text').should('be.visible').and('have.text', 'Permit Application');
+    cy.get('[data-testid="continue-application-button"]').should('exist');
   }
   
   const expectFailureViewIndividualApplicationInProgress = () => {
