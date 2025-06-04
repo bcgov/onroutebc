@@ -23,7 +23,7 @@ export const AmendOrVoidFeeSummary = ({
           <div className="table-row__th">Amount</div>
         </div>
 
-        <div className="table-row">
+        <div className="table-row table-row--current-value">
           <div className="table-row__td">Current Permit Value</div>
 
           <div className="table-row__td">{currentPermitValue}</div>

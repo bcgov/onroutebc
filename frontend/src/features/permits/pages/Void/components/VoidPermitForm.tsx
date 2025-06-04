@@ -81,6 +81,9 @@ export const VoidPermitForm = ({
 
   const currentPermitValue = calculateNetAmount(transactionHistory);
 
+  // amountToRefund is a negative number so we add here rather than subtract
+  const newPermitValue = currentPermitValue + amountToRefund;
+
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
@@ -205,7 +208,7 @@ export const VoidPermitForm = ({
 
                 <AmendOrVoidFeeSummary
                   currentPermitValue={`${currentPermitValue}`}
-                  newPermitValue={"0"}
+                  newPermitValue={`${newPermitValue}`}
                   amountToRefund={`${amountToRefund}`}
                 />
               </div>

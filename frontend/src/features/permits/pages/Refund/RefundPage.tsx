@@ -442,11 +442,6 @@ export const RefundPage = ({
               amountToRefund={`${amountToRefund}`}
             />
 
-            {/* <FeeSummary
-              permitType={permitType}
-              feeSummary={`${amountToRefund}`}
-            /> */}
-
             <div className="refund-fee-summary__footer">
               <Button
                 className="finish-btn"
