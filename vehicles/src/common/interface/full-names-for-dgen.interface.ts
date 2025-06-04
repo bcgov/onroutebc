@@ -9,4 +9,5 @@ export interface FullNamesForDgen {
   vehicleProvinceName: string;
   permitName: string;
   vehicleConfigurationTrailers?: VehicleDetails[];
+  commodityTypeName: string;
 }

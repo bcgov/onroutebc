@@ -13,7 +13,10 @@ import {
   DEFAULT_EMPTY_CARD_TYPE,
   PaymentMethodData,
 } from "../types/PaymentMethodData";
-import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import {
+  invalidTranactionIdLength,
+  requiredMessage,
+} from "../../../../../../../common/helpers/validationMessages";
 import { Nullable } from "../../../../../../../common/types/common";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
 import {
@@ -82,6 +85,10 @@ const transactionIdRules = {
         requiredMessage()
       );
     },
+  },
+  maxLength: {
+    value: 15,
+    message: invalidTranactionIdLength(15),
   },
 };
 

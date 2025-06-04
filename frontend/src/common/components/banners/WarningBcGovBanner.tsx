@@ -7,7 +7,7 @@ export const WarningBcGovBanner = ({
   className,
 }: {
   msg: string | JSX.Element;
-  additionalInfo?: JSX.Element;
+  additionalInfo?: string | JSX.Element;
   className?: string;
 }) => (
   <BcGovAlertBanner
