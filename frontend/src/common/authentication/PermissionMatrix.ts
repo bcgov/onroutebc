@@ -143,7 +143,7 @@ const MANAGE_PERMITS = {
    */
   VIEW_LIST_OF_EXPIRED_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_INDIVIDUAL_EXPIRED_PERMIT_PDF: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
