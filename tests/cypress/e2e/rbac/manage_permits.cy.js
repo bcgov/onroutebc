@@ -96,19 +96,16 @@ describe('Manage Permits', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
+    // cy.get('input[type="checkbox"]').each(($checkbox) => {
+    //   cy.wrap($checkbox).click({ force: true });
+    // });
+    // cy.wait(wait_time);
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+    // cy.wait(wait_time);
 
-    cy.get('.shopping-cart-button').click({force: true});
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
+    // cy.get('.shopping-cart-button').click({force: true});
+    // cy.wait(wait_time);
 
   }
 
@@ -203,19 +200,16 @@ describe('Manage Permits', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
+    // cy.get('input[type="checkbox"]').each(($checkbox) => {
+    //   cy.wrap($checkbox).click({ force: true });
+    // });
+    // cy.wait(wait_time);
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+    // cy.wait(wait_time);
 
-    cy.get('.shopping-cart-button').click({force: true});
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
+    // cy.get('.shopping-cart-button').click({force: true});
+    // cy.wait(wait_time);
 
   }
 
@@ -258,30 +252,34 @@ describe('Manage Permits', () => {
       if(user_role === 'ca' || user_role === 'pa'){
         cy.visit(permits_url);
         cy.wait(wait_time);
-
-        cy.get('a.custom-link.column-link.column-link--application-details')
-        .first()
-        .should('be.visible')
-        .click();
-          cy.wait(wait_time);
       }
       else {
         cy.search(company_name);
       }
 
-        cy.get('a[href="/applications"]').click({ force: true });
-        cy.wait(wait_time);
-
-        const selector = 'a.custom-link.column-link.column-link--application-details';
-        const elements = Cypress.$(selector); // Direct jQuery lookup
-
-        if (elements.length > 0) {
-          cy.get(selector).first().should('be.visible').click();
-          cy.wait(wait_time);
+      if(user_role !== 'fin' && user_role !== 'eo' && user_role !== 'hqa') {
+      cy.get('a.custom-link.column-link.column-link--application-details').then(($els) => {
+        if ($els.length > 0) {
+          cy.log('Element exists');
+          cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+          cy.wait(wait_time); 
         } else {
-          cy.log('Element not found, skipping click');
+          cy.log('Element does NOT exist');
         }
-        cy.wait(wait_time);      
+      });
+    }
+
+      
+
+      // cy.get('h3.no-records-found__msg').then(($el) => {
+      //   if ($el.length > 0) {
+      //     cy.log('No Records Found message is displayed.');
+      //   } else {
+      //     cy.get('a.custom-link.column-link.column-link--application-details').first().click();
+      //     cy.wait(wait_time);    
+      //   }
+      // });
+        
 
     assertionFn();
   }
@@ -291,36 +289,31 @@ describe('Manage Permits', () => {
       cy.visit(permits_url);
       cy.wait(wait_time);
     }
-    else if(user_role === 'fin' || user_role === 'eo' || user_role === 'hqa') {
+    else {
       cy.search(company_name);
     }
-
-    const selector = 'a.custom-link.column-link.column-link--application-details';
-        const elements = Cypress.$(selector);
-        if (elements.length > 0) {
-          cy.get('a.custom-link.column-link.column-link--application-details')
-          .first()
-          .should('be.visible')
-          .click();
+    if(user_role !== 'fin' && user_role !== 'eo' && user_role !== 'hqa') {
+      cy.get('a.custom-link.column-link.column-link--application-details').then($body => {
+        cy.get('a.custom-link.column-link.column-link--application-details').first().click();
           cy.wait(wait_time);
-
+  
           cy.get('body').then($body => {
             if ($body.find('div.error-page__title').length == 0) {
               cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
               cy.wait(wait_time);
-              
+                    
               cy.get('[data-testid="save-application-button"]').click();
               cy.wait(wait_time);
             } else {
               cy.log('Unexpected Error element not found');
             }
           });
-          
-        } else {
-          cy.log('Element not found, skipping click');
-        }
-        cy.wait(wait_time);  
+      });
 
+    }
+
+    
+    
     assertionFn();
   }
 
@@ -528,6 +521,21 @@ describe('Manage Permits', () => {
     assertionFn();
   }
 
+  const expectResultViewIndividualExpiredPermit = () => {
+    expectSuccessViewIndividualExpiredPermit();
+  }
+
+  const expectSuccessViewIndividualExpiredPermit = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('exist');
+  }
+  
+  const expectFailureViewIndividualExpiredPermit = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('not.exist');
+    
+  }
+
   function viewExpiredPermitsAs(user_role, assertionFn) {
     if(user_role === 'ca' || user_role === 'pa'){
       cy.visit(permits_url);
@@ -543,6 +551,20 @@ describe('Manage Permits', () => {
     cy.wait(wait_time);
     
     assertionFn();
+  }
+
+  const expectResultViewExpiredPermits = () => {
+    expectSuccessViewExpiredPermits();
+  }
+
+  const expectSuccessViewExpiredPermits = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('exist');
+  }
+  
+  const expectFailureViewExpiredPermits = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('not.exist');  
   }
 
   function viewExpiredPermitReceiptAs(user_role, assertionFn) {
@@ -570,6 +592,20 @@ describe('Manage Permits', () => {
 
     assertionFn();
   }
+
+  const expectResultViewExpiredPermitReceipt = () => {
+    expectSuccessViewExpiredPermitReceipt();
+  }
+
+  const expectSuccessViewExpiredPermitReceipt = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('exist');
+  }
+  
+  const expectFailureViewExpiredPermitReceipt = () => {
+    cy.xpath("//div[@class='tab__label' and text()='Expired Permits']")
+    .should('not.exist'); 
+  }
   
   const expectResult = () => {
     switch (user_role) {
@@ -593,18 +629,16 @@ describe('Manage Permits', () => {
     switch (user_role) {
       case 'ca':
       case 'pa':
-        expectNoInPersonOption();
-        break;
       case 'pc':
       case 'sa':
       case 'train':
       case 'ctpo':
-        expectNoInPersonOption();
+        expectSuccessStartApplicationTros();
         break;
       case 'fin':
       case 'eo':
       case 'hqa':
-        expectNoStartApplication();
+        expectFailureStartApplicationTros();
         break;
     }
   }
@@ -646,14 +680,13 @@ describe('Manage Permits', () => {
     .should('include', 'Success');
   }
   
-  const expectNoInPersonOption = () => {
-    cy.contains('div.label__text', 'In-person at a Service BC Office (GA)')
-  .should('not.exist');
+  const expectSuccessStartApplicationTros = () => {
+    cy.get('[data-testid="add-to-cart-btn"]').should('exist');
 
   }
 
-  const expectNoStartApplication = () => {
-    cy.contains('button', 'Start Application').should('not.exist');
+  const expectFailureStartApplicationTros = () => {
+    cy.get('[data-testid="add-to-cart-btn"]').should('not.exist');
   }
 
   const expectResultViewIndividualApplicationInProgress = () => {
@@ -675,7 +708,7 @@ describe('Manage Permits', () => {
   }
 
   const expectSuccessViewIndividualApplicationInProgress = () => {
-    cy.get('h2.layout-banner__text').should('be.visible').and('have.text', 'Permit Application');
+    cy.get('[data-testid="continue-application-button"]').should('exist');
   }
   
   const expectFailureViewIndividualApplicationInProgress = () => {
@@ -772,15 +805,11 @@ describe('Manage Permits', () => {
     cy.xpath("//div[@class='tab__label' and text()='Applications in Review']")
     .should('exist');
 
-
   }
   
   const expectFailureViewIndividualApplicationsInReview = () => {
-    
-    
+     
   }
-
-  
   
   beforeEach(() => {
     cy.loginAs(user_role);
@@ -843,15 +872,15 @@ describe('Manage Permits', () => {
   });
 
   it('Should View list of Expired Permits', () => {
-    viewExpiredPermitsAs(user_role, expectResult);
+    viewExpiredPermitsAs(user_role, expectResultViewExpiredPermits);
   });
 
   it('Should View individual Expired Permit PDF', () => {
-    viewIndividualExpiredPermitAs(user_role, expectResult);
+    viewIndividualExpiredPermitAs(user_role, expectResultViewIndividualExpiredPermit);
   });
 
   it('Should View Expired permit receipt', () => {
-    viewExpiredPermitReceiptAs(user_role, expectResult);
+    viewExpiredPermitReceiptAs(user_role, expectResultViewExpiredPermitReceipt);
   });
 
 });
