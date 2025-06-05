@@ -38,10 +38,10 @@ import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 export const CompanyInfoForm = memo(
   ({
     companyInfo,
-    setIsEditting,
+    setIsEditing,
   }: {
     companyInfo?: CompanyProfile;
-    setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
     const userEmail = getUserEmailFromSession();
@@ -130,7 +130,7 @@ export const CompanyInfoForm = memo(
           queryClient.invalidateQueries({
             queryKey: ["companyInfo"],
           });
-          setIsEditting(false);
+          setIsEditing(false);
         } // else { // Display Error in the form }
       },
     });
@@ -193,7 +193,7 @@ export const CompanyInfoForm = memo(
             aria-label="Cancel Update"
             variant="contained"
             color="tertiary"
-            onClick={() => setIsEditting(false)}
+            onClick={() => setIsEditing(false)}
             className="submit-btn submit-btn--cancel"
           >
             Cancel

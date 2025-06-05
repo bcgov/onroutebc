@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
-import { SETTINGS_TABS, SettingsTab } from "../../types/tabs";
+import { SETTINGS_TABS } from "../../types/tabs";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
@@ -10,6 +10,7 @@ import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadat
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
+import { TabComponentProps } from "../../../../common/components/tabs/types/TabComponentProps";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { companyId } = useContext(OnRouteBCContext);
@@ -34,16 +35,16 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
 
-  const canViewSuspend = usePermissionMatrix({
+  const canViewSuspendCompanyInfo = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SUSPEND_COMPANY_INFO",
     },
   });
 
-  const showSuspendTab = canViewSuspend && !hideSuspendTab;
+  const showSuspendTab = canViewSuspendCompanyInfo && !hideSuspendTab;
 
-  const showSpecialAuth = usePermissionMatrix({
+  const canViewSpecialAuthorizations = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
@@ -69,7 +70,7 @@ export const ManageSettingsDashboard = React.memo(() => {
   }
 
   const tabs = [
-    showSpecialAuth
+    canViewSpecialAuthorizations
       ? {
           label: "Special Authorizations",
           component: <SpecialAuthorizations companyId={companyId} />,
@@ -92,11 +93,7 @@ export const ManageSettingsDashboard = React.memo(() => {
           componentKey: SETTINGS_TABS.SUSPEND,
         }
       : null,
-  ].filter((tab) => Boolean(tab)) as {
-    label: string;
-    component: JSX.Element;
-    componentKey: SettingsTab;
-  }[];
+  ].filter((tab) => Boolean(tab)) as TabComponentProps[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(

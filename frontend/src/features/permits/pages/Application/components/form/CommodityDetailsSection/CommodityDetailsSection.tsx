@@ -1,4 +1,4 @@
-import { Box, MenuItem } from "@mui/material";
+import { Box, MenuItem, Tooltip } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 
 import "./CommodityDetailsSection.scss";
@@ -113,11 +113,18 @@ export const CommodityDetailsSection = ({
                 },
                 renderOption: (props, option) => (
                   <MenuItem {...props} key={option.value} value={option.value}>
-                    {option.label}
+                    <Tooltip title={option.label}>
+                      <span>{option.label}</span>
+                    </Tooltip>
                   </MenuItem>
                 ),
                 isOptionEqualToValue: (option, value) =>
                   option.value === value.value && option.label === value.label,
+
+                ListboxProps: {
+                  className:
+                    "commodity-details-section__listbox custom-listbox",
+                },
               }}
               helperText={
                 error?.message

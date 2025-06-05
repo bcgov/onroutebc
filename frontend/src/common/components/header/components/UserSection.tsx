@@ -13,7 +13,7 @@ export const UserSection = ({ username }: { username: string }) => {
   const { companyId } = useContext(OnRouteBCContext);
   const { cartCount } = useContext(CartContext);
   const cartItemCount = getDefaultRequiredVal(0, cartCount);
-  const showShoppingCart =
+  const canViewShoppingCart =
     usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MISCELLANEOUS",
@@ -25,7 +25,7 @@ export const UserSection = ({ username }: { username: string }) => {
     <div className="user-section">
       <UserSectionInfo username={username} />
 
-      {showShoppingCart ? (
+      {canViewShoppingCart ? (
         <ShoppingCartButton cartItemCount={cartItemCount} />
       ) : null}
 

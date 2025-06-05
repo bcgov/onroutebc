@@ -29,12 +29,7 @@ import {
 } from "../../../settings/types/creditAccount";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
-
-interface ProfileDashboardTab {
-  label: string;
-  component: JSX.Element;
-  componentKey: string;
-}
+import { TabComponentProps } from "../../../../common/components/tabs/types/TabComponentProps";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -69,12 +64,14 @@ export const ManageProfilesDashboard = React.memo(() => {
     useGetCreditAccountMetadataQuery(companyId);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
-  const showUserManagementTab = usePermissionMatrix({
+
+  const canViewUserManagementScreen = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
       permissionMatrixFunctionKey: "VIEW_USER_MANAGEMENT_SCREEN",
     },
   });
+
   const { data: specialAuthorizations, isPending: isSpecialAuthAPILoading } =
     useFetchSpecialAuthorizations(companyId as number, true);
   const activeLOAsQuery = useFetchLOAs(companyId, false);
@@ -88,6 +85,14 @@ export const ManageProfilesDashboard = React.memo(() => {
       permissionMatrixFunctionKey: "EDIT_AN_LOA",
     },
   });
+
+  const canViewCompanyInformation = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "VIEW_COMPANY_INFORMATION",
+    },
+  });
+
   const showSpecialAuth = usePermissionMatrix({
     additionalConditionToCheck: () =>
       !isStaffActingAsCompany &&
@@ -110,7 +115,7 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
-  const showCreditAccountTab = usePermissionMatrix({
+  const canViewCreditAccounTabAccountHolder = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
@@ -119,22 +124,31 @@ export const ManageProfilesDashboard = React.memo(() => {
     additionalConditionToCheck: () => isCreditAccountHolder,
   });
 
+  const canViewMyInformation = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "VIEW_MY_INFORMATION",
+    },
+  });
+
   const { state: stateFromNavigation } = useLocation();
 
-  const tabs: ProfileDashboardTab[] = [
-    {
-      label: "Company Information",
-      component: <CompanyInfo companyInfoData={companyInfoData} />,
-      componentKey: PROFILE_TABS.COMPANY_INFORMATION,
-    },
-    !isStaffActingAsCompany
+  const tabs: TabComponentProps[] = [
+    canViewCompanyInformation
+      ? {
+          label: "Company Information",
+          component: <CompanyInfo companyInfoData={companyInfoData} />,
+          componentKey: PROFILE_TABS.COMPANY_INFORMATION,
+        }
+      : null,
+    canViewMyInformation
       ? {
           label: "My Information",
           component: <MyInfo />,
           componentKey: PROFILE_TABS.MY_INFORMATION,
         }
       : null,
-    showUserManagementTab
+    canViewUserManagementScreen
       ? {
           label: "Add / Manage Users",
           component: <UserManagement />,
@@ -148,7 +162,7 @@ export const ManageProfilesDashboard = React.memo(() => {
           componentKey: PROFILE_TABS.SPECIAL_AUTH,
         }
       : null,
-    showCreditAccountTab
+    canViewCreditAccounTabAccountHolder
       ? {
           label: "Credit Account",
           component: (
@@ -163,7 +177,7 @@ export const ManageProfilesDashboard = React.memo(() => {
           componentKey: PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,
-  ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
+  ].filter((tab) => Boolean(tab)) as TabComponentProps[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(
@@ -173,6 +187,13 @@ export const ManageProfilesDashboard = React.memo(() => {
     return tabIndex;
   };
 
+  const canAddUser = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "ADD_USER",
+    },
+  });
+
   // Only show "Add User" button for Add / Manage Users tab
   const showAddUserButton = (selectedTabIndex: number) => {
     // Get index of Add / Manage Users tab, if it exists
@@ -180,7 +201,9 @@ export const ManageProfilesDashboard = React.memo(() => {
       (tab) => tab.componentKey === PROFILE_TABS.USER_MANAGEMENT,
     );
 
-    return showUserManagementTab && selectedTabIndex === userManagementTabIndex;
+    return (
+      canViewUserManagementScreen && selectedTabIndex === userManagementTabIndex
+    );
   };
 
   const initialSelectedTabIndex = getSelectedTabFromNavigation();
@@ -220,6 +243,7 @@ export const ManageProfilesDashboard = React.memo(() => {
             sx={{
               height: "50px",
             }}
+            disabled={!canAddUser}
           >
             Add User
           </Button>

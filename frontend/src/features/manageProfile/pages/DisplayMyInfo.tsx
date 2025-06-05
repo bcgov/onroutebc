@@ -8,6 +8,7 @@ import { ReadUserInformationResponse } from "../types/manageProfile";
 import { getProvinceFullName } from "../../../common/helpers/countries/getProvinceFullName";
 import { getCountryFullName } from "../../../common/helpers/countries/getCountryFullName";
 import { getFormattedPhoneNumber } from "../../../common/helpers/phone/getFormattedPhoneNumber";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 export const DisplayMyInfo = memo(
   ({
@@ -18,7 +19,17 @@ export const DisplayMyInfo = memo(
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const countryFullName = getCountryFullName(myInfo?.countryCode);
-    const provinceFullName = getProvinceFullName(myInfo?.countryCode, myInfo?.provinceCode);
+    const provinceFullName = getProvinceFullName(
+      myInfo?.countryCode,
+      myInfo?.provinceCode,
+    );
+
+    const canEditMyInformation = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PROFILE",
+        permissionMatrixFunctionKey: "EDIT_MY_INFORMATION",
+      },
+    });
 
     return myInfo ? (
       <div className="my-info-display">
@@ -41,16 +52,10 @@ export const DisplayMyInfo = memo(
             </Typography>
           ) : null}
 
-          {countryFullName ? (
-            <Typography>
-              {countryFullName}
-            </Typography>
-          ) : null}
+          {countryFullName ? <Typography>{countryFullName}</Typography> : null}
 
           {provinceFullName ? (
-            <Typography>
-              {provinceFullName}
-            </Typography>
+            <Typography>{provinceFullName}</Typography>
           ) : null}
 
           <Typography>{myInfo.city}</Typography>
@@ -61,6 +66,7 @@ export const DisplayMyInfo = memo(
             variant="contained"
             color="tertiary"
             onClick={() => setIsEditing(true)}
+            disabled={!canEditMyInformation}
           >
             <FontAwesomeIcon className="edit-icon" icon={faPencil} />
             Edit
