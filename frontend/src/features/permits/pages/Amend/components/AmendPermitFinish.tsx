@@ -16,7 +16,6 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
-import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { useRefundPermitMutation } from "../../Refund/hooks/useRefundPermit";
