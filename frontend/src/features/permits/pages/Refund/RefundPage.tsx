@@ -23,9 +23,8 @@ import {
 import { getErrorMessage } from "../../../../common/components/form/CustomFormComponents";
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
-import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { isZeroAmount } from "../../helpers/feeSummary";
+import { calculateNetAmount, isZeroAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable, Optional } from "../../../../common/types/common";
 import {
@@ -35,6 +34,7 @@ import {
   PAYMENT_METHOD_TYPE_DISPLAY,
   getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
+import { AmendOrVoidFeeSummary } from "../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -242,6 +242,11 @@ export const RefundPage = ({
     onFinish(formValues);
   };
 
+  const currentPermitValue = calculateNetAmount(validTransactionHistory);
+
+  // amountToRefund is a negative number so we add here rather than subtract
+  const newPermitValue = currentPermitValue + amountToRefund;
+
   const showSendSection = permitAction === "void" || permitAction === "revoke";
   const showReasonSection =
     (permitAction === "void" || permitAction === "revoke") && reason;
@@ -431,11 +436,12 @@ export const RefundPage = ({
               </div>
             </div>
 
-            <FeeSummary
-              permitType={permitType}
-              feeSummary={`${amountToRefund}`}
+            <AmendOrVoidFeeSummary
+              currentPermitValue={`${currentPermitValue}`}
+              newPermitValue={`${newPermitValue}`}
+              amountToRefund={`${amountToRefund}`}
             />
-            
+
             <div className="refund-fee-summary__footer">
               <Button
                 className="finish-btn"

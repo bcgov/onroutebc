@@ -143,7 +143,7 @@ const MANAGE_PERMITS = {
    */
   VIEW_LIST_OF_EXPIRED_PERMITS: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_INDIVIDUAL_EXPIRED_PERMIT_PDF: {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
@@ -247,8 +247,7 @@ const MANAGE_SETTINGS = {
   VIEW_SPECIAL_AUTHORIZATIONS: { allowedIDIRRoles: ALL_IDIR_ROLES },
   ADD_NO_FEE_FLAG: { allowedIDIRRoles: [SA, HQA] },
   UPDATE_NO_FEE_FLAG: { allowedIDIRRoles: [SA, HQA] },
-  ADD_LCV_FLAG: { allowedIDIRRoles: [SA, HQA] },
-  REMOVE_LCV_FLAG: { allowedIDIRRoles: [SA, HQA] },
+  UPDATE_LCV_FLAG: { allowedIDIRRoles: [SA, HQA] },
   ADD_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   EDIT_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   VIEW_LOA: { allowedIDIRRoles: ALL_IDIR_ROLES },
