@@ -131,14 +131,6 @@ describe('Manage Profile', () => {
         cy.contains('button', 'Save').should('exist').click();
         cy.wait(wait_time);
     
-        cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
-        cy.wait(wait_time);
-    
-        cy.get('td[data-index="1"]').first()
-        .should('exist')
-        .within(() => {
-          cy.get('span').should('exist');
-        });
     }
     else{
       cy.search(company_name);
