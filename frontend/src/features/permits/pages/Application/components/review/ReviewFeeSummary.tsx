@@ -13,11 +13,7 @@ import { useContext } from "react";
 import { AmendPermitContext } from "../../../Amend/context/AmendPermitContext";
 import { isValidTransaction } from "../../../../helpers/payment";
 import { calculateNetAmount } from "../../../../helpers/feeSummary";
-import { useParams } from "react-router-dom";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../../common/helpers/util";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { useFetchSpecialAuthorizations } from "../../../../../settings/hooks/specialAuthorizations";
 import { usePolicyEngine } from "../../../../../policy/hooks/usePolicyEngine";
 import { useCalculateRefundAmount } from "../../../../hooks/useCalculateRefundAmount";
@@ -31,6 +27,7 @@ export const ReviewFeeSummary = ({
   permitType,
   fee,
   reviewContext,
+  companyId,
 }: {
   hasAttemptedSubmission: boolean;
   areAllConfirmed: boolean;
@@ -38,6 +35,7 @@ export const ReviewFeeSummary = ({
   permitType?: Nullable<PermitType>;
   fee: string;
   reviewContext: PermitReviewContext;
+  companyId: number;
 }) => {
   const isAmendAction = reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND;
 
@@ -50,13 +48,6 @@ export const ReviewFeeSummary = ({
 
   const currentPermitValue = calculateNetAmount(validTransactionHistory);
 
-  const { companyId: companyIdParam } = useParams();
-  const companyId: number = applyWhenNotNullable(
-    (id) => Number(id),
-    companyIdParam,
-    0,
-  );
-
   permitType = getDefaultRequiredVal(
     DEFAULT_PERMIT_TYPE,
     amendmentApplication?.permitType,
@@ -65,7 +56,9 @@ export const ReviewFeeSummary = ({
 
   const { data: specialAuthorizations } =
     useFetchSpecialAuthorizations(companyId);
+
   const policyEngine = usePolicyEngine(specialAuthorizations);
+
   const calculatedRefundAmount = useCalculateRefundAmount(
     validTransactionHistory,
     {

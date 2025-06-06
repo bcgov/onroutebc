@@ -44,14 +44,17 @@ export const ApplicationInQueueReview = ({
     DEFAULT_PERMIT_TYPE,
     applicationData?.permitType,
   );
-  
+
   const policyEngine = usePolicyEngine(specialAuth);
-  const fee = useCalculatePermitFee({
-    permitType,
-    permitData: applicationData?.permitData
-      ? serializePermitData(applicationData.permitData)
-      : {},
-  }, policyEngine);
+  const fee = useCalculatePermitFee(
+    {
+      permitType,
+      permitData: applicationData?.permitData
+        ? serializePermitData(applicationData.permitData)
+        : {},
+    },
+    policyEngine,
+  );
 
   const navigate = useNavigate();
 
@@ -166,7 +169,10 @@ export const ApplicationInQueueReview = ({
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={true}
           thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}
-          conditionalLicensingFee={applicationData?.permitData?.conditionalLicensingFee}
+          conditionalLicensingFee={
+            applicationData?.permitData?.conditionalLicensingFee
+          }
+          companyId={companyId}
         />
       </FormProvider>
 

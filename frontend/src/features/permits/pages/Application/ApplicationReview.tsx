@@ -73,12 +73,15 @@ export const ApplicationReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
-  const fee = useCalculatePermitFee({
-    permitType,
-    permitData: applicationData?.permitData
-      ? serializePermitData(applicationData.permitData)
-      : {},
-  }, policyEngine);
+  const fee = useCalculatePermitFee(
+    {
+      permitType,
+      permitData: applicationData?.permitData
+        ? serializePermitData(applicationData.permitData)
+        : {},
+    },
+    policyEngine,
+  );
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -377,7 +380,10 @@ export const ApplicationReview = ({
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={isStaffUser}
           thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}
-          conditionalLicensingFee={applicationData?.permitData?.conditionalLicensingFee}
+          conditionalLicensingFee={
+            applicationData?.permitData?.conditionalLicensingFee
+          }
+          companyId={companyId}
         />
       </FormProvider>
 
