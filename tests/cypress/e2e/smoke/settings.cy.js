@@ -1,5 +1,5 @@
-describe('Login Test for OnRouteBC', () => {
-  it('Should navigate to the login page, find the login button, and enter credentials', () => {
+describe('Manage for settings', () => {
+  it('Should manage settings with different roles', () => {
     // Retrieve the environment variables
     const username = Cypress.env('username');
     const password = Cypress.env('password');
@@ -8,6 +8,7 @@ describe('Login Test for OnRouteBC', () => {
     const vehicles_url = Cypress.env('/manage-vehicles');
     const profiles_url = Cypress.env('/manage-profiles');
     const wait_time = Cypress.env('wait_time');
+    const user_role = Cypress.env('user_role').toLowerCase();
 
     // Step 1: Visit the base URL
     cy.visit('/');
@@ -53,6 +54,12 @@ describe('Login Test for OnRouteBC', () => {
 
     cy.contains('a', 'Settings').click();
     cy.wait(wait_time);
+
+    if (user_role !== 'sa' && user_role !== 'fin' && user_role !== 'eo' && user_role !== 'ctpo') {
+      cy.contains('.tab__label', 'Suspend').should('not.exist');
+      cy.wait(wait_time);
+      return;
+    }
 
     cy.contains('.tab__label', 'Suspend').should('exist').click();
     cy.wait(wait_time);
