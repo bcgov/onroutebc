@@ -65,7 +65,8 @@ export const AmendPermitReview = () => {
     amendmentApplication?.permitType,
     permit?.permitType,
   );
-  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const { data: specialAuthorizations } =
+    useFetchSpecialAuthorizations(companyId);
 
   const policyEngine = usePolicyEngine(specialAuthorizations);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
@@ -139,7 +140,9 @@ export const AmendPermitReview = () => {
         permitDuration={amendmentApplication?.permitData?.permitDuration}
         permitExpiryDate={amendmentApplication?.permitData?.expiryDate}
         permitConditions={amendmentApplication?.permitData?.commodities}
-        permittedCommodity={amendmentApplication?.permitData?.permittedCommodity}
+        permittedCommodity={
+          amendmentApplication?.permitData?.permittedCommodity
+        }
         commodityOptions={commodityOptions}
         createdDateTime={createdDateTime}
         updatedDateTime={updatedDateTime}
@@ -157,7 +160,9 @@ export const AmendPermitReview = () => {
         vehicleWasSaved={
           amendmentApplication?.permitData?.vehicleDetails?.saveVehicle
         }
-        vehicleConfiguration={amendmentApplication?.permitData?.vehicleConfiguration}
+        vehicleConfiguration={
+          amendmentApplication?.permitData?.vehicleConfiguration
+        }
         route={amendmentApplication?.permitData?.permittedRoute}
         applicationNotes={amendmentApplication?.permitData?.applicationNotes}
         showChangedFields={true}
@@ -180,8 +185,13 @@ export const AmendPermitReview = () => {
         doingBusinessAs={doingBusinessAs}
         loas={amendmentApplication?.permitData?.loas}
         isStaffUser={true}
-        thirdPartyLiability={amendmentApplication?.permitData?.thirdPartyLiability}
-        conditionalLicensingFee={amendmentApplication?.permitData?.conditionalLicensingFee}
+        thirdPartyLiability={
+          amendmentApplication?.permitData?.thirdPartyLiability
+        }
+        conditionalLicensingFee={
+          amendmentApplication?.permitData?.conditionalLicensingFee
+        }
+        companyId={companyId}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
