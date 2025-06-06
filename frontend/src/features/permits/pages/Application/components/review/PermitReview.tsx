@@ -87,19 +87,31 @@ interface PermitReviewProps {
   isStaffUser: boolean;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
+  companyId: number;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
   const { powerUnitSubTypes, trailerSubTypes } = props;
-  const powerUnitSubtypeNamesMap = useMemo(() => new Map<string, string>(
-    getDefaultRequiredVal([], powerUnitSubTypes)
-      .map(({ typeCode, type }) => [typeCode, type]),
-  ), [powerUnitSubTypes]);
+  const powerUnitSubtypeNamesMap = useMemo(
+    () =>
+      new Map<string, string>(
+        getDefaultRequiredVal([], powerUnitSubTypes).map(
+          ({ typeCode, type }) => [typeCode, type],
+        ),
+      ),
+    [powerUnitSubTypes],
+  );
 
-  const trailerSubtypeNamesMap = useMemo(() => new Map<string, string>(
-    getDefaultRequiredVal([], trailerSubTypes)
-      .map(({ typeCode, type }) => [typeCode, type]),
-  ), [trailerSubTypes]);
+  const trailerSubtypeNamesMap = useMemo(
+    () =>
+      new Map<string, string>(
+        getDefaultRequiredVal([], trailerSubTypes).map(({ typeCode, type }) => [
+          typeCode,
+          type,
+        ]),
+      ),
+    [trailerSubTypes],
+  );
 
   const shouldShowRejectionHistory =
     (props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE ||
@@ -115,8 +127,9 @@ export const PermitReview = (props: PermitReviewProps) => {
         )
       : false;
 
-  const hasToCartButton = props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY
-    && (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser);
+  const hasToCartButton =
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
+    (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser);
 
   return (
     <Box className="permit-review layout-box">
@@ -176,7 +189,9 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <LoadedDimensions
           vehicleConfiguration={props.vehicleConfiguration}
-          oldVehicleConfiguration={props.oldFields?.permitData?.vehicleConfiguration}
+          oldVehicleConfiguration={
+            props.oldFields?.permitData?.vehicleConfiguration
+          }
           showChangedFields={props.showChangedFields}
         />
 
@@ -188,7 +203,9 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ThirdPartyLiabilitySection
           thirdPartyLiability={props.thirdPartyLiability}
-          oldThirdPartyLiability={props.oldFields?.permitData?.thirdPartyLiability}
+          oldThirdPartyLiability={
+            props.oldFields?.permitData?.thirdPartyLiability
+          }
           showChangedFields={props.showChangedFields}
         />
 
@@ -200,9 +217,13 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewVehicleWeightSection
           loadedGVW={props.vehicleConfiguration?.loadedGVW}
-          oldLoadedGVW={props.oldFields?.permitData?.vehicleConfiguration?.loadedGVW}
+          oldLoadedGVW={
+            props.oldFields?.permitData?.vehicleConfiguration?.loadedGVW
+          }
           netWeight={props.vehicleConfiguration?.netWeight}
-          oldNetWeight={props.oldFields?.permitData?.vehicleConfiguration?.netWeight}
+          oldNetWeight={
+            props.oldFields?.permitData?.vehicleConfiguration?.netWeight
+          }
           showChangedFields={props.showChangedFields}
         />
 
@@ -221,6 +242,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           permitType={props.permitType}
           fee={props.calculatedFee}
           reviewContext={props.reviewContext}
+          companyId={props.companyId}
         />
 
         {props.children}
