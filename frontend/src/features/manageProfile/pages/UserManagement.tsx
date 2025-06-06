@@ -13,7 +13,6 @@ import {
 import { SnackBarContext } from "../../../App";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { TrashButton } from "../../../common/components/buttons/TrashButton";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -33,6 +32,7 @@ import {
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import "./UserManagement.scss";
 import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
+import { DeleteButton } from "../../../common/components/buttons/DeleteButton";
 
 /**
  * User Management Component for CV Client.
@@ -203,11 +203,11 @@ export const UserManagement = () => {
       },
       [],
     ),
-    renderToolbarInternalActions: useCallback(
+    renderTopToolbar: useCallback(
       () => (
-        <Box className="table-container__toolbar-internal-actions">
-          <TrashButton
-            onClickTrash={onClickTrashIcon}
+        <Box className="table-container__delete-button">
+          <DeleteButton
+            onClick={onClickTrashIcon}
             disabled={hasNoRowsSelected || !canRemoveUser}
           />
         </Box>

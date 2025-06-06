@@ -9,8 +9,10 @@ import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { Permit } from "../../../types/permit";
 import { RevokeDialog } from "./RevokeDialog";
-import { calculateAmountForVoid } from "../../../helpers/feeSummary";
-import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
+import {
+  calculateAmountForVoid,
+  calculateNetAmount,
+} from "../../../helpers/feeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
@@ -32,6 +34,7 @@ import {
 
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
+import { AmendOrVoidFeeSummary } from "../../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
@@ -76,6 +79,11 @@ export const VoidPermitForm = ({
     !permit || transactionHistory.length === 0
       ? 0
       : -1 * calculateAmountForVoid(permit, transactionHistory);
+
+  const currentPermitValue = calculateNetAmount(transactionHistory);
+
+  // amountToRefund is a negative number so we add here rather than subtract
+  const newPermitValue = currentPermitValue + amountToRefund;
 
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
@@ -199,9 +207,10 @@ export const VoidPermitForm = ({
                   )}
                 />
 
-                <FeeSummary
-                  permitType={permit?.permitType}
-                  feeSummary={`${amountToRefund}`}
+                <AmendOrVoidFeeSummary
+                  currentPermitValue={`${currentPermitValue}`}
+                  newPermitValue={`${newPermitValue}`}
+                  amountToRefund={`${amountToRefund}`}
                 />
               </div>
 
