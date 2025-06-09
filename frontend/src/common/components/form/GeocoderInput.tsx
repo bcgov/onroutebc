@@ -108,6 +108,7 @@ export const GeocoderInput = <
       // and none of the address options where selected,
       // or if no available options to select due to search string being invalid
       // then set selected address to be previously selected address
+      setSearchString(searchString);
       onSelectAddress?.(searchString);
     }
   };
