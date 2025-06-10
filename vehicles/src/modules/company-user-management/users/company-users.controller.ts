@@ -35,6 +35,7 @@ import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/g
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
+  CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
@@ -176,7 +177,7 @@ export class CompanyUsersController {
     type: ReadUserDto,
   })
   @Permissions({
-    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
     allowedIdirRoles: [
       IDIRUserRole.PPC_CLERK,
       IDIRUserRole.SYSTEM_ADMINISTRATOR,
@@ -191,6 +192,14 @@ export class CompanyUsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
+    if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.PERMIT_APPLICANT,
+      ]) &&
+      currentUser.userGUID !== userGUID
+    ) {
+      throw new ForbiddenException();
+    }
     const user = await this.userService.update(
       userGUID,
       updateUserDto,

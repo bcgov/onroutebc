@@ -175,8 +175,15 @@ export const VehicleList = memo(
       shouldFetchTrailerSubtypesData,
     );
 
-    const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
-    const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
+    const powerUnitSubTypes = useMemo(
+      () => getDefaultRequiredVal([], powerUnitSubtypesData),
+      [powerUnitSubtypesData],
+    );
+
+    const trailerSubTypes = useMemo(
+      () => getDefaultRequiredVal([], trailerSubtypesData),
+      [trailerSubtypesData],
+    );
 
     const { mutateAsync: deletePowerUnits, isError: deletePowerUnitsFailed } =
       useDeletePowerUnitsMutation();

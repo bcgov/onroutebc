@@ -1,10 +1,10 @@
 describe('Login Test for OnRouteBC', () => {
   it('Should navigate to the login page, find the login button, and enter credentials', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
-    const new_tros_url = '/create-application/TROS';
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const wait_time = Cypress.env('wait_time');
+    // const update_term_oversize_url = Cypress.env('update_term_oversize_url');
 
     // Step 1: Visit the base URL
     cy.visit('/');
@@ -22,7 +22,11 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(wait_time);
 
-    cy.visit(new_tros_url);
+
+
+
+    // new a TROS application first
+    cy.visit('/create-application/TROS');
     cy.wait(wait_time);
 
     // fill out the form
@@ -68,19 +72,48 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
+
+    // get the application id just created
+    cy.get('.MuiAlert-message').invoke('text').then((text) => {
+      const match = text.match(/A2-\d{8}-\d{3}-\w{2}/);
+      if (match) {
+        const extractedValue = match[0];
+
+        cy.visit('/applications');
+        cy.wait(wait_time);
+    
+        cy.get('a.column-link--application-details').each(($el) => {
+          cy.wrap($el).invoke('text').then((linkText) => {
+            if (linkText.includes(extractedValue)) {
+              cy.wrap($el).click();
+              cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+              cy.wait(wait_time);
+
+              // save updates
+              cy.get('[data-testid="save-application-button"]').click();
+              cy.wait(wait_time);
+              return false; // Breaks out of the .each() loop once the item is clicked
+            }
+          });
+        });
+      } else {
+        cy.log('No matching value found in the alert message');
+      }
     });
-    cy.wait(wait_time);
+    
+    
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    
 
-    cy.get('.shopping-cart-button').click({force: true});
-    cy.wait(wait_time);
+    // cy.get('a.column-link--application-details').first().click();
+    // cy.wait(wait_time);
 
-    cy.get('[data-testid="pay-now-btn"]').scrollIntoView().click({force: true});
-    cy.wait(wait_time);
+    // update phone ext
+    // cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+    // cy.wait(wait_time);
 
+    // // save updates
+    // cy.get('[data-testid="save-application-button"]').click();
+    // cy.wait(wait_time);
   });
 });

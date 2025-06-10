@@ -1,9 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getSpecialAuthorizations, updateLCV, updateNoFee } from "../apiManager/specialAuthorization";
+import {
+  getSpecialAuthorizations,
+  updateLCV,
+  updateNoFee,
+} from "../apiManager/specialAuthorization";
 
 const QUERY_KEYS = {
-  SPECIAL_AUTH: (companyId: number | string) => ["special-auth", `${companyId}`],
+  SPECIAL_AUTH: (companyId: number | string) => [
+    "special-auth",
+    `${companyId}`,
+  ],
 };
 
 /**
@@ -23,7 +30,7 @@ export const useFetchSpecialAuthorizations = (
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
-    enabled,
+    enabled: enabled && Number(companyId) > 0,
   });
 };
 
