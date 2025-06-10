@@ -84,11 +84,15 @@ export const GeocoderInput = <
     enableSearch: isOpen && (debouncedSearchString.trim().length >= MIN_SEARCH_LENGTH),
   });
 
+  const geocoderAddresses = getDefaultRequiredVal(
+    [],
+    geocoderResults?.features?.map(({ properties }) => properties.fullAddress),
+  );
+
   const addressSuggestions = useMemoizedArray(
-    getDefaultRequiredVal(
-      [],
-      geocoderResults?.features?.map(({ properties }) => properties.fullAddress),
-    ),
+    searchString && !geocoderAddresses.includes(searchString)
+      ? [...geocoderAddresses, searchString]
+      : geocoderAddresses,
     (result) => result,
     (result1, result2) => result1 === result2,
   );
@@ -109,7 +113,6 @@ export const GeocoderInput = <
       // or if no available options to select due to search string being invalid
       // then set selected address to be previously selected address
       setSearchString(searchString);
-      onSelectAddress?.(searchString);
     }
   };
 
