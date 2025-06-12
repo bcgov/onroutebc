@@ -4,7 +4,10 @@ import {
   AutocompleteProps as MuiAutocompleteProps,
 } from "@mui/material";
 
-import { Autocomplete, AutocompleteProps } from "./subFormComponents/Autocomplete";
+import {
+  Autocomplete,
+  AutocompleteProps,
+} from "./subFormComponents/Autocomplete";
 import { useGeocoder } from "../../hooks/useGeocoder";
 import { useMemoizedArray } from "../../hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../helpers/util";
@@ -15,18 +18,12 @@ export interface GeocoderInputProps<
   DisableClearable extends boolean | undefined,
   ChipComponent extends React.ElementType,
 > extends Omit<
-  AutocompleteProps<
-    string,
-    false,
-    DisableClearable,
-    true,
-    ChipComponent
-  >,
-  "autocompleteProps"
-> {
+    AutocompleteProps<string, false, DisableClearable, true, ChipComponent>,
+    "autocompleteProps"
+  > {
   autocompleteProps?: Omit<
     MuiAutocompleteProps<string, false, DisableClearable, true, ChipComponent>,
-    "renderInput"
+    | "renderInput"
     | "options"
     | "renderOption"
     | "isOptionEqualToValue"
@@ -42,10 +39,9 @@ export interface GeocoderInputProps<
 export const GeocoderInput = <
   DisableClearable extends boolean | undefined = false,
   ChipComponent extends React.ElementType = "div",
->(props: GeocoderInputProps<
-  DisableClearable,
-  ChipComponent
->) => {
+>(
+  props: GeocoderInputProps<DisableClearable, ChipComponent>,
+) => {
   const {
     autocompleteProps,
     label,
@@ -60,9 +56,10 @@ export const GeocoderInput = <
 
   // This is the search string that appears in the input textfield
   const [searchString, setSearchString] = useState<string>(selectedAddress);
-  
+
   // This is the same as the searchString, except it's only set after a debounce period
-  const [debouncedSearchString, setDebouncedSearchString] = useState<string>(selectedAddress);
+  const [debouncedSearchString, setDebouncedSearchString] =
+    useState<string>(selectedAddress);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -81,18 +78,17 @@ export const GeocoderInput = <
   // Search for addresses based on the debounced search string
   const { data: geocoderResults, isLoading } = useGeocoder({
     address: debouncedSearchString,
-    enableSearch: isOpen && (debouncedSearchString.trim().length >= MIN_SEARCH_LENGTH),
+    enableSearch:
+      isOpen && debouncedSearchString.trim().length >= MIN_SEARCH_LENGTH,
   });
 
-  const geocoderAddresses = getDefaultRequiredVal(
-    [],
-    geocoderResults?.features?.map(({ properties }) => properties.fullAddress),
-  );
-
   const addressSuggestions = useMemoizedArray(
-    searchString && !geocoderAddresses.includes(searchString)
-      ? [...geocoderAddresses, searchString]
-      : geocoderAddresses,
+    getDefaultRequiredVal(
+      [],
+      geocoderResults?.features?.map(
+        ({ properties }) => properties.fullAddress,
+      ),
+    ),
     (result) => result,
     (result1, result2) => result1 === result2,
   );
@@ -103,17 +99,6 @@ export const GeocoderInput = <
 
   const handleClose = () => {
     setIsOpen(false);
-    if (!searchString.trim()) { //Using Trim to invalidate empty string
-      // If inputted search string is empty when exiting geocoder input,
-      // set selected address to be empty
-      onSelectAddress?.("");
-    } else if (searchString !== selectedAddress) {
-      // If upon exiting geocoder, the inputted search string is partial,
-      // and none of the address options where selected,
-      // or if no available options to select due to search string being invalid
-      // then set selected address to be previously selected address
-      setSearchString(searchString);
-    }
   };
 
   return (
@@ -131,8 +116,7 @@ export const GeocoderInput = <
             {option}
           </MenuItem>
         ),
-        isOptionEqualToValue: (option, value) =>
-          option === value,
+        isOptionEqualToValue: (option, value) => option === value,
         open: isOpen,
         onOpen: handleOpen,
         onClose: handleClose,
@@ -146,7 +130,7 @@ export const GeocoderInput = <
           }
         },
         onInputChange: (_, value) => {
-          setSearchString(value);
+          onSelectAddress?.(value);
           onAddressSearchChange?.(value);
         },
         loading: isLoading,
