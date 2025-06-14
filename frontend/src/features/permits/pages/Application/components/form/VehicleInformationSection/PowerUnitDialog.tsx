@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +17,9 @@ import {
   PermitVehicleDetails,
 } from "../../../../../types/PermitVehicleDetails";
 import {
+  PowerUnit,
   Vehicle,
+  VEHICLE_TYPES,
   VehicleSubType,
 } from "../../../../../../manageVehicles/types/Vehicle";
 import { PermitType } from "../../../../../types/PermitType";
@@ -38,6 +40,7 @@ export const PowerUnitDialog = ({
 }: {
   open: boolean;
   feature: ORBCFormFeatureType;
+  // vehicle data as part of the permit form, not the form in this dialog
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
@@ -47,6 +50,31 @@ export const PowerUnitDialog = ({
   onCancel: () => void;
   onSavePowerUnit: (powerUnit: PermitVehicleDetails) => void;
 }) => {
+  // Flag indicating whether this dialog is opened to add power unit or edit power unit
+  // The presence of vin existing in the vehicleFormData indicates whether the power unit
+  // should be edited (or to be added if it's absent)
+  const isEditMode = Boolean(vehicleFormData.vin);
+  const prevSelectedSubtype = vehicleFormData.vehicleSubType;
+
+  // If editing an existing power unit, only the previously selected power unit subtype can
+  // be selected, and only vehicles of that subtype are available to be selected
+  const powerUnitSubtypeOptions = useMemo(() => {
+    return isEditMode
+      ? subtypeOptions.filter(({ typeCode }) => typeCode === prevSelectedSubtype)
+      : subtypeOptions;
+  }, [isEditMode, subtypeOptions, prevSelectedSubtype]);
+
+  const allowedVehicleOptions = useMemo(() => {
+    return isEditMode
+      ? vehicleOptions.filter(
+        v => v.vehicleType === VEHICLE_TYPES.POWER_UNIT
+          && (v as PowerUnit).powerUnitTypeCode === prevSelectedSubtype
+      )
+      : vehicleOptions;
+  }, [isEditMode, vehicleOptions, prevSelectedSubtype]);
+
+  // A secondary form is used to hold temporary power unit details inside this dialog
+  // These temporary details will be saved to the permit form upon submit
   const formMethods = useForm<{
     permitData: {
       vehicleDetails: PermitVehicleDetails;
@@ -74,19 +102,25 @@ export const PowerUnitDialog = ({
     (vehicleDetails: PermitVehicleDetails) => {
       setValue("permitData.vehicleDetails", {
         ...vehicleDetails,
+        vehicleSubType: isEditMode
+          ? prevSelectedSubtype
+          : vehicleDetails.vehicleSubType,
       });
     },
-    [setValue],
+    [setValue, prevSelectedSubtype, isEditMode],
   );
 
   const onClearVehicle = useCallback(
     (saveVehicle: boolean) => {
       setValue("permitData.vehicleDetails", {
         ...EMPTY_VEHICLE_DETAILS,
+        vehicleSubType: isEditMode
+          ? prevSelectedSubtype
+          : EMPTY_VEHICLE_DETAILS.vehicleSubType,
         saveVehicle,
       });
     },
-    [setValue],
+    [setValue, prevSelectedSubtype, isEditMode],
   );
 
   const handleSave = () => {
@@ -114,7 +148,7 @@ export const PowerUnitDialog = ({
             </div>
 
             <span className="power-unit-dialog__title">
-              {vehicleFormData.vin ? "Edit" : "Add"} Power Unit
+              {isEditMode ? "Edit" : "Add"} Power Unit
             </span>
           </DialogTitle>
 
@@ -122,14 +156,15 @@ export const PowerUnitDialog = ({
             <VehicleDetails
               feature={feature}
               vehicleFormData={selectedVehicle}
-              vehicleOptions={vehicleOptions}
-              subtypeOptions={subtypeOptions}
+              vehicleOptions={allowedVehicleOptions}
+              subtypeOptions={powerUnitSubtypeOptions}
               isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
               permitType={permitType}
               onSetSaveVehicle={onToggleSaveVehicle}
               onSetVehicle={onSetVehicle}
               onClearVehicle={onClearVehicle}
+              disableSubtypeSelection={isEditMode}
             />
           </DialogContent>
 
