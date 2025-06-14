@@ -99,6 +99,11 @@ export const GeocoderInput = <
 
   const handleClose = () => {
     setIsOpen(false);
+    if (!searchString.trim()) {
+      // If inputted search string is empty when exiting geocoder input,
+      // set selected address to be empty
+      onSelectAddress?.("");
+    }
   };
 
   return (
