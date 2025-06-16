@@ -7,6 +7,7 @@ import {
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
+import { normalizeClientNumber, normalizePermitNumber, normalizePlateNumber } from "../helpers/SearchNormaliser";
 
 /**
  * Searches the data with options and value entered by the user.
@@ -19,7 +20,15 @@ export const getPermitDataBySearch = (
 ): Promise<PaginatedResponse<PermitListItem>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
-  searchURL.searchParams.set("searchString", searchString);
+  if(searchByFilter === "plate"){
+    searchURL.searchParams.set("searchString", normalizePlateNumber(searchString));
+  }
+  else if(searchByFilter === "permitNumber"){
+    searchURL.searchParams.set("searchString", normalizePermitNumber(searchString));
+  }
+  else{
+    searchURL.searchParams.set("searchString", searchString);
+  }
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
@@ -40,7 +49,8 @@ export const getCompanyDataBySearch = (
   if (searchByFilter === "companyName") {
     searchURL.searchParams.set("companyName", searchString);
   } else {
-    searchURL.searchParams.set("clientNumber", searchString);
+    
+    searchURL.searchParams.set("clientNumber", normalizeClientNumber(searchString));
   }
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
