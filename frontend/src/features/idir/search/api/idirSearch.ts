@@ -25,10 +25,7 @@ export const getPermitDataBySearch = (
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   if (searchByFilter === SEARCH_BY_FILTERS.PLATE_NUMBER) {
-    searchURL.searchParams.set(
-      "searchString",
-      normalizePlateNumber(searchString),
-    );
+    searchURL.searchParams.set("searchString", normalizePlateNumber(searchString));
   } else if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
     searchURL.searchParams.set("searchString", normalizePermitNumber(searchString));
   } else {
