@@ -1,4 +1,3 @@
-
 export const normalizeClientNumber = (input: string): string => {
   // Remove non-alphanumeric characters and convert to uppercase
   const cleaned = input.replace(/[^a-zA-Z0-9]/g, "");
@@ -9,10 +8,11 @@ export const normalizeClientNumber = (input: string): string => {
   const part3 = cleaned.slice(8, 11);
 
   // Combine with hyphens as needed. User can enter 2 to 11 characters.
-  let formatted = part1;
-  if (cleaned.length > 2) formatted += `-${part2}`;
-  if (cleaned.length > 8) formatted += `-${part3}`;
-  return formatted;
+  return (
+    part1 +
+    (cleaned.length > 2 ? `-${part2}` : "") +
+    (cleaned.length > 8 ? `-${part3}` : "")
+  );
 };
 
 export const normalizePlateNumber = (input: string): string => {
@@ -20,7 +20,7 @@ export const normalizePlateNumber = (input: string): string => {
     .toLowerCase()
     .replace(/[-\s]/g, "") // remove spaces and dashes
     .trim();
-}
+};
 
 export const normalizePermitNumber = (input: string): string => {
   const cleaned = input.replace(/[^a-zA-Z0-9]/g, ""); // remove all non-alphanumerics
@@ -29,9 +29,9 @@ export const normalizePermitNumber = (input: string): string => {
   const part2 = cleaned.slice(2, 10);
   const part3 = cleaned.slice(10, 13);
 
-  let formatted = part1;
-  if (cleaned.length > 2) formatted += `-${part2}`;
-  if (cleaned.length > 10) formatted += `-${part3}`;
-
-  return formatted;
+  return (
+    part1 +
+    (cleaned.length > 2 ? `-${part2}` : "") +
+    (cleaned.length > 10 ? `-${part3}` : "")
+  );
 };
