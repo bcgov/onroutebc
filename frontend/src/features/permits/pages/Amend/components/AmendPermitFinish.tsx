@@ -1,13 +1,13 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitFinish.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
-import { PERMIT_REFUND_ACTIONS, RefundPage } from "../../Refund/RefundPage";
-import { RefundFormData } from "../../Refund/types/RefundFormData";
+import { SnackBarContext } from "../../../../../App";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
-import { serializeAmendRefundData } from "./helpers/serializeAmendRefundData";
-import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
+import { RefundErrorModal } from "../../Refund/components/RefundErrorModal";
+import { RefundPage, PERMIT_REFUND_ACTIONS } from "../../Refund/RefundPage";
+
 import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
@@ -16,19 +16,24 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
+
+import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
+import { useRefundPermitMutation } from "../../Refund/hooks/useRefundPermit";
+import { RefundFormData } from "../../Refund/types/RefundFormData";
+import {
+  mapToRefundRequestData,
+  mapToZeroDollarRefundRequestData,
+} from "../../Refund/helpers/mapper";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmount";
 import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
+import { isZeroAmount } from "../../../helpers/feeSummary";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
   const { companyId: companyIdParam } = useParams();
-  const companyId: number = applyWhenNotNullable(
-    (id) => Number(id),
-    companyIdParam,
-    0,
-  );
+  const companyId = applyWhenNotNullable((id) => Number(id), companyIdParam, 0);
 
   const {
     permit,
@@ -37,6 +42,7 @@ export const AmendPermitFinish = () => {
     getLinks,
     afterFinishAmend,
   } = useContext(AmendPermitContext);
+  const { setSnackBar } = useContext(SnackBarContext);
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -65,27 +71,75 @@ export const AmendPermitFinish = () => {
 
   const amountToRefund = -1 * calculatedRefundAmount;
 
-  const { mutation: startTransactionMutation, transaction } =
-    useStartTransaction();
+  const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
 
+  // Refund mutation
+  const { mutation: refundPermitMutation, transaction: refundTransaction } =
+    useRefundPermitMutation();
+
+  const {
+    mutation: startTransactionMutation,
+    transaction: paymentTransaction,
+  } = useStartTransaction();
+
+  const handleFinish = (refundData: RefundFormData[]) => {
+    const totalRefundAmount = refundData.reduce(
+      (sum: number, transaction: RefundFormData) =>
+        sum + Number(transaction.refundAmount),
+      0,
+    );
+
+    if (totalRefundAmount !== Math.abs(amountToRefund)) {
+      setShowRefundErrorModal(true);
+      return;
+    }
+
+    if (isZeroAmount(amountToRefund)) {
+      startTransactionMutation.mutate(
+        mapToZeroDollarRefundRequestData(permitId),
+      );
+    } else {
+      refundPermitMutation.mutate({
+        applicationId: permitId,
+        transactions: mapToRefundRequestData(refundData),
+      });
+    }
+  };
+
+  const handleCloseRefundErrorModal = () => {
+    setShowRefundErrorModal(false);
+  };
+
+  // Permit issuance mutation
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
   useEffect(() => {
-    if (typeof transaction !== "undefined") {
-      // refund transaction response received
-      if (!transaction) {
-        // refund transaction failed
+    if (refundTransaction !== undefined) {
+      if (!refundTransaction) {
         console.error("Refund failed.");
         navigate(ERROR_ROUTES.UNEXPECTED);
       } else {
-        // refund transaction successful, proceed to issue permit
         issuePermitMutation.mutate({
           companyId,
           applicationIds: [permitId],
         });
       }
     }
-  }, [transaction, permitId, companyId]);
+  }, [refundTransaction, permitId, companyId]);
+
+  useEffect(() => {
+    if (paymentTransaction !== undefined) {
+      if (!paymentTransaction) {
+        console.error("Payment failed.");
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      } else {
+        issuePermitMutation.mutate({
+          companyId,
+          applicationIds: [permitId],
+        });
+      }
+    }
+  }, [paymentTransaction, permitId, companyId]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
@@ -93,20 +147,16 @@ export const AmendPermitFinish = () => {
       console.error("Permit issuance failed.");
       navigate(ERROR_ROUTES.UNEXPECTED);
     } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
-      // Navigate back to search page upon issue success
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Permit Amended",
+        alertType: "success",
+      });
+      // TODO implement conditional navigation to Active Permits tab or Global permit search screen based on user journey
       afterFinishAmend();
     }
-  }, [issueResults]);
-
-  const handleFinish = (refundData: RefundFormData) => {
-    const requestData = serializeAmendRefundData(
-      refundData,
-      -1 * amountToRefund,
-      permitId,
-    );
-
-    startTransactionMutation.mutate(requestData);
-  };
+  }, [issueResults, navigate, setSnackBar]);
 
   return (
     <div className="amend-permit-finish">
@@ -116,10 +166,22 @@ export const AmendPermitFinish = () => {
         permitHistory={validTransactionHistory}
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
-        permitType={permit?.permitType}
         permitAction={PERMIT_REFUND_ACTIONS.AMEND}
-        onFinish={handleFinish}
+        handleFinish={handleFinish}
+        disableSubmitButton={
+          refundPermitMutation.isPending ||
+          startTransactionMutation.isPending ||
+          issuePermitMutation.isPending
+        }
       />
+
+      {showRefundErrorModal && (
+        <RefundErrorModal
+          isOpen={showRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+        />
+      )}
     </div>
   );
 };

@@ -22,7 +22,10 @@ import {
 } from "../types/PaymentMethodData";
 import { Controller, useFormContext } from "react-hook-form";
 import { Nullable } from "../../../../../../../common/types/common";
-import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import {
+  invalidTranactionIdLength,
+  requiredMessage,
+} from "../../../../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
 import "./InPersonPPCPaymentOption.scss";
 
@@ -120,6 +123,10 @@ export const InPersonPPCPaymentOption = ({
           requiredMessage()
         );
       },
+    },
+    maxLength: {
+      value: 15,
+      message: invalidTranactionIdLength(15),
     },
   };
 

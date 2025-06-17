@@ -2,18 +2,27 @@
 
 .shopping-cart-item {
   display: flex;
+  gap: 2rem;
+  width: 100%;
   padding: 1.5rem 0;
   border-bottom: 1px solid $bc-border-grey;
+  
+  &__details {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2rem;
 
-  &__info-section {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
   }
 
-  &__header {
+  &__column {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    &:first-child {
+      justify-content: flex-start;
+    }
   }
 
   &__label {
@@ -34,27 +43,19 @@
     &#{&}--application-number {
       font-size: 1.25rem;
     }
-  }
 
-  &__details-container {
-    display: flex;
-    width: 100%;
-  }
-
-  &__details-group {
-    display: flex;
-    flex-direction: column;
-    width: 33.3333%;
-    margin-right: 0.5rem;
+    &--invalid {
+      color: $bc-red;
+    }
   }
 
   &__detail {
-    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
   }
 
   & &__checkbox {
     padding: 0;
-    margin-right: 1.5rem;
-    margin-left: 0;
   }
 }
