@@ -32,7 +32,6 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix: [dev, gold-dev]
-    secrets: inherit
     steps:
       - uses: ./.github/workflows/deploy.yml
         with:
