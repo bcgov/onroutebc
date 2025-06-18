@@ -237,8 +237,6 @@ export const AmendPermitReview = () => {
 
   const continueBtnText = amountToRefund >= 0 ? "Continue" : undefined;
 
-  console.log(amountToRefund);
-
   return (
     <div className="amend-permit-review">
       <Breadcrumb links={getLinks()} />
