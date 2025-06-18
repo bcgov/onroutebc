@@ -1,5 +1,5 @@
 ---
-name: Deploy Dev
+name: Deploy Dev (Silver)
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ on:
         type: string
 jobs:
   deploy-dev:
-    name: Deploys (DEV)
+    name: Deploys Dev (Silver)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
