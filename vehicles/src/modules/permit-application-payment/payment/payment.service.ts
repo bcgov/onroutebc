@@ -343,7 +343,7 @@ export class PaymentService {
           application.permitData.permitData,
         ) as PermitData;
         // If application includes LoAs then validate Loa data.
-        if (permitData.loas) {
+        if (permitData.loas && !isVoidorRevoked(application.permitStatus)) {
           await isValidLoa(application, queryRunner, this.classMapper);
         }
       }
