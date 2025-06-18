@@ -33,6 +33,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
+      environment: dev
       release: ${{inputs.tag}}
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
