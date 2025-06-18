@@ -83,7 +83,6 @@ jobs:
     needs: [builds, vars]
     steps:
       - uses: ./.github/workflows/dev.yml
-        secrets: inherit
         with:
           tag: ${{ needs.vars.outputs.pr }}
           params: |
