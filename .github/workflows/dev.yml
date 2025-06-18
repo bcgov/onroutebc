@@ -35,8 +35,8 @@ jobs:
         zone: [dev, gold-dev]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - run: cd ${{ github.repository }}
 
       - uses: ./.github/workflows/deploy.yml
         with:
