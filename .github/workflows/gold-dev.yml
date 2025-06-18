@@ -38,6 +38,7 @@ jobs:
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
+        --set-string global.license='c3141c' \
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
