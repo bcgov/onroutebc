@@ -9,6 +9,11 @@ on:
         required: false
         type: string
         default: "latest"
+      environment:
+        description: "Environment to deploy to"
+        required: false
+        type: string
+        default: "dev"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -21,6 +26,11 @@ on:
         required: false
         type: string
         default: "latest"
+      environment:
+        description: "Environment to deploy to"
+        required: false
+        type: string
+        default: "dev"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -28,31 +38,24 @@ on:
         type: string
 jobs:
   deploy-dev:
-    name: Deploys (${{ matrix.zone }})
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix: 
-        zone: [dev, gold-dev]
-
-    steps:
-      - uses: actions/checkout@v4
-      - run: cd ${{ github.repository }}
-
-      - uses: ./.github/workflows/deploy.yml
-        with:
-          autoscaling: false
-          environment: ${{ matrix.zone }}
-          release: ${{inputs.tag}}
-          tag: ${{ inputs.tag }}
-          triggers: '' #omit=always;
-          params: |
-            --set-string global.zone='dev' \
-            --set-string global.vault.role='nonprod' \
-            --set-string global.vault.zone='dev' \
-            --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-            --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-            --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-            --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-            --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
-            --set-json public.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-            ${{ inputs.params }} \
+    name: Deploys (DEV)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: ${{ inputs.environment }}
+      release: ${{inputs.tag}}
+      tag: ${{ inputs.tag }}
+      triggers: '' #omit=always;
+      params: |
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='dev' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='dev' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+        --set-json public.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        ${{ inputs.params }} \
