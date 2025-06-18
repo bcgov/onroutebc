@@ -79,7 +79,6 @@ jobs:
     name: Deploys (Dev)
     needs: [builds, vars]
     uses: ./.github/workflows/dev.yml
-    secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
       params: |
