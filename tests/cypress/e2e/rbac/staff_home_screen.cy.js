@@ -62,39 +62,48 @@ const expectResultManageQueue = () => {
 }
 
 function processNextLink(index = 0) {
-  cy.get('.custom-link__link').then(($links) => {
-    if (index >= $links.length) return; // End of loop
+  cy.get('body').then(($body) => {
+    const test = $body.find('.custom-link__link').length;
+    cy.log(`custom link number: ${test}`);
+    if ($body.find('.custom-link__link').length == 0) return; // No links found
 
-    cy.wrap($links[index])
-      .scrollIntoView()
-      .should('be.visible')
-      .click();
+    cy.get('.custom-link__link').then(($links) => {
+      if (index >= $links.length) return; // End of loop
 
-    cy.wait(wait_time);
-
-    cy.get('body').then(($body) => {
-      if ($body.find('[data-testid="cancel-claim-application-button"]').length > 0) {
-        cy.get('[data-testid="cancel-claim-application-button"]').click();
-        processNextLink(index + 1); // Move to the next link
-      } else {
-        cy.get('button[aria-label="Edit"]').click();
-        cy.wait(wait_time);
-
-        cy.get('textarea[name="permitData.applicationNotes"]')
-          .clear()
-          .type('Additional notes for testing');
-        cy.wait(wait_time);
-
-        cy.get('[data-testid="save-application-button"]').click();
-        cy.wait(wait_time);
-
-        cy.contains('div.MuiAlert-message', /Application.*updated\./).should('exist');
-        cy.wait(wait_time);
-
-        // Stop after successful save — no more recursion
-      }
+      cy.wrap($links[index])
+        .scrollIntoView()
+        .should('be.visible')
+        .click();
+  
+      cy.wait(wait_time);
+  
+      cy.get('body').then(($body) => {
+        if ($body.find('[data-testid="cancel-claim-application-button"]').length > 0) {
+          cy.get('[data-testid="cancel-claim-application-button"]').click();
+          processNextLink(index + 1); // Move to the next link
+        } else {
+          cy.get('button[aria-label="Edit"]').click();
+          cy.wait(wait_time);
+  
+          cy.get('textarea[name="permitData.applicationNotes"]')
+            .clear()
+            .type('Additional notes for testing');
+          cy.wait(wait_time);
+  
+          cy.get('[data-testid="save-application-button"]').click();
+          cy.wait(wait_time);
+  
+          cy.contains('div.MuiAlert-message', /Application.*updated\./).should('exist');
+          cy.wait(wait_time);
+        }
+      });
     });
+    
   });
+  
+  
+
+ 
 }
 
 const expectSuccessManageQueue = () => {
