@@ -1,5 +1,5 @@
 ---
-name: Deploy Dev
+name: Deploy Dev (Gold)
 
 on:
   workflow_dispatch:
@@ -9,11 +9,6 @@ on:
         required: false
         type: string
         default: "latest"
-      environment:
-        description: "Environment to deploy to"
-        required: false
-        type: string
-        default: "dev"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -26,11 +21,6 @@ on:
         required: false
         type: string
         default: "latest"
-      environment:
-        description: "Environment to deploy to"
-        required: false
-        type: string
-        default: "dev"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -38,17 +28,16 @@ on:
         type: string
 jobs:
   deploy-dev:
-    name: Deploys (DEV)
+    name: Deploys Dev (Gold)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      environment: ${{ inputs.environment }}
+      environment: gold-dev
       release: ${{inputs.tag}}
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
-        --set-string global.license='c28f0c' \
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
