@@ -28,15 +28,17 @@ on:
         type: string
 jobs:
   deploy-dev:
-    name: Deploys (${{ inputs.matrix }})
+    name: Deploys (${{ inputs.matrix.zone }})
     runs-on: ubuntu-22.04
     strategy:
-      matrix: [dev, gold-dev]
+      matrix: 
+        zone: [dev, gold-dev]
+
     steps:
       - uses: ./.github/workflows/deploy.yml
         with:
           autoscaling: false
-          environment: ${{ inputs.environment }}
+          environment: ${{ matrix.zone }}
           release: ${{inputs.tag}}
           tag: ${{ inputs.tag }}
           triggers: '' #omit=always;
