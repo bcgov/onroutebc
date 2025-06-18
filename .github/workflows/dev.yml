@@ -28,13 +28,16 @@ on:
         type: string
 jobs:
   deploy-dev:
-    name: Deploys (${{ inputs.matrix.zone }})
+    name: Deploys (${{ matrix.zone }})
     runs-on: ubuntu-22.04
     strategy:
       matrix: 
         zone: [dev, gold-dev]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - uses: ./.github/workflows/deploy.yml
         with:
           autoscaling: false
