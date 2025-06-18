@@ -78,17 +78,15 @@ jobs:
   deploys-dev:
     name: Deploys (${{ matrix.env }})
     needs: [builds, vars]
-    runs-on: ubuntu-22.04
     strategy:
       matrix:
         env: [dev, gold-dev]
-    steps:
-      - uses: ./.github/workflows/dev.yml
-        secrets: inherit
-        with:
-          tag: ${{ needs.vars.outputs.pr }}
-          environment: ${{ matrix.env }}
-          params: |
-            --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
-            --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+    uses: ./.github/workflows/dev.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      environment: ${{ matrix.env }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
 
