@@ -2,7 +2,7 @@
 global:
   env: {}
   autoscaling: true
-  license: "c28f0c"
+  license: '{{ index (splitList "-" .Release.Namespace) 0 }}'
   podAnnotations: |
     app.kubernetes.io/timestamp: {{now | toString }}
   repository: bcgov/onroutebc # the repository where the images are stored.
@@ -152,7 +152,7 @@ frontend:
         port: 80
         targetPort: 3000
   serviceAccount:
-    name: "{{ .Values.global.license }}-vault"
+    name: "{{tpl .Values.global.license .}}-vault"
   vault:
     enabled: true
     authPath: "{{ .Values.global.vault.authPath }}"

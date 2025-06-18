@@ -40,7 +40,6 @@ jobs:
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
-        --set-string global.license='${{ index (splitList "-" .Release.Namespace) 0 }}' \
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
