@@ -27,18 +27,20 @@ on:
         required: false
         type: string
 jobs:
-  deploy-dev:
-    name: Deploys (DEV)
+  deploy-silver-dev:
+    name: Deploys Dev (Silver)
+    strategy:
+      matrix: [dev, gold-dev]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      environment: dev
+      environment: ${{ inputs.matrix }}
       release: ${{inputs.tag}}
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
-        --set-string global.license='c28f0c' \
+        --set-string global.license='${{ index (split '-' vars.OC_NAMESPACE) 0 }}' \
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
