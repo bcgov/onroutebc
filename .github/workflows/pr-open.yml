@@ -76,15 +76,12 @@ jobs:
 
   # https://github.com/bcgov/action-deployer-openshift
   deploys-dev:
-    name: Deploys (${{ inputs.matrix }})
-    environment: ${{ inputs.matrix }}
-    strategy:
-      matrix: [dev, gold-dev]
+    name: Deploys (Dev)
     needs: [builds, vars]
-    steps:
-      - uses: ./.github/workflows/dev.yml
-        with:
-          tag: ${{ needs.vars.outputs.pr }}
-          params: |
-            --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
-            --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+    uses: ./.github/workflows/dev.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
