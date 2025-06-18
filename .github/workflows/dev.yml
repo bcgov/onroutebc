@@ -27,15 +27,12 @@ on:
         required: false
         type: string
 jobs:
-  deploy-silver-dev:
-    name: Deploys Dev (Silver)
-    strategy:
-      matrix: [dev, gold-dev]
+  deploy-dev:
+    name: Deploys Dev
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      environment: ${{ inputs.matrix }}
       release: ${{inputs.tag}}
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
