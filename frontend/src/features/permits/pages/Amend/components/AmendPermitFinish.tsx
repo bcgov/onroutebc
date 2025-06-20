@@ -69,7 +69,7 @@ export const AmendPermitFinish = () => {
     policyEngine,
   );
 
-  const amountToRefund = -1 * calculatedRefundAmount;
+  const amountToRefund = -1 * Number(calculatedRefundAmount.toFixed(2));
 
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
 
@@ -153,15 +153,12 @@ export const AmendPermitFinish = () => {
         message: "Permit Amended",
         alertType: "success",
       });
-      // TODO implement conditional navigation to Active Permits tab or Global permit search screen based on user journey
       afterFinishAmend();
     }
   }, [issueResults, navigate, setSnackBar]);
-
   return (
     <div className="amend-permit-finish">
       <Breadcrumb links={getLinks()} />
-
       <RefundPage
         permitHistory={validTransactionHistory}
         amountToRefund={amountToRefund}
