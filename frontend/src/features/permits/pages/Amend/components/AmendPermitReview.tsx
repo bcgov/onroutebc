@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -14,10 +14,7 @@ import {
   useModifyAmendmentApplication,
   useSaveApplicationMutation,
 } from "../../../hooks/hooks";
-import {
-  ERROR_ROUTES,
-  SHOPPING_CART_ROUTES,
-} from "../../../../../routes/constants";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
@@ -38,6 +35,7 @@ import { SnackBarContext } from "../../../../../App";
 import { ApplicationFormData } from "../../../types/application";
 import { deserializeApplicationResponse } from "../../../helpers/serialize/deserializeApplication";
 import { isAxiosError } from "axios";
+import { PERMIT_ACTION_ORIGINS } from "../../../../idir/search/types/types";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -56,6 +54,7 @@ export const AmendPermitReview = () => {
     back,
     next,
     getLinks,
+    goHome,
   } = useContext(AmendPermitContext);
 
   // Send data to the backend API
@@ -218,6 +217,8 @@ export const AmendPermitReview = () => {
     );
   };
 
+  const { state: stateFromNavigation } = useLocation();
+
   const handleAddToCart = async () => {
     await handleSaveApplication(
       async (companyId, permitId, applicationNumber) => {
@@ -228,8 +229,13 @@ export const AmendPermitReview = () => {
             message: `Application ${applicationNumber} added to cart`,
             alertType: "success",
           });
-          refetchCartCount();
-          navigate(SHOPPING_CART_ROUTES.BASE);
+          if (
+            stateFromNavigation.permitActionOrigin ===
+            PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ) {
+            refetchCartCount();
+          }
+          goHome();
         });
       },
     );
