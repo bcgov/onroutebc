@@ -325,7 +325,7 @@ export class ApplicationProfile extends AutomapperProfile {
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
               ) {
                 const diff = differenceBetween(
-                  s.updatedDateTime.toUTCString(),
+                  s?.cases?.at(0)?.createdDateTime?.toUTCString(),
                   currentDateTime.toUTCString(),
                   'minutes',
                 );
