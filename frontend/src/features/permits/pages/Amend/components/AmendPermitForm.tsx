@@ -1,6 +1,7 @@
 import { useContext, useMemo, useState } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Dayjs } from "dayjs";
 
 import "./AmendPermitForm.scss";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
@@ -37,8 +38,8 @@ import { Loading } from "../../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
-import { PERMIT_TYPES } from "../../../types/PermitType";
-import { dayjsToUtcStr, now } from "../../../../../common/helpers/formatDate";
+import { isTermPermitType, PERMIT_TYPES } from "../../../types/PermitType";
+import { dayjsToUtcStr, getStartOfDate, now } from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,
@@ -51,6 +52,7 @@ import {
 } from "../../../helpers/dateSelection";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
+import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -260,6 +262,8 @@ export const AmendPermitForm = () => {
     }
   };
 
+  const currentDate = now();
+
   const revisionHistory = permitHistory
     .filter((history) => history.comment && history.transactionSubmitDate)
     .map((history) => ({
@@ -267,10 +271,16 @@ export const AmendPermitForm = () => {
       comment: getDefaultRequiredVal("", history.comment),
       name: history.commentUsername,
       revisionDateTime: getDefaultRequiredVal(
-        dayjsToUtcStr(now()),
+        dayjsToUtcStr(currentDate),
         history.transactionSubmitDate,
       ),
     }));
+
+  const oldPermitStartDate: Dayjs = applyWhenNotNullable(
+    (dateStr) => getStartOfDate(dateStr),
+    permit?.permitData?.startDate,
+    currentDate,
+  );
 
   const permitOldDuration = getDefaultRequiredVal(
     minDurationForPermitType(formData.permitType),
@@ -279,14 +289,25 @@ export const AmendPermitForm = () => {
 
   const durationOptions = durationOptionsForPermitType(
     formData.permitType,
-  ).filter((duration) => duration.value <= permitOldDuration);
+    true,
+  );
+  
+  // Term permits only allow duration to be shortened
+  // All other permit types can shorten or lengthen duration as needed
+  const amendmentDurationOptions = useMemoizedArray(
+    isTermPermitType(formData.permitType)
+      ? durationOptions.filter((duration) => duration.value <= permitOldDuration)
+      : durationOptions,
+    durationOption => durationOption.value,
+    (durationOption1, durationOption2) => durationOption1.value === durationOption2.value,
+  );
 
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
       formData,
       policyEngine,
-      durationOptions,
+      durationOptions: amendmentDurationOptions,
       allVehiclesFromInventory,
       powerUnitSubtypeNamesMap,
       trailerSubtypeNamesMap,
@@ -294,6 +315,8 @@ export const AmendPermitForm = () => {
       feature: FEATURE,
       companyInfo,
       isAmendAction: true,
+      isStaff: true,
+      oldPermitStartDate,
       createdDateTime,
       updatedDateTime,
       pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
@@ -311,12 +334,13 @@ export const AmendPermitForm = () => {
       initialFormData,
       formData,
       policyEngine,
-      durationOptions,
+      amendmentDurationOptions,
       allVehiclesFromInventory,
       powerUnitSubtypeNamesMap,
       trailerSubtypeNamesMap,
       isLcvDesignated,
       companyInfo,
+      oldPermitStartDate,
       createdDateTime,
       updatedDateTime,
       applicableLOAs,

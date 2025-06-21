@@ -119,6 +119,7 @@ export const ApplicationForm = ({
       applicationData: applicationContext?.applicationData,
       userDetails,
       policyEngine,
+      isStaff: isStaffUser,
     });
 
   // Applicable LOAs must be:
@@ -361,7 +362,7 @@ export const ApplicationForm = ({
     setShowLeaveApplicationDialog(false);
   };
 
-  const durationOptions = durationOptionsForPermitType(permitType);
+  const durationOptions = durationOptionsForPermitType(permitType, isStaffUser);
   const pastStartDateStatus = isStaffUser
     ? PAST_START_DATE_STATUSES.WARNING
     : PAST_START_DATE_STATUSES.FAIL;
@@ -379,6 +380,7 @@ export const ApplicationForm = ({
       feature: FEATURE,
       companyInfo,
       isAmendAction: false,
+      isStaff: isStaffUser,
       createdDateTime,
       updatedDateTime,
       pastStartDateStatus,
@@ -402,6 +404,7 @@ export const ApplicationForm = ({
       trailerSubtypeNamesMap,
       isLcvDesignated,
       companyInfo,
+      isStaffUser,
       createdDateTime,
       updatedDateTime,
       pastStartDateStatus,

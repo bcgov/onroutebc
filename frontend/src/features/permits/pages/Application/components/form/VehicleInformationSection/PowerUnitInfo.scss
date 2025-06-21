@@ -12,18 +12,41 @@
     padding: 1.5rem 0;
   }
 
-  & &__remove-btn {
-    background-color: orbcStyles.$bc-background-light-grey;
-    padding: 0.875rem 1rem;
+  & &__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  & &__action-btn {
     box-shadow: none;
-    line-height: normal;
-    min-height: inherit;
-    border: none;
 
     &:hover {
-      background-color: orbcStyles.$bc-background-light-grey;
-      border: 2px solid orbcStyles.$bc-text-box-border-grey;
       box-shadow: none;
     }
+
+    &--remove {
+      background-color: orbcStyles.$bc-background-light-grey;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
+      line-height: normal;
+      min-height: inherit;
+      border: none;
+
+      &:hover {
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
+        box-shadow: none;
+      }
+    }
+
+    &--edit {
+      display: flex;
+      align-items: center;
+      margin-left: 1.5rem;
+    }
+  }
+
+  & &__button-icon {
+    margin-right: 0.5rem;
   }
 }

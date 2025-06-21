@@ -61,6 +61,7 @@ export const useAmendPermitForm = (
         companyLOAs,
         inventoryVehicles,
         eligibleSubtypes,
+        true,
       );
 
       return {
@@ -97,6 +98,7 @@ export const useAmendPermitForm = (
       companyLOAs,
       inventoryVehicles,
       eligibleSubtypes,
+      true,
     );
   }, [
     amendmentApplication,

@@ -1,6 +1,6 @@
-@import "../../../../../../../themes/orbcStyles";
+@use "../../../../../../../themes/orbcStyles";
 
-.add-power-unit-dialog {
+.power-unit-dialog {
   & &__container {
     max-width: 66.75rem;
   }
@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: $bc-background-light-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
   }
 
   & &__icon {
@@ -21,10 +21,10 @@
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    background-color: $bc-black;
+    background-color: orbcStyles.$bc-black;
 
     .icon {
-      color: $bc-white;
+      color: orbcStyles.$bc-white;
       height: 1.5rem;
     }
   }
@@ -33,7 +33,7 @@
     font-weight: bold;
     font-size: 1.5rem;
     margin-left: 1rem;
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
 
   & form &__body {
@@ -65,24 +65,24 @@
   & &__btn {
     &--cancel {
       cursor: pointer;
-      background-color: $bc-background-light-grey;
-      color: $bc-black;
+      background-color: orbcStyles.$bc-background-light-grey;
+      color: orbcStyles.$bc-black;
       border: none;
 
       &:hover {
-        border: 2px solid $bc-text-box-border-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
       }
     }
 
-    &--add {
+    &--done {
       margin-left: 1.5rem;
-      color: $white;
-      background-color: $bc-primary-blue;
+      color: orbcStyles.$white;
+      background-color: orbcStyles.$bc-primary-blue;
       font-weight: bold;
       cursor: pointer;
 
       &:hover {
-        background-color: $button-hover;
+        background-color: orbcStyles.$button-hover;
       }
     }
   }

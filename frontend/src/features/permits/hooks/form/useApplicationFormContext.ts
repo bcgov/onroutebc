@@ -33,6 +33,8 @@ export const useApplicationFormContext = () => {
     feature,
     companyInfo,
     isAmendAction,
+    isStaff,
+    oldPermitStartDate,
     createdDateTime,
     updatedDateTime,
     pastStartDateStatus,
@@ -104,6 +106,13 @@ export const useApplicationFormContext = () => {
     ),
   );
 
+  const oldStartDate = useMemoizedObject(
+    oldPermitStartDate,
+    (dateObj1, dateObj2) => Boolean(
+      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+    ),
+  );
+
   const startDate = useMemoizedObject(
     getStartOfDate(permitStartDate),
     (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
@@ -127,15 +136,23 @@ export const useApplicationFormContext = () => {
   );
 
   // Update duration options and expiry when needed
-  const { availableDurationOptions } = usePermitDateSelection(
+  const {
+    availableDurationOptions,
+    minAllowedPastStartDate,
+    maxAllowedFutureStartDate,
+    maxNumDaysAllowedInFuture,
+  } = usePermitDateSelection({
     permitType,
     startDate,
+    isAmend: isAmendAction,
+    isStaff,
+    oldPermitStartDate: oldStartDate,
     durationOptions,
-    currentSelectedLOAs,
-    permitDuration,
+    selectedLOAs: currentSelectedLOAs,
+    selectedDuration: permitDuration,
     onSetDuration,
     onSetExpiryDate,
-  );
+  });
   
   // Update permit conditions when LCV designation or vehicle subtype changes
   const { allConditions } = usePermitConditions(
@@ -318,5 +335,8 @@ export const useApplicationFormContext = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+    minAllowedPastStartDate,
+    maxAllowedFutureStartDate,
+    maxNumDaysAllowedInFuture,
   };
 };

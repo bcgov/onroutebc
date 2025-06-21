@@ -120,7 +120,6 @@ export const CommodityDetailsSection = ({
                 ),
                 isOptionEqualToValue: (option, value) =>
                   option.value === value.value && option.label === value.label,
-
                 ListboxProps: {
                   className:
                     "commodity-details-section__listbox custom-listbox",

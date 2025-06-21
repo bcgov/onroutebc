@@ -146,6 +146,20 @@ export const getEndOfDate = (date: Dayjs | string) => {
 };
 
 /**
+ * Get the start of the quarter for any given datetime (ie. the date + time of 00:00:00 am).
+ * @param date Any Dayjs object or date string representation
+ * @returns Dayjs object representing the start of the quarter for the datetime (with time 00:00:00 am)
+ */
+export const getStartOfQuarter = (date: Dayjs | string) => {
+  return dayjs(date)
+    .startOf("quarter")
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+};
+
+/**
  * Get the end of the quarter for any given datetime (ie. the date + time of 23:59:59 pm).
  * @param date Any Dayjs object or date string representation
  * @returns Dayjs object representing the end of the quarter for the datetime (with time 23:59:59 pm)

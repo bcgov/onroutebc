@@ -57,6 +57,9 @@ export const PermitForm = () => {
     availableCLFs,
     enableLoadedGVW,
     enableNetWeight,
+    minAllowedPastStartDate,
+    maxAllowedFutureStartDate,
+    maxNumDaysAllowedInFuture,
     onLeave,
     onSave,
     onCancel,
@@ -108,8 +111,11 @@ export const PermitForm = () => {
           permitType={permitType}
           expiryDate={expiryDate}
           allConditions={allConditions}
+          startDate={startDate}
+          minAllowedPastStartDate={minAllowedPastStartDate}
+          maxAllowedFutureStartDate={maxAllowedFutureStartDate}
+          maxNumDaysAllowedInFuture={maxNumDaysAllowedInFuture}
           durationOptions={availableDurationOptions}
-          disableStartDate={isAmendAction}
           pastStartDateStatus={pastStartDateStatus}
           onSetConditions={onSetConditions}
         />

@@ -37,6 +37,7 @@ export const useInitApplicationFormData = (
     applicationData?: Nullable<Application>;
     userDetails?: BCeIDUserDetailContext;
     policyEngine?: Nullable<Policy>;
+    isStaff: boolean,
   },
 ) => {
   const {
@@ -48,6 +49,7 @@ export const useInitApplicationFormData = (
     applicationData,
     userDetails,
     policyEngine,
+    isStaff,
   } = data;
 
   // Used to populate/initialize the form with
@@ -72,6 +74,7 @@ export const useInitApplicationFormData = (
       companyLOAs,
       inventoryVehicles,
       eligibleVehicleSubtypes,
+      isStaff,
     );
   }, [
     permitType,
@@ -82,6 +85,7 @@ export const useInitApplicationFormData = (
     companyLOAs,
     inventoryVehicles,
     policyEngine,
+    isStaff,
   ]);
 
   // Register default values with react-hook-form

@@ -21,7 +21,7 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { isUndefined, ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import { isUndefined, Nullable, ORBCFormFeatureType } from "../../../../../../../common/types/common";
 import {
   disableMouseWheelInputOnNumberField,
 } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
@@ -69,6 +69,7 @@ export const VehicleDetails = ({
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
+  disableSubtypeSelection = false,
 }: {
   feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
@@ -80,6 +81,7 @@ export const VehicleDetails = ({
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
+  disableSubtypeSelection?: Nullable<boolean>;
 }) => {
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
   const disableVehicleType = (
@@ -369,8 +371,8 @@ export const VehicleDetails = ({
               {subtype.type}
             </MenuItem>
           ))}
-          readOnly={isLOAUsed}
-          disabled={isLOAUsed}
+          readOnly={disableSubtypeSelection || isLOAUsed}
+          disabled={disableSubtypeSelection || isLOAUsed}
         />
 
         {showGVW ? (

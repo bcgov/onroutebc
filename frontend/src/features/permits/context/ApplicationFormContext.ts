@@ -33,6 +33,8 @@ interface ApplicationFormContextType {
   feature: ORBCFormFeatureType;
   companyInfo?: Nullable<CompanyProfile>;
   isAmendAction: boolean;
+  isStaff: boolean;
+  oldPermitStartDate?: Nullable<Dayjs>;
   createdDateTime?: Nullable<Dayjs>;
   updatedDateTime?: Nullable<Dayjs>;
   pastStartDateStatus: PastStartDateStatus;
@@ -65,6 +67,8 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     feature: ORBC_FORM_FEATURES.APPLICATION,
     companyInfo: undefined,
     isAmendAction: false,
+    isStaff: false,
+    oldPermitStartDate: undefined,
     createdDateTime: undefined,
     updatedDateTime: undefined,
     pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
