@@ -33,6 +33,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 import {
   findApplicationForPE,
   findPermitHistory,
+  isVoidorRevoked,
 } from '../../common/helper/permit-application.helper';
 import { getQueryRunner } from '../../common/helper/database.helper';
 import { PermitData } from '../../common/interface/permit.template.interface';
@@ -311,16 +312,19 @@ export class PolicyService {
         specialAuth,
       );
 
-      // Extract LOA numbers and validate LOAs
-      const loaNumbers = permitData?.loas?.map((loa) => loa.loaNumber);
-      const loas = await this.loaService.findLoaByLoaNumber(
-        companyId,
-        loaNumbers,
-        queryRunner,
-      );
+      let loaValidationResults: ValidationResult[] = [];
 
-      const loaValidationResults = validateLoas(application, loas);
+      if (!isVoidorRevoked(application.permitStatus)) {
+        // Extract LOA numbers and validate LOAs
+        const loaNumbers = permitData?.loas?.map((loa) => loa.loaNumber);
+        const loas = await this.loaService.findLoaByLoaNumber(
+          companyId,
+          loaNumbers,
+          queryRunner,
+        );
 
+        loaValidationResults = validateLoas(application, loas);
+      }
       // Handle LOA validation results
       if (loaValidationResults?.length) {
         validationResults?.violations?.push(...loaValidationResults);
