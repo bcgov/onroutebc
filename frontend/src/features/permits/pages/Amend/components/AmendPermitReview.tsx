@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -10,7 +10,10 @@ import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { isValidTransaction } from "../../../helpers/payment";
 import { getDatetimes } from "./helpers/getDatetimes";
-import { useModifyAmendmentApplication } from "../../../hooks/hooks";
+import {
+  useModifyAmendmentApplication,
+  useSaveApplicationMutation,
+} from "../../../hooks/hooks";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
@@ -25,6 +28,14 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { useAddToCart } from "../../../hooks/cart";
+import { hasPermitsActionFailed } from "../../../helpers/permitState";
+import { CartContext } from "../../../context/CartContext";
+import { SnackBarContext } from "../../../../../App";
+import { ApplicationFormData } from "../../../types/application";
+import { deserializeApplicationResponse } from "../../../helpers/serialize/deserializeApplication";
+import { isAxiosError } from "axios";
+import { PERMIT_ACTION_ORIGINS } from "../../../../idir/search/types/types";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -43,6 +54,7 @@ export const AmendPermitReview = () => {
     back,
     next,
     getLinks,
+    goHome,
   } = useContext(AmendPermitContext);
 
   // Send data to the backend API
@@ -126,6 +138,111 @@ export const AmendPermitReview = () => {
     policyEngine,
   );
 
+  const { setSnackBar } = useContext(SnackBarContext);
+  const addToCartMutation = useAddToCart();
+
+  const proceedWithAddToCart = async (
+    companyId: number,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const setShowSnackbar = () => true;
+  const { refetchCartCount } = useContext(CartContext);
+
+  const permitId = getDefaultRequiredVal("", amendmentApplication?.permitId);
+  const applicationNumber = getDefaultRequiredVal(
+    "",
+    amendmentApplication?.applicationNumber,
+  );
+
+  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
+
+  const handleSaveApplication = async (
+    followUpAction: (
+      companyId: number,
+      permitId: string,
+      applicationNumber: string,
+    ) => Promise<void>,
+  ) => {
+    setHasAttemptedSubmission(true);
+
+    if (!allConfirmed) return;
+
+    if (!companyId || !permitId || !applicationNumber) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    await saveApplication(
+      {
+        data: amendmentApplication
+          ? {
+              ...amendmentApplication,
+              permitData: amendmentApplication.permitData,
+            }
+          : ({} as ApplicationFormData),
+        companyId,
+      },
+      {
+        onSuccess: ({ data: savedApplication }) => {
+          setAmendmentApplication(
+            deserializeApplicationResponse(savedApplication),
+          );
+          followUpAction(companyId, permitId, applicationNumber);
+        },
+        onError: (e) => {
+          console.error(e);
+          if (isAxiosError(e)) {
+            navigate(ERROR_ROUTES.UNEXPECTED, {
+              state: {
+                correlationId: e?.response?.headers["x-correlation-id"],
+              },
+            });
+          } else {
+            navigate(ERROR_ROUTES.UNEXPECTED);
+          }
+        },
+      },
+    );
+  };
+
+  const { state: stateFromNavigation } = useLocation();
+
+  const handleAddToCart = async () => {
+    await handleSaveApplication(
+      async (companyId, permitId, applicationNumber) => {
+        await proceedWithAddToCart(companyId, [permitId], () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar,
+            message: `Application ${applicationNumber} added to cart`,
+            alertType: "success",
+          });
+          if (
+            stateFromNavigation.permitActionOrigin ===
+            PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ) {
+            refetchCartCount();
+          }
+          goHome();
+        });
+      },
+    );
+  };
+
+  const continueBtnText = amountToRefund >= 0 ? "Continue" : undefined;
+
   return (
     <div className="amend-permit-review">
       <Breadcrumb links={getLinks()} />
@@ -148,9 +265,10 @@ export const AmendPermitReview = () => {
         updatedDateTime={updatedDateTime}
         companyInfo={companyInfo}
         contactDetails={amendmentApplication?.permitData?.contactDetails}
-        continueBtnText="Continue"
+        continueBtnText={continueBtnText}
         onEdit={back}
         onContinue={onSubmit}
+        onAddToCart={handleAddToCart}
         allConfirmed={allConfirmed}
         setAllConfirmed={setAllConfirmed}
         hasAttemptedCheckboxes={hasAttemptedSubmission}
