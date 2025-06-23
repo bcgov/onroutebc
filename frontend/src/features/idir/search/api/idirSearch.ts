@@ -4,6 +4,7 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { PermitListItem } from "../../../permits/types/permit";
 import { SEARCH_BY_FILTERS, SearchFields } from "../types/types";
 import {
+  isUndefined,
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
@@ -32,7 +33,7 @@ export const getPermitDataBySearch = (
   } else {
     searchURL.searchParams.set("searchString", searchString);
   }
-  if (expired !== undefined) {
+  if (!isUndefined(expired)) {
     searchURL.searchParams.set("expired", expired.toString());
   }
 

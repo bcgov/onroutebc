@@ -30,6 +30,7 @@ import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler
 import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 import { PermitRowOptions } from "../../../permits/components/permit-list/PermitRowOptions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -132,12 +133,6 @@ export const IDIRPermitSearchResults = memo(
       [searchEntity, searchByFilter],
     );
 
-    /**
-     *
-     * @param initialData The initial data to filter by the active data toggle.
-     * @returns List of permit items containing the data to be displayed in table.
-     */
-
     const canResendPermit = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "GLOBAL_SEARCH",
@@ -175,7 +170,7 @@ export const IDIRPermitSearchResults = memo(
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: data?.items ?? [],
+      data: getDefaultRequiredVal([], data?.items),
       columns: columns,
       initialState: {
         ...defaultTableInitialStateOptions,
