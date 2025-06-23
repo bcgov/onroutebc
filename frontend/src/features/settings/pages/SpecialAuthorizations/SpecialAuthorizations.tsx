@@ -266,7 +266,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
         />
       ) : null}
 
-      {canReadLOA ? (
+      {canWriteLOA || (canReadLOA && activeLOAs.length > 0) ? (
         <div className="special-authorizations__loa">
           <div className="special-authorizations__section-header">
             <div className="special-authorizations__header-title">
