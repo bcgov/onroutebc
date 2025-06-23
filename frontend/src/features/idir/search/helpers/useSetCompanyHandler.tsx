@@ -4,6 +4,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import * as routes from "../../../../routes/constants";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { VerifiedClient } from "../../../../common/authentication/types";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export type CompanyOrClient = CompanyProfile | VerifiedClient;
 
@@ -20,11 +21,18 @@ export const useSetCompanyHandler = () => {
     setIsCompanySuspended,
   } = context;
 
+  const canCreateCompany = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "CREATE_COMPANY",
+    },
+  });
+
   const handleSelectCompany = (selectedCompany: CompanyOrClient) => {
     const { companyId, legalName, clientNumber, primaryContact, isSuspended } =
       selectedCompany;
 
-    if (primaryContact?.firstName) {
+    if (primaryContact?.firstName || !canCreateCompany) {
       setCompanyId?.(() => companyId);
       setCompanyLegalName?.(() => legalName);
       setOnRouteBCClientNumber?.(() => clientNumber);
