@@ -13,9 +13,13 @@ jobs:
   cleanup:
     name: Cleanup OpenShift and/or Promote Images
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.7.1
+    strategy:
+      matrix:
+        environment: [dev, gold-dev]
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
+      environment: ${{ matrix.environment }}
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
