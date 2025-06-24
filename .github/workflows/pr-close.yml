@@ -12,6 +12,7 @@ concurrency:
 jobs:
   cleanup:
     name: Cleanup OpenShift and/or Promote Images
+    environment: ${{ matrix.environment }}
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
     strategy:
       fail-fast: false
