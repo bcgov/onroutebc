@@ -4,6 +4,7 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { PermitListItem } from "../../../permits/types/permit";
 import { SEARCH_BY_FILTERS, SearchFields } from "../types/types";
 import {
+  isUndefined,
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
@@ -21,6 +22,7 @@ import {
 export const getPermitDataBySearch = (
   { searchEntity, searchByFilter, searchString }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
+  expired?: boolean,
 ): Promise<PaginatedResponse<PermitListItem>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
@@ -30,6 +32,9 @@ export const getPermitDataBySearch = (
     searchURL.searchParams.set("searchString", normalizePermitNumber(searchString));
   } else {
     searchURL.searchParams.set("searchString", searchString);
+  }
+  if (!isUndefined(expired)) {
+    searchURL.searchParams.set("expired", expired.toString());
   }
 
   // API pagination index starts at 1. Hence page + 1.
