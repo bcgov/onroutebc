@@ -21,5 +21,6 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       environment: ${{ matrix.environment }}
+      server: ${{ vars.OC_SERVER }}
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
