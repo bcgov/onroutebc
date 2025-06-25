@@ -67,7 +67,15 @@ export const StartApplicationAction = () => {
         callback: (event: React.MouseEvent<HTMLElement>) =>
           handleChooseFrom(event, item),
         // Correctly set the nested item's callback
-        items: item?.items?.map((nestedItem) => ({
+        items: item?.items?.filter((nestedItem) => {
+          // If isn't non-resident, return all nested permit types
+          // Otherwise, only return nested permit types that are enabled
+          return item?.value !== PERMIT_CATEGORIES.NON_RESIDENT
+            || (nestedItem?.value === PERMIT_TYPES.STFR && enableSTFR)
+            || (nestedItem?.value === PERMIT_TYPES.QRFR && enableQRFR)
+            || (nestedItem?.value === PERMIT_TYPES.NRSCV && enableNRSCV)
+            || (nestedItem?.value === PERMIT_TYPES.NRQCV && enableNRQCV);
+        })?.map((nestedItem) => ({
           ...nestedItem,
           callback: (event: React.MouseEvent<HTMLElement>) =>
             handleChooseFrom(event, nestedItem),
