@@ -202,6 +202,7 @@ export const getUpdatedVehicleDetailsForLOAs = (
  * @param upToDateLOAs Most recent up-to-date company LOAs
  * @param inventoryVehicles Vehicle options from the inventory
  * @param eligibleVehicleSubtypes Set of eligible vehicle subtypes that can be used for vehicles
+ * @param isStaff Whether or not the user who manages the application is staff
  * @returns Application data after applying the up-to-date LOAs
  */
 export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFormData | Application>>(
@@ -209,6 +210,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
   upToDateLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
   eligibleVehicleSubtypes: Set<string>,
+  isStaff: boolean,
 ): T => {
   // If application doesn't exist, no need to apply LOAs to it at all
   if (!applicationData) return applicationData;
@@ -242,7 +244,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
 
   // Update duration in permit if selected LOAs changed
   const durationOptions = getAvailableDurationOptions(
-    durationOptionsForPermitType(applicationData.permitType),
+    durationOptionsForPermitType(applicationData.permitType, isStaff),
     newSelectedLOAs,
     applicationData.permitData.startDate,
   );

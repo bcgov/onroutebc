@@ -6,15 +6,17 @@ import { InfoBcGovBanner } from "../../../../../../common/components/banners/Inf
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { ConditionsTable } from "./ConditionsTable";
-import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
+import { invalidMaxStartDate, requiredMessage, warnPastStartDate } from "../../../../../../common/helpers/validationMessages";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { PermitCondition } from "../../../../types/PermitCondition";
-import { DATE_FORMATS } from "../../../../../../common/helpers/formatDate";
+import { DATE_FORMATS, now } from "../../../../../../common/helpers/formatDate";
 import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { Optional, ORBCFormFeatureType } from "../../../../../../common/types/common";
 import {
   CustomDatePicker,
+  PAST_START_DATE_STATUSES,
   PastStartDateStatus,
 } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
@@ -22,27 +24,32 @@ import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
-import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
 export const PermitDetails = ({
   feature,
   permitType,
+  startDate,
+  minAllowedPastStartDate,
+  maxAllowedFutureStartDate,
+  maxNumDaysAllowedInFuture,
   expiryDate,
   allConditions,
   durationOptions,
-  disableStartDate,
   pastStartDateStatus,
   onSetConditions,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
+  startDate: Dayjs;
+  minAllowedPastStartDate?: Optional<Dayjs>;
+  maxAllowedFutureStartDate: Dayjs;
+  maxNumDaysAllowedInFuture: number;
   expiryDate: Dayjs;
   allConditions: PermitCondition[];
   durationOptions: {
     value: number;
     label: string;
   }[];
-  disableStartDate: boolean;
   pastStartDateStatus: PastStartDateStatus;
   onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
@@ -55,6 +62,12 @@ export const PermitDetails = ({
   ] as PermitType[]).includes(permitType);
 
   const showValidQuarterInfoBanner = permitType === PERMIT_TYPES.QRFR;
+
+  const startDateWarningMessage =
+    now().isAfter(startDate, "day") &&
+    pastStartDateStatus === PAST_START_DATE_STATUSES.WARNING
+      ? warnPastStartDate()
+      : null;
 
   return (
     <Box className="permit-details">
@@ -82,14 +95,15 @@ export const PermitDetails = ({
             className="permit-details__input permit-details__input--start-date"
             feature={feature}
             name="permitData.startDate"
-            disabled={disableStartDate}
-            readOnly={disableStartDate}
             rules={{
               required: { value: true, message: requiredMessage() },
             }}
             label="Start Date"
             pastStartDateStatus={pastStartDateStatus}
-            maxDaysInFuture={14}
+            minAllowablePastDate={minAllowedPastStartDate}
+            maxAllowableFutureDate={maxAllowedFutureStartDate}
+            dateWarningMessage={startDateWarningMessage}
+            futureDateErrorMessage={invalidMaxStartDate(maxNumDaysAllowedInFuture)}
           />
 
           {!isQuarterlyPermit(permitType) ? (

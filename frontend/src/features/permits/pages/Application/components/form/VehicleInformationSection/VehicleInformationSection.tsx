@@ -15,7 +15,7 @@ import {
 } from "../../../../../../manageVehicles/types/Vehicle";
 import { VehicleDetails } from "./VehicleDetails";
 import { PowerUnitInfo } from "./PowerUnitInfo";
-import { AddPowerUnitDialog } from "./AddPowerUnitDialog";
+import { PowerUnitDialog } from "./PowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
@@ -78,7 +78,7 @@ export const VehicleInformationSection = ({
   const isPowerUnitSelectedForSingleTrip =
     isSingleTrip && Boolean(vehicleFormData.vin);
 
-  const [showAddPowerUnitDialog, setShowAddPowerUnitDialog] =
+  const [showPowerUnitDialog, setShowPowerUnitDialog] =
     useState<boolean>(false);
 
   const powerUnitFieldRef = "permitData.vehicleDetails";
@@ -86,7 +86,12 @@ export const VehicleInformationSection = ({
 
   const handleClickAddPowerUnit = () => {
     if (isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected) return;
-    setShowAddPowerUnitDialog(true);
+    setShowPowerUnitDialog(true);
+  };
+
+  const handleClickEditPowerUnit = () => {
+    if (!isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected) return;
+    setShowPowerUnitDialog(true);
   };
 
   const handleRemovePowerUnit = () => {
@@ -95,14 +100,13 @@ export const VehicleInformationSection = ({
   };
 
   const handleClosePowerUnitDialog = () => {
-    handleRemovePowerUnit();
-    setShowAddPowerUnitDialog(false);
+    setShowPowerUnitDialog(false);
   };
 
-  const handleAddPowerUnit = (powerUnit: PermitVehicleDetails) => {
+  const handleSavePowerUnit = (powerUnit: PermitVehicleDetails) => {
     clearErrors(powerUnitFieldRef);
     onSetVehicle(powerUnit);
-    setShowAddPowerUnitDialog(false);
+    setShowPowerUnitDialog(false);
   };
 
   return (
@@ -185,6 +189,7 @@ export const VehicleInformationSection = ({
             powerUnitInfo={vehicleFormData}
             powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
             onRemovePowerUnit={handleRemovePowerUnit}
+            onEditPowerUnit={handleClickEditPowerUnit}
           />
         ) : null}
 
@@ -198,9 +203,9 @@ export const VehicleInformationSection = ({
         ) : null}
       </Box>
 
-      {showAddPowerUnitDialog ? (
-        <AddPowerUnitDialog
-          open={showAddPowerUnitDialog}
+      {showPowerUnitDialog ? (
+        <PowerUnitDialog
+          open={showPowerUnitDialog}
           feature={feature}
           vehicleFormData={vehicleFormData}
           vehicleOptions={vehicleOptions}
@@ -209,7 +214,7 @@ export const VehicleInformationSection = ({
           isSelectedLOAVehicle={isSelectedLOAVehicle}
           permitType={permitType}
           onCancel={handleClosePowerUnitDialog}
-          onAddPowerUnit={handleAddPowerUnit}
+          onSavePowerUnit={handleSavePowerUnit}
         />
       ) : null}
     </Box>
