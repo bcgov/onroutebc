@@ -12,17 +12,15 @@ concurrency:
 jobs:
   cleanup:
     name: Cleanup OpenShift and/or Promote Images
-    environment: ${{ matrix.environment }}
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
     strategy:
-      fail-fast: false
       matrix:
         environment: [dev, gold-dev]
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      environment: ${{ matrix.environment }}
-      oc_server: ${{ vars.OC_SERVER }}
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
