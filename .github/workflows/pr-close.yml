@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   matrix:
-    name: ${{ matrix.environment }} - Cleanup OpenShift and/or Promote Images
+    name:  Cleanup OpenShift and/or Promote Images
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
