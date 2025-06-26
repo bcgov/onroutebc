@@ -19,3 +19,4 @@ export const INDUSTRIAL_X_PLATE_TYPE_FEE_RATE_TEXT =
   'Industrial (X-Plate Type)';
 export const FARM_VEHICLE_FEE_RATE_TEXT = 'Farm Vehicle';
 export const FARM_TRACTOR_FEE_RATE_TEXT = 'Farm Tractor';
+export const EGARMS_CREDIT_API_SYSTEM_ID = 'ONROUTE';
