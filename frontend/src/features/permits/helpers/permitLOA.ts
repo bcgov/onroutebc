@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
-import { PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PermitType } from "../types/PermitType";
 import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
@@ -22,6 +22,7 @@ import { getUpdatedCLF } from "./conditionalLicensingFee/getUpdatedCLF";
 import { getAvailableCLFs } from "./conditionalLicensingFee/getAvailableCLFs";
 import { getVehicleWeightStatusForCLF } from "./vehicles/configuration/getVehicleWeightStatusForCLF";
 import { getUpdatedVehicleWeights } from "./vehicles/configuration/getUpdatedVehicleWeights";
+import { getExpiryDate } from "./permitState";
 
 /**
  * Filter valid LOAs for a given permit type.
@@ -255,6 +256,12 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     durationOptions,
   );
 
+  const updatedExpiryDate = getExpiryDate(
+    applicationData.permitData.startDate,
+    isQuarterlyPermit(applicationData.permitType),
+    updatedDuration,
+  );
+
   // Update vehicle details in permit if selected LOAs changed
   const { updatedVehicle } = getUpdatedVehicleDetailsForLOAs(
     newSelectedLOAs,
@@ -297,6 +304,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     permitData: {
       ...applicationData.permitData,
       permitDuration: updatedDuration,
+      expiryDate: updatedExpiryDate,
       loas: newSelectedLOAs,
       vehicleDetails: updatedVehicle,
       conditionalLicensingFee: updatedCLF,
