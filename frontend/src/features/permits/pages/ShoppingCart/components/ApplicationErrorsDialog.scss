@@ -1,0 +1,34 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.application-errors-dialog {
+  &__header {
+    display: flex;
+    align-items: center;
+    background-color: $bc-background-light-grey;
+    color: $bc-black;
+    padding: 1.5rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  &__info {
+    padding: 1.5rem;
+    color: $bc-black;
+  }
+
+  & &__btn {
+    color: $white;
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+  }
+}
+
