@@ -10,14 +10,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cleanup:
+  cleanup-silver:
     name: Cleanup OpenShift and/or Promote Images
-    strategy:
-      matrix:
-        environment: [dev, gold-dev]
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    environment: dev
+    secrets:
+      oc_namespace: ${{ vars.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: helm
+      packages: dops frontend scheduler vehicles policy public
+  
+  cleanup-gold:
+    name: Cleanup OpenShift and/or Promote Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    environment: gold-dev
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
