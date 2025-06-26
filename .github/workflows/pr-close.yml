@@ -5,24 +5,25 @@ on:
     types: [closed]
 
 concurrency:
-  # PR open and close use the same group, allowing only one at a time
   group: ${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
-  cleanup:
-    name: Cleanup OpenShift and/or Promote Images
-    environment: ${{ matrix.environment }}
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+  matrix:
+    name: ${{ matrix.environment }} - Cleanup OpenShift and/or Promote Images
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         environment: [dev, gold-dev]
-    secrets:
-      oc_namespace: ${{ vars.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-    with:
-      environment: ${{ matrix.environment }}
-      oc_server: ${{ vars.OC_SERVER }}
-      cleanup: helm
-      packages: dops frontend scheduler vehicles policy public
+    steps:
+      - uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+        with:
+          environment: ${{ matrix.environment }}
+          oc_server: ${{ vars.OC_SERVER }}
+          cleanup: helm
+          packages: dops frontend scheduler vehicles policy public
+        secrets:
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+
