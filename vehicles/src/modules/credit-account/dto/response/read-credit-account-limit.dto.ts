@@ -11,7 +11,7 @@ export class ReadCreditAccountLimitDto {
     description: 'The credit limit of the account.',
     example: CreditAccountLimit[10000],
   })
-  creditLimit: CreditAccountLimitType;
+  creditLimit: CreditAccountLimitType | number;
 
   @AutoMap()
   @ApiProperty({
@@ -28,4 +28,12 @@ export class ReadCreditAccountLimitDto {
     required: false,
   })
   availableCredit?: number;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'EGARMS return Code.',
+    example: 'I0001',
+    required: false,
+  })
+  egarmsReturnCode?: string;
 }

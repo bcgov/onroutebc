@@ -85,7 +85,8 @@ export const AccountDetails = ({
 
   const renderValue = (value: number | string): string => {
     if (typeof value === "number" || !isNaN(Number(value))) {
-      return `$${formatValue(value)}`;
+      value = Number(value);
+      return `${value < 0 ? "-$" : "$"}${formatValue(Math.abs(value))}`;
     } else {
       return formatValue(value);
     }
@@ -252,7 +253,7 @@ export const AccountDetails = ({
           />
         </Box>
         <Box className="account-details__body">
-          {creditAccountLimitData?.creditLimit && (
+          {creditAccountLimitData?.creditLimit !== undefined && (
             <Box className="account-details__row">
               <dt className="account-details__text">Credit Limit</dt>
               <dd className="account-details__text">

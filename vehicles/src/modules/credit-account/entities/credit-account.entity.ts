@@ -124,4 +124,16 @@ export class CreditAccount extends Base {
     },
   )
   creditAccountUsers?: CreditAccountUser[];
+
+  @AutoMap()
+  @Column({
+    type: 'decimal',
+    precision: 9,
+    scale: 2,
+    name: 'EXTERNAL_ADJUSTMENT_AMT',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  externalAdjustmentAmount: number;
 }
