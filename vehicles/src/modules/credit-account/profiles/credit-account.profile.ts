@@ -196,8 +196,6 @@ export class CreditAccountProfile extends AutomapperProfile {
                 egarmsCreditAccountDetails: IEGARMSResponse;
               },
             ) => {
-              console.log('source.externalAdjustmentAmount',source.externalAdjustmentAmount);
-
               return (
                 egarmsCreditAccountDetails?.PPABalance?.negative_limit +
                 egarmsCreditAccountDetails?.PPABalance?.account_balance -
