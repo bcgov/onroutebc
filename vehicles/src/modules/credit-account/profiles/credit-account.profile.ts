@@ -176,8 +176,10 @@ export class CreditAccountProfile extends AutomapperProfile {
               ) {
                 return undefined;
               } else {
-                return Math.abs(
-                  egarmsCreditAccountDetails?.PPABalance?.account_balance,
+                return (
+                  Math.abs(
+                    egarmsCreditAccountDetails?.PPABalance?.account_balance,
+                  ) + (source.externalAdjustmentAmount ?? 0)
                 );
               }
             },
@@ -194,9 +196,12 @@ export class CreditAccountProfile extends AutomapperProfile {
                 egarmsCreditAccountDetails: IEGARMSResponse;
               },
             ) => {
+              console.log('source.externalAdjustmentAmount',source.externalAdjustmentAmount);
+
               return (
                 egarmsCreditAccountDetails?.PPABalance?.negative_limit +
-                egarmsCreditAccountDetails?.PPABalance?.account_balance
+                egarmsCreditAccountDetails?.PPABalance?.account_balance -
+                (source.externalAdjustmentAmount ?? 0)
               );
             },
           ),

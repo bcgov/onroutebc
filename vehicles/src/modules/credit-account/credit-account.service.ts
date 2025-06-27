@@ -402,8 +402,12 @@ export class CreditAccountService {
           await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
             creditAccount.creditAccountNumber,
           );
+
+        readCreditAccountMetadataDto.egarmsReturnCode =
+          egarmsCreditAccountDetails?.PPABalance?.return_code;
+
         if (
-          egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          readCreditAccountMetadataDto.egarmsReturnCode ===
           EGARMS_CREDIT_ACCOUNT_ACTIVE
         ) {
           readCreditAccountMetadataDto.isValidPaymentMethod = true;
