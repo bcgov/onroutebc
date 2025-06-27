@@ -85,7 +85,8 @@ export const AccountDetails = ({
 
   const renderValue = (value: number | string): string => {
     if (typeof value === "number" || !isNaN(Number(value))) {
-      return `$${formatValue(value)}`;
+      value = Number(value);
+      return `${value < 0 ? "-$" : "$"}${formatValue(Math.abs(value))}`;
     } else {
       return formatValue(value);
     }
