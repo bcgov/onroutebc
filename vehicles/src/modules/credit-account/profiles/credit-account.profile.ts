@@ -26,7 +26,6 @@ import {
   CLIENT_USER_ROLE_LIST,
   IDIRUserRole,
 } from '../../../common/enum/user-role.enum';
-import { CreditAccountLimit } from '../../../common/enum/credit-account-limit.enum';
 import { IEGARMSResponse } from '../../../common/interface/egarms-response.interface';
 
 @Injectable()
@@ -177,7 +176,9 @@ export class CreditAccountProfile extends AutomapperProfile {
               ) {
                 return undefined;
               } else {
-                return egarmsCreditAccountDetails?.PPABalance?.account_balance;
+                return Math.abs(
+                  egarmsCreditAccountDetails?.PPABalance?.account_balance,
+                );
               }
             },
           ),
