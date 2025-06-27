@@ -27,6 +27,7 @@ import {
   IDIRUserRole,
 } from '../../../common/enum/user-role.enum';
 import { CreditAccountLimit } from '../../../common/enum/credit-account-limit.enum';
+import { IEGARMSResponse } from '../../../common/interface/egarms-response.interface';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -132,7 +133,16 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditLimit,
           mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
+            (
+              source,
+              {
+                currentUser,
+                egarmsCreditAccountDetails,
+              }: {
+                currentUser: IUserJWT;
+                egarmsCreditAccountDetails: IEGARMSResponse;
+              },
+            ) => {
               if (
                 doesUserHaveRole(currentUser?.orbcUserRole, [
                   IDIRUserRole.PPC_CLERK,
@@ -141,7 +151,7 @@ export class CreditAccountProfile extends AutomapperProfile {
               ) {
                 return undefined;
               } else {
-                return CreditAccountLimit[10000]; //TODO - Change to the credit limit from GARMS
+                return egarmsCreditAccountDetails?.PPABalance?.negative_limit;
               }
             },
           ),
@@ -149,7 +159,16 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditBalance,
           mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
+            (
+              source,
+              {
+                currentUser,
+                egarmsCreditAccountDetails,
+              }: {
+                currentUser: IUserJWT;
+                egarmsCreditAccountDetails: IEGARMSResponse;
+              },
+            ) => {
               if (
                 doesUserHaveRole(currentUser?.orbcUserRole, [
                   IDIRUserRole.PPC_CLERK,
@@ -158,14 +177,43 @@ export class CreditAccountProfile extends AutomapperProfile {
               ) {
                 return undefined;
               } else {
-                return 0; //TODO - Change to the calculated credit balance
+                return egarmsCreditAccountDetails?.PPABalance?.account_balance;
               }
             },
           ),
         ),
         forMember(
           (d) => d.availableCredit,
-          fromValue(0), //TODO - Change to the calculated available credit
+          mapWithArguments(
+            (
+              source,
+              {
+                egarmsCreditAccountDetails,
+              }: {
+                egarmsCreditAccountDetails: IEGARMSResponse;
+              },
+            ) => {
+              return (
+                egarmsCreditAccountDetails?.PPABalance?.negative_limit +
+                egarmsCreditAccountDetails?.PPABalance?.account_balance
+              );
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.egarmsReturnCode,
+          mapWithArguments(
+            (
+              source,
+              {
+                egarmsCreditAccountDetails,
+              }: {
+                egarmsCreditAccountDetails: IEGARMSResponse;
+              },
+            ) => {
+              return egarmsCreditAccountDetails?.PPABalance?.return_code;
+            },
+          ),
         ),
       );
 

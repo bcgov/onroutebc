@@ -58,6 +58,8 @@ import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account
 import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 import { doesUserHaveRole } from '../../common/helper/auth.helper';
+import { EGARMSCreditAccountService } from '../common/egarms.credit-account.service';
+import { EGARMS_CREDIT_ACCOUNT_ACTIVE } from '../../common/constants/api.constant';
 
 /**
  * Service functions for credit account operations.
@@ -75,6 +77,7 @@ export class CreditAccountService {
     @InjectRepository(CreditAccountUser)
     private readonly creditAccountUserRepository: Repository<CreditAccountUser>,
     private readonly cfsCreditAccountService: CFSCreditAccountService,
+    private readonly egarmsCreditAccountService: EGARMSCreditAccountService,
     private readonly companyService: CompanyService,
   ) {}
 
@@ -386,6 +389,7 @@ export class CreditAccountService {
       readCreditAccountMetadataDto.userType =
         CreditAccountUserType.ACCOUNT_USER;
     }
+
     if (
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ACTIVE &&
@@ -393,6 +397,22 @@ export class CreditAccountService {
       creditAccount?.isVerified
     ) {
       readCreditAccountMetadataDto.isValidPaymentMethod = true;
+      try {
+        const egarmsCreditAccountDetails =
+          await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+            creditAccount.creditAccountNumber,
+          );
+        if (
+          egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_ACTIVE
+        ) {
+          readCreditAccountMetadataDto.isValidPaymentMethod = true;
+        } else {
+          readCreditAccountMetadataDto.isValidPaymentMethod = false;
+        }
+      } catch (error) {
+        this.logger.error(error);
+      }
     } else {
       readCreditAccountMetadataDto.isValidPaymentMethod = false;
     }
@@ -1268,6 +1288,11 @@ export class CreditAccountService {
       throw new ForbiddenException();
     }
 
+    const egarmsCreditAccountDetails =
+      await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+        creditAccount.creditAccountNumber,
+      );
+
     // TODO Limit calculation is currently blocked and needs to be implemented
     return await this.classMapper.mapAsync(
       creditAccount,
@@ -1276,6 +1301,7 @@ export class CreditAccountService {
       {
         extraArgs: () => ({
           currentUser: currentUser,
+          egarmsCreditAccountDetails: egarmsCreditAccountDetails,
         }),
       },
     );

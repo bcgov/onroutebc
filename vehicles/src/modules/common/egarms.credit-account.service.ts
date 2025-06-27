@@ -34,7 +34,7 @@ export class EGARMSCreditAccountService {
       },
     };
 
-    const eGARMSCreditAccountDetails = await lastValueFrom(
+    const egarmsCreditAccountDetails = await lastValueFrom(
       this.httpService.get(url, reqConfig),
     )
       .then((response) => {
@@ -53,6 +53,6 @@ export class EGARMSCreditAccountService {
         );
       });
 
-    return eGARMSCreditAccountDetails;
+    return egarmsCreditAccountDetails;
   }
 }
