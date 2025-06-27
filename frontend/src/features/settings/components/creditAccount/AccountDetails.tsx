@@ -252,7 +252,7 @@ export const AccountDetails = ({
           />
         </Box>
         <Box className="account-details__body">
-          {creditAccountLimitData?.creditLimit && (
+          {creditAccountLimitData?.creditLimit !== undefined && (
             <Box className="account-details__row">
               <dt className="account-details__text">Credit Limit</dt>
               <dd className="account-details__text">
