@@ -113,12 +113,11 @@ export const DisplayCompanyInfo = memo(
     return companyInfo ? (
       <div className="display-company-info">
         <Box>
-          <Typography variant="h3">Doing Business As (DBA)</Typography>
-
-          {doingBusinessAs ? (
-            <Typography>{doingBusinessAs}</Typography>
-          ) : (
-            <EmptyState />
+          {doingBusinessAs && (
+            <>
+              <Typography variant="h3">Doing Business As (DBA)</Typography>
+              <Typography>{doingBusinessAs}</Typography>
+            </>
           )}
 
           <Typography variant="h3">Company Mailing Address</Typography>
