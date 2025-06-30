@@ -24,6 +24,7 @@ import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
 import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /*
  *
@@ -73,6 +74,12 @@ export const IDIRCompanySearchResults = memo(
 
     const { data, isPending, isError } = searchResultsQuery;
 
+    const canCreateCompany = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "CREATE_COMPANY",
+      },
+    });
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
       () => [
@@ -147,24 +154,26 @@ export const IDIRCompanySearchResults = memo(
           <>
             <Stack display="flex" justifyContent="center" alignItems="center">
               <NoRecordsFound />
-              <Box className="create-company-btn">
-                <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
-                  <div className="button-outline">
-                    <CardMedia
-                      className="create-company-img"
-                      component="img"
-                      src="/Create_Company_Graphic.png"
-                      alt="Create Company"
-                      title="Create Company"
-                    />
-                    <Typography variant={"h3"}>
-                      Create
-                      <br />
-                      Company
-                    </Typography>
-                  </div>
-                </CustomNavLink>
-              </Box>
+              {canCreateCompany && (
+                <Box className="create-company-btn">
+                  <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
+                    <div className="button-outline">
+                      <CardMedia
+                        className="create-company-img"
+                        component="img"
+                        src="/Create_Company_Graphic.png"
+                        alt="Create Company"
+                        title="Create Company"
+                      />
+                      <Typography variant={"h3"}>
+                        Create
+                        <br />
+                        Company
+                      </Typography>
+                    </div>
+                  </CustomNavLink>
+                </Box>
+              )}
             </Stack>
           </>
         )}
