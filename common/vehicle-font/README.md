@@ -152,9 +152,9 @@ vehicle-font/
 │
 ├── /svg-glyphs/
 │   ├── /inkscape-svg/                 # Editable master glyphs
-│       ├── _export-plain-svg.bat         # Batch SVG exporter
-│       ├── _normalize-group-ids.py       # ID cleaning script
-│       └── _translate-objects.bat        # Sample SVG transform script
+│   │   ├── _export-plain-svg.bat         # Batch SVG exporter
+│   │   ├── _normalize-group-ids.py       # ID cleaning script
+│   │   └── _translate-objects.bat        # Sample SVG transform script
 │   └── /plain-svg/                    # Exported clean SVGs for FontForge
 │
 ├── /generated/
