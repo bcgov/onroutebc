@@ -27,7 +27,7 @@ Each glyph is triggered by a **ligature string**. Basic structure:
 
 | Vehicle Category     | Ligature Format          | Notes |
 |----------------------|--------------------------|-------|
-| Truck Tractor        | `TT1S1`, `2D2--`          | Use `S` for steer (with `TT` prefix), `D` for drive axles |
+| Truck Tractor        | `TT1S1`, `2D2-`          | Use `S` for steer (with `TT` prefix), `D` for drive axles |
 | Mobile Crane         | `MC2S1-`, `3A2--`         | Use `S` for steer (with `MC`), and `A` for drive/additional axles |
 | Jeep                 | `2J3-`                    | Axles 1–4, supports dash spacing |
 | Trailer              | `3T4--`                   | Tridem = 2 trailing dashes |
@@ -148,20 +148,22 @@ All scripts include instructions in code comments. Not required, but helpful:
 ```
 vehicle-font/
 ├── onRouteBC Configurations.sfd       # FontForge project
-├── onRouteBC_Configurations.woff2     # Web font (primary use)
-├── onRouteBC_Configurations.ttf       # TrueType (PDF/export usage)
-├── onRouteBC_Configurations.otf       # OpenType font
-├── onRouteBC_Configurations.svg       # Legacy/optional format
+├── update-font-with-svg.py            # Script to batch update font from SVGs
 │
 ├── /svg-glyphs/
 │   ├── /inkscape-svg/                 # Editable master glyphs
+│       ├── _export-plain-svg.bat         # Batch SVG exporter
+│       ├── _normalize-group-ids.py       # ID cleaning script
+│       └── _translate-objects.bat        # Sample SVG transform script
 │   └── /plain-svg/                    # Exported clean SVGs for FontForge
 │
 ├── /generated/
 │   ├── test-font.html                 # Live preview tester
-│   ├── _export-plain-svg.bat         # Batch SVG exporter
-│   ├── _normalize-group-ids.py       # ID cleaning script
-│   ├── _translate-objects.bat        # Sample SVG transform script
+│   ├── onRouteBC Configurations.sfd       # FontForge project
+│   ├── onRouteBC_Configurations.woff2     # Web font (primary use)
+│   ├── onRouteBC_Configurations.ttf       # TrueType (PDF/export usage)
+│   ├── onRouteBC_Configurations.otf       # OpenType font
+│   ├── onRouteBC_Configurations.svg       # Legacy/optional format
 ```
 
 ---
