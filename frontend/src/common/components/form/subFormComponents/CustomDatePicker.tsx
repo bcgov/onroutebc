@@ -1,7 +1,7 @@
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material";
 import { useState, useEffect } from "react";
 
@@ -15,19 +15,19 @@ import {
 } from "react-hook-form";
 
 import "./CustomDatePicker.scss";
+import { getStartOfDate, now } from "../../../helpers/formatDate";
+import { getErrorMessage } from "../CustomFormComponents";
 import {
   Nullable,
   ORBC_FormTypes,
   RequiredOrNull,
 } from "../../../types/common";
-import { getStartOfDate, now } from "../../../helpers/formatDate";
-import { getErrorMessage } from "../CustomFormComponents";
+
 import {
   invalidDate,
-  invalidMaxStartDate,
   invalidPastStartDate,
-  warnPastStartDate,
 } from "../../../helpers/validationMessages";
+import { getDefaultRequiredVal } from "../../../helpers/util";
 
 export const PAST_START_DATE_STATUSES = {
   ALLOWED: "ALLOWED",
@@ -48,7 +48,10 @@ export interface CustomDatePickerProps<T extends FieldValues> {
   rules: RegisterOptions;
   label?: string;
   pastStartDateStatus: PastStartDateStatus;
-  maxDaysInFuture?: number;
+  minAllowablePastDate?: Dayjs;
+  maxAllowableFutureDate?: Dayjs;
+  dateWarningMessage?: Nullable<string>;
+  futureDateErrorMessage?: Nullable<string>;
   onChangeOverride?: (value: Dayjs | null) => void;
 }
 
@@ -63,7 +66,10 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
   rules,
   label,
   pastStartDateStatus,
-  maxDaysInFuture,
+  minAllowablePastDate,
+  maxAllowableFutureDate,
+  dateWarningMessage,
+  futureDateErrorMessage,
   onChangeOverride,
 }: CustomDatePickerProps<T>): JSX.Element => {
   const {
@@ -71,12 +77,6 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
     formState: { isSubmitted, errors },
     control,
   } = useFormContext();
-
-  // If applicable, the user can only select a date that is up to
-  // max number of days into the future of the current date
-  const maxDate = maxDaysInFuture
-    ? now().add(maxDaysInFuture, "day")
-    : undefined;
 
   /**
    * DatePicker is tricky, because in theory, you have two components with event listeners.
@@ -114,13 +114,12 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
       },
       maxDate: (value: Nullable<Dayjs>) => {
         return (
-          !maxDaysInFuture ||
           dateError !== "maxDate" ||
-          !maxDate ||
+          !maxAllowableFutureDate ||
           !value ||
-          value.isBefore(getStartOfDate(maxDate)) ||
-          value.isSame(getStartOfDate(maxDate)) ||
-          invalidMaxStartDate(maxDaysInFuture)
+          value.isBefore(getStartOfDate(maxAllowableFutureDate)) ||
+          value.isSame(getStartOfDate(maxAllowableFutureDate)) ||
+          getDefaultRequiredVal(invalidDate(), futureDateErrorMessage)
         );
       },
       invalidDate: () => {
@@ -144,11 +143,6 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
   }, [dateError]);
 
   const rulesViolationMessage = getErrorMessage(errors, name);
-  const startDateWarningMessage =
-    dayjs().isAfter(value, "day") &&
-    pastStartDateStatus === PAST_START_DATE_STATUSES.WARNING
-      ? warnPastStartDate()
-      : null;
 
   return (
     <Box className={`custom-date-picker ${className ? className : ""}`}>
@@ -182,7 +176,8 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
                 disablePast={
                   pastStartDateStatus === PAST_START_DATE_STATUSES.FAIL
                 }
-                maxDate={maxDate}
+                minDate={minAllowablePastDate}
+                maxDate={maxAllowableFutureDate}
                 onError={(dateValidationError) =>
                   setDateError(dateValidationError)
                 }
@@ -217,12 +212,12 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
               </FormHelperText>
             ) : null}
 
-            {startDateWarningMessage ? (
+            {dateWarningMessage ? (
               <FormHelperText
                 className="custom-date-picker__helper-text custom-date-picker__helper-text--warning"
                 data-testid={`custom-date-picker-${name}-warning`}
               >
-                {startDateWarningMessage}
+                {dateWarningMessage}
               </FormHelperText>
             ) : null}
           </FormControl>

@@ -1,8 +1,8 @@
-describe('Login Test for OnRouteBC', () => {
+describe('Do global search for companies or permits', () => {
   it('Should navigate to the login page, find the login button, and enter credentials', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('idir_username');
-    const password = Cypress.env('idir_password');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
     const home_url = '/idir/welcome';
     const report_url = 'idir/reports';
     const wait_time = Cypress.env('wait_time');
@@ -88,34 +88,5 @@ describe('Login Test for OnRouteBC', () => {
       .click({force: true});
     cy.wait(wait_time);
 
-    cy.get('li[data-option-value="resend"]')
-      .click({force: true});
-    cy.wait(wait_time);
-
-    cy.get('input.PrivateSwitchBase-input[type="checkbox"]').eq(1).click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[data-testid="input-email"]').type('bruce.wang@bc.gov.ca');
-    cy.wait(wait_time);
-
-    // cy.get('button').contains('Resend').click();
-    // cy.wait(wait_time);
-
-    // cy.get('button#actions-button')
-    //   .first()
-    //   .click({force: true});
-    // cy.wait(wait_time);
-
-    // cy.get('li[data-option-value="resend"]')
-    //   .click({force: true});
-    // cy.wait(wait_time);
-
-    // Can cancel the resend
-    cy.get('button')
-      .contains('Cancel')
-      .click();
-    cy.wait(wait_time);
-
-    
   });
 });

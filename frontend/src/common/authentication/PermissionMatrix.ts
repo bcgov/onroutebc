@@ -409,7 +409,7 @@ const GLOBAL_SEARCH = {
   AMEND_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO] },
   VOID_PERMIT: { allowedIDIRRoles: [SA] },
   REVOKE_PERMIT: { allowedIDIRRoles: [SA] },
-  RESEND_PERMIT: { allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA] },
+  RESEND_PERMIT: { allowedIDIRRoles: ALL_IDIR_ROLES },
 
   /** Search for Inactive Permit */
   SEARCH_FOR_INACTIVE_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO, EO] },

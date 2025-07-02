@@ -1,10 +1,10 @@
-describe('Crud for trailer', () => {
-  it('Should create, update or delete a trailer', () => {
+describe('Crud for power unit', () => {
+  it('Should create, update or delete a power unit', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('bceid_username');
-    const password = Cypress.env('bceid_password');
-    const new_trailer_url = '/manage-vehicles/add-trailer';
-    const update_trailer_url = Cypress.env('update_trailer_url');
+    const username = Cypress.env('username');
+    const password = Cypress.env('password');
+    const new_power_unit_url = '/manage-vehicles/add-powerunit';
+    const update_power_unit_url = Cypress.env('update_power_unit_url');
     const manage_vehicle_url = '/manage-vehicles';
     const wait_time = Cypress.env('wait_time');
 
@@ -24,29 +24,29 @@ describe('Crud for trailer', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(wait_time);
 
-    cy.visit(new_trailer_url);
+    cy.visit(new_power_unit_url);
     cy.wait(wait_time);
 
-    // create new trailer
-    // cy.get('[name="unitNumber"]').type('TCL37');
+    // create new power unit
+    // cy.get('[name="unitNumber"]').type('MCL37');
     // cy.wait(wait_time);
 
-    cy.get('[name="make"]').type('NISSAN');
+    cy.get('[name="make"]').type('Toyota');
     cy.wait(wait_time);
 
-    cy.get('[name="year"]').type('2005');
+    cy.get('[name="year"]').type('2002');
     cy.wait(wait_time);
 
-    cy.get('[name="vin"]').type('TCL37A');
+    cy.get('[name="vin"]').type('MCL37A');
     cy.wait(wait_time);
 
-    cy.get('[name="plate"]').type('VT0007');
+    cy.get('[name="plate"]').type('VB0007');
     cy.wait(wait_time);
 
-    cy.get('[id="mui-component-select-trailerTypeCode"]').click({ force: true });
+    cy.get('[id="mui-component-select-powerUnitTypeCode"]').click({ force: true });
     cy.wait(wait_time);
 
-    cy.get('[data-value="BOOSTER"]').click();
+    cy.get('[data-value="BUSCRUM"]').click();
     cy.wait(wait_time);
 
     cy.get('[id="mui-component-select-countryCode"]').scrollIntoView().click();
@@ -58,7 +58,10 @@ describe('Crud for trailer', () => {
     cy.get('[id="mui-component-select-provinceCode"]').click();
     cy.wait(wait_time);
 
-    cy.get('[data-value="BC"]').click();
+    cy.get('[data-value="AB"]').click();
+    cy.wait(wait_time);
+
+    cy.get('[name="licensedGvw"]').type('2000');
     cy.wait(wait_time);
 
     cy.get('.css-xie432').click();
@@ -68,33 +71,26 @@ describe('Crud for trailer', () => {
     cy.visit(manage_vehicle_url);
     cy.wait(wait_time);
 
-    cy.get('.tab__label').contains('Trailer').click();
-    cy.wait(wait_time);
-
     cy.get('.css-15mydm5').first().scrollIntoView().wait(3000).click({ force: true });
     cy.wait(wait_time);
 
     cy.xpath("//li[text()='Edit']").click();
     cy.wait(wait_time);
 
-    cy.get('[name="make"]').clear().type('BMW');
+    cy.get('[name="make"]').clear().type('Toyota');
     cy.wait(wait_time);
 
-    // cy.get('[name="unitNumber"]').clear().type('TCL37');
-    // cy.wait(wait_time);
-
     cy.get('[name="year"]').clear().type('2021');
+    cy.wait(wait_time);
+
+    cy.get('[name="licensedGvw"]').clear().type('3000');
     cy.wait(wait_time);
 
     cy.get('.css-xie432').click();
     cy.wait(wait_time);
 
-
-    // delete trailer
+    // delete power unit
     cy.visit(manage_vehicle_url);
-    cy.wait(wait_time);
-
-    cy.get('.tab__label').contains('Trailer').click();
     cy.wait(wait_time);
 
     cy.xpath("(//input[@type='checkbox'])[2]")
