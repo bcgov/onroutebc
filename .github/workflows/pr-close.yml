@@ -10,27 +10,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cleanup:
-    name: cleanup
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [dev, gold-dev]
-    steps:
-      - name: Load credentials for ${{ matrix.environment }}
-        id: credentials
-        run: |
-          # Dynamically fetch secrets using GitHub Actions syntax
-          echo "OC_NAMESPACE=${{ vars.OC_NAMSPACE }}" >> $GITHUB_ENV
-          echo "OC_TOKEN=${{ secrets.OC_TOKEN }}" >> $GITHUB_ENV
-
-      - name: Cleanup OpenShift and/or Promote Images
-        uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
-        env:
-          oc_namespace: ${{ env.OC_NAMESPACE }}
-          oc_token: ${{ env.OC_TOKEN }}
-        with:
-          cleanup: helm
-          packages: dops frontend scheduler vehicles policy public
+  cleanup-silver:
+    name: Cleanup OpenShift and/or Promote Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    secrets:
+      oc_namespace: ${{ vars.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      environment: dev
+      cleanup: helm
+      packages: dops frontend scheduler vehicles policy public
   
+  cleanup-gold:
+    name: Cleanup OpenShift and/or Promote Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    secrets:
+      oc_namespace: ${{ vars.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      environment: gold-dev
+      cleanup: helm
+      packages: dops frontend scheduler vehicles policy public
