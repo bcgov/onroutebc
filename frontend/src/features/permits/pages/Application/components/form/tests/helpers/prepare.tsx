@@ -9,7 +9,12 @@ import { getDefaultConditions, getMandatoryConditions } from "../../../../../../
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
 import { PermitCondition } from "../../../../../../types/PermitCondition";
-import { PAST_START_DATE_STATUSES } from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
+import { MAX_ALLOWED_FUTURE_DAYS_CV } from "../../../../../../constants/constants";
+import {
+  PAST_START_DATE_STATUSES,
+} from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   getStartOfDate,
   now,
@@ -17,9 +22,10 @@ import {
 
 import {
   durationOptionsForPermitType,
+  getMaxAllowedPermitFutureStartDate,
+  getMinAllowedPermitPastStartDate,
   minDurationForPermitType,
 } from "../../../../../../helpers/dateSelection";
-import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
 
 const feature = ORBC_FORM_FEATURES.TEST_FEATURE;
 export const currentDt = getStartOfDate(now());
@@ -39,7 +45,7 @@ const permitType = DEFAULT_PERMIT_TYPE;
 export const conditions = getDefaultConditions(permitType);
 export const defaultDuration = minDurationForPermitType(permitType);
 export const emptyConditions: PermitCondition[] = [];
-export const allDurations = durationOptionsForPermitType(permitType).map(
+export const allDurations = durationOptionsForPermitType(permitType, false).map(
   (durationOption) => ({
     text: durationOption.label,
     days: durationOption.value,
@@ -104,18 +110,34 @@ export const renderTestComponent = (
     },
   );
 
+  const minAllowedPastStartDate = getMinAllowedPermitPastStartDate(
+    permitType,
+    currentDt,
+    currentDt,
+    false,
+    false,
+  );
+
+  const maxAllowedFutureStartDate = getMaxAllowedPermitFutureStartDate(
+    currentDt,
+    false,
+  );
+
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
         permitType={permitType}
+        startDate={startDate}
+        minAllowedPastStartDate={minAllowedPastStartDate}
+        maxAllowedFutureStartDate={maxAllowedFutureStartDate}
+        maxNumDaysAllowedInFuture={MAX_ALLOWED_FUTURE_DAYS_CV}
         expiryDate={expiryDate}
         allConditions={allConditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
         }))}
-        disableStartDate={false}
         pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
         onSetConditions={(updatedConditions) => {
           selectedConditions = [...updatedConditions];

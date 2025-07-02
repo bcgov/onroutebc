@@ -72,6 +72,8 @@ export interface PermitTypeChooseFromItem {
 export const BASE_DAYS_IN_YEAR = 365;
 export const TERM_PERMIT_MIN_DURATION = 30;
 export const TERM_DURATION_INTERVAL_DAYS = 30;
+export const MAX_ALLOWED_FUTURE_DAYS_CV = 14;
+export const MAX_ALLOWED_FUTURE_DAYS_STAFF = 60;
 
 export const TERM_PERMIT_DURATION_OPTIONS = [
   { value: TERM_PERMIT_MIN_DURATION, label: "30 Days" },

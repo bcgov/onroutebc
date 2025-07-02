@@ -10,6 +10,7 @@ import { CommonService } from './common.service';
 import { HttpModule } from '@nestjs/axios';
 import { DopsService } from './dops.service';
 import { CFSCreditAccountService } from './cfsCreditAccountService';
+import { EGARMSCreditAccountService } from './egarms.credit-account.service';
 
 @Global()
 @Module({
@@ -23,6 +24,7 @@ import { CFSCreditAccountService } from './cfsCreditAccountService';
     CommonService,
     DopsService,
     CFSCreditAccountService,
+    EGARMSCreditAccountService,
   ],
   exports: [
     HttpModule,
@@ -31,6 +33,7 @@ import { CFSCreditAccountService } from './cfsCreditAccountService';
     CommonService,
     DopsService,
     CFSCreditAccountService,
+    EGARMSCreditAccountService,
   ],
 })
 export class CommonModule {}
