@@ -15,7 +15,7 @@ GO
 -- Add non-nullable column [case].[ORBC_CASE].[CASE_OPENED_DATE_TIME] to track when a case was added to the queue.
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
-ALTER TABLE [case].[ORBC_CASE] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NOT NULL;
+ALTER TABLE [case].[ORBC_CASE] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NULL;
 
 
 IF @@ERROR <> 0 SET NOEXEC ON
