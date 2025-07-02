@@ -16,6 +16,7 @@ jobs:
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ secrets.OC_SERVER }}
     with:
       environment: dev
       cleanup: helm
@@ -27,6 +28,7 @@ jobs:
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ secrets.OC_SERVER }}
     with:
       environment: gold-dev
       cleanup: helm
