@@ -43,7 +43,7 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
     description:
       'The search string used for querying the database. ' +
       'This field is conditionally required. It is mandatory when a searchColumn is defined. ' +
-      'If a searchColumn is not defined, the value is searched against Plate or Unit Number, making the field optional.',
+      'If a searchColumn is not defined, the value is searched against Plate, Unit Number or Permit Number, making the field optional.',
     required: false,
     example: 'P0-08000508-500',
   })
