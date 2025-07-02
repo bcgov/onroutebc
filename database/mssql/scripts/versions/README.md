@@ -297,3 +297,6 @@
 
 ### Version 76:
 - Configure STOS v4 template (bugfixes)
+
+### Version 78:
+- DDL changes to add CASE_OPENED_DATE_TIME column to case.ORBC_CASE table
