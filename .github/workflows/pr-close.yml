@@ -16,6 +16,7 @@ jobs:
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ vars.OC_SERVER }}
     with:
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
