@@ -12,10 +12,10 @@ GO
 BEGIN TRANSACTION
 GO
 
--- Add non-nullable column [case].[ORBC_CASE].[ADDED_TO_QUEUE_AT] to track when a case was added to the queue.
+-- Add non-nullable column [case].[ORBC_CASE].[CASE_OPENED_DATE_TIME] to track when a case was added to the queue.
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
-ALTER TABLE [case].[ORBC_CASE] ADD [ADDED_TO_QUEUE_AT] [datetime2](7) NOT NULL;
+ALTER TABLE [case].[ORBC_CASE] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NOT NULL;
 
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -27,12 +27,12 @@ EXEC sys.sp_addextendedproperty @name = N'MS_Description'
 	,@level1type = N'TABLE'
 	,@level1Name = N'ORBC_CASE'
 	,@level2type = N'COLUMN'
-	,@level2name = N'ADDED_TO_QUEUE_AT';
+	,@level2name = N'CASE_OPENED_DATE_TIME';
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Add ADDED_TO_QUEUE_AT column to case.ORBC_CASE'
+SET @VersionDescription = 'Add CASE_OPENED_DATE_TIME column to case.ORBC_CASE'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (74, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (78, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 

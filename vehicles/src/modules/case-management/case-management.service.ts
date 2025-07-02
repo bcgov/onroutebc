@@ -140,7 +140,7 @@ export class CaseManagementService {
       newCase.previousCaseId = existingCase?.caseId;
       newCase.originalCaseId = existingCase?.originalCaseId;
       setBaseEntityProperties({ entity: newCase, currentUser });
-      newCase.addedToQueueAt = new Date(); // Set the date when the case was added to the queue
+      newCase.caseOpenedDateTime = new Date(); // Set the date when the case was added to the queue
       newCase = await queryRunner.manager.save<Case>(newCase);
       newCase.originalCaseId = newCase.originalCaseId ?? newCase.caseId;
       newCase = await queryRunner.manager.save<Case>(newCase);

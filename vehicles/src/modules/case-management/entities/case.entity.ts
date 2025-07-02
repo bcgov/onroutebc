@@ -65,9 +65,10 @@ export class Case extends Base {
 
   @AutoMap()
   @Column({
-    name: 'ADDED_TO_QUEUE_AT',
+    name: 'CASE_OPENED_DATE_TIME',
+    nullable: true,
   })
-  addedToQueueAt: Date;
+  caseOpenedDateTime: Date;
 
   @AutoMap()
   @ManyToOne(() => User, { eager: true, cascade: false, nullable: true })
