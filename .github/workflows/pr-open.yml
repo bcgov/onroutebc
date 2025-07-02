@@ -72,7 +72,7 @@ jobs:
           package: ${{ matrix.package }}
           tag: ${{ needs.vars.outputs.pr }}
           tag_fallback: latest
-          triggers: '${{ matrix.package }}/' #omit to build everything
+          # triggers: '${{ matrix.package }}/' #omit to build everything
 
   # https://github.com/bcgov/action-deployer-openshift
   deploys-dev:
