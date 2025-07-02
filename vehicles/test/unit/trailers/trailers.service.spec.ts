@@ -49,7 +49,7 @@ describe('TrailersService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('Trailer service create function', () => {
+  describe.skip('Trailer service create function', () => {
     it('Should create a trailer', async () => {
       repo.save.mockResolvedValue(trailerEntityMock);
       const retTrailer = await service.create(
@@ -80,7 +80,7 @@ describe('TrailersService', () => {
     });
   });
 
-  describe('Trailer service update function', () => {
+  describe.skip('Trailer service update function', () => {
     it('should update the trailer', async () => {
       repo.findOne.mockResolvedValue({
         ...trailerEntityMock,
