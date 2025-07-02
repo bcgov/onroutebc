@@ -350,6 +350,12 @@ export class PermitService {
             })
             .orWhere('permitData.unitNumber like :searchString', {
               searchString: `%${searchString}%`,
+            })
+            .orWhere(`permit.permitNumber like :searchString`, {
+              searchString: `%${searchString}%`,
+            })
+            .orWhere(`permit.migratedPermitNumber like :searchString`, {
+              searchString: `%${searchString}%`,
             });
         }),
       );
