@@ -17,7 +17,6 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 ALTER TABLE [case].[ORBC_CASE] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NULL;
 
-
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 EXEC sys.sp_addextendedproperty @name = N'MS_Description'
@@ -29,6 +28,47 @@ EXEC sys.sp_addextendedproperty @name = N'MS_Description'
 	,@level2type = N'COLUMN'
 	,@level2name = N'CASE_OPENED_DATE_TIME';
 
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+-- Add column to history table, only if it does not already exist.
+-- The check if it already exists is there because if we revert
+-- this script, that history column will not be dropped. This check
+-- allows this script to be run, rolled back, then run again if needed.
+IF COL_LENGTH('case.ORBC_CASE_HIST', 'CASE_OPENED_DATE_TIME') IS NULL
+BEGIN
+  ALTER TABLE [case].[ORBC_CASE_HIST] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NULL;
+END
+
+
+-- Alter history trigger to reflect the new column
+PRINT N'Alter trigger case.ORBC_CASE_A_S_IUD_TR'
+GO
+ALTER TRIGGER [case].[ORBC_CASE_A_S_IUD_TR] ON [case].[ORBC_CASE] FOR INSERT, UPDATE, DELETE AS
+SET NOCOUNT ON
+BEGIN TRY
+DECLARE @curr_date datetime;
+SET @curr_date = getutcdate();
+  IF NOT EXISTS(SELECT * FROM inserted) AND NOT EXISTS(SELECT * FROM deleted) 
+    RETURN;
+
+  -- historical
+  IF EXISTS(SELECT * FROM deleted)
+    update [case].[ORBC_CASE_HIST] set END_DATE_HIST = @curr_date where CASE_ID in (select CASE_ID from deleted) and END_DATE_HIST is null;
+  
+  IF EXISTS(SELECT * FROM inserted)
+    insert into [case].[ORBC_CASE_HIST] ([CASE_ID], [ORIGINAL_CASE_ID], [PREVIOUS_CASE_ID], [PERMIT_ID], [CASE_TYPE], [CASE_STATUS_TYPE], [ASSIGNED_USER_GUID], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [CASE_OPENED_DATE_TIME], _CASE_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
+      select [CASE_ID], [ORIGINAL_CASE_ID], [PREVIOUS_CASE_ID], [PERMIT_ID], [CASE_TYPE], [CASE_STATUS_TYPE], [ASSIGNED_USER_GUID], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], [CASE_OPENED_DATE_TIME], (next value for [case].[ORBC_CASE_H_ID_SEQ]) as [_CASE_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
+
+END TRY
+BEGIN CATCH
+   IF @@trancount > 0 ROLLBACK TRANSACTION
+   EXEC orbc_error_handling
+END CATCH;
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Add CASE_OPENED_DATE_TIME column to case.ORBC_CASE'
 
