@@ -16,8 +16,8 @@ jobs:
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-      oc_server: ${{ secrets.OC_SERVER }}
     with:
+      oc_server: ${{ secrets.OC_SERVER }}
       environment: dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
@@ -28,8 +28,8 @@ jobs:
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-      oc_server: ${{ secrets.OC_SERVER }}
     with:
+      oc_server: ${{ secrets.OC_SERVER }}
       environment: gold-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
