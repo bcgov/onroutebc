@@ -166,7 +166,7 @@ OpenShift server address.
 
 OpenShift project/namespace.  Provided by your OpenShift platform team.
 
-* Variable: `{{ vars.OC_NAMESPACE }}`
+* Variable: `{{ secrets.OC_NAMESPACE }}`
 * Value: format `abc123-dev | test | prod`
 
 **OC_TOKEN**

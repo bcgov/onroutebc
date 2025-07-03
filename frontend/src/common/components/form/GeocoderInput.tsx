@@ -99,16 +99,10 @@ export const GeocoderInput = <
 
   const handleClose = () => {
     setIsOpen(false);
-    if (!searchString.trim()) { //Using Trim to invalidate empty string
+    if (!searchString.trim()) {
       // If inputted search string is empty when exiting geocoder input,
       // set selected address to be empty
       onSelectAddress?.("");
-    } else if (searchString !== selectedAddress) {
-      // If upon exiting geocoder, the inputted search string is partial,
-      // and none of the address options where selected,
-      // or if no available options to select due to search string being invalid
-      // then set selected address to be previously selected address
-      onSelectAddress?.(searchString);
     }
   };
 
@@ -142,7 +136,7 @@ export const GeocoderInput = <
           }
         },
         onInputChange: (_, value) => {
-          setSearchString(value);
+          onSelectAddress?.(value);
           onAddressSearchChange?.(value);
         },
         loading: isLoading,

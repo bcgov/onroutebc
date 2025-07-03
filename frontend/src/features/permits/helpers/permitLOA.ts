@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
-import { PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PermitType } from "../types/PermitType";
 import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
@@ -22,6 +22,7 @@ import { getUpdatedCLF } from "./conditionalLicensingFee/getUpdatedCLF";
 import { getAvailableCLFs } from "./conditionalLicensingFee/getAvailableCLFs";
 import { getVehicleWeightStatusForCLF } from "./vehicles/configuration/getVehicleWeightStatusForCLF";
 import { getUpdatedVehicleWeights } from "./vehicles/configuration/getUpdatedVehicleWeights";
+import { getExpiryDate } from "./permitState";
 
 /**
  * Filter valid LOAs for a given permit type.
@@ -202,6 +203,7 @@ export const getUpdatedVehicleDetailsForLOAs = (
  * @param upToDateLOAs Most recent up-to-date company LOAs
  * @param inventoryVehicles Vehicle options from the inventory
  * @param eligibleVehicleSubtypes Set of eligible vehicle subtypes that can be used for vehicles
+ * @param isStaff Whether or not the user who manages the application is staff
  * @returns Application data after applying the up-to-date LOAs
  */
 export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFormData | Application>>(
@@ -209,6 +211,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
   upToDateLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
   eligibleVehicleSubtypes: Set<string>,
+  isStaff: boolean,
 ): T => {
   // If application doesn't exist, no need to apply LOAs to it at all
   if (!applicationData) return applicationData;
@@ -242,7 +245,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
 
   // Update duration in permit if selected LOAs changed
   const durationOptions = getAvailableDurationOptions(
-    durationOptionsForPermitType(applicationData.permitType),
+    durationOptionsForPermitType(applicationData.permitType, isStaff),
     newSelectedLOAs,
     applicationData.permitData.startDate,
   );
@@ -251,6 +254,12 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     applicationData.permitType,
     applicationData.permitData.permitDuration,
     durationOptions,
+  );
+
+  const updatedExpiryDate = getExpiryDate(
+    applicationData.permitData.startDate,
+    isQuarterlyPermit(applicationData.permitType),
+    updatedDuration,
   );
 
   // Update vehicle details in permit if selected LOAs changed
@@ -295,6 +304,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     permitData: {
       ...applicationData.permitData,
       permitDuration: updatedDuration,
+      expiryDate: updatedExpiryDate,
       loas: newSelectedLOAs,
       vehicleDetails: updatedVehicle,
       conditionalLicensingFee: updatedCLF,

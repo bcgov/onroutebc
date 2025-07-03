@@ -10,14 +10,6 @@ module.exports = defineConfig({
     env: {
       username: '', 
       password: '',
-      update_term_oversize_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/applications/581', 
-      new_tros_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/create-application/TROS', 
-      new_trow_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/create-application/TROW', 
-      new_power_unit_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-powerunit',
-      update_power_unit_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/power-units/106',
-      manage_vehicle_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles',
-      new_trailer_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-trailer',
-      update_trailer_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/trailers/106',
       rolesToCompanies: {
         pc: 'Herman, Pfannerstill and Huels Trucking',
         sa: 'Test Transport Inc.',
