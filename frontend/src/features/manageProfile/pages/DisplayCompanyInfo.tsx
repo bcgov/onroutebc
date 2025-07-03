@@ -127,11 +127,12 @@ export const DisplayCompanyInfo = memo(
               {mailingAddressLine1 && (
                 <Typography>{mailingAddressLine1}</Typography>
               )}
-              {mailingCountry && <Typography>{mailingCountry}</Typography>}
+              {mailingCity && <Typography>{mailingCity}</Typography>}
               {mailingProvince && <Typography>{mailingProvince}</Typography>}
-              {mailingCityAndPostalCode && (
-                <Typography>{mailingCityAndPostalCode}</Typography>
+              {mailingPostalCode && (
+                <Typography>{mailingPostalCode}</Typography>
               )}
+              {mailingCountry && <Typography>{mailingCountry}</Typography>}
             </>
           ) : (
             <EmptyState />
