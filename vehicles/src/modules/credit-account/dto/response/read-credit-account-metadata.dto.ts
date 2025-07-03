@@ -24,4 +24,12 @@ export class ReadCreditAccountMetadataDto {
     example: false,
   })
   isValidPaymentMethod: boolean;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'EGARMS return Code.',
+    example: 'I0001',
+    required: false,
+  })
+  egarmsReturnCode?: string;
 }
