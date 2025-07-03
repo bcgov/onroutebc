@@ -10,13 +10,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  vars:
+    runs-on: ubuntu-24.04
+    environment: ${{ matrix.environment }}
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, gold-dev]
+    steps:
+      - name: Load credentials for ${{ inputs.environment }}
+        id: credentials
+        run: |
+          # Dynamically fetch secrets using GitHub Actions syntax
+          echo "${{matrix.environment}}_OC_NAMESPACE=${{ secrets.OC_NAMESPACE }}" >> $GITHUB_ENV
+          echo "${{matrix.environment}}_OC_TOKEN=${{ secrets.OC_TOKEN }}" >> $GITHUB_ENV
+          echo "${{matrix.environment}}_OC_SERVER=${{ secrets.OC_SERVER }}" >> $GITHUB_ENV
+  
   cleanup-silver:
     name: Cleanup OpenShift and/or Promote Images
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
     secrets:
-      oc_namespace: ${{ vars.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-      oc_server: ${{ secrets.OC_SERVER }}
+      oc_namespace: ${{ env.dev_OC_NAMESPACE }}
+      oc_token: ${{ env.dev_OC_TOKEN }}
+      oc_server: ${{ env.dev_OC_SERVER }}
     with:
       environment: dev
       cleanup: helm
@@ -26,9 +42,9 @@ jobs:
     name: Cleanup OpenShift and/or Promote Images
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
     secrets:
-      oc_namespace: ${{ vars.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-      oc_server: ${{ secrets.OC_SERVER }}
+      oc_namespace: ${{ env.gold-dev_OC_NAMESPACE }}
+      oc_token: ${{ env.gold-dev_OC_TOKEN }}
+      oc_server: ${{ env.gold-dev_OC_SERVER }}
     with:
       environment: gold-dev
       cleanup: helm
