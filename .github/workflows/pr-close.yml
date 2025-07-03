@@ -12,24 +12,24 @@ concurrency:
 jobs:
   cleanup-silver:
     name: Cleanup OpenShift and/or Promote Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    with:
       oc_server: ${{ secrets.OC_SERVER }}
+    with:
       environment: dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
   
   cleanup-gold:
     name: Cleanup OpenShift and/or Promote Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    with:
       oc_server: ${{ secrets.OC_SERVER }}
+    with:
       environment: gold-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
