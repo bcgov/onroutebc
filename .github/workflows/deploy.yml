@@ -158,7 +158,7 @@ jobs:
         working-directory: ${{ inputs.directory }}
         shell: bash
         run: |
-          oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
+          oc login --token=${{ secrets.oc_token }} --server=${{ secrets.oc_server }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
 
           # Interrupt any previous jobs (status = pending-upgrade)
