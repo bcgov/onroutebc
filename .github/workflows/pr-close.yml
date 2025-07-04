@@ -32,8 +32,6 @@ jobs:
           echo "${{matrix.environment}}_OC_NAMESPACE=${{ vars.OC_NAMESPACE }}" >> $GITHUB_ENV
           echo "${{matrix.environment}}_OC_TOKEN=${{ secrets.OC_TOKEN }}" >> $GITHUB_ENV
           echo "${{matrix.environment}}_OC_SERVER=${{ secrets.OC_SERVER }}" >> $GITHUB_ENV
-          echo "DEV: ${dev_OC_NAMESPACE}"
-          echo "GOLD-DEV: ${gold-dev_OC_NAMESPACE}"
   
   cleanup-silver:
     name: Cleanup OpenShift and/or Promote Images
