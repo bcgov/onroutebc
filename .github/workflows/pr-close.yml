@@ -18,12 +18,12 @@ jobs:
       matrix:
         environment: [dev, gold-dev]
     outputs:
-      DEV_OC_NAMESPACE: ${{ steps.credentials.outputs.dev_OC_NAMESPACE }}
-      DEV_OC_TOKEN: ${{ steps.credentials.outputs.dev_OC_TOKEN }}
-      DEV_OC_SERVER: ${{ steps.credentials.outputs.dev_OC_SERVER }}
-      GOLD-DEV_OC_NAMESPACE: ${{ steps.credentials.outputs.gold-dev_OC_NAMESPACE }}
-      GOLD-DEV_OC_TOKEN: ${{ steps.credentials.outputs.gold-dev_OC_TOKEN }}
-      GOLD-DEV_OC_SERVER: ${{ steps.credentials.outputs.gold-dev_OC_SERVER }}
+      DEV_OC_NAMESPACE: ${{ env.dev_OC_NAMESPACE }}
+      DEV_OC_TOKEN: ${{ env.dev_OC_TOKEN }}
+      DEV_OC_SERVER: ${{ env.dev_OC_SERVER }}
+      GOLD-DEV_OC_NAMESPACE: ${{ env.gold-dev_OC_NAMESPACE }}
+      GOLD-DEV_OC_TOKEN: ${{ env.gold-dev_OC_TOKEN }}
+      GOLD-DEV_OC_SERVER: ${{ env.gold-dev_OC_SERVER }}
     steps:
       - name: Load credentials for ${{ inputs.environment }}
         id: credentials
@@ -34,6 +34,12 @@ jobs:
           echo "${{matrix.environment}}_OC_SERVER=${{ secrets.OC_SERVER }}" >> $GITHUB_ENV
   
   cleanup-silver:
+    name: DEBUG 
+    needs: vars
+    run: |
+      echo "oc_namespace=${{ needs.vars.outputs.DEV_OC_NAMESPACE }} oc_token=${{ needs.vars.outputs.DEV_OC_TOKEN }} oc_server=${{ needs.vars.outputs.DEV_OC_SERVER }}"
+      echo "oc_namespace=${{ needs.vars.outputs.GOLD-DEV_OC_NAMESPACE }} oc_token=${{ needs.vars.outputs.GOLD-DEV_OC_TOKEN }} oc_server=${{ needs.vars.outputs.GOLD-DEV_OC_SERVER }}"
+
     name: Cleanup OpenShift and/or Promote Images
     needs: vars
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
