@@ -40,7 +40,7 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @Validate(OrderByConstraint, [ApplicationOrderBy])
   @IsString()
   @Length(1, 150)
-  readonly orderBy?: string;
+  declare readonly orderBy?: string;
 
   @ApiProperty({
     description:

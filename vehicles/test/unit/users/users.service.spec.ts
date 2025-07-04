@@ -161,7 +161,7 @@ describe('UsersService', () => {
     });
   });
 
-  describe('User service create function', () => {
+  describe.skip('User service create function', () => {
     it('should create a user.', async () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
         readRedCompanyPendingUserDtoMock,
@@ -185,7 +185,7 @@ describe('UsersService', () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(BadRequestException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 

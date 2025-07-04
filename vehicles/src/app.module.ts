@@ -118,11 +118,11 @@ export class AppModule implements OnApplicationBootstrap {
     consumer
       .apply(VersionMatchMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })
-      .forRoutes('*');
+      .forRoutes('{*wildcard}');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })
-      .forRoutes('*');
+      .forRoutes('{*wildcard}');
   }
   async onApplicationBootstrap() {
     await this.appService.initializeCache().catch((err) => {

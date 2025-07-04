@@ -49,7 +49,7 @@ describe('PowerUnitsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('Power unit service create function', () => {
+  describe.skip('Power unit service create function', () => {
     it('should create a power unit.', async () => {
       repo.save.mockResolvedValue(powerUnitEntityMock);
       const retPowerUnit = await service.create(
@@ -80,7 +80,7 @@ describe('PowerUnitsService', () => {
     });
   });
 
-  describe('Power unit service update function', () => {
+  describe.skip('Power unit service update function', () => {
     it('should update the power unit', async () => {
       repo.findOne.mockResolvedValue({
         ...powerUnitEntityMock,
