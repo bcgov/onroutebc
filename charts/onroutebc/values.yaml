@@ -33,9 +33,9 @@ frontend:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-      PUBLIC_API_URL: "https://{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
-      POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      PUBLIC_API_URL: "https://{{.Release.Name}}-public.{{.Values.global.domain}}"
+      POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
       RELEASE_NUM: "{{.Values.global.env.release_num}}"
@@ -137,7 +137,7 @@ frontend:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-frontend.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -188,11 +188,11 @@ vehicles:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"      
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
+      DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
+      POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"      
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}/payment"
   containers:
     - name: vehicles
       command:
@@ -289,7 +289,7 @@ vehicles:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -338,7 +338,7 @@ public:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
   containers:
     - name: public
       command:
@@ -427,7 +427,7 @@ public:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-public.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-public.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -471,9 +471,9 @@ dops:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
   containers:
     - name: dops
       command:
@@ -568,7 +568,7 @@ dops:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-dops.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -617,7 +617,7 @@ scheduler:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
   containers:
     - name: scheduler
       command:
@@ -679,7 +679,7 @@ scheduler:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-scheduler.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-scheduler.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -729,7 +729,7 @@ policy:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
   containers:
     - name: policy
       command:
@@ -817,7 +817,7 @@ policy:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-policy.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
