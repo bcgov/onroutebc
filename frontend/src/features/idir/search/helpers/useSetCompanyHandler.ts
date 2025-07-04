@@ -77,8 +77,8 @@ export const useSetCompanyHandler = () => {
         setIsCompanySuspended?.(() => isSuspended);
         navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
       }
-      return { handleSelectCompany };
     },
     [canClaimCompany],
   );
+  return { handleSelectCompany };
 };
