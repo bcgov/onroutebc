@@ -10,64 +10,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  vars:
-    runs-on: ubuntu-24.04
-    environment: ${{ matrix.environment }}
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [dev, gold-dev]
-    outputs:
-      DEV_OC_NAMESPACE: ${{ env.dev_OC_NAMESPACE }}
-      DEV_OC_TOKEN: ${{ env.dev_OC_TOKEN }}
-      DEV_OC_SERVER: ${{ env.dev_OC_SERVER }}
-      GOLD-DEV_OC_NAMESPACE: ${{ env.gold-dev_OC_NAMESPACE }}
-      GOLD-DEV_OC_TOKEN: ${{ env.gold-dev_OC_TOKEN }}
-      GOLD-DEV_OC_SERVER: ${{ env.gold-dev_OC_SERVER }}
-    steps:
-      - name: Load credentials for ${{ inputs.environment }}
-        id: credentials
-        run: |
-          # Dynamically fetch secrets using GitHub Actions syntax
-          echo "${{matrix.environment}}_OC_NAMESPACE=${{ vars.OC_NAMESPACE }}" >> $GITHUB_ENV
-          echo "${{matrix.environment}}_OC_TOKEN=${{ secrets.OC_TOKEN }}" >> $GITHUB_ENV
-          echo "${{matrix.environment}}_OC_SERVER=${{ secrets.OC_SERVER }}" >> $GITHUB_ENV
-  
-  debug-vars:
-    name: Debug Vars
-    needs: vars
-    runs-on: ubuntu-24.04
-    steps:
-      - run: |
-          echo "DEV_OC_NAMESPACE=${{ needs.vars.outputs.DEV_OC_NAMESPACE }}"
-          echo "DEV_OC_TOKEN=${{ needs.vars.outputs.DEV_OC_TOKEN }}"
-          echo "DEV_OC_SERVER=${{ needs.vars.outputs.DEV_OC_SERVER }}"
-          echo "GOLD-DEV_OC_NAMESPACE=${{ needs.vars.outputs.GOLD-DEV_OC_NAMESPACE }}"
-          echo "GOLD-DEV_OC_TOKEN=${{ needs.vars.outputs.GOLD-DEV_OC_TOKEN }}"
-          echo "GOLD-DEV_OC_SERVER=${{ needs.vars.outputs.GOLD-DEV_OC_SERVER }}"
-
-  cleanup-silver:
+  cleanup:
     name: Cleanup OpenShift and/or Promote Images
-    needs: vars
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@d9b3d32fb3f03c4699c2dce83ddfff042cd31a1f # v1.0.0
     secrets:
-      oc_namespace: ${{ needs.vars.outputs.DEV_OC_NAMESPACE }}
-      oc_token: ${{ needs.vars.outputs.DEV_OC_TOKEN }}
-      oc_server: ${{ needs.vars.outputs.DEV_OC_SERVER }}
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ secrets.OC_SERVER }}
     with:
-      environment: dev
-      cleanup: helm
-      packages: dops frontend scheduler vehicles policy public
-  
-  cleanup-gold:
-    name: Cleanup OpenShift and/or Promote Images
-    needs: vars
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@main
-    secrets:
-      oc_namespace: ${{ needs.vars.outputs.GOLD-DEV_OC_NAMESPACE }}
-      oc_token: ${{ needs.vars.outputs.GOLD-DEV_OC_TOKEN }}
-      oc_server: ${{ needs.vars.outputs.GOLD-DEV_OC_SERVER }}
-    with:
-      environment: gold-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
