@@ -13,6 +13,7 @@ jobs:
   vars:
     runs-on: ubuntu-24.04
     environment: ${{ matrix.environment }}
+    secrets: inherit
     strategy:
       fail-fast: false
       matrix:
