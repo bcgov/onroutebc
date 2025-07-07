@@ -41,6 +41,7 @@ jobs:
         id: env
         run: |
           pr="${{inputs.target}}"
+          echo "pr=${pr,,}"
           if [[ $pr != 'test' && $pr != 'demo' && $pr != 'uat' && $pr != 'prod'  ]]; then
             target="$pr"
             environment="dev"
@@ -49,7 +50,7 @@ jobs:
             environment=${{inputs.target}}
           fi
           echo "target=$target" >> $GITHUB_OUTPUT
-          echo "environment=${environment,,}" >> $GITHUB_OUTPUT
+          echo "environment=$environment" >> $GITHUB_OUTPUT
 
   rbac-tests:
     name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
