@@ -49,7 +49,7 @@ jobs:
             environment=${{inputs.target}}
           fi
           echo "target=$target" >> $GITHUB_OUTPUT
-          echo "environment=$environment" >> $GITHUB_OUTPUT
+          echo "environment=${environment,,}" >> $GITHUB_OUTPUT
 
   rbac-tests:
     uses: ./.github/workflows/rbac-tests.yml

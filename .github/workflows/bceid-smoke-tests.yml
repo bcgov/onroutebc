@@ -49,12 +49,12 @@ jobs:
             environment=${{inputs.target}}
           fi
           echo "target=$target" >> $GITHUB_OUTPUT
-          echo "environment=$environment" >> $GITHUB_OUTPUT
+          echo "environment=${environment,,}" >> $GITHUB_OUTPUT
 
   bceid-smoke-tests:
     name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
     needs: [vars]
-    environment: ${{toLower(needs.vars.outputs.environment)}}
+    environment: ${{needs.vars.outputs.environment}}
     runs-on: ubuntu-22.04
     defaults:
       run:
