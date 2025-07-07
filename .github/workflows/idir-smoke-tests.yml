@@ -54,7 +54,7 @@ jobs:
   idir-smoke-tests:
     name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
     needs: [vars]
-    environment: ${{needs.vars.outputs.environment}}
+    environment: ${{toLower(needs.vars.outputs.environment)}}
     runs-on: ubuntu-22.04
     defaults:
       run:
