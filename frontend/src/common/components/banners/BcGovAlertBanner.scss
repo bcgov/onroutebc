@@ -15,6 +15,11 @@
     background-color: orbcStyles.$bc-messages-red-text;
     color: orbcStyles.$white;
   }
+ 
+  &#{&}--error-alt {
+    background-color: orbcStyles.$bc-messages-red-background;
+    color: orbcStyles.$bc-messages-red-text;
+  }
 
   &#{&}--info {
     background-color: orbcStyles.$bc-messages-blue-background;

@@ -17,6 +17,7 @@ import {
   PAST_START_DATE_STATUSES,
   PastStartDateStatus,
 } from "../../../common/components/form/subFormComponents/CustomDatePicker";
+import { ApplicationRejectionHistory } from "../types/ApplicationRejectionHistory";
 
 interface ApplicationFormContextType {
   initialFormData: ApplicationFormData;
@@ -45,6 +46,7 @@ interface ApplicationFormContextType {
     revisionDateTime: string;
     comment: string;
   }[];
+  rejectionHistory: ApplicationRejectionHistory[];
   policyViolations: Record<string, string>;
   clearViolation: (fieldReference: string) => void;
   triggerPolicyValidation: () => Promise<Record<string, string>>;
@@ -74,6 +76,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
     companyLOAs: [],
     revisionHistory: [],
+    rejectionHistory: [],
     policyViolations: {},
     clearViolation: () => undefined,
     triggerPolicyValidation: async () => ({}),

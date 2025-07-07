@@ -39,7 +39,11 @@ import { serializePermitVehicleDetails } from "../../../helpers/serialize/serial
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
 import { isTermPermitType, PERMIT_TYPES } from "../../../types/PermitType";
-import { dayjsToUtcStr, getStartOfDate, now } from "../../../../../common/helpers/formatDate";
+import {
+  dayjsToUtcStr,
+  getStartOfDate,
+  now,
+} from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,
@@ -181,10 +185,14 @@ export const AmendPermitForm = () => {
       policyViolations,
       formData.permitData.vehicleDetails.vehicleSubType,
       formData.permitData.loas,
-    ) ? Object.fromEntries(
-      Object.entries(policyViolations)
-        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
-    ) : policyViolations;
+    )
+      ? Object.fromEntries(
+          Object.entries(policyViolations).filter(
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+          ),
+        )
+      : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -291,15 +299,23 @@ export const AmendPermitForm = () => {
     formData.permitType,
     true,
   );
-  
+
   // Term permits only allow duration to be shortened
   // All other permit types can shorten or lengthen duration as needed
   const amendmentDurationOptions = useMemoizedArray(
     isTermPermitType(formData.permitType)
-      ? durationOptions.filter((duration) => duration.value <= permitOldDuration)
+      ? durationOptions.filter(
+          (duration) => duration.value <= permitOldDuration,
+        )
       : durationOptions,
-    durationOption => durationOption.value,
-    (durationOption1, durationOption2) => durationOption1.value === durationOption2.value,
+    (durationOption) => durationOption.value,
+    (durationOption1, durationOption2) =>
+      durationOption1.value === durationOption2.value,
+  );
+
+  const rejectionHistory = getDefaultRequiredVal(
+    [],
+    amendmentApplication?.rejectionHistory,
   );
 
   const applicationFormContextData = useMemo(
@@ -322,6 +338,7 @@ export const AmendPermitForm = () => {
       pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
       companyLOAs: applicableLOAs,
       revisionHistory,
+      rejectionHistory,
       policyViolations,
       onLeave: undefined,
       onSave: undefined,
@@ -345,6 +362,7 @@ export const AmendPermitForm = () => {
       updatedDateTime,
       applicableLOAs,
       revisionHistory,
+      rejectionHistory,
       policyViolations,
       goHome,
       onContinue,
