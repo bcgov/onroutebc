@@ -64,6 +64,13 @@ export class Case extends Base {
   caseStatusType: CaseStatusType;
 
   @AutoMap()
+  @Column({
+    name: 'CASE_OPENED_DATE_TIME',
+    nullable: true,
+  })
+  caseOpenedDateTime: Date;
+
+  @AutoMap()
   @ManyToOne(() => User, { eager: true, cascade: false, nullable: true })
   @JoinColumn({ name: 'ASSIGNED_USER_GUID' })
   assignedUser?: Nullable<User>;
