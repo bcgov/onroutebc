@@ -50,5 +50,5 @@ export const assertSuccessfulSubmit = async (
   }
 
   // Assert - no errors shown after submission
-  expect(async () => await submitErrorsDisplay()).rejects.toThrow();
+  await expect(submitErrorsDisplay()).rejects.toThrow();
 };
