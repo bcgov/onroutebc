@@ -11,13 +11,13 @@ GO
 BEGIN TRANSACTION
 GO
 
-/** ORBC_LOGIN captures login information for all users, including BCeID and IDIR.
+/** ORBC_LOGIN captures login information of all users, including BCeID and IDIR.
 * The table does not have any foreign key constraints to ORBC_USER or ORBC_COMPANY
 * as it may represent a new user. */
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 CREATE TABLE [dbo].[ORBC_LOGIN] (
-	[LOGIN_ID] [int] IDENTITY(1,1) NOT NULL,
+	[LOGIN_ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[USERNAME] [nvarchar](50) NOT NULL,
     [USER_GUID] [char](32) NOT NULL,	
 	[COMPANY_GUID] [char](32) NULL,
