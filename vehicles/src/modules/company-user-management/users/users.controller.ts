@@ -81,6 +81,7 @@ export class UsersController {
   @AuthOnly()
   @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
+    console.log('ip address',request.ip)
     const currentUser = request.user as IUserJWT;
     let userExists: ReadUserOrbcStatusDto;
     if (currentUser.identity_provider === IDP.IDIR) {
