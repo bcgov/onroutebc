@@ -18,9 +18,11 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 CREATE TABLE [dbo].[ORBC_LOGIN] (
 	[LOGIN_ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[USER_DIRECTORY] [varchar](10) NOT NULL,
 	[USERNAME] [nvarchar](50) NOT NULL,
-    [USER_GUID] [char](32) NOT NULL,	
+    [USER_GUID] [char](32) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
+	[COMPANY_LEGAL_NAME] [nvarchar](500) NULL,
 	[EMAIL] [nvarchar](100) NULL,
 	[LOGIN_DATE_TIME] [datetime2](7) NOT NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
@@ -61,7 +63,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Details of user login.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the login table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'LOGIN_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user, coming from bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USER_GUID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s business bcied  as set in bceid' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s business bcied  as set in bceid if exists or COMPANY_GUID as set in ORBC_COMPANY.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s username as set in bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USERNAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s email as set in bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'EMAIL'
 
@@ -84,7 +86,7 @@ CREATE TABLE [dbo].[ORBC_LOGIN_HIST](
   _LOGIN_HIST_ID [bigint] DEFAULT (NEXT VALUE FOR [dbo].[ORBC_LOGIN_H_ID_SEQ]) NOT NULL
   ,EFFECTIVE_DATE_HIST [datetime] NOT NULL default getutcdate()
   ,END_DATE_HIST [datetime]
-  , [LOGIN_ID] int NOT NULL, [USERNAME] nvarchar(50) NOT NULL, [USER_GUID] char(32) NOT NULL, [COMPANY_GUID] char(32) NULL, [EMAIL] nvarchar(100) NULL, [LOGIN_DATE_TIME] datetime2 NOT NULL, [APP_CREATE_TIMESTAMP] datetime2 NULL, [APP_CREATE_USERID] nvarchar(30) NULL, [APP_CREATE_USER_GUID] char(32) NULL, [APP_CREATE_USER_DIRECTORY] nvarchar(30) NULL, [APP_LAST_UPDATE_TIMESTAMP] datetime2 NULL, [APP_LAST_UPDATE_USERID] nvarchar(30) NULL, [APP_LAST_UPDATE_USER_GUID] char(32) NULL, [APP_LAST_UPDATE_USER_DIRECTORY] nvarchar(30) NULL, [CONCURRENCY_CONTROL_NUMBER] int NULL, [DB_CREATE_USERID] varchar(63) NOT NULL, [DB_CREATE_TIMESTAMP] datetime2 NOT NULL, [DB_LAST_UPDATE_USERID] varchar(63) NOT NULL, [DB_LAST_UPDATE_TIMESTAMP] datetime2 NOT NULL
+  , [LOGIN_ID] int NOT NULL, [USER_DIRECTORY] varchar(10) NOT NULL, [USERNAME] nvarchar(50) NOT NULL, [USER_GUID] char(32) NOT NULL, [COMPANY_GUID] char(32) NULL, [COMPANY_LEGAL_NAME] nvarchar(500) NOT NULL , [EMAIL] nvarchar(100) NULL, [LOGIN_DATE_TIME] datetime2 NOT NULL, [APP_CREATE_TIMESTAMP] datetime2 NULL, [APP_CREATE_USERID] nvarchar(30) NULL, [APP_CREATE_USER_GUID] char(32) NULL, [APP_CREATE_USER_DIRECTORY] nvarchar(30) NULL, [APP_LAST_UPDATE_TIMESTAMP] datetime2 NULL, [APP_LAST_UPDATE_USERID] nvarchar(30) NULL, [APP_LAST_UPDATE_USER_GUID] char(32) NULL, [APP_LAST_UPDATE_USER_DIRECTORY] nvarchar(30) NULL, [CONCURRENCY_CONTROL_NUMBER] int NULL, [DB_CREATE_USERID] varchar(63) NOT NULL, [DB_CREATE_TIMESTAMP] datetime2 NOT NULL, [DB_LAST_UPDATE_USERID] varchar(63) NOT NULL, [DB_LAST_UPDATE_TIMESTAMP] datetime2 NOT NULL
   )
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -120,8 +122,8 @@ SET @curr_date = getutcdate();
     update [dbo].[ORBC_LOGIN_HIST] set END_DATE_HIST = @curr_date where LOGIN_ID in (select LOGIN_ID from deleted) and END_DATE_HIST is null;
   
   IF EXISTS(SELECT * FROM inserted)
-    insert into [dbo].[ORBC_LOGIN_HIST] ([LOGIN_ID], [USERNAME], [USER_GUID], [COMPANY_GUID], [EMAIL], [LOGIN_DATE_TIME], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], _LOGIN_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
-      select [LOGIN_ID], [USERNAME], [USER_GUID], [COMPANY_GUID], [EMAIL], [LOGIN_DATE_TIME], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], (next value for [dbo].[ORBC_LOGIN_H_ID_SEQ]) as [_LOGIN_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
+    insert into [dbo].[ORBC_LOGIN_HIST] ([LOGIN_ID], [USER_DIRECTORY], [USERNAME], [USER_GUID], [COMPANY_GUID], [COMPANY_LEGAL_NAME], [EMAIL], [LOGIN_DATE_TIME], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], _LOGIN_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
+      select [LOGIN_ID], [USER_DIRECTORY], [USERNAME], [USER_GUID], [COMPANY_GUID], [COMPANY_LEGAL_NAME], [EMAIL], [LOGIN_DATE_TIME], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], (next value for [dbo].[ORBC_LOGIN_H_ID_SEQ]) as [_LOGIN_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
 
 END TRY
 BEGIN CATCH

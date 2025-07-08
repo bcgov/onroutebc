@@ -80,7 +80,7 @@ export class UsersController {
   })
   @AuthOnly()
   @Post('user-context')
-  async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {    
+  async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     let userExists: ReadUserOrbcStatusDto;
     if (currentUser.identity_provider === IDP.IDIR) {
@@ -89,6 +89,7 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
+    await this.userService.saveLoginInformation(currentUser, userExists);
     return userExists;
   }
 
