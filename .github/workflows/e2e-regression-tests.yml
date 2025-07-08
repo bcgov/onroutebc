@@ -41,6 +41,7 @@ jobs:
         id: env
         run: |
           pr="${{inputs.target}}"
+          pr=${pr,,}
           if [[ $pr != 'test' && $pr != 'demo' && $pr != 'uat' && $pr != 'prod'  ]]; then
             target="$pr"
             environment="dev"
