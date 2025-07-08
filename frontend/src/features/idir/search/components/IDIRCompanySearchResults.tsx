@@ -74,12 +74,6 @@ export const IDIRCompanySearchResults = memo(
 
     const { data, isPending, isError } = searchResultsQuery;
 
-    const canCreateCompany = usePermissionMatrix({
-      permissionMatrixKeys: {
-        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-        permissionMatrixFunctionKey: "CREATE_COMPANY",
-      },
-    });
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
       () => [
@@ -144,6 +138,12 @@ export const IDIRCompanySearchResults = memo(
         : undefined,
       muiTableBodyCellProps: {
         className: "idir-company-search-results__cell",
+      },
+    });
+    const canCreateCompany = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "CREATE_COMPANY",
       },
     });
 
