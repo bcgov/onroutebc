@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Directory } from '../../../../common/enum/directory.enum';
@@ -6,7 +6,7 @@ import { Directory } from '../../../../common/enum/directory.enum';
 @Entity({ name: 'ORBC_LOGIN' })
 export class Login extends Base {
   @AutoMap()
-  @PrimaryColumn({ type: 'bigint', name: 'LOGIN_ID' })
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOGIN_ID' })
   loginId: string;
 
   /**
