@@ -75,10 +75,21 @@ jobs:
           triggers: '${{ matrix.package }}/' #omit to build everything
 
   # https://github.com/bcgov/action-deployer-openshift
-  deploys-dev:
-    name: Deploys (Dev)
+  deploys-silver-dev:
+    name: Deploys (Silver Dev)
     needs: [builds, vars]
-    uses: ./.github/workflows/dev.yml
+    uses: ./.github/workflows/silver-dev.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+  
+  deploys-gold-dev:
+    name: Deploys (Gold Dev)
+    needs: [builds, vars]
+    uses: ./.github/workflows/gold-dev.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}

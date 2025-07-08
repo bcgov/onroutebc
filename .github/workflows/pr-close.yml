@@ -10,13 +10,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cleanup:
+  cleanup-silver:
     name: Cleanup OpenShift and/or Promote Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@d9b3d32fb3f03c4699c2dce83ddfff042cd31a1f # v1.0.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v1.0.0 # v1.0.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-      oc_server: ${{ vars.OC_SERVER }}
+      oc_server: ${{ secrets.OC_SERVER }}
     with:
+      environment: dev
+      cleanup: helm
+      packages: dops frontend scheduler vehicles policy public
+  
+  cleanup-gold:
+    name: Cleanup OpenShift and/or Promote Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v1.0.0 # v1.0.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ secrets.OC_SERVER }}
+    with:
+      environment: gold-dev
+      cleanup: helm
+      packages: dops frontend scheduler vehicles policy public
+  
+  cleanup-golddr:
+    name: Cleanup OpenShift and/or Promote Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v1.0.0 # v1.0.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+      oc_server: ${{ secrets.OC_SERVER }}
+    with:
+      environment: golddr-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
