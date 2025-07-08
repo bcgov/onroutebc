@@ -20,7 +20,7 @@ CREATE TABLE [dbo].[ORBC_LOGIN] (
 	[LOGIN_ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[USER_DIRECTORY] [varchar](10) NOT NULL,
 	[USERNAME] [nvarchar](50) NOT NULL,
-    [USER_GUID] [char](32) NOT NULL,
+	[USER_GUID] [char](32) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
 	[COMPANY_LEGAL_NAME] [nvarchar](500) NULL,
 	[EMAIL] [nvarchar](100) NULL,
@@ -48,7 +48,17 @@ GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
-ALTER TABLE [dbo].[ORBC_LOGIN] ADD  CONSTRAINT [ORBC_LOGIN_LOGIN_DATE_TIME_DF]  DEFAULT (getutcdate()) FOR [LOGIN_DATE_TIME]
+ALTER TABLE [dbo].[ORBC_LOGIN] ADD  CONSTRAINT [DF_ORBC_LOGIN_LOGIN_DATE_TIME]  DEFAULT (getutcdate()) FOR [LOGIN_DATE_TIME]
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+ALTER TABLE [dbo].[ORBC_LOGIN]  WITH CHECK ADD  CONSTRAINT [ORBC_LOGIN_USER_DIRECTORY_FK] FOREIGN KEY([USER_DIRECTORY])
+REFERENCES [dbo].[ORBC_DIRECTORY_TYPE] ([DIRECTORY_TYPE])
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [dbo].[ORBC_LOGIN] CHECK CONSTRAINT [ORBC_LOGIN_USER_DIRECTORY_FK]
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
@@ -62,8 +72,9 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Details of user login.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the login table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'LOGIN_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Origin of the user, whether bceid, business bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USER_DIRECTORY'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user, coming from bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USER_GUID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s business bcied  as set in bceid if exists or COMPANY_GUID as set in ORBC_COMPANY.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s business bcied  as set in user token or COMPANY_GUID as set in ORBC_COMPANY for non Business BCeid users.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s username as set in bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USERNAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s email as set in bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'EMAIL'
 
@@ -138,7 +149,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Create ORBC_LOGIN table and associated components to track user login'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (78, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (79, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
