@@ -307,3 +307,6 @@
 
 ### Version 78:
 - DDL changes to add CASE_OPENED_DATE_TIME column to case.ORBC_CASE table
+
+### Version 79:
+- Configure ORBC_LOGIN tables
