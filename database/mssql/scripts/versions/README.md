@@ -299,4 +299,4 @@
 - Configure STOS v4 template (bugfixes)
 
 ### Version 78:
-- Configure ORBC_LOGIN_DETAILS tables
+- Configure ORBC_LOGIN tables
