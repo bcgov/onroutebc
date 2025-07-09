@@ -35,10 +35,21 @@ jobs:
         id: pr
         run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
 
-  deploys-test:
-    name: Deploys (Test)
+  deploys-test-silver:
+    name: Deploys Test - Silver
     needs: [vars]
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/silver-test.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+  
+  deploys-test-gold:
+    name: Deploys Test - Gold
+    needs: [vars]
+    uses: ./.github/workflows/gold-test.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
@@ -48,7 +59,7 @@ jobs:
 
   promote-images-test:
     name: Promote Images - Test
-    needs: [deploys-test, vars]
+    needs: [deploys-test-silver,deploys-test-gold, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
