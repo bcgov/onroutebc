@@ -5,12 +5,8 @@ import { Permit } from 'src/modules/permit-application-payment/permit/entities/p
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-
-import { In, QueryRunner } from 'typeorm';
-import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
-import { Mapper } from '@automapper/core';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { VehicleType } from '../enum/vehicle-type.enum';
+import { ValidationResult } from 'onroute-policy-engine';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -61,60 +57,103 @@ export const isEndDateValid = (
     ? dayjs(expiryDate).isSameOrAfter(permitExpiryDate, 'day')
     : true;
 };
-export const isValidLoa = async (
-  permit: Permit,
-  queryRunner: QueryRunner,
-  mapper: Mapper,
-) => {
-  const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-  if (permitData.loas) {
+
+export const validateLoas = (
+  application: Permit,
+  loas: ReadLoaDto[],
+): ValidationResult[] => {
+  // Parse permit data from the application object
+  const permitData = JSON.parse(
+    application.permitData.permitData,
+  ) as PermitData;
+  const validationResults: ValidationResult[] = [];
+
+  // Check if there are any LOAs in permit data
+  if (permitData?.loas?.length) {
     const {
       vehicleType: permitVehicleType,
       vehicleSubType: permitVehicleSubtype,
     } = permitData.vehicleDetails;
-    const { companyId } = permit.company;
-    const loaNumbers = permitData.loas.map((loa) => loa.loaNumber);
-    const readLoaDto = await findLoas(
-      companyId,
-      loaNumbers,
-      queryRunner,
-      mapper,
-    );
 
     // Validate LOA details and permit data against database entries
-    validateLoaDetails(
-      readLoaDto,
-      permit,
+    const loaValidationResults = validateLoaDetails(
+      loas,
+      application,
       permitVehicleType as VehicleType,
       permitVehicleSubtype,
     );
 
-    // validate LoA snapshot in permit Data
-    validatePermitDataAgainstLoas(
+    // If there are any validation errors, add them to the results
+    if (loaValidationResults?.length) {
+      validationResults.push(...loaValidationResults);
+    }
+
+    // Validate LoA snapshot in permit Data
+    const loaSnapshotValidationResults = validatePermitDataAgainstLoas(
       permitData,
-      permit,
+      application,
       permitVehicleType as VehicleType,
       permitVehicleSubtype,
     );
+
+    // If there are any snapshot validation errors, add them to the results
+    if (loaSnapshotValidationResults?.length) {
+      validationResults.push(...loaSnapshotValidationResults);
+    }
   }
+  return validationResults; // Return validation results
 };
+
+/**
+ * Validates a list of LOA details against a permit.
+ * @param readLoaDtos - List of read LOA DTOs.
+ * @param permit - The permit object containing permit data.
+ * @param permitVehicleType - Vehicle type from the permit.
+ * @param permitVehicleSubtype - Vehicle subtype from the permit.
+ * @returns An array of validation results.
+ */
 export const validateLoaDetails = (
   readLoaDtos: ReadLoaDto[],
   permit: Permit,
   permitVehicleType: VehicleType,
   permitVehicleSubtype: string,
-) => {
+): ValidationResult[] => {
+  const validationResults: ValidationResult[] = [];
+
+  // Destructure permit start and expiry dates
+  const { startDate: permitStartDate, expiryDate: permitExpiryDate } =
+    permit.permitData;
+
   for (const readLoaDto of readLoaDtos) {
     const {
       vehicleType: loaVehicleType,
       vehicleSubType: loaVehicleSubtype,
       loaPermitType: loaPermitTypes,
+      startDate,
+      expiryDate,
     } = readLoaDto;
-    if (!isValidDateForLoa(readLoaDto, permit)) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid date(s).`,
-      );
+
+    // Validate start date
+    if (!isStartDateValid(startDate, permitStartDate)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${readLoaDto.loaNumber} has invalid date(s)`,
+        fieldReference: 'permitData.loas.startDate',
+      });
     }
+
+    // Validate end date
+    if (!isEndDateValid(expiryDate, permitExpiryDate)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${readLoaDto.loaNumber} has invalid date(s)`,
+        fieldReference: 'permitData.loas.expiryDate',
+      });
+    }
+
+    // Validate vehicle type
     if (
       !isVehicleTypeValid(
         permitVehicleType,
@@ -123,88 +162,103 @@ export const validateLoaDetails = (
         loaVehicleSubtype,
       )
     ) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid vehicle(s).`,
-      );
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${readLoaDto.loaNumber} has invalid vehicle(s)`,
+        fieldReference: 'permitData.loas.vehicleSubType',
+      });
     }
-    if (!isPermitTypeValid(permit.permitType, loaPermitTypes)) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid permitType.`,
-      );
+
+    // Validate permit type
+    if (!isPermitTypeValid(permit?.permitType, loaPermitTypes)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${readLoaDto.loaNumber} has invalid permitType`,
+        fieldReference: 'permitData.loas.vehicleSubType',
+      });
     }
   }
+  return validationResults; // Return validation results
 };
 
+/**
+ * Validates permit data against the list of LOAs.
+ * @param permitData - The permit data object.
+ * @param permit - The permit entity containing relevant data.
+ * @param permitVehicleType - Vehicle type information from the permit.
+ * @param permitVehicleSubtype - Vehicle subtype information from the permit.
+ * @returns An array of validation results.
+ */
 export const validatePermitDataAgainstLoas = (
   permitData: PermitData,
   permit: Permit,
   permitVehicleType: VehicleType,
   permitVehicleSubtype: string,
-) => {
+): ValidationResult[] => {
+  const validationResults: ValidationResult[] = [];
+
+  // Destructure permit start and expiry dates
+  const { startDate: permitStartDate, expiryDate: permitExpiryDate } =
+    permit.permitData;
+
+  // Iterate over each LOA in permit data for validation
   for (const loa of permitData.loas) {
-    const permitLoaVehicleType = loa.vehicleType;
-    const permitLoaVehicleSubtype = loa.vehicleSubType;
-    const permitTypesLoa = loa.loaPermitType;
-    if (!isValidDateForLoa(loa, permit)) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid date(s).`,
-      );
+    const {
+      vehicleType: loaVehicleType,
+      vehicleSubType: loaVehicleSubtype,
+      loaPermitType: loaPermitTypes,
+      startDate,
+      expiryDate,
+    } = loa;
+
+    // Validate start date
+    if (!isStartDateValid(startDate, permitStartDate)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${loa?.loaNumber} snaphot has invalid date(s)`,
+        fieldReference: 'permitData.loas.startDate',
+      });
     }
 
+    // Validate end date
+    if (!isEndDateValid(expiryDate, permitExpiryDate)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${loa?.loaNumber} snaphot has invalid date(s)`,
+        fieldReference: 'permitData.loas.expiryDate',
+      });
+    }
+
+    // Validate vehicle type
     if (
       !isVehicleTypeValid(
         permitVehicleType,
         permitVehicleSubtype,
-        permitLoaVehicleType,
-        permitLoaVehicleSubtype,
+        loaVehicleType,
+        loaVehicleSubtype,
       )
     ) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${loa.loaNumber}  snapshot with invalid vehicle(s).`,
-      );
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${loa?.loaNumber} snapshot has invalid vehicle(s)`,
+        fieldReference: 'permitData.loas.vehicleSubType',
+      });
     }
-    if (!isPermitTypeValid(permit.permitType, permitTypesLoa)) {
-      throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid permitType.`,
-      );
+
+    // Validate permit type
+    if (!isPermitTypeValid(permit.permitType, loaPermitTypes)) {
+      validationResults.push({
+        type: 'violation',
+        code: 'field-validation-error',
+        message: `LoA ${loa?.loaNumber} snapshot has invalid permitType`,
+        fieldReference: 'permitData.loas.vehicleSubType',
+      });
     }
   }
-};
-
-/**
- * Retrieves a single LOA (Letter of Authorization) detail for a specified company.
- *
- * Steps:
- * 1. Fetches the LOA detail from the repository based on company ID and LOA Number.
- * 2. Ensures the fetched LOA detail is active.
- * 3. Includes relations (company, loaVehicle, loaPermitTypes) in the query.
- *
- * @param {number} companyId - ID of the company for which to fetch the LOA detail.
- * @param {number} loaNumber - Number of the LOA to be fetched.
- * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
- */
-export const findLoas = async (
-  companyId: number,
-  loaNumbers: number[],
-  queryRunner: QueryRunner,
-  mapper: Mapper,
-): Promise<ReadLoaDto[]> => {
-  // Fetch initial active LOA details
-  const loaDetails = await queryRunner.manager.find(LoaDetail, {
-    where: {
-      loaNumber: In(loaNumbers),
-      isActive: true,
-      company: { companyId },
-    },
-    relations: ['company', 'loaVehicle', 'loaPermitTypes'],
-  });
-  const readLoaDto = await mapper.mapArrayAsync(
-    loaDetails,
-    LoaDetail,
-    ReadLoaDto,
-    {
-      extraArgs: () => ({ companyId: companyId }),
-    },
-  );
-  return readLoaDto;
+  return validationResults; // Return validation results
 };

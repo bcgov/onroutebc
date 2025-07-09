@@ -13,12 +13,14 @@ export const PermitPayFeeSummary = ({
   selectedItemsCount,
   onPay,
   transactionPending,
+  disablePayNowButton,
 }: {
   calculatedFee: number;
   permitType?: PermitType;
   selectedItemsCount: number;
   transactionPending: boolean;
   onPay: () => void;
+  disablePayNowButton: boolean;
 }) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const disablePay = selectedItemsCount === 0;
@@ -65,7 +67,8 @@ export const PermitPayFeeSummary = ({
             disabled={
               transactionPending ||
               (isStaffActingAsCompany &&
-                featureFlags?.["STAFF-CAN-PAY"] !== "ENABLED")
+                featureFlags?.["STAFF-CAN-PAY"] !== "ENABLED") ||
+              disablePayNowButton
             }
           >
             Pay Now

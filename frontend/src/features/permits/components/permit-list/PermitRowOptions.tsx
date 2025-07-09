@@ -88,7 +88,9 @@ export const PermitRowOptions = ({
         navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
       );
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`, {
+        state: { permitActionOrigin },
+      });
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
       // Sets the companyId and permitId of the permit to be amended,
       // which will in turn look for any existing associated amendment applications,
