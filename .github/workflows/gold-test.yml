@@ -28,7 +28,7 @@ on:
         type: string
   
 jobs:
-  deploy-test:
+  deploy-test-gold:
     name: Deploys Test (Gold)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
