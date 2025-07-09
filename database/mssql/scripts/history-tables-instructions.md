@@ -1,5 +1,5 @@
 # History Tables and Triggers
-MoTI database standards dictate a specific approach for maintaining history of database changes. This is handled in ORBC with 'mirror' history tables, named identically to the base table with a _HIST suffix.
+MoTT database standards dictate a specific approach for maintaining history of database changes. This is handled in ORBC with 'mirror' history tables, named identically to the base table with a _HIST suffix.
 
 The history tables are populated on each insert, update, and delete operation via a trigger on the base table which inserts a new row into the history table for every action.
 
