@@ -18,6 +18,10 @@ import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 import { ConditionalLicensingFeeSection } from "./ConditionalLicensingFeeSection/ConditionalLicensingFeeSection";
 import { VehicleWeightSection } from "./VehicleWeightSection/VehicleWeightSection";
 import { isVehicleSubtypeEmpty } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRejectionHistory";
+import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
+import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
+import { useRef } from "react";
 
 export const PermitForm = () => {
   const {
@@ -41,6 +45,7 @@ export const PermitForm = () => {
     pastStartDateStatus,
     companyLOAs,
     revisionHistory,
+    rejectionHistory,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -82,9 +87,35 @@ export const PermitForm = () => {
     onUpdateNetWeight,
   } = useApplicationFormContext();
 
+  const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
+
+  const scrollToReviewApplicationRejectionHistorySection = () =>
+    reviewApplicationRejectionHistoryRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+
+  const shouldShowRejectionHistory =
+    rejectionHistory && rejectionHistory.length > 0;
+
   return (
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
+        {shouldShowRejectionHistory && (
+          <ErrorAltBcGovBanner
+            className="permit-form__rejection-banner"
+            msg={
+              <div className="rejection-banner__message">
+                <span>This application was rejected. </span>
+                <CustomActionLink
+                  className="rejection-banner__link"
+                  onClick={scrollToReviewApplicationRejectionHistorySection}
+                >
+                  See the reason(s) for rejection.
+                </CustomActionLink>
+              </div>
+            }
+          />
+        )}
         <ApplicationDetails
           permitType={permitType}
           infoNumber={isAmendAction ? permitNumber : applicationNumber}
@@ -182,7 +213,9 @@ export const PermitForm = () => {
 
         <VehicleWeightSection
           permitType={permitType}
-          isVehicleSubtypeEmpty={isVehicleSubtypeEmpty(vehicleFormData.vehicleSubType)}
+          isVehicleSubtypeEmpty={isVehicleSubtypeEmpty(
+            vehicleFormData.vehicleSubType,
+          )}
           enableLoadedGVW={enableLoadedGVW}
           loadedGVW={vehicleConfiguration?.loadedGVW}
           enableNetWeight={enableNetWeight}
@@ -199,6 +232,14 @@ export const PermitForm = () => {
             <AmendReason feature={feature} />
           </>
         ) : null}
+
+        {shouldShowRejectionHistory && (
+          <div ref={reviewApplicationRejectionHistoryRef}>
+            <ReviewApplicationRejectionHistory
+              applicationRejectionHistory={rejectionHistory}
+            />
+          </div>
+        )}
       </Box>
 
       <FormActions
