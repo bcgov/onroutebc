@@ -87,6 +87,13 @@
     },
     "invalid": "You must enter a valid address."
   },
+  "clientName": {
+    "defaultMessage": "Invalid Client Name format",
+    "length": {
+      "messageTemplate": "Client Name length must be between :min-:max characters",
+      "placeholders": [":min", ":max"]
+    }
+  },
   "dba": {
     "defaultMessage": "Invalid DBA format",
     "length": {

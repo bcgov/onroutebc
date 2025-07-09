@@ -28,11 +28,13 @@ export const CompanyInfo = ({
 
   return (
     <div className="company-info-page">
-      {isEditing ? <Header /> : null}
-      <CompanyBanner
-        companyName={companyInfoData?.legalName}
-        clientNumber={companyInfoData?.clientNumber}
-      />
+      {isEditing && <Header />}
+      {!isEditing && (
+        <CompanyBanner
+          companyName={companyInfoData?.legalName}
+          clientNumber={companyInfoData?.clientNumber}
+        />
+      )}
       {isEditing ? (
         <CompanyInfoForm
           companyInfo={companyInfoData}
