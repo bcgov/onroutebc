@@ -26,7 +26,7 @@ export const BcGovAlertBanner = ({
   className,
 }: {
   msg: string | JSX.Element;
-  additionalInfo?: JSX.Element;
+  additionalInfo?: string | JSX.Element;
   bannerType: AlertBannerType;
   className?: string;
 }) => {
@@ -39,6 +39,7 @@ export const BcGovAlertBanner = ({
       case ALERT_BANNER_TYPES.WARNING:
         return faExclamationTriangle;
       case ALERT_BANNER_TYPES.ERROR:
+      case ALERT_BANNER_TYPES.ERROR_ALT:
       default:
         return faExclamationCircle;
     }
