@@ -159,7 +159,7 @@ const commonVehicleDetails = {
 
 export const powerUnitDetails = {
   ...commonVehicleDetails,
-  newGvw: 85000,
+  newGvw: 63500,
   newTireSize: "300",
   newSubtype: defaultPowerUnitSubtypes[0].type,
 };
