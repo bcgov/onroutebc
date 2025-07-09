@@ -89,6 +89,7 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
+    await this.userService.saveLoginInformation(currentUser, userExists);
     return userExists;
   }
 
