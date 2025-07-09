@@ -53,7 +53,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
-      environment: gold-test
+      environment: golddr-test
       release: test
       tag: ${{ inputs.tag }}
       params: |
