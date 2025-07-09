@@ -261,7 +261,7 @@ export const PowerUnitForm = ({
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   lessThanMax: (v) =>
-                    parseFloat(v) < GVW_LIMIT ||
+                    Number(v) <= GVW_LIMIT ||
                     licensedGVWExceeded(GVW_LIMIT, true),
                 },
               },
