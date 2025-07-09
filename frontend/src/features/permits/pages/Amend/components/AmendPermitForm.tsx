@@ -313,11 +313,6 @@ export const AmendPermitForm = () => {
       durationOption1.value === durationOption2.value,
   );
 
-  const rejectionHistory = getDefaultRequiredVal(
-    [],
-    amendmentApplication?.rejectionHistory,
-  );
-
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
@@ -338,7 +333,6 @@ export const AmendPermitForm = () => {
       pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
       companyLOAs: applicableLOAs,
       revisionHistory,
-      rejectionHistory,
       policyViolations,
       onLeave: undefined,
       onSave: undefined,
@@ -362,7 +356,6 @@ export const AmendPermitForm = () => {
       updatedDateTime,
       applicableLOAs,
       revisionHistory,
-      rejectionHistory,
       policyViolations,
       goHome,
       onContinue,

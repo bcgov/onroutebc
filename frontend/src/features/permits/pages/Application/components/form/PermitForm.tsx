@@ -94,10 +94,13 @@ export const PermitForm = () => {
       behavior: "smooth",
     });
 
+  const shouldShowRejectionHistory =
+    rejectionHistory && rejectionHistory.length > 0;
+
   return (
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
-        {rejectionHistory.length > 0 && (
+        {shouldShowRejectionHistory && (
           <ErrorAltBcGovBanner
             className="permit-form__rejection-banner"
             msg={
@@ -230,7 +233,7 @@ export const PermitForm = () => {
           </>
         ) : null}
 
-        {rejectionHistory.length > 0 && (
+        {shouldShowRejectionHistory && (
           <div ref={reviewApplicationRejectionHistoryRef}>
             <ReviewApplicationRejectionHistory
               applicationRejectionHistory={rejectionHistory}

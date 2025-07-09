@@ -46,7 +46,7 @@ interface ApplicationFormContextType {
     revisionDateTime: string;
     comment: string;
   }[];
-  rejectionHistory: ApplicationRejectionHistory[];
+  rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
   policyViolations: Record<string, string>;
   clearViolation: (fieldReference: string) => void;
   triggerPolicyValidation: () => Promise<Record<string, string>>;
