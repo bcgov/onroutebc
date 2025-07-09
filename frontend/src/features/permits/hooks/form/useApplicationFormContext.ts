@@ -40,6 +40,7 @@ export const useApplicationFormContext = () => {
     pastStartDateStatus,
     companyLOAs,
     revisionHistory,
+    rejectionHistory,
     onLeave,
     onSave,
     onCancel,
@@ -72,11 +73,7 @@ export const useApplicationFormContext = () => {
     onUpdateNetWeight,
   } = useApplicationFormUpdateMethods();
 
-  const {
-    permitType,
-    applicationNumber,
-    permitNumber,
-  } = formData;
+  const { permitType, applicationNumber, permitNumber } = formData;
 
   const {
     expiryDate: permitExpiryDate,
@@ -92,25 +89,27 @@ export const useApplicationFormContext = () => {
     conditionalLicensingFee,
   } = formData.permitData;
 
-  const createdAt = useMemoizedObject(
-    createdDateTime,
-    (dateObj1, dateObj2) => Boolean(
-      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+  const createdAt = useMemoizedObject(createdDateTime, (dateObj1, dateObj2) =>
+    Boolean(
+      (!dateObj1 && !dateObj2) ||
+        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
     ),
   );
 
-  const updatedAt = useMemoizedObject(
-    updatedDateTime,
-    (dateObj1, dateObj2) => Boolean(
-      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+  const updatedAt = useMemoizedObject(updatedDateTime, (dateObj1, dateObj2) =>
+    Boolean(
+      (!dateObj1 && !dateObj2) ||
+        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
     ),
   );
 
   const oldStartDate = useMemoizedObject(
     oldPermitStartDate,
-    (dateObj1, dateObj2) => Boolean(
-      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
-    ),
+    (dateObj1, dateObj2) =>
+      Boolean(
+        (!dateObj1 && !dateObj2) ||
+          (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+      ),
   );
 
   const startDate = useMemoizedObject(
@@ -118,9 +117,8 @@ export const useApplicationFormContext = () => {
     (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
   );
 
-  const expiryDate = useMemoizedObject(
-    permitExpiryDate,
-    (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
+  const expiryDate = useMemoizedObject(permitExpiryDate, (dateObj1, dateObj2) =>
+    dateObj1.isSame(dateObj2),
   );
 
   const currentSelectedLOAs = useMemoizedArray(
@@ -153,7 +151,7 @@ export const useApplicationFormContext = () => {
     onSetDuration,
     onSetExpiryDate,
   });
-  
+
   // Update permit conditions when LCV designation or vehicle subtype changes
   const { allConditions } = usePermitConditions(
     permitType,
@@ -163,30 +161,39 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
-  const handleClearVehicle = useCallback((saveVehicle: boolean) => {
-    onClearVehicle(
-      Boolean(saveVehicle),
-      currentSelectedLOAs.length > 0 ? {
-        vehicleType: currentSelectedLOAs[0].vehicleType,
-        vehicleSubtype: currentSelectedLOAs[0].vehicleSubType,
-      } : undefined,
-    );
-  }, [currentSelectedLOAs]);
+  const handleClearVehicle = useCallback(
+    (saveVehicle: boolean) => {
+      onClearVehicle(
+        Boolean(saveVehicle),
+        currentSelectedLOAs.length > 0
+          ? {
+              vehicleType: currentSelectedLOAs[0].vehicleType,
+              vehicleSubtype: currentSelectedLOAs[0].vehicleSubType,
+            }
+          : undefined,
+      );
+    },
+    [currentSelectedLOAs],
+  );
 
-  const handleSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
-    onSetVehicle({
-      ...vehicleDetails,
-      vehicleType: currentSelectedLOAs.length > 0 ?
-        currentSelectedLOAs[0].vehicleType : vehicleDetails.vehicleType,
-      vehicleSubType: currentSelectedLOAs.length > 0 ?
-        currentSelectedLOAs[0].vehicleSubType : vehicleDetails.vehicleSubType,
-    });
-  }, [currentSelectedLOAs]);
+  const handleSetVehicle = useCallback(
+    (vehicleDetails: PermitVehicleDetails) => {
+      onSetVehicle({
+        ...vehicleDetails,
+        vehicleType:
+          currentSelectedLOAs.length > 0
+            ? currentSelectedLOAs[0].vehicleType
+            : vehicleDetails.vehicleType,
+        vehicleSubType:
+          currentSelectedLOAs.length > 0
+            ? currentSelectedLOAs[0].vehicleSubType
+            : vehicleDetails.vehicleSubType,
+      });
+    },
+    [currentSelectedLOAs],
+  );
 
-  const {
-    commodityOptions,
-    onChangeCommodityType,
-  } = usePermittedCommodity(
+  const { commodityOptions, onChangeCommodityType } = usePermittedCommodity(
     policyEngine,
     permitType,
     onSetCommodityType,
@@ -197,20 +204,17 @@ export const useApplicationFormContext = () => {
 
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
-  const {
-    filteredVehicleOptions,
-    subtypeOptions,
-    isSelectedLOAVehicle,
-  } = usePermitVehicles({
-    policyEngine,
-    permitType,
-    vehicleFormData,
-    allVehiclesFromInventory,
-    selectedLOAs: currentSelectedLOAs,
-    powerUnitSubtypeNamesMap,
-    trailerSubtypeNamesMap,
-    selectedCommodity: permittedCommodity?.commodityType,
-  });
+  const { filteredVehicleOptions, subtypeOptions, isSelectedLOAVehicle } =
+    usePermitVehicles({
+      policyEngine,
+      permitType,
+      vehicleFormData,
+      allVehiclesFromInventory,
+      selectedLOAs: currentSelectedLOAs,
+      powerUnitSubtypeNamesMap,
+      trailerSubtypeNamesMap,
+      selectedCommodity: permittedCommodity?.commodityType,
+    });
 
   // Update conditional licensing fee selection if necessary
   const { availableCLFs } = useConditionalLicensingFees(
@@ -223,7 +227,9 @@ export const useApplicationFormContext = () => {
   const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
-      vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType),
+      vehicleConfiguration?.trailers?.map(
+        ({ vehicleSubType }) => vehicleSubType,
+      ),
     ),
     (subtype1, subtype2) => subtype1 === subtype2,
   );
@@ -262,17 +268,17 @@ export const useApplicationFormContext = () => {
     revisionHistory,
     (historyItem) => `${historyItem.permitId}-${historyItem.revisionDateTime}`,
     (historyItem1, historyItem2) =>
-      historyItem1.permitId === historyItem2.permitId
-        && historyItem1.revisionDateTime === historyItem2.revisionDateTime
-        && historyItem1.name === historyItem2.name
-        && historyItem1.comment === historyItem2.comment,
+      historyItem1.permitId === historyItem2.permitId &&
+      historyItem1.revisionDateTime === historyItem2.revisionDateTime &&
+      historyItem1.name === historyItem2.name &&
+      historyItem1.comment === historyItem2.comment,
   );
 
   const highwaySequence = useMemoizedObject(
     getDefaultRequiredVal([], permittedRoute?.manualRoute?.highwaySequence),
     (seq1, seq2) =>
-      seq1.length === seq2.length
-      && seq1.every((num, index) => num === seq2[index]),
+      seq1.length === seq2.length &&
+      seq1.every((num, index) => num === seq2[index]),
   );
 
   return {
@@ -297,6 +303,7 @@ export const useApplicationFormContext = () => {
     pastStartDateStatus,
     companyLOAs: memoizedCompanyLOAs,
     revisionHistory: memoizedRevisionHistory,
+    rejectionHistory,
     commodityOptions,
     highwaySequence,
     tripOrigin: permittedRoute?.manualRoute?.origin,

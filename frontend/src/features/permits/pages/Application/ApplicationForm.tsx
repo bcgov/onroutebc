@@ -194,10 +194,14 @@ export const ApplicationForm = ({
       policyViolations,
       currentFormData.permitData.vehicleDetails.vehicleSubType,
       currentFormData.permitData.loas,
-    ) ? Object.fromEntries(
-      Object.entries(policyViolations)
-        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
-    ) : policyViolations;
+    )
+      ? Object.fromEntries(
+          Object.entries(policyViolations).filter(
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+          ),
+        )
+      : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -303,7 +307,7 @@ export const ApplicationForm = ({
             },
           },
         };
-    
+
     await saveApplication(
       {
         data: applicationToBeSaved,
@@ -367,6 +371,11 @@ export const ApplicationForm = ({
     ? PAST_START_DATE_STATUSES.WARNING
     : PAST_START_DATE_STATUSES.FAIL;
 
+  const rejectionHistory = getDefaultRequiredVal(
+    [],
+    applicationContext.applicationData?.rejectionHistory,
+  );
+
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
@@ -386,6 +395,7 @@ export const ApplicationForm = ({
       pastStartDateStatus,
       companyLOAs: applicableLOAs,
       revisionHistory: [],
+      rejectionHistory,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,
@@ -409,6 +419,7 @@ export const ApplicationForm = ({
       updatedDateTime,
       pastStartDateStatus,
       applicableLOAs,
+      rejectionHistory,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,
