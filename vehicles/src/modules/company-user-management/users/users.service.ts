@@ -42,6 +42,8 @@ import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-met
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { Directory } from '../../../common/enum/directory.enum';
+import { Login } from './entities/login.entity';
+import { setBaseEntityProperties } from '../../../common/helper/database.helper';
 
 @Injectable()
 export class UsersService {
@@ -53,6 +55,8 @@ export class UsersService {
     private companyUserRepository: Repository<CompanyUser>,
     @InjectRepository(PendingIdirUser)
     private pendingIdirUserRepository: Repository<PendingIdirUser>,
+    @InjectRepository(Login)
+    private loginRepository: Repository<Login>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly pendingUsersService: PendingUsersService,
@@ -170,6 +174,39 @@ export class UsersService {
       await queryRunner.release();
     }
     return newUser;
+  }
+
+  /**
+   * The saveLoginInformation() method logs the login information of a user by creating
+   * a new Login entity. This includes attributes like userDirectory, userGUID, userName,
+   * company details, email, and login timestamp. The method uses the currentUser and
+   * readUserOrbcStatusDto to populate these fields and saves the Login entity to the database.
+   *
+   * @param currentUser The current user's details from the JWT token of type {@link IUserJWT}.
+   * @param readUserOrbcStatusDto Contains information about the user's associated companies from ORBC.
+   *
+   * @returns void
+   */
+  @LogAsyncMethodExecution()
+  async saveLoginInformation(
+    currentUser: IUserJWT,
+    readUserOrbcStatusDto: ReadUserOrbcStatusDto,
+  ): Promise<void> {
+    const login = new Login();
+    login.userDirectory = currentUser.orbcUserDirectory;
+    login.userGUID = currentUser.userGUID;
+    login.userName = currentUser.userName;
+    login.companyGUID =
+      readUserOrbcStatusDto?.associatedCompanies?.at(0)?.companyGUID ??
+      currentUser.bceid_business_guid;
+    login.companyLegalName =
+      readUserOrbcStatusDto?.associatedCompanies?.at(0)?.legalName ??
+      currentUser.bceid_business_name;
+    login.email = currentUser.email;
+    login.loginDateTime = new Date();
+    setBaseEntityProperties({ entity: login, currentUser });
+
+    await this.loginRepository.save(login);
   }
 
   /**

@@ -294,6 +294,22 @@
     - FILE_NAME Varchar(50) - non-nullable
 - Downtime is required for prod deployment
 
+### Version 75:
+- Updates to policy validation rules for NRQCV and NRSCV, MFP cost updates
 
 ### Version 76:
 - Configure STOS v4 template (bugfixes)
+
+### Version 77:
+- Update TPS credit account staging table schemas
+  - Create `ORBC_TPS_MIGRATED_CREDIT_ACCOUNT`, `ORBC_TPS_MIGRATED_CREDIT_STATUS`, `ORBC_TPS_MIGRATED_CREDIT_UNPOSTED`, `ORBC_TPS_MIGRATED_CREDIT_USER` tables
+  - Procedure to copy migrated credit accounts
+
+### Version 78:
+- DDL changes to add CASE_OPENED_DATE_TIME column to case.ORBC_CASE table
+
+### Version 79:
+- Configure ORBC_LOGIN tables
+
+### Version 80:
+- Alter size of  ORBC_DOCUMENT.FILE_NAME to allow longer file names
