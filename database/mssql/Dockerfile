@@ -9,7 +9,7 @@ RUN apt-get update && \
 RUN add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2017.list)" && \
     apt-get install -y mssql-server-fts --no-install-recommends
 
-ENV ACCEPT_EULA Y
+ENV ACCEPT_EULA=Y
 
 # Create a config directory
 RUN mkdir -p /usr/config
