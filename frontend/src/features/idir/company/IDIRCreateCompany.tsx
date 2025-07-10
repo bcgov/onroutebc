@@ -117,7 +117,7 @@ export const IDIRCreateCompany = React.memo(() => {
       >
         <div className="create-profile-steps__create-profile">
           <FormProvider {...companyAndUserFormMethods}>
-            <CompanyInformationWizardForm showCompanyName />
+            <CompanyInformationWizardForm />
             <div className="create-profile-section create-profile-section--nav">
               <Stack direction="row" spacing={3}>
                 <Button

@@ -69,7 +69,7 @@ export const CompanyAndUserInfoSteps = ({
             />
           </>
         )}
-        <CompanyInformationWizardForm showCompanyName={!isBusinessBCeID} />
+        <CompanyInformationWizardForm />
       </div>
       <div className="create-profile-section create-profile-section--nav">
         <Stack direction="row" spacing={3}>
