@@ -39,7 +39,11 @@ import { serializePermitVehicleDetails } from "../../../helpers/serialize/serial
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
 import { isTermPermitType, PERMIT_TYPES } from "../../../types/PermitType";
-import { dayjsToUtcStr, getStartOfDate, now } from "../../../../../common/helpers/formatDate";
+import {
+  dayjsToUtcStr,
+  getStartOfDate,
+  now,
+} from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,
@@ -53,6 +57,7 @@ import {
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
+import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -181,10 +186,14 @@ export const AmendPermitForm = () => {
       policyViolations,
       formData.permitData.vehicleDetails.vehicleSubType,
       formData.permitData.loas,
-    ) ? Object.fromEntries(
-      Object.entries(policyViolations)
-        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
-    ) : policyViolations;
+    )
+      ? Object.fromEntries(
+          Object.entries(policyViolations).filter(
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+          ),
+        )
+      : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -193,8 +202,11 @@ export const AmendPermitForm = () => {
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
     const updatedViolations = await triggerPolicyValidation();
-    // prevent CV client continuing if there are policy engine validation errors
-    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+
+    // If there are policy engine validation errors, form validation fails unless those violations
+    // can be overriden
+    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+      console.error(updatedViolations);
       return;
     }
 
@@ -291,15 +303,18 @@ export const AmendPermitForm = () => {
     formData.permitType,
     true,
   );
-  
+
   // Term permits only allow duration to be shortened
   // All other permit types can shorten or lengthen duration as needed
   const amendmentDurationOptions = useMemoizedArray(
     isTermPermitType(formData.permitType)
-      ? durationOptions.filter((duration) => duration.value <= permitOldDuration)
+      ? durationOptions.filter(
+          (duration) => duration.value <= permitOldDuration,
+        )
       : durationOptions,
-    durationOption => durationOption.value,
-    (durationOption1, durationOption2) => durationOption1.value === durationOption2.value,
+    (durationOption) => durationOption.value,
+    (durationOption1, durationOption2) =>
+      durationOption1.value === durationOption2.value,
   );
 
   const applicationFormContextData = useMemo(

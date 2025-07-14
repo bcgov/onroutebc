@@ -1,4 +1,4 @@
-name: Deploy Demo
+name: Deploy Demo (Gold)
 
 on:
   workflow_dispatch:
@@ -27,17 +27,38 @@ on:
         type: string
   
 jobs:
-  deploy-demo:
-    name: Deploys (DEMO)
+  deploy-gold-demo:
+    name: Deploys Demo (Gold)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      environment: demo
+      environment: gold-demo
       tag: ${{inputs.tag}}
       release: "demo"
       params: |
-        --set-string global.license='c28f0c' \
+        --set-string global.domain='apps.gold.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-gold' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='demo' \
+        --set-string global.pr_num='${{ inputs.tag }}' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \
+
+  deploy-golddr-demo:
+    name: Deploys Demo (Golddr)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: golddr-demo
+      tag: ${{inputs.tag}}
+      release: "demo"
+      params: |
+        --set-string global.domain='apps.golddr.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-golddr' \
+        --set-string global.license='c3141c' \
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='demo' \

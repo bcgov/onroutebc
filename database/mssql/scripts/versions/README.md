@@ -310,3 +310,6 @@
 
 ### Version 79:
 - Configure ORBC_LOGIN tables
+
+### Version 80:
+- Alter size of  ORBC_DOCUMENT.FILE_NAME to allow longer file names
