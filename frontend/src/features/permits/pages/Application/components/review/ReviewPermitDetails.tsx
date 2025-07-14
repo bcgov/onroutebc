@@ -112,7 +112,7 @@ export const ReviewPermitDetails = ({
               )}
             </Typography>
           </div>
-
+          
           <div className="permit-dates__duration">
             <Typography className="permit-dates__label">
               <span className="permit-dates__label-text">Permit Duration</span>
@@ -123,9 +123,15 @@ export const ReviewPermitDetails = ({
               className="permit-dates__data"
               data-testid="permit-duration"
             >
-              {!isQuarterlyPermit(permitType)
-                ? applyWhenNotNullable(displayDuration, permitDuration, "")
-                : applyWhenNotNullable(displayDurationQuarter, startDate, "")}
+              {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
+                displayDuration,
+                permitDuration,
+                "",
+              ) : applyWhenNotNullable(
+                displayDurationQuarter,
+                startDate,
+                "",
+              )}
             </Typography>
           </div>
         </Box>
