@@ -97,11 +97,7 @@ export class PaymentController {
     type: ReadTransactionDto,
   })
   @Permissions({
-    allowedIdirRoles: [
-      IDIRUserRole.PPC_CLERK,
-      IDIRUserRole.SYSTEM_ADMINISTRATOR,
-      IDIRUserRole.CTPO,
-    ],
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
   })
   @Post('refund')
   async createRefundTransactionDetails(

@@ -36,6 +36,8 @@ import { ApplicationFormData } from "../../../types/application";
 import { deserializeApplicationResponse } from "../../../helpers/serialize/deserializeApplication";
 import { isAxiosError } from "axios";
 import { PERMIT_ACTION_ORIGINS } from "../../../../idir/search/types/types";
+import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
+import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -89,6 +91,21 @@ export const AmendPermitReview = () => {
   const [allConfirmed, setAllConfirmed] = useState(false);
   const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
+  const canProcessAmendmentRefund = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "PROCESS_AMENDMENT_REFUND",
+    },
+  });
+
+  const [showAuthorizationRequiredModal, setShowAuthorizationRequiredModal] =
+    useState<boolean>(false);
+
+  const handleCloseAuthorizationRequiredModal = () => {
+    setShowAuthorizationRequiredModal(false);
+    goHome();
+  };
+
   const onSubmit = async () => {
     setHasAttemptedSubmission(true);
     if (!allConfirmed) return;
@@ -115,7 +132,12 @@ export const AmendPermitReview = () => {
 
     if (savedApplication) {
       setAmendmentApplication(savedApplication);
-      next();
+
+      if (canProcessAmendmentRefund) {
+        next();
+      } else {
+        setShowAuthorizationRequiredModal(true);
+      }
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -315,6 +337,13 @@ export const AmendPermitReview = () => {
           <ReviewReason reason={amendmentApplication.comment} />
         ) : null}
       </PermitReview>
+
+      <AuthorizationRequiredModal
+        isOpen={showAuthorizationRequiredModal}
+        onCancel={() => setShowAuthorizationRequiredModal(false)}
+        onConfirm={handleCloseAuthorizationRequiredModal}
+        permitNumber={permit?.permitNumber}
+      />
     </div>
   );
 };
