@@ -164,14 +164,14 @@ export const DisplayCompanyInfo = memo(
               {primaryContactPhone && (
                 <Typography>Primary Phone: {primaryContactPhone}</Typography>
               )}
-              {primaryContactCountry && (
-                <Typography>{primaryContactCountry}</Typography>
+              {primaryContactCity && (
+                <Typography>{primaryContactCity}</Typography>
               )}
               {primaryContactProvince && (
                 <Typography>{primaryContactProvince}</Typography>
               )}
-              {primaryContactCity && (
-                <Typography>{primaryContactCity}</Typography>
+              {primaryContactCountry && (
+                <Typography>{primaryContactCountry}</Typography>
               )}
             </>
           ) : (
