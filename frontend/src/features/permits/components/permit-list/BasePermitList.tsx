@@ -30,6 +30,7 @@ import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
 import { PermitRowOptions } from "./PermitRowOptions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { normalizePermitNumber } from "../../../idir/search/helpers/SearchNormaliser";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -53,6 +54,12 @@ export const BasePermitList = ({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const PermitNumberDetector = (input: string): boolean => {
+    const cleaned = input.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+    return /^P\d{2,}/.test(cleaned);
+  };
+
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
@@ -194,7 +201,15 @@ export const BasePermitList = ({
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
     onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: (value) => {
+      const trimmed = value.trim();
+
+      const normalized = PermitNumberDetector(trimmed)
+        ? normalizePermitNumber(trimmed)
+        : trimmed;
+
+      setGlobalFilter(normalized);
+    },
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
