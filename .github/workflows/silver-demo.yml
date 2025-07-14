@@ -1,4 +1,4 @@
-name: Deploy Demo
+name: Deploy Demo (Silver)
 
 on:
   workflow_dispatch:
@@ -27,8 +27,8 @@ on:
         type: string
   
 jobs:
-  deploy-demo:
-    name: Deploys (DEMO)
+  deploy-silver-demo:
+    name: Deploys Demo (Silver)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
@@ -37,6 +37,8 @@ jobs:
       tag: ${{inputs.tag}}
       release: "demo"
       params: |
+        --set-string global.domain='apps.silver.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-silver' \
         --set-string global.license='c28f0c' \
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
