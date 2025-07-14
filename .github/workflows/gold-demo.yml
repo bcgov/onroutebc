@@ -33,7 +33,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
-      environment: demo
+      environment: gold-demo
       tag: ${{inputs.tag}}
       release: "demo"
       params: |
@@ -52,7 +52,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
-      environment: demo
+      environment: golddr-demo
       tag: ${{inputs.tag}}
       release: "demo"
       params: |
