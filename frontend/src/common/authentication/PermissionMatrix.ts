@@ -453,6 +453,9 @@ const MISCELLANEOUS = {
   PAY_WITH_CREDIT_ACCOUNT: {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
+  PROCESS_AMENDMENT_REFUND: {
+    allowedIDIRRoles: [SA],
+  },
 } as const;
 
 /**
