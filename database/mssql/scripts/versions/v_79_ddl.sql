@@ -76,7 +76,7 @@ GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Details of user login. It captures a snapshot of certain fields from the user token. One record per login' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Captures user login details including a snapshot of certain fields from the user token. One row of static data per login; no update or delete by the application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the login table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'LOGIN_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Origin of the user, whether bceid, business bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USER_DIRECTORY'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user, coming from bceid, bcsc or IDIR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_LOGIN', @level2type=N'COLUMN',@level2name=N'USER_GUID'
