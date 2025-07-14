@@ -57,6 +57,7 @@ import {
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
+import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -201,8 +202,11 @@ export const AmendPermitForm = () => {
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
     const updatedViolations = await triggerPolicyValidation();
-    // prevent CV client continuing if there are policy engine validation errors
-    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+
+    // If there are policy engine validation errors, form validation fails unless those violations
+    // can be overriden
+    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+      console.error(updatedViolations);
       return;
     }
 

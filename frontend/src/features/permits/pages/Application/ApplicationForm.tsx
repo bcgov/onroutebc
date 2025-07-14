@@ -61,6 +61,7 @@ import {
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
+import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -238,8 +239,10 @@ export const ApplicationForm = ({
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
     const updatedViolations = await triggerPolicyValidation();
-    // prevent CV client continuing if there are policy engine validation errors
-    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+
+    // If there are policy engine validation errors, form validation fails unless those violations
+    // can be overriden
+    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
       console.error(updatedViolations);
       return;
     }
