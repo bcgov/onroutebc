@@ -91,7 +91,7 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: ${{ github.head_ref }}
+          tags: ${{ github.head_ref && github.head_ref != '' && github.head_ref.split('/')[-1] }}
 
   # https://github.com/bcgov/action-deployer-openshift
   deploys-silver-dev:
