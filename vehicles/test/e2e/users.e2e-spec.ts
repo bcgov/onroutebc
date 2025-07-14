@@ -39,6 +39,7 @@ import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock
 import { App } from 'supertest/types';
 import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
@@ -47,6 +48,8 @@ let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+
+let cacheManager: DeepMocked<Cache>;
 
 describe('Users (e2e)', () => {
   let app: INestApplication<Express.Application>;
@@ -60,11 +63,13 @@ describe('Users (e2e)', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
         UsersService,
+        { provide: CACHE_MANAGER, useValue: cacheManager },
         {
           provide: getRepositoryToken(User),
           useValue: repo,

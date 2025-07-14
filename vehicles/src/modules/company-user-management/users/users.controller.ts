@@ -3,6 +3,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Inject,
   Param,
   Post,
   Query,
@@ -37,6 +38,9 @@ import {
   IDIR_USER_ROLE_LIST,
 } from '../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -58,7 +62,11 @@ import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
 
   /**
    * A POST method defined with a route of
@@ -89,7 +97,9 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
-    await this.userService.saveLoginInformation(currentUser, userExists);
+    if (await isFeatureEnabled(this.cacheManager, 'AUDIT_LOGIN')) {
+      await this.userService.saveLoginInformation(currentUser, userExists);
+    }
     return userExists;
   }
 

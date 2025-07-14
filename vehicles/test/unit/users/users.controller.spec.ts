@@ -19,6 +19,7 @@ import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
 import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;
@@ -28,15 +29,21 @@ interface FindUsersDtoMockParameters {
   companyId?: number[];
 }
 
+let cacheManager: DeepMocked<Cache>;
+
 describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     userService = createMock<UsersService>();
+    cacheManager = createMock<Cache>();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: userService }],
+      providers: [
+        { provide: UsersService, useValue: userService },
+        { provide: CACHE_MANAGER, useValue: cacheManager },
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
