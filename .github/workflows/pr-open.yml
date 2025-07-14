@@ -76,7 +76,7 @@ jobs:
   
   tag-frcr-release-bundle-builds:
     name: Tag FRCR Release Bundle Builds
-    if: contains(github.head_ref, 'frcr-release-bundle')
+    if: contains(github.head_ref, 'frcr_release_bundle')
     needs: [builds, vars]
     runs-on: ubuntu-22.04
     permissions:
