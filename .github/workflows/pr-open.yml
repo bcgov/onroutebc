@@ -76,7 +76,7 @@ jobs:
   
   tag-frcr-release-bundle-builds:
     name: Tag FRCR Release Bundle Builds
-    if: contains(github.ref_name, 'frcr-release-bundle')
+    if: contains(github.head_ref, 'frcr-release-bundle')
     needs: [builds, vars]
     runs-on: ubuntu-22.04
     permissions:
@@ -91,7 +91,7 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: ${{ github.ref_name }}
+          tags: ${{ github.head_ref }}
 
   # https://github.com/bcgov/action-deployer-openshift
   deploys-silver-dev:
