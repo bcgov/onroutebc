@@ -66,7 +66,7 @@ export class Case extends Base {
   @AutoMap()
   @Column({
     name: 'CASE_OPENED_DATE_TIME',
-    nullable: true,
+    nullable: false,
   })
   caseOpenedDateTime: Date;
 

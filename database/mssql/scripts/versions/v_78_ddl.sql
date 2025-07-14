@@ -17,10 +17,20 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 ALTER TABLE [case].[ORBC_CASE] ADD [CASE_OPENED_DATE_TIME] [datetime2](7) NULL;
 
+-- Patch up existing data to enforce the column as non nullable.
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+UPDATE [case].[ORBC_CASE] SET [CASE_OPENED_DATE_TIME]=[APP_CREATE_TIMESTAMP]
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [case].[ORBC_CASE] ALTER COLUMN [CASE_OPENED_DATE_TIME] [datetime2](7) NOT NULL;
+
+
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 EXEC sys.sp_addextendedproperty @name = N'MS_Description'
-	,@value = N'The date and time when the case was added to the queue'
+	,@value = N'The date and time when the case was added to the queue. i.e, when CASE_STATUS_TYPE = ''OPENED''. It cannot be null.'
 	,@level0type = N'SCHEMA'
 	,@level0name = N'case'
 	,@level1type = N'TABLE'
