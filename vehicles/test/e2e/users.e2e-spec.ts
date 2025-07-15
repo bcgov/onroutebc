@@ -39,6 +39,9 @@ import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock
 import { App } from 'supertest/types';
 import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
@@ -47,6 +50,8 @@ let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+
+let cacheManager: DeepMocked<Cache>;
 
 describe('Users (e2e)', () => {
   let app: INestApplication<Express.Application>;
@@ -60,11 +65,24 @@ describe('Users (e2e)', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [
+        AutomapperModule,
+        ThrottlerModule.forRoot({
+          throttlers: [
+            {
+              ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+              limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
+            },
+          ],
+        }),
+      ],
       providers: [
         UsersService,
+        { provide: CACHE_MANAGER, useValue: cacheManager },
+        { provide: APP_GUARD, useValue: ThrottlerGuard },
         {
           provide: getRepositoryToken(User),
           useValue: repo,
