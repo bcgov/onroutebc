@@ -20,6 +20,8 @@ import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-ma
 import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;
@@ -39,10 +41,21 @@ describe('UsersController', () => {
     userService = createMock<UsersService>();
     cacheManager = createMock<Cache>();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ThrottlerModule.forRoot({
+          throttlers: [
+            {
+              ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+              limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
+            },
+          ],
+        }),
+      ],
       controllers: [UsersController],
       providers: [
         { provide: UsersService, useValue: userService },
         { provide: CACHE_MANAGER, useValue: cacheManager },
+        { provide: APP_GUARD, useValue: ThrottlerGuard },
       ],
     }).compile();
 
