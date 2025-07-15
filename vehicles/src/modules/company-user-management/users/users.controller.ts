@@ -3,10 +3,12 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Inject,
   Param,
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -37,6 +39,10 @@ import {
   IDIR_USER_ROLE_LIST,
 } from '../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -58,7 +64,11 @@ import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
 
   /**
    * A POST method defined with a route of
@@ -79,6 +89,7 @@ export class UsersController {
       'It supports different identity providers, including IDIR and general ORBC user flows.',
   })
   @AuthOnly()
+  @UseGuards(ThrottlerGuard)
   @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
@@ -89,7 +100,9 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
-    await this.userService.saveLoginInformation(currentUser, userExists);
+    if (await isFeatureEnabled(this.cacheManager, 'AUDIT_LOGIN')) {
+      await this.userService.saveLoginInformation(currentUser, userExists);
+    }
     return userExists;
   }
 

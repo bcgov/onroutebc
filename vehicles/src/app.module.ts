@@ -41,12 +41,21 @@ import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 import { CaseManagementModule } from './modules/case-management/case-management.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { VersionMatchMiddleware } from './common/middleware/version.middleware';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: +process.env.VEHICLES_API_PUBLIC_AUTH_THROTTLER_TTL_MS || 60000,
+          limit: +process.env.VEHICLES_API_PUBLIC_AUTH_RATE_LIMIT || 100,
+        },
+      ],
+    }),
     // Register the ClsModule,
     ClsModule.forRoot({
       global: true,
