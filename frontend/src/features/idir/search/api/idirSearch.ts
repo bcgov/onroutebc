@@ -2,7 +2,7 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { PermitListItem } from "../../../permits/types/permit";
-import { SearchFields, SEARCH_BY_FILTERS } from "../types/types";
+import { SEARCH_BY_FILTERS, SearchFields } from "../types/types";
 import {
   isUndefined,
   PaginatedResponse,
