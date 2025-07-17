@@ -8,11 +8,6 @@ import {
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
-import {
-  normalizeClientNumber,
-  normalizePermitNumber,
-  normalizePlateNumber,
-} from "../helpers/SearchNormaliser";
 
 /**
  * Searches the data with options and value entered by the user.
@@ -27,9 +22,9 @@ export const getPermitDataBySearch = (
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   if (searchByFilter === SEARCH_BY_FILTERS.PLATE_NUMBER) {
-    searchURL.searchParams.set("searchString", normalizePlateNumber(searchString));
+    searchURL.searchParams.set("searchString", searchString);
   } else if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
-    searchURL.searchParams.set("searchString", normalizePermitNumber(searchString));
+    searchURL.searchParams.set("searchString", searchString);
   } else {
     searchURL.searchParams.set("searchString", searchString);
   }
@@ -56,7 +51,7 @@ export const getCompanyDataBySearch = (
   if (searchByFilter === SEARCH_BY_FILTERS.COMPANY_NAME) {
     searchURL.searchParams.set("companyName", searchString);
   } else {
-    searchURL.searchParams.set("clientNumber", normalizeClientNumber(searchString));
+    searchURL.searchParams.set("clientNumber", searchString);
   }
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
