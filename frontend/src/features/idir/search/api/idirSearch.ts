@@ -31,7 +31,6 @@ export const getPermitDataBySearch = (
   if (!isUndefined(expired)) {
     searchURL.searchParams.set("expired", expired.toString());
   }
-  searchURL.searchParams.set("searchString", searchString);
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
@@ -49,7 +48,7 @@ export const getCompanyDataBySearch = (
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<CompanyProfile>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
-  if (searchByFilter === "companyName") {
+  if (searchByFilter === SEARCH_BY_FILTERS.COMPANY_NAME) {
     searchURL.searchParams.set("companyName", searchString);
   } else {
     searchURL.searchParams.set("clientNumber", searchString);
