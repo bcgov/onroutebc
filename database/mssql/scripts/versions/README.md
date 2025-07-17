@@ -313,3 +313,13 @@
 
 ### Version 80:
 - Alter size of  ORBC_DOCUMENT.FILE_NAME to allow longer file names
+
+### Version 81:
+- DDL changes to permit.ORBC_PERMIT to have clean computed values of PERMIT_NUMBER and TPS_PERMIT_NUMBER
+  - Following coulumns are added to permit.ORBC_PERMIT
+    - COMPUTED_PERMIT_NUMBER NVARCHAR(19) - COMPUTED
+    - COMPUTED_TPS_PERMIT_NUMBER NVARCHAR(11) - COMPUTED
+  - Following indexes are added to permit.ORBC_PERMIT
+    - IX_ORBC_PERMIT_COMPUTED_PERMIT_NUMBER ON COMPUTED_PERMIT_NUMBER
+    - IX_ORBC_PERMIT_COMPUTED_TPS_PERMIT_NUMBER ON COMPUTED_TPS_PERMIT_NUMBER
+- Downtime is required for prod deployment
