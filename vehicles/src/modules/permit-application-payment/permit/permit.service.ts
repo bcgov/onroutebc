@@ -309,6 +309,8 @@ export class PermitService {
       );
     }
 
+    const cleanSearchString = searchString?.replace(/[- ]/g, '');
+
     // Handle search conditions
     if (searchColumn) {
       switch (searchColumn) {
@@ -328,12 +330,15 @@ export class PermitService {
           permitsQuery = permitsQuery.andWhere(
             new Brackets((query) => {
               query
-                .where(`permit.permitNumber like :searchString`, {
-                  searchString: `%${searchString}%`,
+                .where(`permit.cleanPermitNumber like :searchString`, {
+                  searchString: `%${cleanSearchString}%`,
                 })
-                .orWhere(`permit.migratedPermitNumber like :searchString`, {
-                  searchString: `%${searchString}%`,
-                });
+                .orWhere(
+                  `permit.migratedCleanPermitNumber like :searchString`,
+                  {
+                    searchString: `%${cleanSearchString}%`,
+                  },
+                );
             }),
           );
           break;
@@ -351,11 +356,11 @@ export class PermitService {
             .orWhere('permitData.unitNumber like :searchString', {
               searchString: `%${searchString}%`,
             })
-            .orWhere(`permit.permitNumber like :searchString`, {
-              searchString: `%${searchString}%`,
+            .orWhere(`permit.cleanPermitNumber like :searchString`, {
+              searchString: `%${cleanSearchString}%`,
             })
-            .orWhere(`permit.migratedPermitNumber like :searchString`, {
-              searchString: `%${searchString}%`,
+            .orWhere(`permit.migratedCleanPermitNumber like :searchString`, {
+              searchString: `%${cleanSearchString}%`,
             });
         }),
       );
