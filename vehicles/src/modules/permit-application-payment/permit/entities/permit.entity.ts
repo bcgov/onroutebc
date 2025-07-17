@@ -184,7 +184,7 @@ export class Permit extends Base {
     insert: false,
     update: false,
   })
-  cleanPermitNumber: string;
+  permitNumberWithoutHyphen: string;
 
   @AutoMap()
   @ApiProperty({
@@ -210,7 +210,7 @@ export class Permit extends Base {
     insert: false,
     update: false,
   })
-  migratedCleanPermitNumber?: string;
+  migratedPermitNumberWithoutHyphen?: string;
 
   @AutoMap()
   @ApiProperty({

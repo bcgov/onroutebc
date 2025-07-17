@@ -309,7 +309,7 @@ export class PermitService {
       );
     }
 
-    const cleanSearchString = searchString?.replace(/[- ]/g, '');
+    const searchStringWithoutHyphen = searchString?.replace(/[- ]/g, '');
 
     // Handle search conditions
     if (searchColumn) {
@@ -330,13 +330,13 @@ export class PermitService {
           permitsQuery = permitsQuery.andWhere(
             new Brackets((query) => {
               query
-                .where(`permit.cleanPermitNumber like :searchString`, {
-                  searchString: `%${cleanSearchString}%`,
+                .where(`permit.permitNumberWithoutHyphen like :searchString`, {
+                  searchString: `%${searchStringWithoutHyphen}%`,
                 })
                 .orWhere(
-                  `permit.migratedCleanPermitNumber like :searchString`,
+                  `permit.migratedPermitNumberWithoutHyphen like :searchString`,
                   {
-                    searchString: `%${cleanSearchString}%`,
+                    searchString: `%${searchStringWithoutHyphen}%`,
                   },
                 );
             }),
@@ -356,12 +356,15 @@ export class PermitService {
             .orWhere('permitData.unitNumber like :searchString', {
               searchString: `%${searchString}%`,
             })
-            .orWhere(`permit.cleanPermitNumber like :searchString`, {
-              searchString: `%${cleanSearchString}%`,
+            .orWhere(`permit.permitNumberWithoutHyphen like :searchString`, {
+              searchString: `%${searchStringWithoutHyphen}%`,
             })
-            .orWhere(`permit.migratedCleanPermitNumber like :searchString`, {
-              searchString: `%${cleanSearchString}%`,
-            });
+            .orWhere(
+              `permit.migratedPermitNumberWithoutHyphen like :searchString`,
+              {
+                searchString: `%${searchStringWithoutHyphen}%`,
+              },
+            );
         }),
       );
     }
