@@ -190,6 +190,11 @@ export const BasePermitList = ({
     muiSearchTextFieldProps: {
       ...defaultTableOptions.muiSearchTextFieldProps,
       helperText: globalFilter?.length >= 100 && "100 characters maximum.",
+      placeholder: "Search by Unit No., Plate or Permit No.",
+      sx: {
+        minWidth: "450px",
+        backgroundColor: "white",
+      },
     },
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,

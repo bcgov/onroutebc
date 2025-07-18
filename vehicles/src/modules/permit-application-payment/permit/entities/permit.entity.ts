@@ -175,6 +175,17 @@ export class Permit extends Base {
   })
   permitNumber: string;
 
+  //A computed column without hyphens
+  @AutoMap()
+  @Column({
+    length: '19',
+    name: 'COMPUTED_PERMIT_NUMBER',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  permitNumberWithoutHyphen: string;
+
   @AutoMap()
   @ApiProperty({
     example: '08-000-2819',
@@ -189,6 +200,17 @@ export class Permit extends Base {
     update: false,
   })
   migratedPermitNumber?: string;
+
+  //A computed column without hyphens
+  @AutoMap()
+  @Column({
+    length: '11',
+    name: 'COMPUTED_TPS_PERMIT_NUMBER',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  migratedPermitNumberWithoutHyphen?: string;
 
   @AutoMap()
   @ApiProperty({
