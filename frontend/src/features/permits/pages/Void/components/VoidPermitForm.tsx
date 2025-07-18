@@ -14,7 +14,7 @@ import {
   calculateNetAmount,
 } from "../../../helpers/feeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
-import { useVoidPermit } from "../hooks/useVoidPermit";
+import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import {
   Nullable,
@@ -53,7 +53,8 @@ export const VoidPermitForm = ({
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
-  const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
+  const { mutation: revokePermitMutation, voidResults } =
+    useVoidOrRevokePermit();
   const { companyId: companyIdParam } = useParams();
 
   const companyId: number = getDefaultRequiredVal(
