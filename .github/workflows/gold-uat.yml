@@ -34,7 +34,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: true
-      environment: uat
+      environment: gold-uat
       tag: ${{inputs.tag}}
       release: uat
       params: |
@@ -52,7 +52,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: true
-      environment: uat
+      environment: golddr-uat
       tag: ${{inputs.tag}}
       release: uat
       params: |
