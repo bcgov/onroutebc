@@ -51,10 +51,21 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: ${{ needs.vars.outputs.release-name }}
 
-  deploys-uat:
-    name: Deploys (Uat)
+  deploys-uat-silver:
+    name: Deploys UAT (Silver)
     needs: [vars,promote-images-release]
-    uses: ./.github/workflows/uat.yml
+    uses: ./.github/workflows/silver-uat.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.release-num }}' \
+  
+  deploys-uat-gold:
+    name: Deploys UAT (Gold)
+    needs: [vars,promote-images-release]
+    uses: ./.github/workflows/gold-uat.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
@@ -64,7 +75,7 @@ jobs:
         
   promote-images-uat:
     name: Promote Images - Uat
-    needs: [vars,deploys-uat]
+    needs: [vars,deploys-uat-silver,deploys-uat-gold]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
