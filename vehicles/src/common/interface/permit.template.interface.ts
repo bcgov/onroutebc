@@ -53,6 +53,7 @@ export interface PermitData {
 }
 
 interface AxleConfiguration {
+  axleUnit: number;
   numberOfAxles: number;
   axleSpread?: Nullable<number>;
   interaxleSpacing?: Nullable<number>;
