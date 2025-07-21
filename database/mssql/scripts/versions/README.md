@@ -323,3 +323,7 @@
     - IX_ORBC_PERMIT_COMPUTED_PERMIT_NUMBER ON COMPUTED_PERMIT_NUMBER
     - IX_ORBC_PERMIT_COMPUTED_TPS_PERMIT_NUMBER ON COMPUTED_TPS_PERMIT_NUMBER
 - Downtime is required for prod deployment
+
+
+### Version 82:
+- Configure first draft of STOW templates
