@@ -72,6 +72,7 @@ export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
   };
 
   const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
   const handleStartNewAmendment = useCallback(async () => {
     if (existingAmendmentApplicationId) {
       const deleteExistingResult = await deleteAmendmentApplication(

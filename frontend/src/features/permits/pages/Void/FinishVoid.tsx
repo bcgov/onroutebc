@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
@@ -73,10 +72,6 @@ export const FinishVoid = ({
     }
   }, [voidResults]);
 
-  const { state: stateFromNavigation } = useLocation();
-
-  console.log({ stateFromNavigation });
-
   const { deleteAmendmentApplication } = useAttemptAmend(permitActionOrigin);
 
   const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
@@ -87,6 +82,7 @@ export const FinishVoid = ({
   const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
 
   const handleFinish = async (refundData: RefundFormData) => {
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the void transaction
     if (existingAmendmentApplicationId) {
       await deleteAmendmentApplication(
         companyId,
