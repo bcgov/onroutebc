@@ -60,6 +60,7 @@ export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
   };
 
   const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
   const deleteAmendmentApplication = async (
     companyOfAmendment: number,
     amendmentApplicationId: string,
@@ -117,5 +118,6 @@ export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
     handleCloseModal,
     handleStartNewAmendment,
     handleContinueAmendment,
+    deleteAmendmentApplication,
   };
 };
