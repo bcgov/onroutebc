@@ -119,6 +119,5 @@ export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
     handleCloseModal,
     handleStartNewAmendment,
     handleContinueAmendment,
-    deleteAmendmentApplication,
   };
 };

@@ -186,7 +186,6 @@ export const VoidPermit = () => {
       permit={permit}
       onSuccess={goHomeSuccess}
       onFail={handleFail}
-      permitActionOrigin={permitActionOrigin}
     />,
   ];
 

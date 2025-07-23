@@ -6,6 +6,7 @@ import { RefundFormData } from "../Refund/types/RefundFormData";
 import { Permit } from "../../types/permit";
 import {
   useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
   usePermitHistoryQuery,
 } from "../../hooks/hooks";
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
@@ -19,19 +20,15 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { useAttemptAmend } from "../../hooks/useAttemptAmend";
-import { PermitActionOrigin } from "../../../idir/search/types/types";
 
 export const FinishVoid = ({
   permit,
   onSuccess,
   onFail,
-  permitActionOrigin,
 }: {
   permit: Nullable<Permit>;
   onSuccess: () => void;
   onFail: () => void;
-  permitActionOrigin: PermitActionOrigin;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
   const { companyId: companyIdParam } = useParams();
@@ -72,8 +69,6 @@ export const FinishVoid = ({
     }
   }, [voidResults]);
 
-  const { deleteAmendmentApplication } = useAttemptAmend(permitActionOrigin);
-
   const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
     companyId,
     originalPermitId,
@@ -81,13 +76,15 @@ export const FinishVoid = ({
 
   const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
 
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
   const handleFinish = async (refundData: RefundFormData) => {
     // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the void transaction
     if (existingAmendmentApplicationId) {
-      await deleteAmendmentApplication(
+      await deleteApplications({
         companyId,
-        existingAmendmentApplicationId,
-      );
+        applicationIds: [existingAmendmentApplicationId],
+      });
     }
     const requestData = mapToVoidRequestData(
       voidPermitData,
