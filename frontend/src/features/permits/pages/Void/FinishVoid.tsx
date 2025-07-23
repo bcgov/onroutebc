@@ -4,7 +4,11 @@ import { useParams } from "react-router-dom";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 import { Permit } from "../../types/permit";
-import { usePermitHistoryQuery } from "../../hooks/hooks";
+import {
+  useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
+  usePermitHistoryQuery,
+} from "../../hooks/hooks";
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
@@ -12,7 +16,10 @@ import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 
 export const FinishVoid = ({
   permit,
@@ -30,15 +37,12 @@ export const FinishVoid = ({
   const companyId: number = getDefaultRequiredVal(
     0,
     permit?.companyId,
-    applyWhenNotNullable(id => Number(id), companyIdParam),
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
   );
 
   const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
 
-  const permitHistoryQuery = usePermitHistoryQuery(
-    companyId,
-    originalPermitId,
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(companyId, originalPermitId);
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
@@ -48,9 +52,10 @@ export const FinishVoid = ({
         isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
       );
 
-  const amountToRefund = !permit || transactionHistory.length === 0
-    ? 0
-    : -1 * calculateAmountForVoid(permit, transactionHistory);
+  const amountToRefund =
+    !permit || transactionHistory.length === 0
+      ? 0
+      : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 
@@ -64,7 +69,23 @@ export const FinishVoid = ({
     }
   }, [voidResults]);
 
-  const handleFinish = (refundData: RefundFormData) => {
+  const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
+  const handleFinish = async (refundData: RefundFormData) => {
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the void transaction
+    if (existingAmendmentApplicationId) {
+      await deleteApplications({
+        companyId,
+        applicationIds: [existingAmendmentApplicationId],
+      });
+    }
     const requestData = mapToVoidRequestData(
       voidPermitData,
       refundData,

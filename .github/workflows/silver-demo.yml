@@ -1,5 +1,4 @@
----
-name: Deploy UAT
+name: Deploy Demo (Silver)
 
 on:
   workflow_dispatch:
@@ -8,7 +7,7 @@ on:
         description: "Image tag to deploy"
         required: false
         type: string
-        default: "test"
+        default: "uat"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -20,7 +19,7 @@ on:
         description: "Image tag to deploy"
         required: false
         type: string
-        default: "test"
+        default: "uat"
       params:
         description: 'Extra parameters to pass to helm upgrade'
         default: ''
@@ -28,18 +27,21 @@ on:
         type: string
   
 jobs:
-  deploy-uat:
-    name: Deploys (UAT)
+  deploy-silver-demo:
+    name: Deploys Demo (Silver)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      autoscaling: true
-      environment: uat
+      autoscaling: false
+      environment: demo
       tag: ${{inputs.tag}}
-      release: uat
+      release: "demo"
       params: |
+        --set-string global.domain='apps.silver.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-silver' \
         --set-string global.license='c28f0c' \
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
-        --set-string global.vault.zone='uat' \
-        ${{ inputs.params }} \
+        --set-string global.vault.zone='demo' \
+        --set-string global.pr_num='${{ inputs.tag }}' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \

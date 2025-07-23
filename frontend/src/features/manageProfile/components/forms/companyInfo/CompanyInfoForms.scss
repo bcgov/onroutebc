@@ -1,6 +1,6 @@
 .company-info-form {
   width: 100%;
-  max-width: 528px;
+  max-width: 1056px;
   display: flex;
   flex-direction: column;
   margin-top: 1em;
@@ -8,6 +8,7 @@
   .bc-gov-alertbanner {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
+    width: auto;
   }
 
   &__submission {

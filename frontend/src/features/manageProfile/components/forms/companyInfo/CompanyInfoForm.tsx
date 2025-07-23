@@ -24,10 +24,13 @@ import {
 } from "../../../../../common/helpers/util";
 
 import {
+  invalidClientNameLength,
   invalidDBALength,
   isValidOptionalString,
+  requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
 import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+import { WarningBcGovBanner } from "../../../../../common/components/banners/WarningBcGovBanner";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -147,6 +150,30 @@ export const CompanyInfoForm = memo(
     return (
       <div className="company-info-form">
         <FormProvider {...formMethods}>
+          <Typography variant="h2" gutterBottom>
+            Client Name
+          </Typography>
+          <WarningBcGovBanner
+            msg={BANNER_MESSAGES.CLIENT_NAME_MUST_BE_REGISTERED_OWNER}
+          />
+          <CustomFormComponent
+            type="input"
+            feature={FEATURE}
+            options={{
+              name: "legalName",
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                validate: {
+                  validateLegalName: (legalName: string) =>
+                    isValidOptionalString(legalName, {
+                      maxLength: 150,
+                    }) || invalidClientNameLength(1, 150),
+                },
+              },
+              label: "Client Name",
+            }}
+          />
+
           <Typography variant="h2" gutterBottom>
             Doing Business As (DBA)
           </Typography>

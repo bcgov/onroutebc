@@ -1,15 +1,12 @@
 import { Button, Stack } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
-import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
 import { Nullable } from "../../../common/types/common";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
-import { WizardClientBanner } from "./WizardClientBanner";
 import { useCreateProfileMutation } from "../hooks/hooks";
 
 /**
@@ -22,11 +19,8 @@ export const CompanyAndUserInfoSteps = ({
   setClientNumber: Dispatch<SetStateAction<Nullable<string>>>;
 }) => {
   const navigate = useNavigate();
-  const { handleSubmit: handleCreateProfileSubmit, register } =
+  const { handleSubmit: handleCreateProfileSubmit } =
     useFormContext<CreateCompanyRequest>();
-
-  const { user } = useAuth();
-  const isBusinessBCeID = Boolean(user?.profile?.bceid_business_name);
 
   const { mutate: createProfile } = useCreateProfileMutation(setClientNumber);
 
@@ -58,18 +52,7 @@ export const CompanyAndUserInfoSteps = ({
   return (
     <>
       <div className="create-profile-section create-profile-section--company">
-        {isBusinessBCeID && (
-          <>
-            <input type="hidden" {...register("legalName")} />
-            <WizardClientBanner
-              legalName={getDefaultRequiredVal(
-                "",
-                user?.profile?.bceid_business_name as string,
-              )}
-            />
-          </>
-        )}
-        <CompanyInformationWizardForm showCompanyName={!isBusinessBCeID} />
+        <CompanyInformationWizardForm />
       </div>
       <div className="create-profile-section create-profile-section--nav">
         <Stack direction="row" spacing={3}>
