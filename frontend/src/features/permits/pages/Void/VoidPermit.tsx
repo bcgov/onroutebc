@@ -110,6 +110,7 @@ export const VoidPermit = () => {
         })
       : // return to global permit search results
         navigate(fullSearchRoute);
+
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>
@@ -139,10 +140,14 @@ export const VoidPermit = () => {
 
   const contextData = useMemo(
     () => ({
+      permit,
       voidPermitData,
       setVoidPermitData,
       back: () => setCurrentLink(0),
       next: () => setCurrentLink(1),
+      goHome,
+      goHomeSuccess,
+      handleFail,
     }),
     [voidPermitData],
   );
@@ -174,19 +179,8 @@ export const VoidPermit = () => {
   if (!isVoidable(permit)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   const pages = [
-    <VoidPermitForm
-      key="void-permit"
-      permit={permit}
-      onRevokeSuccess={goHomeSuccess}
-      onCancel={goHome}
-      onFail={handleFail}
-    />,
-    <FinishVoid
-      key="finish-void"
-      permit={permit}
-      onSuccess={goHomeSuccess}
-      onFail={handleFail}
-    />,
+    <VoidPermitForm key="void-permit" />,
+    <FinishVoid key="finish-void" />,
   ];
 
   return (

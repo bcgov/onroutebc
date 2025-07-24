@@ -41,6 +41,7 @@ export const AmendPermitFinish = () => {
     permitHistory,
     getLinks,
     afterFinishAmend,
+    goHome,
   } = useContext(AmendPermitContext);
   const { setSnackBar } = useContext(SnackBarContext);
 
@@ -170,6 +171,7 @@ export const AmendPermitFinish = () => {
           startTransactionMutation.isPending ||
           issuePermitMutation.isPending
         }
+        onCancel={goHome}
       />
 
       {showRefundErrorModal && (

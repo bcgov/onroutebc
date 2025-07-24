@@ -1,13 +1,12 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { Button, FormControl } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import "./VoidPermitForm.scss";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
-import { Permit } from "../../../types/permit";
 import { RevokeDialog } from "./RevokeDialog";
 import {
   calculateAmountForVoid,
@@ -16,10 +15,7 @@ import {
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
-import {
-  Nullable,
-  ORBC_FORM_FEATURES,
-} from "../../../../../common/types/common";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
@@ -35,20 +31,13 @@ import {
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AmendOrVoidFeeSummary } from "../../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
+import { VoidPermitContext } from "../context/VoidPermitContext";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
-export const VoidPermitForm = ({
-  permit,
-  onRevokeSuccess,
-  onCancel,
-  onFail,
-}: {
-  permit: Nullable<Permit>;
-  onRevokeSuccess: () => void;
-  onCancel: () => void;
-  onFail: () => void;
-}) => {
+export const VoidPermitForm = () => {
+  const { permit, handleFail, goHomeSuccess, goHome } =
+    useContext(VoidPermitContext);
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
@@ -88,11 +77,11 @@ export const VoidPermitForm = ({
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
-      onFail();
+      handleFail();
     } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Revoke action was successful and has results
       setOpenRevokeDialog(false);
-      onRevokeSuccess();
+      goHomeSuccess();
     }
   }, [voidResults]);
 
@@ -253,7 +242,7 @@ export const VoidPermitForm = ({
               variant="contained"
               color="tertiary"
               className="void-permit-button void-permit-button--cancel"
-              onClick={onCancel}
+              onClick={goHome}
               data-testid="cancel-void-permit-button"
             >
               Cancel
