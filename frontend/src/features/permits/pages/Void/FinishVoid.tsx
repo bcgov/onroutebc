@@ -17,7 +17,7 @@ import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 
 export const FinishVoid = () => {
-  const { voidPermitData, permit, handleFail, goHomeSuccess } =
+  const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
     useContext(VoidPermitContext);
   const { companyId: companyIdParam } = useParams();
 
@@ -97,6 +97,7 @@ export const FinishVoid = () => {
         permitAction={PERMIT_REFUND_ACTIONS.VOID}
         handleFinish={handleFinish}
         disableSubmitButton={voidPermitMutation.isPending}
+        onCancel={goHome}
       />
       {showRefundErrorModal && (
         <RefundErrorModal

@@ -8,11 +8,9 @@ import { calculateNetAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { RefundErrorModal } from "./components/RefundErrorModal";
 import { MRT_RowSelectionState } from "material-react-table";
-import { VoidPermitContext } from "../Void/context/VoidPermitContext";
-import { AmendPermitContext } from "../Amend/context/AmendPermitContext";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -45,6 +43,7 @@ export const RefundPage = ({
   amountToRefund,
   handleFinish,
   disableSubmitButton,
+  onCancel,
 }: {
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
@@ -55,6 +54,7 @@ export const RefundPage = ({
   amountToRefund: number;
   handleFinish: (refundData: RefundFormData[]) => void;
   disableSubmitButton: boolean;
+  onCancel: () => void;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -114,12 +114,6 @@ export const RefundPage = ({
       handleFinish(selectedTransactions);
     }
   };
-
-  const { goHome: onCancelAmend } = useContext(AmendPermitContext);
-  const { goHome: onCancelVoid } = useContext(VoidPermitContext);
-
-  const onCancel =
-    permitAction === PERMIT_REFUND_ACTIONS.AMEND ? onCancelAmend : onCancelVoid;
 
   return (
     <div className="refund-page">
