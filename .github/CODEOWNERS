@@ -5,23 +5,23 @@
 /frontend/** @krishnan-aot @zgong-gov
 
 # Vehicles:
-/vehicles/**  @gchauhan-aot @praju-aot
+/vehicles/**  @gchauhan-aot @praju-aot @zgong-gov
 
 # Public:
-/public/**  @gchauhan-aot @praju-aot
+/public/**  @gchauhan-aot @praju-aot @zgong-gov
 # Scheduler:
-/scheduler/**  @gchauhan-aot 
+/scheduler/**  @gchauhan-aot @zgong-gov
 
 # Dops:
-/dops/**  @gchauhan-aot @praju-aot
+/dops/**  @gchauhan-aot @praju-aot @zgong-gov
 
 # Policy:
-/policy/**  @gchauhan-aot @praju-aot
+/policy/**  @gchauhan-aot @praju-aot @zgong-gov
 
 # Database:
-/database/** @gchauhan-aot @john-fletcher-aot @praju-aot
+/database/** @gchauhan-aot @john-fletcher-aot @praju-aot @zgong-gov
 
 # Devops:
-Dockerfile @cberg-aot
-docker-compose.yml @cberg-aot
-/.github/** @cberg-aot
+Dockerfile @cberg-aot @zgong-gov
+docker-compose.yml @cberg-aot @zgong-gov
+/.github/** @cberg-aot @zgong-gov
