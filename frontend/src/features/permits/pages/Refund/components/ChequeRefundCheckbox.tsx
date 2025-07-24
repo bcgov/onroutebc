@@ -3,6 +3,7 @@ import { RefundFormData } from "../types/RefundFormData";
 import { useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 
 export const ChequeRefundCheckbox = ({
   cell,
@@ -22,6 +23,12 @@ export const ChequeRefundCheckbox = ({
   const refundTransactionId = getValues(
     `refundData.${fieldIndex}.refundTransactionId`,
   );
+  const paymentMethodTypeCode = refundData[fieldIndex].paymentMethodTypeCode;
+  const mustRefundByCheque = [
+    PAYMENT_METHOD_TYPE_CODE.CASH,
+    PAYMENT_METHOD_TYPE_CODE.CHEQUE,
+    PAYMENT_METHOD_TYPE_CODE.GA,
+  ].includes(paymentMethodTypeCode);
   const rowIsSelected = cell.row.getIsSelected();
 
   // local state necessary for 'chequeRefund' checkbox column to allow setting it to false when row is unselected
@@ -39,10 +46,17 @@ export const ChequeRefundCheckbox = ({
 
   // clear chequeRefund when refundAmount is cleared
   useEffect(() => {
-    if (refundAmount === "") {
+    if (refundAmount === "" && !mustRefundByCheque) {
       setIsChecked(false);
     }
   }, [refundAmount]);
+
+  // if payment method is Cash, Cheque or GA, Cheque Refund should always be checked
+  useEffect(() => {
+    if (rowIsSelected && mustRefundByCheque) {
+      setIsChecked(true);
+    }
+  }, [rowIsSelected]);
 
   return (
     <FormControlLabel
@@ -53,7 +67,10 @@ export const ChequeRefundCheckbox = ({
           checked={isChecked}
           onChange={(e) => setIsChecked(e.target.checked)}
           disabled={
-            !rowIsSelected || refundAmount === "" || refundTransactionId !== ""
+            !rowIsSelected ||
+            refundAmount === "" ||
+            refundTransactionId !== "" ||
+            mustRefundByCheque
           }
         />
       }
