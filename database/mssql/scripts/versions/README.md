@@ -326,3 +326,6 @@
 
 ### Version 82:
 - Configure STOW permit templates
+
+### Version 83:
+- Updated policy config json to support fixed cost for NR conditional permits
