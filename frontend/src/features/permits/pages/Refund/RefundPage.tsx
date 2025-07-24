@@ -8,9 +8,11 @@ import { calculateNetAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { RefundErrorModal } from "./components/RefundErrorModal";
 import { MRT_RowSelectionState } from "material-react-table";
+import { VoidPermitContext } from "../Void/context/VoidPermitContext";
+import { AmendPermitContext } from "../Amend/context/AmendPermitContext";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -113,6 +115,12 @@ export const RefundPage = ({
     }
   };
 
+  const { goHome: onCancelAmend } = useContext(AmendPermitContext);
+  const { goHome: onCancelVoid } = useContext(VoidPermitContext);
+
+  const onCancel =
+    permitAction === PERMIT_REFUND_ACTIONS.AMEND ? onCancelAmend : onCancelVoid;
+
   return (
     <div className="refund-page">
       <h2 className="refund-page__header refund-page__header--main">
@@ -172,15 +180,25 @@ export const RefundPage = ({
           </div>
         )}
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onSubmit)}
-          disabled={disableSubmitButton}
-          className="refund-page__button"
-        >
-          Finish
-        </Button>
+        <div className="refund-page__section refund-page__section--actions">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={onCancel}
+            className="refund-page__button refund-page__button--cancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onSubmit)}
+            disabled={disableSubmitButton}
+            className="refund-page__button"
+          >
+            Finish
+          </Button>
+        </div>
       </FormProvider>
 
       {showRefundErrorModal && (

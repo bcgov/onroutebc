@@ -2,14 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { Permit } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidOrRevokePermit } from "./hooks/useVoidOrRevokePermit";
 import { isValidTransaction } from "../../helpers/payment";
-import { Nullable } from "../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import {
   applyWhenNotNullable,
@@ -18,16 +16,9 @@ import {
 import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 
-export const FinishVoid = ({
-  permit,
-  onSuccess,
-  onFail,
-}: {
-  permit: Nullable<Permit>;
-  onSuccess: () => void;
-  onFail: () => void;
-}) => {
-  const { voidPermitData } = useContext(VoidPermitContext);
+export const FinishVoid = () => {
+  const { voidPermitData, permit, handleFail, goHomeSuccess } =
+    useContext(VoidPermitContext);
   const { companyId: companyIdParam } = useParams();
 
   const { email, additionalEmail, reason } = voidPermitData;
@@ -59,10 +50,10 @@ export const FinishVoid = ({
   useEffect(() => {
     const voidFailed = hasPermitsActionFailed(voidResults);
     if (voidFailed) {
-      onFail();
+      handleFail();
     } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Void action was triggered, and has results (was successful)
-      onSuccess();
+      goHomeSuccess();
     }
   }, [voidResults]);
 

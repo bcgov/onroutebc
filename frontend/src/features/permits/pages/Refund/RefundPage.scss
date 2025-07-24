@@ -19,6 +19,12 @@
   &__section {
     padding: 2.5rem 0;
     border-bottom: 1px solid $bc-border-grey;
+
+    &--actions {
+      border-bottom: none;
+      display: flex;
+      gap: 2.5rem;
+    }
   }
 
   &__info {
@@ -32,10 +38,17 @@
     padding: .5rem 2rem;
     box-shadow: none;
     min-width: fit-content;
-    margin-top: 2.5rem;
 
     &:hover, &:focus {
       box-shadow: none; 
+    }
+
+    &--cancel {
+      border: 2px solid $bc-background-light-grey;
+      &:hover, &:focus {
+        background-color: $bc-background-light-grey;
+        border-color: $bc-text-box-border-grey;
+      }
     }
   }
 }
