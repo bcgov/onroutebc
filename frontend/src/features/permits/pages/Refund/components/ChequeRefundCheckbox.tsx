@@ -24,7 +24,7 @@ export const ChequeRefundCheckbox = ({
     `refundData.${fieldIndex}.refundTransactionId`,
   );
   const paymentMethodTypeCode = refundData[fieldIndex].paymentMethodTypeCode;
-  const mustRefundByCheque = [
+  const shouldRefundByCheque = [
     PAYMENT_METHOD_TYPE_CODE.CASH,
     PAYMENT_METHOD_TYPE_CODE.CHEQUE,
     PAYMENT_METHOD_TYPE_CODE.GA,
@@ -46,17 +46,17 @@ export const ChequeRefundCheckbox = ({
 
   // clear chequeRefund when refundAmount is cleared
   useEffect(() => {
-    if (refundAmount === "" && !mustRefundByCheque) {
+    if (refundAmount === "" && !shouldRefundByCheque) {
       setIsChecked(false);
     }
-  }, [refundAmount]);
+  }, [refundAmount, shouldRefundByCheque]);
 
   // if payment method is Cash, Cheque or GA, Cheque Refund should always be checked
   useEffect(() => {
-    if (rowIsSelected && mustRefundByCheque) {
+    if (rowIsSelected && shouldRefundByCheque) {
       setIsChecked(true);
     }
-  }, [rowIsSelected]);
+  }, [rowIsSelected, shouldRefundByCheque]);
 
   return (
     <FormControlLabel
@@ -70,7 +70,7 @@ export const ChequeRefundCheckbox = ({
             !rowIsSelected ||
             refundAmount === "" ||
             refundTransactionId !== "" ||
-            mustRefundByCheque
+            shouldRefundByCheque
           }
         />
       }
