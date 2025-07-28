@@ -21,24 +21,21 @@ export const VehicleWeightSection = ({
   loadedGVW?: Nullable<number>;
   enableNetWeight: boolean;
   netWeight?: Nullable<number>;
-  onUpdateLoadedGVW: (
-    updatedLoadedGVW: Nullable<number>,
-  ) => void;
-  onUpdateNetWeight: (
-    updatedNetWeight: Nullable<number>,
-  ) => void;
+  onUpdateLoadedGVW: (updatedLoadedGVW: Nullable<number>) => void;
+  onUpdateNetWeight: (updatedNetWeight: Nullable<number>) => void;
 }) => {
-  const showSection = ([
-    PERMIT_TYPES.NRSCV,
-    PERMIT_TYPES.NRQCV,
-  ] as PermitType[]).includes(permitType);
+  const showSection = (
+    [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
+  ).includes(permitType);
 
-  const loadedGVWInputClassName = `vehicle-weight-section__input vehicle-weight-section__input--loaded-gvw`
-    + (enableLoadedGVW ? "" : " vehicle-weight-section__input--disabled");
+  const loadedGVWInputClassName =
+    `vehicle-weight-section__input vehicle-weight-section__input--loaded-gvw` +
+    (enableLoadedGVW ? "" : " vehicle-weight-section__input--disabled");
 
-  const netWeightInputClassName = `vehicle-weight-section__input vehicle-weight-section__input--net-weight`
-    + (enableNetWeight ? "" : " vehicle-weight-section__input--disabled");
-  
+  const netWeightInputClassName =
+    `vehicle-weight-section__input vehicle-weight-section__input--net-weight` +
+    (enableNetWeight ? "" : " vehicle-weight-section__input--disabled");
+
   return showSection ? (
     <Box className="vehicle-weight-section">
       <Box className="vehicle-weight-section__header">
@@ -50,7 +47,7 @@ export const VehicleWeightSection = ({
           name="permitData.vehicleConfiguration.loadedGVW"
           label={{
             id: "loaded-gvw-input-label",
-            component: "Loaded GVW (kg)",
+            component: "Actual GVW (kg)",
           }}
           className={loadedGVWInputClassName}
           isEnabled={enableLoadedGVW}
