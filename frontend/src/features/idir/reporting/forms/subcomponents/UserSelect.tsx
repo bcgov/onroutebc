@@ -42,6 +42,7 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
     const {
       target: { value },
     } = event;
+    console.log({ value });
     if (permitIssuers) {
       // permitIssuers is a <userName, userGUID> record.
       // So, Object.values is what we need.
