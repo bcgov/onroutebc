@@ -11,6 +11,10 @@
     align-items: flex-start;    
   }
 
+  &__message {
+     width: 320px;
+  }
+
   .conditional-licensing-fee-type {
     display: flex;
     align-items: center;
