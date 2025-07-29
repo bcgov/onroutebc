@@ -33,7 +33,6 @@ import {
 } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-import { PERMIT_TABS } from "../../types/PermitTabs";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
