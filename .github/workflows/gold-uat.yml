@@ -1,5 +1,5 @@
 ---
-name: Deploy UAT
+name: Deploy UAT (Gold)
 
 on:
   workflow_dispatch:
@@ -28,17 +28,37 @@ on:
         type: string
   
 jobs:
-  deploy-uat:
-    name: Deploys (UAT)
+  deploy-uat-gold:
+    name: Deploys UAT (Gold)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: true
-      environment: uat
+      environment: gold-uat
       tag: ${{inputs.tag}}
       release: uat
       params: |
-        --set-string global.license='c28f0c' \
+        --set-string global.domain='apps.gold.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-gold' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='uat' \
+        ${{ inputs.params }} \
+  
+  deploy-uat-golddr:
+    name: Deploys UAT (Golddr)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: true
+      environment: golddr-uat
+      tag: ${{inputs.tag}}
+      release: uat
+      params: |
+        --set-string global.domain='apps.golddr.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-golddr' \
+        --set-string global.license='c3141c' \
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='uat' \
