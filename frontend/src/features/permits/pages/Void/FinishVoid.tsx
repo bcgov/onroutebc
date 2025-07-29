@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
+import { Permit } from "../../types/permit";
 import {
   useAmendmentApplicationQuery,
   useDeleteApplicationsMutation,
@@ -94,7 +95,6 @@ export const FinishVoid = () => {
         applicationIds: [existingAmendmentApplicationId],
       });
     }
-
     voidPermitMutation.mutate({
       permitId: voidPermitData.permitId,
       voidData: mapToVoidRequestData(
