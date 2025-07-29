@@ -124,7 +124,12 @@ function getTokenCredentials(govCommonServices: GovCommonServices): {
       username = process.env.CFS_CREDIT_ACCOUNT_CLIENT_ID;
       password = process.env.CFS_CREDIT_ACCOUNT_CLIENT_SECRET;
       break;
-
+    case GovCommonServices.ORBC_SERVICE_ACCOUNT:
+      tokenCacheKey = CacheKey.ORBC_SERVICE_ACCOUNT_ACCESS_TOKEN;
+      tokenUrl = process.env.ORBC_SERVICE_ACCOUNT_TOKEN_URL;
+      username = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
+      password = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_SECRET;
+      break;
     default:
       break;
   }

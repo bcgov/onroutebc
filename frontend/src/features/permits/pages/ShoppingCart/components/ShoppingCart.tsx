@@ -1,14 +1,17 @@
-import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
-
+import {
+  Checkbox,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
+import { CheckBox, IndeterminateCheckBox } from "@mui/icons-material";
 import "./ShoppingCart.scss";
-import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { RemoveCartButton } from "./RemoveCartButton";
 import { ShoppingCartItem } from "./ShoppingCartItem";
-import { CartChangedWarningBanner } from "./CartChangedWarningBanner";
 import { SelectableCartItem } from "../../../types/CartItem";
 
 export const ShoppingCart = ({
-  outdatedApplicationNumbers,
   showCartFilter,
   showAllApplications,
   cartItemSelection,
@@ -19,7 +22,6 @@ export const ShoppingCart = ({
   handleRemoveSelected,
   handleEditCartItem,
 }: {
-  outdatedApplicationNumbers: string[];
   showCartFilter: boolean;
   showAllApplications: boolean;
   cartItemSelection: SelectableCartItem[];
@@ -31,90 +33,77 @@ export const ShoppingCart = ({
   handleEditCartItem: (id: string) => void;
 }) => {
   const cartItemsTotalCount = cartItemSelection.length;
-  const selectedItemsCount = cartItemSelection.filter(cartItem => cartItem.selected).length;
+  const selectedItemsCount = cartItemSelection.filter(
+    (cartItem) => cartItem.selected,
+  ).length;
+
+  const someItemsSelected = selectedItemsCount > 0;
+  const allItemsSelected =
+    cartItemsTotalCount > 0 && selectedItemsCount === cartItemsTotalCount;
 
   return (
     <div className="shopping-cart">
-      {outdatedApplicationNumbers.length > 0 ? (
-        <CartChangedWarningBanner removedItems={outdatedApplicationNumbers} />
-      ) : null}
+      <div className="shopping-cart__heading">Shopping Cart</div>
 
-      <div className="shopping-cart__header">
-        <div className="shopping-cart__header-section shopping-cart__header-section--main">
-          <div className="shopping-cart__main-header">
-            <div className="shopping-cart__title">Shopping Cart</div>
-
-            <div className="shopping-cart__info">
-              <div className="select-info select-info--selected-count">
-                {`${selectedItemsCount} of ${cartItemsTotalCount} Selected`}
-              </div>
-
-              <CustomActionLink
-                className={`select-info select-info--select-all`}
-                disabled={cartItemsTotalCount === 0}
-                onClick={toggleSelectAll}
-              >
-                {selectedItemsCount !== cartItemsTotalCount ? "Select All" : "Deselect All"}
-              </CustomActionLink>
-            </div>
-          </div>
-
-          {showCartFilter ? (
+      <div className="shopping-cart__actions actions">
+        <div className="actions__select select">
+          <Checkbox
+            className="select__checkbox"
+            aria-labelledby="shopping-cart-select-label"
+            disabled={cartItemsTotalCount === 0}
+            checked={someItemsSelected}
+            checkedIcon={
+              allItemsSelected ? <CheckBox /> : <IndeterminateCheckBox />
+            }
+            onChange={toggleSelectAll}
+          />
+          <FormLabel id="shopping-cart-select-label" className="select__label">
+            {`${selectedItemsCount} of ${cartItemsTotalCount} Selected`}
+          </FormLabel>
+        </div>
+        {showCartFilter && (
+          <div className="actions__filter filter">
+            <FormLabel id="shopping-cart-filter-label">View: </FormLabel>
             <RadioGroup
-              className="shopping-cart__filter"
+              className="filter__options"
+              aria-labelledby="shopping-cart-filter-label"
               defaultValue={showAllApplications}
               value={showAllApplications}
               onChange={(e) => handleCartFilterChange(e.target.value)}
             >
-              <div
-                className={`cart-filter cart-filter--all ${
-                  showAllApplications
-                    ? "cart-filter--active"
-                    : ""
-                }`}
-              >
-                <FormControlLabel
-                  className="cart-filter__label"
-                  label="All applications"
-                  value={true}
-                  control={
-                    <Radio
-                      key="all-applications"
-                      className="cart-filter__radio"
-                      classes={{
-                        checked: "cart-filter__radio--checked"
-                      }}
-                    />}
-                />
-              </div>
+              <FormControlLabel
+                className="filter__label"
+                label="All applications"
+                value={true}
+                control={
+                  <Radio
+                    key="all-applications"
+                    className="filter__radio"
+                    classes={{
+                      checked: "filter__radio--checked",
+                    }}
+                  />
+                }
+              />
 
-              <div
-                className={`cart-filter cart-filter--my ${
-                  !showAllApplications
-                    ? "cart-filter--active"
-                    : ""
-                }`}
-              >
-                <FormControlLabel
-                  className="cart-filter__label"
-                  label="My applications"
-                  value={false}
-                  control={
-                    <Radio
-                      key="my-applications"
-                      className="cart-filter__radio"
-                      classes={{
-                        checked: "cart-filter__radio--checked"
-                      }}
-                    />
-                  }
-                />
-              </div>
+              <FormControlLabel
+                className="filter__label"
+                label="My applications"
+                value={false}
+                control={
+                  <Radio
+                    key="my-applications"
+                    className="filter__radio"
+                    classes={{
+                      checked: "filter__radio--checked",
+                    }}
+                  />
+                }
+              />
             </RadioGroup>
-          ) : null}
-        </div>
-
-        <div className="shopping-cart__header-section shopping-cart__header-section--actions">
+          </div>
+        )}
+        <div className="actions__remove">
           <RemoveCartButton
             onRemove={handleRemoveSelected}
             isDisabled={selectedItemsCount === 0}
@@ -123,20 +112,20 @@ export const ShoppingCart = ({
       </div>
 
       <div className="shopping-cart__items">
-        {cartItemsTotalCount > 0 ? cartItemSelection.map(cartItem => (
-          <ShoppingCartItem
-            onEditCartItem={handleEditCartItem}
-            key={cartItem.applicationId}
-            cartItemData={cartItem}
-            isSelected={cartItem.selected}
-            isDisabled={!cartItem.isSelectable}
-            onSelect={handleSelectItem}
-            onDeselect={handleDeselectItem}
-          />
-        )) : (
-          <div className="shopping-cart__empty">
-            Cart is empty.
-          </div>
+        {cartItemsTotalCount > 0 ? (
+          cartItemSelection.map((cartItem) => (
+            <ShoppingCartItem
+              onEditCartItem={handleEditCartItem}
+              key={cartItem.applicationId}
+              cartItemData={cartItem}
+              isSelected={cartItem.selected}
+              isDisabled={!cartItem.isSelectable}
+              onSelect={handleSelectItem}
+              onDeselect={handleDeselectItem}
+            />
+          ))
+        ) : (
+          <div className="shopping-cart__empty">Cart is empty.</div>
         )}
       </div>
     </div>

@@ -5,7 +5,6 @@ import {
   useParams,
 } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { usePermitDetailsQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
@@ -32,8 +31,8 @@ import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { PERMIT_TABS } from "../../types/PermitTabs";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
@@ -139,10 +138,14 @@ export const VoidPermit = () => {
 
   const contextData = useMemo(
     () => ({
+      permit,
       voidPermitData,
       setVoidPermitData,
       back: () => setCurrentLink(0),
       next: () => setCurrentLink(1),
+      goHome,
+      goHomeSuccess,
+      handleFail,
     }),
     [voidPermitData],
   );
@@ -174,19 +177,8 @@ export const VoidPermit = () => {
   if (!isVoidable(permit)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   const pages = [
-    <VoidPermitForm
-      key="void-permit"
-      permit={permit}
-      onRevokeSuccess={goHomeSuccess}
-      onCancel={goHome}
-      onFail={handleFail}
-    />,
-    <FinishVoid
-      key="finish-void"
-      permit={permit}
-      onSuccess={goHomeSuccess}
-      onFail={handleFail}
-    />,
+    <VoidPermitForm key="void-permit" />,
+    <FinishVoid key="finish-void" />,
   ];
 
   return (
