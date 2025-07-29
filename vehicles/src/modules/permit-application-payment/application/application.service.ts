@@ -93,7 +93,7 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ApplicationService {
