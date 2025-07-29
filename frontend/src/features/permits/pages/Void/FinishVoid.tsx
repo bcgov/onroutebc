@@ -94,7 +94,6 @@ export const FinishVoid = () => {
         applicationIds: [existingAmendmentApplicationId],
       });
     }
-
     voidPermitMutation.mutate({
       permitId: voidPermitData.permitId,
       voidData: mapToVoidRequestData(
