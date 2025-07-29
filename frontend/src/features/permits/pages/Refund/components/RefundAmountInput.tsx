@@ -43,6 +43,9 @@ export const RefundAmountInput = ({
             onChange: ({ target: { value } }) => {
               setValue(fieldName, value);
             },
+            onBlur: ({ target: { value } }) => {
+              setValue(fieldName, Math.round(Number(value)));
+            },
             disabled: !rowIsSelected,
             startAdornment: <span>$&nbsp;</span>,
           }}
