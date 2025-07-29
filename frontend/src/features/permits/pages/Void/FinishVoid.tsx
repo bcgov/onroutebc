@@ -2,7 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { usePermitHistoryQuery } from "../../hooks/hooks";
+import { RefundFormData } from "../Refund/types/RefundFormData";
+import {
+  useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
+  usePermitHistoryQuery,
+} from "../../hooks/hooks";
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
@@ -14,7 +19,6 @@ import {
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
-import { RefundFormData } from "../Refund/types/RefundFormData";
 
 export const FinishVoid = () => {
   const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
@@ -57,6 +61,15 @@ export const FinishVoid = () => {
     }
   }, [voidResults]);
 
+  const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
   const [showRefundErrorModal, setShowRefundErrorModal] =
     useState<boolean>(false);
 
@@ -64,7 +77,7 @@ export const FinishVoid = () => {
     setShowRefundErrorModal(false);
   };
 
-  const handleFinish = (refundData: RefundFormData[]) => {
+  const handleFinish = async (refundData: RefundFormData[]) => {
     const totalRefundAmount = refundData.reduce(
       (sum: number, transaction) => sum + Number(transaction.refundAmount),
       0,
@@ -73,6 +86,13 @@ export const FinishVoid = () => {
     if (totalRefundAmount !== Math.abs(amountToRefund)) {
       setShowRefundErrorModal(true);
       return;
+    }
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the void transaction
+    if (existingAmendmentApplicationId) {
+      await deleteApplications({
+        companyId,
+        applicationIds: [existingAmendmentApplicationId],
+      });
     }
 
     voidPermitMutation.mutate({

@@ -323,3 +323,9 @@
     - IX_ORBC_PERMIT_COMPUTED_PERMIT_NUMBER ON COMPUTED_PERMIT_NUMBER
     - IX_ORBC_PERMIT_COMPUTED_TPS_PERMIT_NUMBER ON COMPUTED_TPS_PERMIT_NUMBER
 - Downtime is required for prod deployment
+
+### Version 82:
+- Configure STOW permit templates
+
+### Version 83:
+- Updated policy config json to support fixed cost for NR conditional permits

@@ -48,6 +48,7 @@ const isVoidable = (permit: Permit) => {
 export const VoidPermit = () => {
   const navigate = useNavigate();
   const { state: stateFromNavigation } = useLocation();
+  const { permitActionOrigin } = stateFromNavigation;
 
   const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
 
@@ -90,8 +91,7 @@ export const VoidPermit = () => {
 
   const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
   const goHome = () =>
-    stateFromNavigation.permitActionOrigin ===
-    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
       ? navigate(APPLICATIONS_ROUTES.BASE, {
           state: {
             selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
@@ -101,8 +101,7 @@ export const VoidPermit = () => {
         navigate(-1);
 
   const goHomeSuccess = () =>
-    stateFromNavigation.permitActionOrigin ===
-    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
       ? navigate(APPLICATIONS_ROUTES.BASE, {
           state: {
             selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
@@ -110,7 +109,6 @@ export const VoidPermit = () => {
         })
       : // return to global permit search results
         navigate(fullSearchRoute);
-
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>

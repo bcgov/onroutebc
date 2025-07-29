@@ -51,10 +51,21 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: ${{ needs.vars.outputs.release-name }}
 
-  deploys-uat:
-    name: Deploys (Uat)
+  deploys-uat-silver:
+    name: Deploys UAT (Silver)
     needs: [vars,promote-images-release]
-    uses: ./.github/workflows/uat.yml
+    uses: ./.github/workflows/silver-uat.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.release-num }}' \
+  
+  deploys-uat-gold:
+    name: Deploys UAT (Gold)
+    needs: [vars,promote-images-release]
+    uses: ./.github/workflows/gold-uat.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
@@ -64,7 +75,7 @@ jobs:
         
   promote-images-uat:
     name: Promote Images - Uat
-    needs: [vars,deploys-uat]
+    needs: [vars,deploys-uat-silver,deploys-uat-gold]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -80,10 +91,21 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: uat
   
-  deploys-prod:
-    name: Deploys (Prod)
+  deploys-prod-silver:
+    name: Deploys Prod (Silver)
     needs: [vars,promote-images-uat]
-    uses: ./.github/workflows/prod.yml
+    uses: ./.github/workflows/silver-prod.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.release-num }}' \
+  
+  deploys-prod-gold:
+    name: Deploys Prod (Gold)
+    needs: [vars,promote-images-uat]
+    uses: ./.github/workflows/gold-prod.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
@@ -93,7 +115,7 @@ jobs:
   
   promote-images-prod:
     name: Promote Images - Prod
-    needs: [vars,deploys-prod]
+    needs: [vars,deploys-prod-silver,deploys-prod-gold]
     runs-on: ubuntu-22.04
     permissions:
       packages: write

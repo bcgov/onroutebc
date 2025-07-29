@@ -52,6 +52,16 @@ export interface PermitData {
   conditionalLicensingFee?: Nullable<ConditionalLicensingFee>;
 }
 
+interface AxleConfiguration {
+  axleUnit: number;
+  numberOfAxles: number;
+  axleSpread?: Nullable<number>;
+  interaxleSpacing?: Nullable<number>;
+  axleUnitWeight: number;
+  numberOfTires?: Nullable<number>;
+  tireSize?: number;
+}
+
 interface VehicleConfiguration {
   overallLength?: Nullable<number>;
   overallWidth?: Nullable<number>;
@@ -61,6 +71,8 @@ interface VehicleConfiguration {
   trailers?: VehicleDetails[];
   loadedGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
+  axleConfiguration?: Nullable<AxleConfiguration[]>;
+  vehicleDisplayCode?: Nullable<string>;
 }
 
 interface PermittedRoute {
