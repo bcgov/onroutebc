@@ -43,6 +43,7 @@ export const RefundPage = ({
   amountToRefund,
   handleFinish,
   disableSubmitButton,
+  onCancel,
 }: {
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
@@ -53,6 +54,7 @@ export const RefundPage = ({
   amountToRefund: number;
   handleFinish: (refundData: RefundFormData[]) => void;
   disableSubmitButton: boolean;
+  onCancel: () => void;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -172,15 +174,25 @@ export const RefundPage = ({
           </div>
         )}
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onSubmit)}
-          disabled={disableSubmitButton}
-          className="refund-page__button"
-        >
-          Finish
-        </Button>
+        <div className="refund-page__section refund-page__section--actions">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={onCancel}
+            className="refund-page__button refund-page__button--cancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onSubmit)}
+            disabled={disableSubmitButton}
+            className="refund-page__button"
+          >
+            Finish
+          </Button>
+        </div>
       </FormProvider>
 
       {showRefundErrorModal && (
