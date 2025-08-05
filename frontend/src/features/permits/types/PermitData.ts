@@ -31,4 +31,5 @@ export interface PermitData {
   applicationNotes?: Nullable<string>;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
+  returnTrip?: Nullable<Boolean>;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Controller } from "react-hook-form";
 
 import "./TripOriginDestination.scss";
@@ -18,6 +19,7 @@ import { convertToNumberIfValid } from "../../../../../../../common/helpers/nume
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { GeocoderInput } from "../../../../../../../common/components/form/GeocoderInput";
+import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 export const TripOriginDestination = ({
   feature,
@@ -42,6 +44,7 @@ export const TripOriginDestination = ({
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
   const showTotalDistance = permitType === PERMIT_TYPES.MFP;
+  const showReturnTrip = permitType === PERMIT_TYPES.STOS;
 
   const origin = getDefaultRequiredVal("", tripOrigin);
 
@@ -171,6 +174,33 @@ export const TripOriginDestination = ({
             />
           )}
         />
+      ) : null}
+
+      {showReturnTrip ? (
+        <div className="trip-origin-destination__return-trip return-trip">
+          <Controller
+            name="permitData.returnTrip"
+            render={({ field: { value } }) => (
+              <RadioGroup
+                className="return-trip__radio-group"
+                defaultValue={false}
+                value={value}
+                onChange={(e) => console.log(e.target.value)}
+              >
+                <FormControlLabel
+                  label="One way"
+                  value={false}
+                  control={<Radio className="return-trip__input" />}
+                />
+                <FormControlLabel
+                  label="Return Trip"
+                  value={true}
+                  control={<Radio className="return-trip__input" />}
+                />
+              </RadioGroup>
+            )}
+          />
+        </div>
       ) : null}
     </div>
   );
