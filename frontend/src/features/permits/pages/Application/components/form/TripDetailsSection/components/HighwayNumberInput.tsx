@@ -27,6 +27,9 @@ export const HighwayNumberInput = ({
       }}
       value={highwayNumber}
       onChange={(e) => onHighwayInputChange(e.target.value, rowIndex, colIndex)}
+      inputProps={{
+        maxLength: 3,
+      }}
     />
   );
 };
