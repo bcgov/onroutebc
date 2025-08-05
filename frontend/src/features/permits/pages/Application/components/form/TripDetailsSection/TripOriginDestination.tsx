@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Controller } from "react-hook-form";
 
 import "./TripOriginDestination.scss";
