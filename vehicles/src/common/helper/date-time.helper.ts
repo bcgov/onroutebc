@@ -2,11 +2,13 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as duration from 'dayjs/plugin/duration';
+import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DurationDifference } from '../interface/duration-difference.interface';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
+dayjs.extend(quarterOfYear);
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   const formattedDate = dayjs.utc(dateTime).tz('Canada/Pacific').format(format);
@@ -57,4 +59,39 @@ export const getDuration = ({
   unit = 'days',
 }: DurationDifference): duration.Duration => {
   return dayjs.duration(maxDiff, unit);
+};
+
+/**
+ * Returns the start date of the quarter for a given date time.
+ *
+ * @param dateTime The dateTime as a string
+ * @returns The start date of the quarter as a Date object.
+ */
+export const startOfQuarterOfYear = (dateTime: string): Date => {
+  const result = dayjs(dateTime).startOf('quarter').toDate();
+  console.log('startOfQuarterOfYear', result);
+  return result;
+};
+
+/**
+ * Returns the end date of the quarter for a given date time.
+ *
+ * @param dateTime The dateTime as a string
+ * @returns The end date of the quarter as a Date object.
+ */
+export const endOfQuarterOfYear = (dateTime: string): Date => {
+  const result = dayjs(dateTime).endOf('quarter').toDate();
+  return result;
+};
+
+/**
+ * Adds a specified number of days to a given date.
+ *
+ * @param dateTime The date as a Date object
+ * @param daysToAdd The number of days to add to the date
+ * @returns The new date with the added days as a Date object.
+ */
+export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
+  const result = dayjs.utc(dateTime).add(daysToAdd, 'days').toDate();
+  return result;
 };

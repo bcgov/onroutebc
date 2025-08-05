@@ -5,8 +5,17 @@ import { ValidationResult, ValidationResults } from 'onroute-policy-engine';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { isCVClient } from './common.helper';
 import { PermitType } from '../enum/permit-type.enum';
-import { differenceBetween } from './date-time.helper';
-import { STOS_MAX_ALLOWED_DURATION_AMEND } from '../constants/permit.constant';
+import {
+  addDaysToDate,
+  convertUtcToPt,
+  differenceBetween,
+  endOfQuarterOfYear,
+  startOfQuarterOfYear,
+} from './date-time.helper';
+import {
+  DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+  STOS_MAX_ALLOWED_DURATION_AMEND,
+} from '../constants/permit.constant';
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
@@ -56,11 +65,70 @@ export const evaluatePolicyValidationResult = (
     violation?.fieldReference === PE_FIELD_REFERENCE_PERMIT_DURATION;
 
   // Function to check if there is a start date violation which can be excluded
-  const isStartDateViolation = (violation: ValidationResult) =>
-    violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE;
+  const isStartDateViolationAllowed = (
+    violation: ValidationResult,
+    permitType: PermitType,
+  ) => {
+    if (violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE) {
+      if (
+        permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+        permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR
+      ) {
+        // Check if the permit start date is within the current quarter's bounds and meets criteria.
+        return (
+          differenceBetween(
+            permitData.startDate,
+            convertUtcToPt(
+              endOfQuarterOfYear(new Date().toISOString()),
+              'YYYY-MM-DD',
+            ),
+          ) >= 0 &&
+          differenceBetween(
+            permitData.startDate,
+            convertUtcToPt(
+              startOfQuarterOfYear(new Date().toISOString()),
+              'YYYY-MM-DD',
+            ),
+          ) <= 0 &&
+          differenceBetween(
+            permitData.startDate,
+            convertUtcToPt(
+              addDaysToDate(
+                new Date().toISOString(),
+                DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+              ),
+              'YYYY-MM-DD',
+            ),
+          ) >= 0
+        );
+      } else if (
+        permitType ===
+          PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE ||
+        permitType ===
+          PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR
+      ) {
+        // Ensure single trip permit's start date does not exceed allowable maximum.
+        return (
+          differenceBetween(
+            permitData.startDate,
+            convertUtcToPt(
+              addDaysToDate(
+                new Date().toISOString(),
+                DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+              ),
+              'YYYY-MM-DD',
+            ),
+          ) >= 0
+        );
+      } else {
+        // True for start date issues not linked to specific permit conditions.
+        return true;
+      }
+    }
+  };
 
   // Function to check if there is an STOS duration violation which can be excluded
-  const isSTOSDurationViolation = (violation: ValidationResult) =>
+  const isSTOSDurationViolationAllowed = (violation: ValidationResult) =>
     isSTOS &&
     isDurationViolation(violation) &&
     isAllowedDuration(STOS_MAX_ALLOWED_DURATION_AMEND);
@@ -70,7 +138,10 @@ export const evaluatePolicyValidationResult = (
     (violation) =>
       !(
         //Add violations that need to be skipped
-        (isSTOSDurationViolation(violation) || isStartDateViolation(violation))
+        (
+          isSTOSDurationViolationAllowed(violation) ||
+          isStartDateViolationAllowed(violation, permitType)
+        )
       ),
   );
 };
