@@ -42,7 +42,6 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
     const {
       target: { value },
     } = event;
-    console.log({ value });
     if (permitIssuers) {
       // permitIssuers is a <userName, userGUID> record.
       // So, Object.values is what we need.
@@ -76,9 +75,27 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
         multiple
         onChange={onSelectUser}
         displayEmpty
-        renderValue={(selected) => {
+        renderValue={(selectedUser) => {
           if (isAllUsersSelected) return "All Users";
-          return selected.join(", ");
+
+          // if we are unable to look up userName in permitIssuers object, fallback to selectedUserGUID
+          if (!permitIssuers || Array.isArray(permitIssuers)) {
+            return (selectedUser as string[]).join(", ");
+          }
+
+          // look up userName in the permitIssuers object from the selected userGUID
+          const selectedUserNames = (selectedUser as string[]).map(
+            (selectedUserGUID) => {
+              for (const userName in permitIssuers) {
+                if (permitIssuers[userName] === selectedUserGUID) {
+                  return userName;
+                }
+              }
+              return selectedUserGUID;
+            },
+          );
+
+          return selectedUserNames.join(", ");
         }}
         input={<OutlinedInput />}
         value={selectedUsers}
