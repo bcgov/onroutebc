@@ -63,61 +63,51 @@ export const evaluatePolicyValidationResult = (
   const isDurationViolation = (violation: ValidationResult) =>
     violation?.fieldReference === PE_FIELD_REFERENCE_PERMIT_DURATION;
 
-  // Function to check if there is a start date violation which can be excluded
   const isStartDateViolationAllowed = (
     violation: ValidationResult,
     permitType: PermitType,
   ) => {
-    if (violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE) {
+    // Check if the violation is not related to the start date, return false immediately
+    if (violation?.fieldReference !== PE_FIELD_REFERENCE_START_DATE) {
+      return false;
+    }
+
+    // Determine if the permit type is Quarterly Non-Resident
+    const isQuarterlyNonResident =
+      permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+      permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR;
+
+    // Determine if the permit type is Single Trip Non-Resident
+    const isSingleTripNonResident =
+      permitType ===
+        PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE ||
+      permitType ===
+        PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR;
+
+    // Calculate the difference between the permit's start date and the allowed start date by staff
+    const startDateDiff = differenceBetween(
+      permitData.startDate,
+      convertUtcToPt(
+        addDaysToDate(
+          new Date().toISOString(),
+          DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+        ),
+        'YYYY-MM-DD',
+      ),
+    );
+
+    // If Quarterly Non-Resident, check the violation message and date difference to determine allowance
+    if (isQuarterlyNonResident) {
       if (
-        permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
-        permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR
+        violation?.message === PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION ||
+        startDateDiff >= 0
       ) {
-        // Check if the permit start date is within the current quarter's bounds and meets criteria.
-        if (
-          violation?.message === PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION
-        ) {
-          return false;
-        } else if (
-          differenceBetween(
-            permitData.startDate,
-            convertUtcToPt(
-              addDaysToDate(
-                new Date().toISOString(),
-                DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
-              ),
-              'YYYY-MM-DD',
-            ),
-          ) >= 0
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      } else if (
-        permitType ===
-          PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE ||
-        permitType ===
-          PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR
-      ) {
-        // Ensure single trip permit's start date does not exceed allowable maximum.
-        return (
-          differenceBetween(
-            permitData.startDate,
-            convertUtcToPt(
-              addDaysToDate(
-                new Date().toISOString(),
-                DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
-              ),
-              'YYYY-MM-DD',
-            ),
-          ) >= 0
-        );
-      } else {
-        // True for start date issues not linked to specific permit conditions.
-        return true;
+        return false;
       }
     }
+
+    // Return true if Single Trip Non-Resident and the start date is within allowed range, otherwise return true
+    return isSingleTripNonResident ? startDateDiff >= 0 : true;
   };
 
   // Function to check if there is an STOS duration violation which can be excluded

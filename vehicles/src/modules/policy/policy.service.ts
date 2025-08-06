@@ -324,39 +324,45 @@ export class PolicyService {
       );
 
       if (
+        // Check if the application has a revision greater than 0 and is of a specific permit type
         application?.revision > 0 &&
         (application?.permitType ===
           PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
           application?.permitType ===
             PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
       ) {
+        // Check if there is a start date violation already present in validation results
         const startDateViolation = validationResults?.violations?.some(
           (violation) =>
             violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE,
         );
         if (!startDateViolation) {
+          // If no start date violation, retrieve the original permit data
           const originalPermit = await queryRunner.manager.findOne(Permit, {
             where: {
               permitId: application?.originalPermitId,
             },
             relations: ['permitData'],
           });
+
+          // Calculate the difference between the new start date and the quarter boundaries of the original permit's start date
+          const startDate = permitData.startDate;
+          const originalStartDate = originalPermit?.permitData?.startDate;
+          const endOfQuarter = convertUtcToPt(
+            endOfQuarterOfYear(originalStartDate),
+            'YYYY-MM-DD',
+          );
+          const startOfQuarter = convertUtcToPt(
+            startOfQuarterOfYear(originalStartDate),
+            'YYYY-MM-DD',
+          );
+
           if (
-            differenceBetween(
-              permitData.startDate,
-              convertUtcToPt(
-                endOfQuarterOfYear(originalPermit?.permitData?.startDate),
-                'YYYY-MM-DD',
-              ),
-            ) < 0 ||
-            differenceBetween(
-              permitData.startDate,
-              convertUtcToPt(
-                startOfQuarterOfYear(originalPermit?.permitData?.startDate),
-                'YYYY-MM-DD',
-              ),
-            ) > 0
+            // If the new start date is outside the quarter boundaries of the original start date
+            differenceBetween(startDate, endOfQuarter) < 0 ||
+            differenceBetween(startDate, startOfQuarter) > 0
           ) {
+            // Add a start date violation to the validation results
             validationResults?.violations?.push({
               type: 'violation',
               code: 'field-validation-error',
@@ -366,6 +372,7 @@ export class PolicyService {
           }
         }
       }
+
       let loaValidationResults: ValidationResult[] = [];
 
       if (!isVoidorRevoked(application.permitStatus)) {
