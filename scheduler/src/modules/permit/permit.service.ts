@@ -89,6 +89,7 @@ export class PermitService {
           permitStatus: ApplicationStatus.ISSUED,
         })
         .andWhere('permit.documentId IS NULL')
+        .andWhere('permit.tpsPermitNumber IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
         .take(count)
         .getMany();
