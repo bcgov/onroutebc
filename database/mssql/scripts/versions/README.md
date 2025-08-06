@@ -329,3 +329,7 @@
 
 ### Version 83:
 - Updated policy config json to support fixed cost for NR conditional permits
+
+### Version 84:
+- Updated policy config json to reflect new structure to support STOW
+  - Note this has a new minimum PE version, so requires updates to policy engine NPM packages wherever used
