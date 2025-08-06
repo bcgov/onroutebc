@@ -125,3 +125,49 @@ export const isWithinCalendarQuarter = (
     differenceBetween(dateToCheck, quarterStartDate) <= 0
   );
 };
+
+/**
+ * Determines if a date falls before the start of the calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is before the start of the quarter of the referenceDate; otherwise, false.
+ */
+export const isBeforeCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterStartDate = convertUtcToPt(
+    startOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return differenceBetween(dateToCheck, quarterStartDate) <= 0;
+};
+
+/**
+ * Determines if a date falls after the end of the calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is after the end of the quarter of the referenceDate; otherwise, false.
+ */
+export const isAfterCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterEndDate = convertUtcToPt(
+    endOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return differenceBetween(dateToCheck, quarterEndDate) >= 0;
+};
