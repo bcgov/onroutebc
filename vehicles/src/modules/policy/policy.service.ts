@@ -48,6 +48,7 @@ import {
   convertUtcToPt,
   differenceBetween,
   endOfQuarterOfYear,
+  isWithinCalendarQuarter,
   startOfQuarterOfYear,
 } from '../../common/helper/date-time.helper';
 
@@ -323,89 +324,20 @@ export class PolicyService {
         specialAuth,
       );
 
-      if (
-        // Check if the application has a revision greater than 0 and is of a specific permit type
-        application?.revision > 0 &&
-        (application?.permitType ===
-          PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
-          application?.permitType ===
-            PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
-      ) {
-        // Check if there is a start date violation already present in validation results
-        const startDateViolation = validationResults?.violations?.some(
-          (violation) =>
-            violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE,
-        );
-        if (!startDateViolation) {
-          // If no start date violation, retrieve the original permit data
-          const originalPermit = await queryRunner.manager.findOne(Permit, {
-            where: {
-              permitId: application?.originalPermitId,
-            },
-            relations: ['permitData'],
-          });
+      await this.validateNonResidentQuartelyPermitStartDate(
+        application,
+        validationResults,
+        queryRunner,
+        permitData,
+      );
 
-          // Calculate the difference between the new start date and the quarter boundaries of the original permit's start date
-          const startDate = permitData.startDate;
-          const originalStartDate = originalPermit?.permitData?.startDate;
-          const endOfQuarter = convertUtcToPt(
-            endOfQuarterOfYear(originalStartDate),
-            'YYYY-MM-DD',
-          );
-          const startOfQuarter = convertUtcToPt(
-            startOfQuarterOfYear(originalStartDate),
-            'YYYY-MM-DD',
-          );
-
-          if (
-            // If the new start date is outside the quarter boundaries of the original start date
-            differenceBetween(startDate, endOfQuarter) < 0 ||
-            differenceBetween(startDate, startOfQuarter) > 0
-          ) {
-            // Add a start date violation to the validation results
-            validationResults?.violations?.push({
-              type: 'violation',
-              code: 'field-validation-error',
-              fieldReference: PE_FIELD_REFERENCE_START_DATE,
-              message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
-            } as ValidationResult);
-          }
-        }
-      }
-
-      let loaValidationResults: ValidationResult[] = [];
-
-      if (!isVoidorRevoked(application.permitStatus)) {
-        // Extract LOA numbers and validate LOAs
-        const loaNumbers = permitData?.loas?.map((loa) => loa.loaNumber);
-        const loas = await this.loaService.findLoaByLoaNumber(
-          companyId,
-          loaNumbers,
-          queryRunner,
-        );
-
-        loaValidationResults = validateLoas(application, loas);
-      }
-      // Handle LOA validation results
-      if (loaValidationResults?.length) {
-        validationResults?.violations?.push(...loaValidationResults);
-      } else if (permitData?.loas?.length) {
-        //TODO Remove the else if condition once LOA is implemented in PE
-        const index = validationResults?.violations?.findIndex(
-          (violation) =>
-            violation.type === 'violation' &&
-            violation.fieldReference ===
-              'permitData.vehicleDetails.vehicleSubType',
-        );
-        if (index >= 0) {
-          validationResults?.violations?.splice(index, 1);
-          validationResults?.information?.push({
-            type: 'information',
-            code: 'loa',
-            message: `Policy validation allowing loa vehicle permitting for client ${companyId}`,
-          } as ValidationResult);
-        }
-      }
+      await this.validateLoas(
+        application,
+        permitData,
+        companyId,
+        queryRunner,
+        validationResults,
+      );
 
       // Ensure cost is defined, initialize if necessary
       if (!validationResults?.cost?.length) {
@@ -483,5 +415,93 @@ export class PolicyService {
     }
 
     return validationResults; // Return the results of validation and cost calculation
+  }
+
+  private async validateLoas(
+    application: Permit,
+    permitData: PermitData,
+    companyId: number,
+    queryRunner: QueryRunner,
+    validationResults: ValidationResults,
+  ) {
+    let loaValidationResults: ValidationResult[] = [];
+
+    if (!isVoidorRevoked(application.permitStatus)) {
+      // Extract LOA numbers and validate LOAs
+      const loaNumbers = permitData?.loas?.map((loa) => loa.loaNumber);
+      const loas = await this.loaService.findLoaByLoaNumber(
+        companyId,
+        loaNumbers,
+        queryRunner,
+      );
+
+      loaValidationResults = validateLoas(application, loas);
+    }
+    // Handle LOA validation results
+    if (loaValidationResults?.length) {
+      validationResults?.violations?.push(...loaValidationResults);
+    } else if (permitData?.loas?.length) {
+      //TODO Remove the else if condition once LOA is implemented in PE
+      const index = validationResults?.violations?.findIndex(
+        (violation) =>
+          violation.type === 'violation' &&
+          violation.fieldReference ===
+            'permitData.vehicleDetails.vehicleSubType',
+      );
+      if (index >= 0) {
+        validationResults?.violations?.splice(index, 1);
+        validationResults?.information?.push({
+          type: 'information',
+          code: 'loa',
+          message: `Policy validation allowing loa vehicle permitting for client ${companyId}`,
+        } as ValidationResult);
+      }
+    }
+  }
+
+  private async validateNonResidentQuartelyPermitStartDate(
+    application: Permit,
+    validationResults: ValidationResults,
+    queryRunner: QueryRunner,
+    permitData: PermitData,
+  ) {
+    if (
+      application?.revision > 0 &&
+      (application?.permitType ===
+        PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+        application?.permitType ===
+          PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
+    ) {
+      // Check if there is a start date violation already present in validation results
+      const startDateViolation = validationResults?.violations?.some(
+        (violation) =>
+          violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE,
+      );
+      if (!startDateViolation) {
+        // If no start date violation, retrieve the original permit data
+        const originalPermit = await queryRunner.manager.findOne(Permit, {
+          where: {
+            permitId: application?.originalPermitId,
+          },
+          relations: ['permitData'],
+        });
+
+        if (
+          // If the start date is outside the quarter boundaries of the original start date
+          !isWithinCalendarQuarter(
+            permitData.startDate,
+            originalPermit?.permitData?.startDate,
+          )
+        ) {
+          // Add a start date violation to the validation results
+          validationResults?.violations?.push({
+            type: 'violation',
+            code: 'field-validation-error',
+            fieldReference: PE_FIELD_REFERENCE_START_DATE,
+            message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
+          } as ValidationResult);
+        }
+      }
+    }
   }
 }

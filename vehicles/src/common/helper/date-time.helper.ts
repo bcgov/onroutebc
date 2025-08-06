@@ -4,6 +4,7 @@ import * as timezone from 'dayjs/plugin/timezone';
 import * as duration from 'dayjs/plugin/duration';
 import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DurationDifference } from '../interface/duration-difference.interface';
+import { Nullable } from '../types/common';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -93,4 +94,34 @@ export const endOfQuarterOfYear = (dateTime: string): Date => {
 export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
   const result = dayjs.utc(dateTime).add(daysToAdd, 'days').toDate();
   return result;
+};
+
+/**
+ * Determines if a date falls within the same calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is within the quarter of the referenceDate; otherwise, false.
+ */
+export const isWithinCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterEndDate = convertUtcToPt(
+    endOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+  const quarterStartDate = convertUtcToPt(
+    startOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return (
+    differenceBetween(dateToCheck, quarterEndDate) >= 0 &&
+    differenceBetween(dateToCheck, quarterStartDate) <= 0
+  );
 };
