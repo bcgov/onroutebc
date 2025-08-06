@@ -44,7 +44,7 @@ import {
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../../common/constants/policy-engine.constant';
 import { PermitType } from '../../common/enum/permit-type.enum';
-import { isWithinCalendarQuarter } from '../../common/helper/date-time.helper';
+import { isBeforeCalendarQuarter } from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class PolicyService {
@@ -475,8 +475,8 @@ export class PolicyService {
       });
 
       if (
-        // If the start date is outside the quarter boundaries of the original start date
-        !isWithinCalendarQuarter(
+        // If the start date is before the quarter start date of the original start date
+        !isBeforeCalendarQuarter(
           permitData.startDate,
           originalPermit?.permitData?.startDate,
         )
