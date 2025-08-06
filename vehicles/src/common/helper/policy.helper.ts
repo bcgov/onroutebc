@@ -9,8 +9,6 @@ import {
   addDaysToDate,
   convertUtcToPt,
   differenceBetween,
-  endOfQuarterOfYear,
-  startOfQuarterOfYear,
 } from './date-time.helper';
 import {
   DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
@@ -19,6 +17,7 @@ import {
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
+  PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../constants/policy-engine.constant';
 export const convertToPolicyApplication = (
   application: Permit,
@@ -75,21 +74,11 @@ export const evaluatePolicyValidationResult = (
         permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR
       ) {
         // Check if the permit start date is within the current quarter's bounds and meets criteria.
-        return (
-          differenceBetween(
-            permitData.startDate,
-            convertUtcToPt(
-              endOfQuarterOfYear(new Date().toISOString()),
-              'YYYY-MM-DD',
-            ),
-          ) >= 0 &&
-          differenceBetween(
-            permitData.startDate,
-            convertUtcToPt(
-              startOfQuarterOfYear(new Date().toISOString()),
-              'YYYY-MM-DD',
-            ),
-          ) <= 0 &&
+        if (
+          violation?.message === PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION
+        ) {
+          return false;
+        } else if (
           differenceBetween(
             permitData.startDate,
             convertUtcToPt(
@@ -100,7 +89,11 @@ export const evaluatePolicyValidationResult = (
               'YYYY-MM-DD',
             ),
           ) >= 0
-        );
+        ) {
+          return false;
+        } else {
+          return true;
+        }
       } else if (
         permitType ===
           PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE ||

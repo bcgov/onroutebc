@@ -69,7 +69,6 @@ export const getDuration = ({
  */
 export const startOfQuarterOfYear = (dateTime: string): Date => {
   const result = dayjs(dateTime).startOf('quarter').toDate();
-  console.log('startOfQuarterOfYear', result);
   return result;
 };
 

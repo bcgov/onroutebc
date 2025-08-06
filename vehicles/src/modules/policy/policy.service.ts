@@ -39,6 +39,17 @@ import { getQueryRunner } from '../../common/helper/database.helper';
 import { PermitData } from '../../common/interface/permit.template.interface';
 import { LoaService } from '../special-auth/loa.service';
 import { validateLoas } from '../../common/helper/validate-loa.helper';
+import {
+  PE_FIELD_REFERENCE_START_DATE,
+  PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
+} from '../../common/constants/policy-engine.constant';
+import { PermitType } from '../../common/enum/permit-type.enum';
+import {
+  convertUtcToPt,
+  differenceBetween,
+  endOfQuarterOfYear,
+  startOfQuarterOfYear,
+} from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class PolicyService {
@@ -312,6 +323,49 @@ export class PolicyService {
         specialAuth,
       );
 
+      if (
+        application?.revision > 0 &&
+        (application?.permitType ===
+          PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+          application?.permitType ===
+            PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
+      ) {
+        const startDateViolation = validationResults?.violations?.some(
+          (violation) =>
+            violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE,
+        );
+        if (!startDateViolation) {
+          const originalPermit = await queryRunner.manager.findOne(Permit, {
+            where: {
+              permitId: application?.originalPermitId,
+            },
+            relations: ['permitData'],
+          });
+          if (
+            differenceBetween(
+              permitData.startDate,
+              convertUtcToPt(
+                endOfQuarterOfYear(originalPermit?.permitData?.startDate),
+                'YYYY-MM-DD',
+              ),
+            ) < 0 ||
+            differenceBetween(
+              permitData.startDate,
+              convertUtcToPt(
+                startOfQuarterOfYear(originalPermit?.permitData?.startDate),
+                'YYYY-MM-DD',
+              ),
+            ) > 0
+          ) {
+            validationResults?.violations?.push({
+              type: 'violation',
+              code: 'field-validation-error',
+              fieldReference: PE_FIELD_REFERENCE_START_DATE,
+              message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
+            } as ValidationResult);
+          }
+        }
+      }
       let loaValidationResults: ValidationResult[] = [];
 
       if (!isVoidorRevoked(application.permitStatus)) {
