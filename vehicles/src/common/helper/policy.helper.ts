@@ -77,13 +77,6 @@ export const evaluatePolicyValidationResult = (
       permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
       permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR;
 
-    // Determine if the permit type is Single Trip Non-Resident
-    const isSingleTripNonResident =
-      permitType ===
-        PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE ||
-      permitType ===
-        PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR;
-
     // Calculate the difference between the permit's start date and the allowed start date by staff
     const startDateDiff = differenceBetween(
       permitData.startDate,
@@ -106,8 +99,8 @@ export const evaluatePolicyValidationResult = (
       }
     }
 
-    // Return true if Single Trip Non-Resident and the start date is within allowed range, otherwise return true
-    return isSingleTripNonResident ? startDateDiff >= 0 : true;
+    // Return true if start date is within allowed range, otherwise return false
+    return startDateDiff >= 0;
   };
 
   // Function to check if there is an STOS duration violation which can be excluded
