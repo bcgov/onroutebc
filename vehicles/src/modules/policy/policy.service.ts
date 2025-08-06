@@ -44,13 +44,7 @@ import {
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../../common/constants/policy-engine.constant';
 import { PermitType } from '../../common/enum/permit-type.enum';
-import {
-  convertUtcToPt,
-  differenceBetween,
-  endOfQuarterOfYear,
-  isWithinCalendarQuarter,
-  startOfQuarterOfYear,
-} from '../../common/helper/date-time.helper';
+import { isWithinCalendarQuarter } from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class PolicyService {
