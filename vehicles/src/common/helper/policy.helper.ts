@@ -5,11 +5,19 @@ import { ValidationResult, ValidationResults } from 'onroute-policy-engine';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { isCVClient } from './common.helper';
 import { PermitType } from '../enum/permit-type.enum';
-import { differenceBetween } from './date-time.helper';
-import { STOS_MAX_ALLOWED_DURATION_AMEND } from '../constants/permit.constant';
+import {
+  addDaysToDate,
+  convertUtcToPt,
+  differenceBetween,
+} from './date-time.helper';
+import {
+  DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+  STOS_MAX_ALLOWED_DURATION_AMEND,
+} from '../constants/permit.constant';
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
+  PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../constants/policy-engine.constant';
 export const convertToPolicyApplication = (
   application: Permit,
@@ -55,12 +63,48 @@ export const evaluatePolicyValidationResult = (
   const isDurationViolation = (violation: ValidationResult) =>
     violation?.fieldReference === PE_FIELD_REFERENCE_PERMIT_DURATION;
 
-  // Function to check if there is a start date violation which can be excluded
-  const isStartDateViolation = (violation: ValidationResult) =>
-    violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE;
+  const isStartDateViolationAllowed = (
+    violation: ValidationResult,
+    permitType: PermitType,
+  ) => {
+    // Check if the violation is not related to the start date, return false immediately
+    if (violation?.fieldReference !== PE_FIELD_REFERENCE_START_DATE) {
+      return false;
+    }
+
+    // Determine if the permit type is Quarterly Non-Resident
+    const isQuarterlyNonResident =
+      permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+      permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR;
+
+    // Calculate the difference between the permit's start date and the allowed start date by staff
+    const startDateDiff = differenceBetween(
+      permitData.startDate,
+      convertUtcToPt(
+        addDaysToDate(
+          new Date().toISOString(),
+          DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+        ),
+        'YYYY-MM-DD',
+      ),
+    );
+
+    // If Quarterly Non-Resident, check the violation message and date difference to determine allowance
+    if (isQuarterlyNonResident) {
+      if (
+        violation?.message === PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION ||
+        startDateDiff >= 0
+      ) {
+        return false;
+      }
+    }
+
+    // Return true if start date is within allowed range, otherwise return false
+    return startDateDiff >= 0;
+  };
 
   // Function to check if there is an STOS duration violation which can be excluded
-  const isSTOSDurationViolation = (violation: ValidationResult) =>
+  const isSTOSDurationViolationAllowed = (violation: ValidationResult) =>
     isSTOS &&
     isDurationViolation(violation) &&
     isAllowedDuration(STOS_MAX_ALLOWED_DURATION_AMEND);
@@ -70,7 +114,10 @@ export const evaluatePolicyValidationResult = (
     (violation) =>
       !(
         //Add violations that need to be skipped
-        (isSTOSDurationViolation(violation) || isStartDateViolation(violation))
+        (
+          isSTOSDurationViolationAllowed(violation) ||
+          isStartDateViolationAllowed(violation, permitType)
+        )
       ),
   );
 };
