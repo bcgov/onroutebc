@@ -466,35 +466,37 @@ export class PolicyService {
         application?.permitType ===
           PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
     ) {
-      // Check if there is a start date violation already present in validation results
-      const startDateViolation = validationResults?.violations?.some(
-        (violation) =>
-          violation?.fieldReference === PE_FIELD_REFERENCE_START_DATE,
-      );
-      if (!startDateViolation) {
-        // If no start date violation, retrieve the original permit data
-        const originalPermit = await queryRunner.manager.findOne(Permit, {
-          where: {
-            permitId: application?.originalPermitId,
-          },
-          relations: ['permitData'],
-        });
+      // Retrieve the original permit data
+      const originalPermit = await queryRunner.manager.findOne(Permit, {
+        where: {
+          permitId: application?.originalPermitId,
+        },
+        relations: ['permitData'],
+      });
 
-        if (
-          // If the start date is outside the quarter boundaries of the original start date
-          !isWithinCalendarQuarter(
-            permitData.startDate,
-            originalPermit?.permitData?.startDate,
-          )
-        ) {
-          // Add a start date violation to the validation results
-          validationResults?.violations?.push({
-            type: 'violation',
-            code: 'field-validation-error',
-            fieldReference: PE_FIELD_REFERENCE_START_DATE,
-            message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
-          } as ValidationResult);
+      if (
+        // If the start date is outside the quarter boundaries of the original start date
+        !isWithinCalendarQuarter(
+          permitData.startDate,
+          originalPermit?.permitData?.startDate,
+        )
+      ) {
+        const index = validationResults?.violations?.findIndex(
+          (violation) =>
+            violation.type === 'violation' &&
+            violation.fieldReference === PE_FIELD_REFERENCE_START_DATE,
+        );
+
+        if (index >= 0) {
+          validationResults?.violations?.splice(index, 1);
         }
+        // Add a start date violation to the validation results
+        validationResults?.violations?.push({
+          type: 'violation',
+          code: 'field-validation-error',
+          fieldReference: PE_FIELD_REFERENCE_START_DATE,
+          message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
+        } as ValidationResult);
       }
     }
   }
