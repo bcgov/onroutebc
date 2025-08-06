@@ -93,7 +93,7 @@ export const evaluatePolicyValidationResult = (
     if (isQuarterlyNonResident) {
       if (
         violation?.message === PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION ||
-        startDateDiff >= 0
+        startDateDiff < 0
       ) {
         return false;
       }
