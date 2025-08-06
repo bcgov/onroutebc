@@ -79,21 +79,19 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
           if (isAllUsersSelected) return "All Users";
 
           // if we are unable to look up userName in permitIssuers object, fallback to selectedUserGUID
-          if (!permitIssuers || Array.isArray(permitIssuers)) {
-            return (selectedUser as string[]).join(", ");
+          if (!permitIssuers) {
+            return selectedUser.join(", ");
           }
 
           // look up userName in the permitIssuers object from the selected userGUID
-          const selectedUserNames = (selectedUser as string[]).map(
-            (selectedUserGUID) => {
-              for (const userName in permitIssuers) {
-                if (permitIssuers[userName] === selectedUserGUID) {
-                  return userName;
-                }
+          const selectedUserNames = selectedUser.map((selectedUserGUID) => {
+            for (const userName in permitIssuers) {
+              if (Object(permitIssuers)[userName] === selectedUserGUID) {
+                return userName;
               }
-              return selectedUserGUID;
-            },
-          );
+            }
+            return selectedUserGUID;
+          });
 
           return selectedUserNames.join(", ");
         }}
