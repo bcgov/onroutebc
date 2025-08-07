@@ -79,7 +79,7 @@ export class PendingUsersService {
         !company?.companyUsers?.length &&
         createPendingUserDto?.userRole === ClientUserRole.PERMIT_APPLICANT
       ) {
-        throw throwUnprocessableEntityException(
+        throwUnprocessableEntityException(
           'First user must be an Administrator.',
           null,
           'FIRST_USER_ADMIN',
@@ -97,7 +97,7 @@ export class PendingUsersService {
 
       // If the pending user exists, throw an exception to stop the process
       if (existingPendingUser?.length) {
-        throw throwUnprocessableEntityException(
+        throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already added as a pending user to a company and is awaiting processing.',
           null,
           'USER_ALREADY_EXISTS',
@@ -116,7 +116,7 @@ export class PendingUsersService {
 
       // If the user exists, throw an exception to stop the process
       if (existingUser?.length) {
-        throw throwUnprocessableEntityException(
+        throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already associated with a company.',
           null,
           'USER_ALREADY_EXISTS',

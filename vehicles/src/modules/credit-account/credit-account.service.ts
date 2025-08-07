@@ -232,6 +232,7 @@ export class CreditAccountService {
         this.logger.error(
           `Could not save ${CreditAccountActivityType.ACCOUNT_OPENED} activity to the database for companyId: ${companyId}.`,
         );
+        this.logger.error(error);
       }
     }
 

@@ -226,7 +226,7 @@ export class UsersService {
     userGUID: string,
     updateUserDto: UpdateUserDto,
     companyId: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUsersEntity(userGUID, [companyId]);
@@ -607,10 +607,10 @@ export class UsersService {
    */
   @LogAsyncMethodExecution()
   async getClaimsForUser(userGUID: string, companyId = 0): Promise<Claim[]> {
-    const queryResult = (await this.userRepository.query(
+    const queryResult: [{ ROLE_TYPE: Claim }] = await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
       [userGUID, companyId],
-    )) as [{ ROLE_TYPE: Claim }];
+    );
 
     const claims = queryResult.map((r) => r.ROLE_TYPE);
 

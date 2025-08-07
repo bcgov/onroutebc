@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
@@ -192,7 +191,7 @@ describe('UsersService', () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(BadRequestException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -341,6 +340,6 @@ function findUsersEntityMock(
 
   jest
     .spyOn(repo, 'createQueryBuilder')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     .mockImplementation(() => createQueryBuilderMock(filteredList));
 }
