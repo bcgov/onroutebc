@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from 'src/modules/common/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Base } from '../../common/entities/base.entity';
 
 @Entity({ name: 'ORBC_OUTAGE_NOTIFICATION' })
 export class OutageNotification extends Base {
