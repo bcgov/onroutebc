@@ -86,7 +86,6 @@ export class S3Service {
       Key: this._s3Key + '/' + filePath,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
     const url: string = await getSignedUrl(
       this.s3client,
       new GetObjectCommand(params),

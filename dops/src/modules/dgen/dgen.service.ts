@@ -254,18 +254,20 @@ export class DgenService {
       await page.setContent(htmlBody);
       await page.emulateMediaType('print');
 
-      generatedDocument.buffer = await page.pdf({
-        timeout: 0, // Set to 0 for indefinite wait
-        format: 'letter',
-        displayHeaderFooter: true,
-        printBackground: true,
-        landscape: true,
-        footerTemplate: `
+      generatedDocument.buffer = Buffer.from(
+        await page.pdf({
+          timeout: 0, // Set to 0 for indefinite wait
+          format: 'letter',
+          displayHeaderFooter: true,
+          printBackground: true,
+          landscape: true,
+          footerTemplate: `
         <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
           <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
         </div>
        `,
-      });
+        }),
+      );
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (error) {
       this.logger.error(error);
