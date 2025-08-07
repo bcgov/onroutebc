@@ -54,7 +54,8 @@ export class CreditAccount {
   @AutoMap()
   @ApiProperty({
     example: '30.00',
-    description: 'External adjustment dollar amount, currently will only be used for TPS migrations to store the unposted credit value'
+    description:
+      'External adjustment dollar amount, currently will only be used for TPS migrations to store the unposted credit value',
   })
   @Column({
     type: 'decimal',
@@ -63,5 +64,5 @@ export class CreditAccount {
     name: 'EXTERNAL_ADJUSTMENT_AMT',
     nullable: true,
   })
-  totalTransactionAmount?: number;  
+  totalTransactionAmount?: number;
 }
