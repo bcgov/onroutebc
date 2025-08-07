@@ -2,6 +2,7 @@ import { DataSource, QueryRunner, SelectQueryBuilder } from 'typeorm';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { Base } from '../../modules/common/entities/base.entity';
 import { Nullable } from '../types/common';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export const callDatabaseSequence = async (
   databaseSequenceName: string,
@@ -31,8 +32,11 @@ export const callDatabaseSequence = async (
 export const sortQuery = <T>(
   query: SelectQueryBuilder<T>,
   orderByMapping: Record<string, string>,
-  orderBy?: string | undefined,
+  orderBy: string,
 ): void => {
+  if (!orderBy) {
+    throw new InternalServerErrorException('orderBy is required');
+  }
   // Split the orderBy string into individual order by values
   const orderByList = orderBy.split(',');
 

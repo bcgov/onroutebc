@@ -7,7 +7,6 @@ const correlationIdFormat = winston.format((info) => {
   const cls = ClsServiceManager.getClsService();
   const correlationId = cls.getId();
   if (correlationId) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     info.message = `[${correlationId}] ${info.message as string}`;
   }
   return info;
