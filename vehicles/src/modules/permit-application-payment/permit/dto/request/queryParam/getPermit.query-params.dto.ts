@@ -71,5 +71,5 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   @Validate(OrderByConstraint, [PermitOrderBy])
   @IsString()
   @Length(1, 150)
-  readonly orderBy?: string;
+  declare readonly orderBy?: string;
 }
