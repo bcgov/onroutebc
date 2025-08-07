@@ -54,12 +54,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       orbcUserRole: UserRole | ClientUserRole | IDIRUserRole;
 
     let companyId: number;
-    if (req.params.companyId) {
+    if (req?.params?.companyId) {
       companyId = +req.params.companyId;
-    } else if (req.query.companyId) {
+    } else if (req?.query?.companyId) {
       companyId = +req.query.companyId;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    } else if (req.body.companyId) {
+    } else if (req?.body?.companyId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       companyId = req.body.companyId as number;
     }
