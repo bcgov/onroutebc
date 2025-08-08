@@ -88,8 +88,8 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.32.0",    
-    "eslint-config-prettier": "^10.1.8",    
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.5.4",
@@ -151,7 +151,8 @@
   "lint-staged": {
     "*.{js,ts}": "./node_modules/.bin/eslint --cache --fix"
   },
-   "overrides": {
+  "overrides": {
+    "tmp@<0.1.0": "^0.2.4",
     "@automapper/classes": {
       "reflect-metadata": "^0.2.2"
     },

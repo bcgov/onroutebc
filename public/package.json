@@ -158,6 +158,7 @@
     "*.{js,ts}": "./node_modules/.bin/eslint --cache --fix"
   },
   "overrides": {
+    "tmp@<0.1.0": "^0.2.4",
     "@automapper/classes": {
       "reflect-metadata": "^0.2.2"
     },
