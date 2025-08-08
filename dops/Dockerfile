@@ -36,7 +36,6 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-# # It's a good idea to use dumb-init to help prevent zombie chrome processes.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -48,6 +47,10 @@ RUN apk add --no-cache \
       dumb-init
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# # It's a good idea to use dumb-init to help prevent zombie chrome processes.
+# ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
+# RUN chmod +x /usr/local/bin/dumb-init
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
@@ -62,7 +65,7 @@ USER pptruser
 EXPOSE 5001
 
 # It's a good idea to use dumb-init to help prevent zombie chrome processes.
-# ENTRYPOINT ["dumb-init", "--"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
