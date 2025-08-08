@@ -17,7 +17,7 @@ export class JwtOneOfAuthGuard implements CanActivate {
 
     try {
       return jwtAuthGuard.canActivate(context); // Attempt to activate the jwtAuthGuard
-    } catch (error) {
+    } catch {
       // If the jwtAuthGuard fails, attempt to activate the jwtServiceAccountAuthGuard
       return jwtServiceAccountAuthGuard.canActivate(context);
     }

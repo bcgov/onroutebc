@@ -5,21 +5,21 @@ export const isCronRunning = (
   schedulerRegistry: SchedulerRegistry,
 ): boolean => {
   const job = schedulerRegistry.getCronJob(cronJobName);
-  return job.running;
+  return job.isActive;
 };
 
-export const runCronJob = (
+export const runCronJob = async (
   cronJobName: string,
   schedulerRegistry: SchedulerRegistry,
 ) => {
   const job = schedulerRegistry.getCronJob(cronJobName);
-  job.fireOnTick();
+  await job.fireOnTick();
 };
 
-export const stopCronJob = (
+export const stopCronJob = async (
   cronJobName: string,
   schedulerRegistry: SchedulerRegistry,
 ) => {
   const job = schedulerRegistry.getCronJob(cronJobName);
-  job.stop();
+  await job.stop();
 };

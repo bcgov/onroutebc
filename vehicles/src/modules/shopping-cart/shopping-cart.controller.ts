@@ -186,7 +186,6 @@ export class ShoppingCartController {
   @ApiOkResponse({
     description: 'The result of the changes to cart.',
     type: ResultDto,
-    status: 200,
   })
   @Permissions({
     allowedBCeIDRoles: [
