@@ -28,6 +28,9 @@ const getBannerText = (searchFields: SearchFields): string => {
   if (searchByFilter === SEARCH_BY_FILTERS.VIN) {
     return `Search Results: VIN ${searchString}`;
   }
+  if (searchByFilter === SEARCH_BY_FILTERS.COMPANY_NAME) {
+    return `Search Results: ${searchString}`;
+  }
   return "";
 };
 
