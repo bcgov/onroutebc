@@ -46,6 +46,7 @@ const shouldShowRowActions = (userRole: Optional<string>): boolean => {
     USER_ROLE.SYSTEM_ADMINISTRATOR,
     USER_ROLE.FINANCE,
     USER_ROLE.HQ_ADMINISTRATOR,
+    USER_ROLE.CTPO,
   ] as string[];
   return allowableRoles.includes(userRole);
 };
