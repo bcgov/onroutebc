@@ -62,7 +62,7 @@ USER pptruser
 EXPOSE 5001
 
 # It's a good idea to use dumb-init to help prevent zombie chrome processes.
-ENTRYPOINT ["dumb-init", "--"]
+# ENTRYPOINT ["dumb-init", "--"]
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
