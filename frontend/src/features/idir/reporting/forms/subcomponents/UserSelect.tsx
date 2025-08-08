@@ -75,9 +75,25 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
         multiple
         onChange={onSelectUser}
         displayEmpty
-        renderValue={(selected) => {
+        renderValue={(selectedUser) => {
           if (isAllUsersSelected) return "All Users";
-          return selected.join(", ");
+
+          // if we are unable to look up userName in permitIssuers object, fallback to selectedUserGUID
+          if (!permitIssuers) {
+            return selectedUser.join(", ");
+          }
+
+          // look up userName in the permitIssuers object from the selected userGUID
+          const selectedUserNames = selectedUser.map((selectedUserGUID) => {
+            for (const userName in permitIssuers) {
+              if (Object(permitIssuers)[userName] === selectedUserGUID) {
+                return userName;
+              }
+            }
+            return selectedUserGUID;
+          });
+
+          return selectedUserNames.join(", ");
         }}
         input={<OutlinedInput />}
         value={selectedUsers}
