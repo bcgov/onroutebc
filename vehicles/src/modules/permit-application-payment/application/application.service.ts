@@ -84,7 +84,6 @@ import {
   differenceBetween,
 } from '../../../common/helper/date-time.helper';
 import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
-import * as dayjs from 'dayjs';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { PermitLoa } from './entities/permit-loa.entity';
@@ -93,6 +92,8 @@ import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
+import { isCVClient } from '../../../common/helper/common.helper';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ApplicationService {
@@ -619,6 +620,11 @@ export class ApplicationService {
         applicationId,
       });
 
+      if (isCVClient(currentUser.identity_provider)) {
+        throwUnprocessableEntityException(
+          'CV Client cannot edit an application in-queue.',
+        );
+      }
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
@@ -1095,9 +1101,7 @@ export class ApplicationService {
           const permitData = JSON.parse(
             application?.permitData?.permitData,
           ) as PermitData;
-          const currentDate = dayjs(new Date().toISOString())?.format(
-            'YYYY-MM-DD',
-          );
+          const currentDate = convertUtcToPt(new Date(), 'YYYY-MM-DD');
 
           if (
             application.permitStatus === ApplicationStatus.IN_QUEUE &&
