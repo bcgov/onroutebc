@@ -344,10 +344,11 @@ export class PaymentService {
         validationResults?.violations?.push(paymentValidationResult);
       }
 
-      const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
+      const isPolicyValidationSuccessful = await evaluatePolicyValidationResult(
         existingApplication,
         currentUser,
         validationResults,
+        queryRunner,
       );
 
       if (!isPolicyValidationSuccessful) {
@@ -602,11 +603,13 @@ export class PaymentService {
           ...validationResults,
         });
 
-        const isPolicyValidationSuccessful = evaluatePolicyValidationResult(
-          application,
-          currentUser,
-          validationResults,
-        );
+        const isPolicyValidationSuccessful =
+          await evaluatePolicyValidationResult(
+            application,
+            currentUser,
+            validationResults,
+            queryRunner,
+          );
 
         if (!isPolicyValidationSuccessful) {
           throw throwUnprocessableEntityException(
