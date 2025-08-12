@@ -154,7 +154,7 @@ export const ReviewPermitDetails = ({
 
         <Box className="permit-conditions">
           <Typography variant="h4">
-            Selected commodities and their respective CVSE forms.
+            The following CVSE forms will be included in your permit.
           </Typography>
 
           <ReviewConditionsTable conditions={conditions} />

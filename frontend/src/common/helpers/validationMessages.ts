@@ -69,7 +69,8 @@ export const invalidPhoneLength = (min: number, max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
-export const invalidExtension = () => validationMessages.extension.defaultMessage;
+export const invalidExtension = () =>
+  validationMessages.extension.defaultMessage;
 
 export const invalidExtensionLength = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.extension.length;
@@ -125,6 +126,12 @@ export const licensedGVWExceeded = (max: number, localizeNumber?: boolean) => {
   );
 };
 
+export const invalidClientNameLength = (min: number, max: number) => {
+  const { messageTemplate, placeholders } =
+    validationMessages.clientName.length;
+  return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
 export const invalidDBALength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.dba.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
@@ -154,9 +161,9 @@ export const requiredHighway = () => validationMessages.highway.missing;
 export const requiredPowerUnit = () => validationMessages.powerUnit.required;
 
 export const provinceVehicleDoesNotRequirePermit = (province: string) => {
-  const { messageTemplate, placeholders }
-    = validationMessages.province.provinceVehicleDoesNotRequirePermit;
-  
+  const { messageTemplate, placeholders } =
+    validationMessages.province.provinceVehicleDoesNotRequirePermit;
+
   return replacePlaceholders(messageTemplate, placeholders, province);
 };
 

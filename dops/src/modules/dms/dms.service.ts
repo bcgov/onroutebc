@@ -33,7 +33,6 @@ export class DmsService {
     file: Express.Multer.File | IFile,
     companyId?: number,
   ): Promise<ReadFileDto> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const s3ObjectId = uuidv4();
     const s3Object = await this.s3Service.uploadFile(file, s3ObjectId);
 

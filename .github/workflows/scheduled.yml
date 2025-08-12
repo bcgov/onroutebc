@@ -89,7 +89,7 @@ jobs:
           # Clean up Helm Releases
 
           # Login to OpenShift (NOTE: project command is a safeguard)
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
 
           # Echos

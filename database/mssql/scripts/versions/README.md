@@ -294,6 +294,45 @@
     - FILE_NAME Varchar(50) - non-nullable
 - Downtime is required for prod deployment
 
+### Version 75:
+- Updates to policy validation rules for NRQCV and NRSCV, MFP cost updates
 
 ### Version 76:
 - Configure STOS v4 template (bugfixes)
+
+### Version 77:
+- Update TPS credit account staging table schemas
+  - Create `ORBC_TPS_MIGRATED_CREDIT_ACCOUNT`, `ORBC_TPS_MIGRATED_CREDIT_STATUS`, `ORBC_TPS_MIGRATED_CREDIT_UNPOSTED`, `ORBC_TPS_MIGRATED_CREDIT_USER` tables
+  - Procedure to copy migrated credit accounts
+
+### Version 78:
+- DDL changes to add CASE_OPENED_DATE_TIME column to case.ORBC_CASE table
+
+### Version 79:
+- Configure ORBC_LOGIN tables
+
+### Version 80:
+- Alter size of  ORBC_DOCUMENT.FILE_NAME to allow longer file names
+
+### Version 81:
+- DDL changes to permit.ORBC_PERMIT to have clean computed values of PERMIT_NUMBER and TPS_PERMIT_NUMBER
+  - Following coulumns are added to permit.ORBC_PERMIT
+    - COMPUTED_PERMIT_NUMBER NVARCHAR(19) - COMPUTED
+    - COMPUTED_TPS_PERMIT_NUMBER NVARCHAR(11) - COMPUTED
+  - Following indexes are added to permit.ORBC_PERMIT
+    - IX_ORBC_PERMIT_COMPUTED_PERMIT_NUMBER ON COMPUTED_PERMIT_NUMBER
+    - IX_ORBC_PERMIT_COMPUTED_TPS_PERMIT_NUMBER ON COMPUTED_TPS_PERMIT_NUMBER
+- Downtime is required for prod deployment
+
+### Version 82:
+- Configure STOW permit templates
+
+### Version 83:
+- Updated policy config json to support fixed cost for NR conditional permits
+
+### Version 84:
+- Updated policy config json to reflect new structure to support STOW
+  - Note this has a new minimum PE version, so requires updates to policy engine NPM packages wherever used
+
+### Version 85:
+- Add CREDIT_ACCOUNT_ID to ORBC_TRANSACTION and ORBC_TRANSACTION_HIST

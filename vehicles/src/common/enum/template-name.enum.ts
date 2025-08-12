@@ -15,6 +15,9 @@ export enum TemplateName {
   PERMIT_STOS = 'PERMIT_STOS',
   PERMIT_STOS_VOID = 'PERMIT_STOS_VOID',
   PERMIT_STOS_REVOKED = 'PERMIT_STOS_REVOKED',
+  PERMIT_STOW = 'PERMIT_STOW',
+  PERMIT_STOW_VOID = 'PERMIT_STOW_VOID',
+  PERMIT_STOW_REVOKED = 'PERMIT_STOW_REVOKED',
   PERMIT_MFP = 'PERMIT_MFP',
   PERMIT_MFP_VOID = 'PERMIT_MFP_VOID',
   PERMIT_MFP_REVOKED = 'PERMIT_MFP_REVOKED',
@@ -32,8 +35,9 @@ export enum TemplateName {
   PERMIT_STFR_REVOKED = 'PERMIT_STFR_REVOKED',
 }
 
-export type PermitTemplateMapping = {
-  [K in ApplicationStatus]?: {
-    [T in PermitType | 'default']?: TemplateName;
-  };
-};
+export type PermitTemplateMapping = Partial<
+  Record<
+    ApplicationStatus,
+    Partial<Record<PermitType | 'default', TemplateName>>
+  >
+>;

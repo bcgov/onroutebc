@@ -61,6 +61,7 @@ import {
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
+import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -194,10 +195,14 @@ export const ApplicationForm = ({
       policyViolations,
       currentFormData.permitData.vehicleDetails.vehicleSubType,
       currentFormData.permitData.loas,
-    ) ? Object.fromEntries(
-      Object.entries(policyViolations)
-        .filter(([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType"),
-    ) : policyViolations;
+    )
+      ? Object.fromEntries(
+          Object.entries(policyViolations).filter(
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+          ),
+        )
+      : policyViolations;
 
     setPolicyViolations(updatedViolations);
     return updatedViolations;
@@ -234,8 +239,10 @@ export const ApplicationForm = ({
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
     const updatedViolations = await triggerPolicyValidation();
-    // prevent CV client continuing if there are policy engine validation errors
-    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+
+    // If there are policy engine validation errors, form validation fails unless those violations
+    // can be overriden
+    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
       console.error(updatedViolations);
       return;
     }
@@ -303,7 +310,7 @@ export const ApplicationForm = ({
             },
           },
         };
-    
+
     await saveApplication(
       {
         data: applicationToBeSaved,
@@ -367,6 +374,11 @@ export const ApplicationForm = ({
     ? PAST_START_DATE_STATUSES.WARNING
     : PAST_START_DATE_STATUSES.FAIL;
 
+  const rejectionHistory = getDefaultRequiredVal(
+    [],
+    applicationContext.applicationData?.rejectionHistory,
+  );
+
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
@@ -386,6 +398,7 @@ export const ApplicationForm = ({
       pastStartDateStatus,
       companyLOAs: applicableLOAs,
       revisionHistory: [],
+      rejectionHistory,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,
@@ -409,6 +422,7 @@ export const ApplicationForm = ({
       updatedDateTime,
       pastStartDateStatus,
       applicableLOAs,
+      rejectionHistory,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,

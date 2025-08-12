@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
@@ -49,6 +48,7 @@ import { readPendingIdirUserMock } from 'test/util/mocks/data/pending-idir-user.
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '../../../src/modules/company-user-management/users/entities/login.entity';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -58,6 +58,7 @@ interface SelectQueryBuilderParameters {
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
+let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
@@ -81,6 +82,7 @@ describe('UsersService', () => {
     companyServiceMock = createMock<CompanyService>();
     repo = createMock<Repository<User>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
+    repoLogin = createMock<Repository<Login>>();
     repoCompanyUser = createMock<Repository<CompanyUser>>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -94,6 +96,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(Login),
+          useValue: repoLogin,
         },
         {
           provide: getRepositoryToken(CompanyUser),
@@ -185,7 +191,7 @@ describe('UsersService', () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(BadRequestException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -334,6 +340,6 @@ function findUsersEntityMock(
 
   jest
     .spyOn(repo, 'createQueryBuilder')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     .mockImplementation(() => createQueryBuilderMock(filteredList));
 }

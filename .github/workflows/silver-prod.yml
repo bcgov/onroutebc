@@ -1,0 +1,46 @@
+name: Deploy Prod (Silver)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "prod"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "prod"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+
+jobs:
+  deploys-prod-silver:
+    name: Deploys Prod (Silver)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: true
+      environment: prod
+      tag: ${{ inputs.tag }}
+      release: prod
+      params: |
+        --set-string global.domain='apps.silver.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-silver' \
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='prod' \
+        --set-string global.vault.role='prod' \
+        --set-string global.vault.zone='prod' \
+        ${{ inputs.params }} \

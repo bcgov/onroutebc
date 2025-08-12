@@ -11,7 +11,7 @@ export class VersionMatchMiddleware implements NestMiddleware {
   use(request: Request, _response: Response, next: NextFunction): void {
     const { headers } = request;
     const origin = request.get('origin');
-    const isProduction = process.env.NODE_ENV === 'production'
+    const isProduction = process.env.NODE_ENV === 'production';
     /**
      * origin is available only when the request is coming from the browser.
      * Interaction between backend pods does not have origin header. 

@@ -25,9 +25,11 @@ import {
   invalidPlateLength,
   invalidVINLength,
   invalidYearMin,
+  licensedGVWExceeded,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
 import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
+import { GVW_LIMIT } from "../../../../common/constants/constants";
 
 const FEATURE = ORBC_FORM_FEATURES.POWER_UNIT;
 
@@ -258,6 +260,9 @@ export const PowerUnitForm = ({
                 required: { value: true, message: requiredMessage() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  lessThanMax: (v) =>
+                    Number(v) <= GVW_LIMIT ||
+                    licensedGVWExceeded(GVW_LIMIT, true),
                 },
               },
               inputType: "number",

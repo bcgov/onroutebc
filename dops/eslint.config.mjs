@@ -12,6 +12,7 @@ export default tseslint.config(
     rules: {
       // Disable the prefer-nullish-coalescing rule temporarily. To be enabled when strictNullChecks enabled and resolved.
       "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/no-base-to-string": "off",
     },
  },
   { files: ["**/*.ts"],
