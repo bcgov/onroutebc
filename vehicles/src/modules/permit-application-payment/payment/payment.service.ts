@@ -13,7 +13,14 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
+import {
+  DataSource,
+  In,
+  IsNull,
+  QueryRunner,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -77,6 +84,9 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
+import { GarmsExtractFile } from './entities/garms-extract-file.entity';
+import { Nullable } from '../../../common/types/common';
+import { GarmsExtractType } from '../../../common/enum/garms-extract-type.enum';
 
 @Injectable()
 export class PaymentService {
@@ -93,6 +103,8 @@ export class PaymentService {
     private paymentCardTypeRepository: Repository<PaymentCardType>,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
+    @InjectRepository(GarmsExtractFile)
+    private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
     private readonly specialAuthService: SpecialAuthService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
@@ -914,5 +926,23 @@ export class PaymentService {
         pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];
+  }
+
+  /**
+   * Searches for an unsubmitted GARMS file based on the provided transaction type.
+   *
+   * @param {GarmsExtractType} transactionType - The type of GARMS transaction to search for.
+   * @returns {Promise<Nullable<GarmsExtractFile>>} A promise that resolves to the GARMS extract file or null if not found.
+   */
+  @LogAsyncMethodExecution()
+  async findUnsubmittedGarmsFile(
+    transactionType: GarmsExtractType,
+  ): Promise<Nullable<GarmsExtractFile>> {
+    return this.garmsExtractFileRepository.findOne({
+      where: {
+        fileSubmitTimestamp: IsNull(),
+        garmsExtractType: transactionType,
+      },
+    });
   }
 }
