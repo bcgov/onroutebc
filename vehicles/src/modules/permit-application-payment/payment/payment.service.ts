@@ -87,6 +87,7 @@ import { SpecialAuthService } from 'src/modules/special-auth/special-auth.servic
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { Nullable } from '../../../common/types/common';
 import { GarmsExtractType } from '../../../common/enum/garms-extract-type.enum';
+import { getToDateForGarms } from '../../../common/helper/garms.helper';
 
 @Injectable()
 export class PaymentService {
@@ -944,5 +945,65 @@ export class PaymentService {
         garmsExtractType: transactionType,
       },
     });
+  }
+
+  /**
+   * Calculates the total adjustment amount for a credit account by summing up transactions
+   * between certain time ranges, based on transaction type.
+   *
+   * @param {number} creditAccountId - The ID of the credit account for which the amount needs to be adjusted.
+   * @returns {Promise<number>} A promise resolving to the total adjustment amount.
+   */
+  @LogAsyncMethodExecution()
+  async getCreditAccountAmountToAdjust(
+    creditAccountId: number,
+  ): Promise<number> {
+    // Get the current timestamp for comparison purposes
+    const toTimestamp = getToDateForGarms();
+    // Find an unsubmitted GARMS file for CREDIT transaction type, if exists
+    const unsubmittedGarmsFile = await this.findUnsubmittedGarmsFile(
+      GarmsExtractType.CREDIT,
+    );
+
+    const queryBuilder = this.transactionRepository
+      .createQueryBuilder('transaction')
+      // Filter transactions by the payment method type
+      .where('transaction.paymentMethodTypeCode = :paymentMethodTypeCode', {
+        paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT,
+      })
+      // Filter transactions belonging to the specific credit account
+      .andWhere('transaction.creditAccountId = :creditAccountId', {
+        creditAccountId: creditAccountId,
+      });
+
+    // If there's a fromTimestamp in unsubmitted GARMS file, include it in the filter
+    if (unsubmittedGarmsFile?.fromTimestamp) {
+      queryBuilder.andWhere(
+        'transaction.transactionApprovedDate >= :fromTimestamp',
+        { fromTimestamp: unsubmittedGarmsFile?.fromTimestamp },
+      );
+    }
+
+    // Get all transactions within the date range under consideration
+    queryBuilder.andWhere(
+      'transaction.transactionApprovedDate <= :toTimestamp',
+      {
+        toTimestamp: toTimestamp,
+      },
+    );
+
+    const creditAccountTransactions = await queryBuilder.getMany();
+
+    // Calculate the total transaction amount, adjusting based on the transaction type
+    const totalTransactionAmount = creditAccountTransactions?.reduce(
+      (accumulator, { transactionTypeId, totalTransactionAmount }) =>
+        transactionTypeId === TransactionType.PURCHASE
+          ? accumulator + totalTransactionAmount
+          : accumulator - totalTransactionAmount,
+      0,
+    );
+
+    // Return the calculated result, ensuring a fallback value of 0
+    return totalTransactionAmount ?? 0;
   }
 }
