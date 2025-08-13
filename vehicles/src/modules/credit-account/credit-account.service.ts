@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
@@ -46,7 +46,7 @@ import { CreditAccountActivity } from './entities/credit-account-activity.entity
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-
+import { PaymentMethodType as PaymentMethodTypeEnum } from '../../common/enum/payment-method-type.enum';
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 import {
   ClientUserRole,
@@ -60,6 +60,10 @@ import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-li
 import { doesUserHaveRole } from '../../common/helper/auth.helper';
 import { EGARMSCreditAccountService } from '../common/egarms.credit-account.service';
 import { EGARMS_CREDIT_ACCOUNT_ACTIVE } from '../../common/constants/api.constant';
+import { GarmsExtractFile } from './entities/garms-extract-file.entity';
+import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
+import { getToDateForGarms } from '../../common/helper/garms.helper';
+import { TransactionType } from '../../common/enum/transaction-type.enum';
 
 /**
  * Service functions for credit account operations.
@@ -79,6 +83,8 @@ export class CreditAccountService {
     private readonly cfsCreditAccountService: CFSCreditAccountService,
     private readonly egarmsCreditAccountService: EGARMSCreditAccountService,
     private readonly companyService: CompanyService,
+    @InjectRepository(GarmsExtractFile)
+    private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
   ) {}
 
   /**
@@ -416,6 +422,7 @@ export class CreditAccountService {
           readCreditAccountMetadataDto.isValidPaymentMethod = false;
         }
       } catch (error) {
+        readCreditAccountMetadataDto.isValidPaymentMethod = false;
         this.logger.error(error);
       }
     } else {
@@ -1298,7 +1305,10 @@ export class CreditAccountService {
         creditAccount.creditAccountNumber,
       );
 
-    // TODO Limit calculation is currently blocked and needs to be implemented
+    const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
+      creditAccount.creditAccountId,
+    );
+
     return await this.classMapper.mapAsync(
       creditAccount,
       CreditAccount,
@@ -1307,6 +1317,7 @@ export class CreditAccountService {
         extraArgs: () => ({
           currentUser: currentUser,
           egarmsCreditAccountDetails: egarmsCreditAccountDetails,
+          orbcAmountToAdjust: orbcAmountToAdjust,
         }),
       },
     );
@@ -1469,5 +1480,84 @@ export class CreditAccountService {
         }
         break;
     }
+  }
+
+  /**
+   * Searches for an unsubmitted GARMS file based on the provided transaction type.
+   *
+   * @param {GarmsExtractType} transactionType - The type of GARMS transaction to search for.
+   * @returns {Promise<Nullable<GarmsExtractFile>>} A promise that resolves to the GARMS extract file or null if not found.
+   */
+  @LogAsyncMethodExecution()
+  async findUnsubmittedGarmsFile(
+    transactionType: GarmsExtractType,
+  ): Promise<Nullable<GarmsExtractFile>> {
+    return this.garmsExtractFileRepository.findOne({
+      where: {
+        fileSubmitTimestamp: IsNull(),
+        garmsExtractType: transactionType,
+      },
+    });
+  }
+
+  /**
+   * Calculates the total adjustment amount for a credit account by summing up transactions
+   * between certain time ranges, based on transaction type.
+   *
+   * @param {number} creditAccountId - The ID of the credit account for which the amount needs to be adjusted.
+   * @returns {Promise<number>} A promise resolving to the total adjustment amount.
+   */
+  @LogAsyncMethodExecution()
+  async getCreditAccountAmountToAdjust(
+    creditAccountId: number,
+  ): Promise<number> {
+    // Get the current timestamp for comparison purposes
+    const toTimestamp = getToDateForGarms();
+    // Find an unsubmitted GARMS file for CREDIT transaction type, if exists
+    const unsubmittedGarmsFile = await this.findUnsubmittedGarmsFile(
+      GarmsExtractType.CREDIT,
+    );
+
+    const queryBuilder = this.creditAccountRepository
+      .createQueryBuilder('creditAccount')
+      .innerJoinAndSelect('creditAccount.transactions', 'transactions')
+      // Filter transactions by the payment method type
+      .where('transactions.paymentMethodTypeCode = :paymentMethodTypeCode', {
+        paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT,
+      })
+      // Filter transactions belonging to the specific credit account
+      .andWhere('creditAccount.creditAccountId = :creditAccountId', {
+        creditAccountId: creditAccountId,
+      });
+
+    // If there's a fromTimestamp in unsubmitted GARMS file, include it in the filter
+    if (unsubmittedGarmsFile?.fromTimestamp) {
+      queryBuilder.andWhere(
+        'transactions.transactionApprovedDate >= :fromTimestamp',
+        { fromTimestamp: unsubmittedGarmsFile?.fromTimestamp },
+      );
+    }
+
+    // Get all transactions within the date range under consideration
+    queryBuilder.andWhere(
+      'transactions.transactionApprovedDate <= :toTimestamp',
+      {
+        toTimestamp: toTimestamp,
+      },
+    );
+
+    const creditAccount = await queryBuilder.getOne();
+
+    // Calculate the total transaction amount, adjusting based on the transaction type
+    const totalTransactionAmount = creditAccount?.transactions?.reduce(
+      (accumulator, { transactionTypeId, totalTransactionAmount }) =>
+        transactionTypeId === TransactionType.PURCHASE
+          ? accumulator + totalTransactionAmount
+          : accumulator - totalTransactionAmount,
+      0,
+    );
+
+    // Return the calculated result
+    return totalTransactionAmount;
   }
 }

@@ -17,6 +17,8 @@ import { Base } from '../../common/entities/base.entity';
 import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountActivity } from './credit-account-activity.entity';
 import { CreditAccountUser } from './credit-account-user.entity';
+import { Transaction } from '../../permit-application-payment/payment/entities/transaction.entity';
+import { Nullable } from '../../../common/types/common';
 
 @Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {
@@ -136,4 +138,11 @@ export class CreditAccount extends Base {
     update: false,
   })
   externalAdjustmentAmount: number;
+
+  @AutoMap()
+  @OneToMany(() => Transaction, (transaction) => transaction.creditAccount, {
+    cascade: false,
+    eager: false,
+  })
+  public transactions?: Nullable<Transaction[]>;
 }

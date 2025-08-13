@@ -13,14 +13,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  DataSource,
-  In,
-  IsNull,
-  QueryRunner,
-  Repository,
-  UpdateResult,
-} from 'typeorm';
+import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -84,10 +77,6 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
-import { GarmsExtractFile } from './entities/garms-extract-file.entity';
-import { Nullable } from '../../../common/types/common';
-import { GarmsExtractType } from '../../../common/enum/garms-extract-type.enum';
-import { getToDateForGarms } from '../../../common/helper/garms.helper';
 
 @Injectable()
 export class PaymentService {
@@ -104,8 +93,6 @@ export class PaymentService {
     private paymentCardTypeRepository: Repository<PaymentCardType>,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    @InjectRepository(GarmsExtractFile)
-    private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
     private readonly specialAuthService: SpecialAuthService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
@@ -927,83 +914,5 @@ export class PaymentService {
         pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];
-  }
-
-  /**
-   * Searches for an unsubmitted GARMS file based on the provided transaction type.
-   *
-   * @param {GarmsExtractType} transactionType - The type of GARMS transaction to search for.
-   * @returns {Promise<Nullable<GarmsExtractFile>>} A promise that resolves to the GARMS extract file or null if not found.
-   */
-  @LogAsyncMethodExecution()
-  async findUnsubmittedGarmsFile(
-    transactionType: GarmsExtractType,
-  ): Promise<Nullable<GarmsExtractFile>> {
-    return this.garmsExtractFileRepository.findOne({
-      where: {
-        fileSubmitTimestamp: IsNull(),
-        garmsExtractType: transactionType,
-      },
-    });
-  }
-
-  /**
-   * Calculates the total adjustment amount for a credit account by summing up transactions
-   * between certain time ranges, based on transaction type.
-   *
-   * @param {number} creditAccountId - The ID of the credit account for which the amount needs to be adjusted.
-   * @returns {Promise<number>} A promise resolving to the total adjustment amount.
-   */
-  @LogAsyncMethodExecution()
-  async getCreditAccountAmountToAdjust(
-    creditAccountId: number,
-  ): Promise<number> {
-    // Get the current timestamp for comparison purposes
-    const toTimestamp = getToDateForGarms();
-    // Find an unsubmitted GARMS file for CREDIT transaction type, if exists
-    const unsubmittedGarmsFile = await this.findUnsubmittedGarmsFile(
-      GarmsExtractType.CREDIT,
-    );
-
-    const queryBuilder = this.transactionRepository
-      .createQueryBuilder('transaction')
-      // Filter transactions by the payment method type
-      .where('transaction.paymentMethodTypeCode = :paymentMethodTypeCode', {
-        paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT,
-      })
-      // Filter transactions belonging to the specific credit account
-      .andWhere('transaction.creditAccountId = :creditAccountId', {
-        creditAccountId: creditAccountId,
-      });
-
-    // If there's a fromTimestamp in unsubmitted GARMS file, include it in the filter
-    if (unsubmittedGarmsFile?.fromTimestamp) {
-      queryBuilder.andWhere(
-        'transaction.transactionApprovedDate >= :fromTimestamp',
-        { fromTimestamp: unsubmittedGarmsFile?.fromTimestamp },
-      );
-    }
-
-    // Get all transactions within the date range under consideration
-    queryBuilder.andWhere(
-      'transaction.transactionApprovedDate <= :toTimestamp',
-      {
-        toTimestamp: toTimestamp,
-      },
-    );
-
-    const creditAccountTransactions = await queryBuilder.getMany();
-
-    // Calculate the total transaction amount, adjusting based on the transaction type
-    const totalTransactionAmount = creditAccountTransactions?.reduce(
-      (accumulator, { transactionTypeId, totalTransactionAmount }) =>
-        transactionTypeId === TransactionType.PURCHASE
-          ? accumulator + totalTransactionAmount
-          : accumulator - totalTransactionAmount,
-      0,
-    );
-
-    // Return the calculated result, ensuring a fallback value of 0
-    return totalTransactionAmount ?? 0;
   }
 }

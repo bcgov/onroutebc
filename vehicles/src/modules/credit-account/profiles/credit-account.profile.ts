@@ -163,9 +163,11 @@ export class CreditAccountProfile extends AutomapperProfile {
               {
                 currentUser,
                 egarmsCreditAccountDetails,
+                orbcAmountToAdjust,
               }: {
                 currentUser: IUserJWT;
                 egarmsCreditAccountDetails: IEGARMSResponse;
+                orbcAmountToAdjust: number;
               },
             ) => {
               if (
@@ -179,7 +181,9 @@ export class CreditAccountProfile extends AutomapperProfile {
                 return (
                   Math.abs(
                     egarmsCreditAccountDetails?.PPABalance?.account_balance,
-                  ) + (source.externalAdjustmentAmount ?? 0)
+                  ) +
+                  (source.externalAdjustmentAmount ?? 0) +
+                  (orbcAmountToAdjust ?? 0)
                 );
               }
             },
@@ -192,14 +196,17 @@ export class CreditAccountProfile extends AutomapperProfile {
               source,
               {
                 egarmsCreditAccountDetails,
+                orbcAmountToAdjust,
               }: {
                 egarmsCreditAccountDetails: IEGARMSResponse;
+                orbcAmountToAdjust: number;
               },
             ) => {
               return (
                 egarmsCreditAccountDetails?.PPABalance?.negative_limit +
                 egarmsCreditAccountDetails?.PPABalance?.account_balance -
-                (source.externalAdjustmentAmount ?? 0)
+                (source.externalAdjustmentAmount ?? 0) -
+                (orbcAmountToAdjust ?? 0)
               );
             },
           ),

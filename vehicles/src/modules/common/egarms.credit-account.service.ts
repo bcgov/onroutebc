@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import {
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -11,6 +12,7 @@ import { EGARMS_CREDIT_API_SYSTEM_ID } from '../../common/constants/api.constant
 import { lastValueFrom } from 'rxjs';
 import { XMLParser } from 'fast-xml-parser';
 import { IEGARMSResponse } from '../../common/interface/egarms-response.interface';
+import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 
 @Injectable()
 export class EGARMSCreditAccountService {
@@ -45,6 +47,14 @@ export class EGARMSCreditAccountService {
         if (error.response) {
           const errorData = error.response.data as string;
           this.logger.error(`Error response from EGARMS: ${errorData}`);
+          if (
+            (error.response?.status as HttpStatus) === HttpStatus.UNAUTHORIZED
+          ) {
+            throwUnprocessableEntityException(
+              `eGARMS threw an unauthorized exception. Please verify your credentials.`,
+              { errorCode: 'CREDIT_ACCOUNT_EGARMS_UNAUTHORIZED' },
+            );
+          }
         } else {
           this.logger.error(error?.message, error?.stack);
         }

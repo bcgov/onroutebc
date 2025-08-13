@@ -13,7 +13,6 @@ import { Permit } from '../permit/entities/permit.entity';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { SpecialAuth } from '../../special-auth/entities/special-auth.entity';
 import { SpecialAuthService } from '../../special-auth/special-auth.service';
-import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { GarmsExtractFile } from './entities/garms-extract-file.entity';
       PaymentMethodType,
       CfsTransactionDetail,
       SpecialAuth,
-      GarmsExtractFile,
     ]),
   ],
   controllers: [PaymentController],
