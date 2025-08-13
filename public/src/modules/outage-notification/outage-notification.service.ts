@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { OutageNotification } from './entities/outage-notification.entity';
 import { ReadOutageNotificationDto } from './dto/read-outage-notification.dto';
@@ -7,7 +7,6 @@ import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { CacheKey } from '../../common/enum/cache-key.enum';
 
@@ -32,7 +31,7 @@ export class OutageNotificationService {
     }
     const notification = await this.findOutageNotification();
     if (!notification) {
-      throw new DataNotFoundException();
+      throw new HttpException(null, HttpStatus.NO_CONTENT);
     }
     await this.cacheManager.set(
       CacheKey.OUTAGE_NOTIFICATION,
