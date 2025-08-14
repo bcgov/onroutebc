@@ -336,3 +336,6 @@
 
 ### Version 85:
 - Add CREDIT_ACCOUNT_ID to ORBC_TRANSACTION and ORBC_TRANSACTION_HIST
+
+### Version 86:
+- Update NRQCV and NRSCV names to Non-Resident Quarterly Licensing and Non-Resident Single Trip Licensing respectively
