@@ -1267,7 +1267,7 @@ export class CreditAccountService {
       ]) &&
       creditAccount?.company.companyId === companyId
     ) {
-      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      // Throw exception if companyId is a Credit Account Holder and user is Company Admin.
       throw new ForbiddenException();
     } else if (
       doesUserHaveRole(currentUser.orbcUserRole, [
@@ -1324,6 +1324,111 @@ export class CreditAccountService {
   }
 
   /**
+   * Validates a credit account payment transaction.
+   *
+   * This method checks if a transaction can be processed on a credit account. It first verifies the account status and activity,
+   * ensuring the account is not closed. It also checks for sufficient balance if the transaction type is not a refund, which bypasses this validation.
+   * Finally, it maps the current credit account details to a DTO for additional data comparison and validation.
+   *
+   * @param companyId - The ID of the company.
+   * @param currentUser - The current authenticated user.
+   * @param transacationType - The type of transaction being processed.
+   * @param totalTransactionAmount - The total amount of the transaction.
+   * @returns {Promise<CreditAccount>} - The credit account details, confirming the transaction can proceed.
+   * @throws {UnprocessableEntityException} - If the account is closed, in an invalid state, or if there is insufficient balance.
+   */
+  @LogAsyncMethodExecution()
+  public async validateCreditAccountPayment({
+    companyId,
+    currentUser,
+    transacationType,
+    totalTransactionAmount,
+  }: {
+    companyId: number;
+    currentUser: IUserJWT;
+    transacationType: TransactionType;
+    totalTransactionAmount: number;
+  }): Promise<number> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+    );
+
+    if (
+      transacationType === TransactionType.REFUND &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED
+    ) {
+      throwUnprocessableEntityException(
+        'Cannot refund to a closed Credit account.',
+        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
+      );
+    } else if (transacationType === TransactionType.REFUND) {
+      return creditAccount?.creditAccountId;
+    }
+
+    // Check if the credit account is non-existent, not verified, or not active.
+    if (
+      !creditAccount ||
+      !creditAccount?.isVerified ||
+      creditAccount?.creditAccountStatusType !==
+        CreditAccountStatus.ACCOUNT_ACTIVE
+    ) {
+      throwUnprocessableEntityException(
+        `Credit account is in an invalid state. Please contact PPC.`,
+        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
+      );
+    }
+
+    const egarmsCreditAccountDetails =
+      await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+        creditAccount.creditAccountNumber,
+      );
+
+    // Ensure the EGARMS account is active.
+    if (
+      egarmsCreditAccountDetails?.PPABalance?.return_code !==
+      EGARMS_CREDIT_ACCOUNT_ACTIVE
+    ) {
+      throwUnprocessableEntityException(
+        `Credit account is in an invalid state in eGARMS. Please contact PPC.`,
+        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
+      );
+    }
+
+    const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
+      creditAccount.creditAccountId,
+    );
+
+    // Map current credit account details to DTO.
+    const readCreditAccountLimitDto = await this.classMapper.mapAsync(
+      creditAccount,
+      CreditAccount,
+      ReadCreditAccountLimitDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+          egarmsCreditAccountDetails: egarmsCreditAccountDetails,
+          orbcAmountToAdjust: orbcAmountToAdjust,
+        }),
+      },
+    );
+
+    // Check if the transaction exceeds available credit limit.
+    if (
+      +readCreditAccountLimitDto?.creditLimit <
+      readCreditAccountLimitDto?.creditBalance + totalTransactionAmount
+    ) {
+      throwUnprocessableEntityException(
+        `Credit account has insufficient balance. Please contact PPC.`,
+        { errorCode: 'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE' },
+      );
+    }
+
+    return creditAccount?.creditAccountId;
+  }
+
+  /**
    * Retrieves credit account activity based on account holder and credit account ID.
    *
    * @param companyId - The ID of the company.
@@ -1364,22 +1469,22 @@ export class CreditAccountService {
     }
   }
 
+  /**
+   * Finds detailed information about a credit account for a given Holder/User.
+   *
+   * This method retrieves credit account details based on the company ID, user information,
+   * and an optional credit account ID. It considers user roles and account statuses to return relevant account information.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {IUserJWT} currentUser - The current user authenticated with JWT.
+   * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
+   * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
+   */
   private async findCreditAccountDetails(
     companyId: number,
     currentUser: IUserJWT,
     creditAccountId?: Nullable<number>,
   ) {
-    /**
-     * Finds detailed information about a credit account for a given Holder/User.
-     *
-     * This method retrieves credit account details based on the company ID, user information,
-     * and an optional credit account ID. It considers user roles and account statuses to return relevant account information.
-     *
-     * @param {number} companyId - The ID of the company.
-     * @param {IUserJWT} currentUser - The current user authenticated with JWT.
-     * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
-     * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
-     */
     let creditAccount = await this.creditAccountRepository.findOne({
       where: {
         ...(creditAccountId && { creditAccountId }),

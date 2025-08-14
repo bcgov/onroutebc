@@ -166,6 +166,13 @@ export class TransactionProfile extends AutomapperProfile {
             return totalTransactionAmount;
           }),
         ),
+        forMember(
+          (transaction) => transaction?.creditAccount?.creditAccountId,
+          mapWithArguments(
+            (source, { creditAccountId }: { creditAccountId: number }) =>
+              creditAccountId,
+          ),
+        ),
       );
 
       createMap(

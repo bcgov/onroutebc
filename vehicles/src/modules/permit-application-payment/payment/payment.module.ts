@@ -13,6 +13,7 @@ import { Permit } from '../permit/entities/permit.entity';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { SpecialAuth } from '../../special-auth/entities/special-auth.entity';
 import { SpecialAuthService } from '../../special-auth/special-auth.service';
+import { CreditAccountModule } from '../../credit-account/credit-account.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SpecialAuthService } from '../../special-auth/special-auth.service';
       CfsTransactionDetail,
       SpecialAuth,
     ]),
+    CreditAccountModule,
   ],
   controllers: [PaymentController],
   providers: [

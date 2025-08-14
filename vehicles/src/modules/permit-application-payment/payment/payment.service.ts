@@ -77,6 +77,7 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
+import { CreditAccountService } from '../../credit-account/credit-account.service';
 
 @Injectable()
 export class PaymentService {
@@ -94,6 +95,7 @@ export class PaymentService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private readonly specialAuthService: SpecialAuthService,
+    private readonly creditAccountService: CreditAccountService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -325,7 +327,7 @@ export class PaymentService {
         Permit,
         {
           where: { permitId: In(applicationIds) },
-          relations: { permitData: true },
+          relations: { permitData: true, company: true },
         },
       );
       for (const application of existingApplications) {
@@ -353,6 +355,21 @@ export class PaymentService {
         currentUser,
         queryRunner,
       );
+
+      let creditAccountId: number = null;
+      if (
+        createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.ACCOUNT
+      ) {
+        creditAccountId =
+          await this.creditAccountService.validateCreditAccountPayment({
+            companyId: existingApplications?.at(0)?.company?.companyId,
+            currentUser,
+            transacationType: createTransactionDto?.transactionTypeId,
+            totalTransactionAmount,
+          });
+      }
+
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -368,6 +385,7 @@ export class PaymentService {
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
+            creditAccountId: creditAccountId,
           }),
         },
       );
