@@ -356,7 +356,6 @@ export class PaymentService {
         queryRunner,
       );
 
-      
       let creditAccountId: number = null;
       // Check if the transaction is using a credit account as the payment method
       if (
@@ -413,7 +412,7 @@ export class PaymentService {
             }
           }
         }
-      }      
+      }
 
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
