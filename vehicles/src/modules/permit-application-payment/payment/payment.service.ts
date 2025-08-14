@@ -356,11 +356,14 @@ export class PaymentService {
         queryRunner,
       );
 
+      
       let creditAccountId: number = null;
+      // Check if the transaction is using a credit account as the payment method
       if (
         createTransactionDto?.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.ACCOUNT
       ) {
+        // Validate and retrieve the credit account ID for the transaction
         creditAccountId =
           await this.creditAccountService.validateCreditAccountPayment({
             companyId: existingApplications?.at(0)?.company?.companyId,
@@ -368,7 +371,49 @@ export class PaymentService {
             transacationType: createTransactionDto?.transactionTypeId,
             totalTransactionAmount,
           });
-      }
+        // Iterate over existing applications associated with the transaction
+        for (const application of existingApplications) {
+          if (application?.revision > 0) {
+            // Query the database to retrieve permits related to the application
+            const permits = await queryRunner.manager
+              .createQueryBuilder()
+              .select('permit')
+              .from(Permit, 'permit')
+              .innerJoinAndSelect(
+                'permit.permitTransactions',
+                'permitTransactions',
+              )
+              .innerJoinAndSelect(
+                'permitTransactions.transaction',
+                'transaction',
+              )
+              // Only select permits with a valid permit number
+              .where('permit.permitNumber IS NOT NULL')
+              // Ensure the permits are linked to the same original permit ID
+              .andWhere('permit.originalPermitId = :originalPermitId', {
+                originalPermitId: application?.originalPermitId,
+              })
+              // Only select transactions that have been approved
+              .andWhere('transaction.transactionApprovedDate IS NOT NULL')
+              // Filter transactions by payment method type and credit account ID
+              .andWhere(
+                'transaction.paymentMethodTypeCode =: paymentMethodTypeCode',
+                { paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT },
+              )
+              .andWhere('transaction.creditAccountId != : creditAccountId', {
+                creditAccountId: creditAccountId,
+              })
+              .getMany();
+            // If any permits were found, it indicates a credit account mismatch
+            if (permits?.length) {
+              throwUnprocessableEntityException(
+                'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
+                { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
+              );
+            }
+          }
+        }
+      }      
 
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
