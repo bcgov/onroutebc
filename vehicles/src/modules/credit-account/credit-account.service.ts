@@ -1645,7 +1645,7 @@ export class CreditAccountService {
 
     // Get all transactions within the date range under consideration
     queryBuilder.andWhere(
-      'transactions.transactionApprovedDate <= :toTimestamp',
+      'transactions.transactionApprovedDate < :toTimestamp',
       {
         toTimestamp: toTimestamp,
       },
