@@ -72,6 +72,7 @@ import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
 import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
+import { CreditAccountService } from '../../credit-account/credit-account.service';
 
 @Injectable()
 export class PaymentService {
@@ -86,6 +87,7 @@ export class PaymentService {
     private readonly paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private readonly paymentCardTypeRepository: Repository<PaymentCardType>,
+    private readonly creditAccountService: CreditAccountService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -351,7 +353,7 @@ export class PaymentService {
       );
 
       if (!isPolicyValidationSuccessful) {
-        throw throwUnprocessableEntityException(
+        throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
           validationResults,
           'VALIDATION_FAILURE',
@@ -554,7 +556,7 @@ export class PaymentService {
         Permit,
         {
           where: { permitId: In(applicationIds) },
-          relations: { permitData: true },
+          relations: { permitData: true, company: true },
         },
       );
 
@@ -568,7 +570,7 @@ export class PaymentService {
             isAmendmentApplication(application)
           )
         ) {
-          throw throwUnprocessableEntityException(
+          throwUnprocessableEntityException(
             `${application.applicationNumber} in its current status cannot be processed for payment.`,
             null,
             'TRANS_INVALID_APPLICATION_STATUS',
@@ -609,7 +611,7 @@ export class PaymentService {
         );
 
         if (!isPolicyValidationSuccessful) {
-          throw throwUnprocessableEntityException(
+          throwUnprocessableEntityException(
             'Policy Engine Validation Failure',
             validationResults,
             'VALIDATION_FAILURE',
@@ -617,6 +619,64 @@ export class PaymentService {
         }
 
         totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
+      }
+
+      let creditAccountId: number = null;
+      // Check if the transaction is using a credit account as the payment method
+      if (
+        createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.ACCOUNT
+      ) {
+        // Validate and retrieve the credit account ID for the transaction
+        creditAccountId =
+          await this.creditAccountService.validateCreditAccountPayment({
+            companyId: existingApplications?.at(0)?.company?.companyId,
+            currentUser,
+            transacationType: createTransactionDto?.transactionTypeId,
+            totalTransactionAmount,
+          });
+        // Iterate over existing applications associated with the transaction
+        for (const application of existingApplications) {
+          if (application?.revision > 0) {
+            // Query the database to retrieve permits related to the application
+            const permits = await queryRunner.manager
+              .createQueryBuilder()
+              .select('permit')
+              .from(Permit, 'permit')
+              .innerJoinAndSelect(
+                'permit.permitTransactions',
+                'permitTransactions',
+              )
+              .innerJoinAndSelect(
+                'permitTransactions.transaction',
+                'transaction',
+              )
+              // Only select permits with a valid permit number
+              .where('permit.permitNumber IS NOT NULL')
+              // Ensure the permits are linked to the same original permit ID
+              .andWhere('permit.originalPermitId = :originalPermitId', {
+                originalPermitId: application?.originalPermitId,
+              })
+              // Only select transactions that have been approved
+              .andWhere('transaction.transactionApprovedDate IS NOT NULL')
+              // Filter transactions by payment method type and credit account ID
+              .andWhere(
+                'transaction.paymentMethodTypeCode =: paymentMethodTypeCode',
+                { paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT },
+              )
+              .andWhere('transaction.creditAccountId != : creditAccountId', {
+                creditAccountId: creditAccountId,
+              })
+              .getMany();
+            // If any permits were found, it indicates a credit account mismatch
+            if (permits?.length) {
+              throwUnprocessableEntityException(
+                'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
+                { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
+              );
+            }
+          }
+        }
       }
 
       const transactionOrderNumber =
@@ -634,6 +694,7 @@ export class PaymentService {
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
+            creditAccountId: creditAccountId,
           }),
         },
       );

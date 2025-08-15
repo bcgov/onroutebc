@@ -10,6 +10,7 @@ import { CreditAccountProfile } from './profiles/credit-account.profile';
 import { CompanyModule } from '../company-user-management/company/company.module';
 import { APP_GUARD } from '@nestjs/core';
 import { FeatureFlagGuard } from '../../common/guard/feature-flag.guard';
+import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { FeatureFlagGuard } from '../../common/guard/feature-flag.guard';
       CreditAccount,
       CreditAccountActivity,
       CreditAccountUser,
+      GarmsExtractFile,
     ]),
     CompanyModule,
   ],
@@ -29,5 +31,6 @@ import { FeatureFlagGuard } from '../../common/guard/feature-flag.guard';
       useClass: FeatureFlagGuard,
     },
   ],
+  exports: [CreditAccountService],
 })
 export class CreditAccountModule {}

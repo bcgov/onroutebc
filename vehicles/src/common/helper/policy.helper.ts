@@ -74,7 +74,7 @@ export const evaluatePolicyValidationResult = (
 
     // Determine if the permit type is Quarterly Non-Resident
     const isQuarterlyNonResident =
-      permitType === PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+      permitType === PermitType.NON_RESIDENT_QUARTERLY_LICENSE ||
       permitType === PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR;
 
     // Calculate the difference between the permit's start date and the allowed start date by staff

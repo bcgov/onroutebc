@@ -461,8 +461,7 @@ export class PolicyService {
   ) {
     if (
       application?.revision > 0 &&
-      (application?.permitType ===
-        PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE ||
+      (application?.permitType === PermitType.NON_RESIDENT_QUARTERLY_LICENSE ||
         application?.permitType ===
           PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR)
     ) {

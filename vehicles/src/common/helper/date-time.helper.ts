@@ -171,3 +171,11 @@ export const isAfterCalendarQuarter = (
   // Check if the date to check is outside the quarter boundaries
   return differenceBetween(dateToCheck, quarterEndDate) >= 0;
 };
+
+/* Returns the current date and time in the Pacific timezone.
+ *
+ * @returns {dayjs.Dayjs} The current Pacific date and time.
+ */
+export const getCurrentPacificDateTime = (): dayjs.Dayjs => {
+  return dayjs().tz('Canada/Pacific');
+};

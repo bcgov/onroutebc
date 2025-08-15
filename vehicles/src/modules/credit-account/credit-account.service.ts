@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
@@ -46,7 +46,7 @@ import { CreditAccountActivity } from './entities/credit-account-activity.entity
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-
+import { PaymentMethodType as PaymentMethodTypeEnum } from '../../common/enum/payment-method-type.enum';
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 import {
   ClientUserRole,
@@ -59,7 +59,15 @@ import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-acco
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 import { doesUserHaveRole } from '../../common/helper/auth.helper';
 import { EGARMSCreditAccountService } from '../common/egarms.credit-account.service';
-import { EGARMS_CREDIT_ACCOUNT_ACTIVE } from '../../common/constants/api.constant';
+import {
+  EGARMS_CREDIT_ACCOUNT_ACTIVE,
+  EGARMS_CREDIT_ACCOUNT_CLOSED,
+  EGARMS_CREDIT_ACCOUNT_NOT_FOUND,
+} from '../../common/constants/api.constant';
+import { GarmsExtractFile } from './entities/garms-extract-file.entity';
+import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
+import { getToDateForGarms } from '../../common/helper/garms.helper';
+import { TransactionType } from '../../common/enum/transaction-type.enum';
 
 /**
  * Service functions for credit account operations.
@@ -79,6 +87,8 @@ export class CreditAccountService {
     private readonly cfsCreditAccountService: CFSCreditAccountService,
     private readonly egarmsCreditAccountService: EGARMSCreditAccountService,
     private readonly companyService: CompanyService,
+    @InjectRepository(GarmsExtractFile)
+    private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
   ) {}
 
   /**
@@ -416,6 +426,7 @@ export class CreditAccountService {
           readCreditAccountMetadataDto.isValidPaymentMethod = false;
         }
       } catch (error) {
+        readCreditAccountMetadataDto.isValidPaymentMethod = false;
         this.logger.error(error);
       }
     } else {
@@ -1260,7 +1271,7 @@ export class CreditAccountService {
       ]) &&
       creditAccount?.company.companyId === companyId
     ) {
-      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      // Throw exception if companyId is a Credit Account Holder and user is Company Admin.
       throw new ForbiddenException();
     } else if (
       doesUserHaveRole(currentUser.orbcUserRole, [
@@ -1298,7 +1309,10 @@ export class CreditAccountService {
         creditAccount.creditAccountNumber,
       );
 
-    // TODO Limit calculation is currently blocked and needs to be implemented
+    const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
+      creditAccount.creditAccountId,
+    );
+
     return await this.classMapper.mapAsync(
       creditAccount,
       CreditAccount,
@@ -1307,9 +1321,129 @@ export class CreditAccountService {
         extraArgs: () => ({
           currentUser: currentUser,
           egarmsCreditAccountDetails: egarmsCreditAccountDetails,
+          orbcAmountToAdjust: orbcAmountToAdjust,
         }),
       },
     );
+  }
+
+  /**
+   * Validates a credit account payment transaction.
+   *
+   * This method checks if a transaction can be processed on a credit account. It first verifies the account status and activity,
+   * ensuring the account is not closed. It also checks for sufficient balance if the transaction type is not a refund, which bypasses this validation.
+   * Finally, it maps the current credit account details to a DTO for additional data comparison and validation.
+   *
+   * @param companyId - The ID of the company.
+   * @param currentUser - The current authenticated user.
+   * @param transacationType - The type of transaction being processed.
+   * @param totalTransactionAmount - The total amount of the transaction.
+   * @returns {Promise<CreditAccount>} - The credit account details, confirming the transaction can proceed.
+   * @throws {UnprocessableEntityException} - If the account is closed, in an invalid state, or if there is insufficient balance.
+   */
+  @LogAsyncMethodExecution()
+  public async validateCreditAccountPayment({
+    companyId,
+    currentUser,
+    transacationType,
+    totalTransactionAmount,
+  }: {
+    companyId: number;
+    currentUser: IUserJWT;
+    transacationType: TransactionType;
+    totalTransactionAmount: number;
+  }): Promise<number> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+    );
+
+    if (!creditAccount) {
+      this.logger.error('Credit account does not exist.');
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    }
+
+    const egarmsCreditAccountDetails =
+      await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+        creditAccount?.creditAccountNumber,
+      );
+
+    if (
+      egarmsCreditAccountDetails?.PPABalance?.return_code ===
+      EGARMS_CREDIT_ACCOUNT_NOT_FOUND
+    ) {
+      this.logger.error('Credit account does not exist in eGARMS.');
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    }
+
+    if (
+      // Check if the transaction type is a REFUND and the credit account status is CLOSED
+      transacationType === TransactionType.REFUND &&
+      (creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED ||
+        // Check if eGARMS credit account details indicate the account is CLOSED
+        egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_CLOSED)
+    ) {
+      // Log an error for attempting a refund on a closed credit account
+      this.logger.error('Cannot refund to a closed Credit account.');
+      // Throw an exception indicating the credit account is unavailable for refund
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    } else if (transacationType === TransactionType.REFUND) {
+      // If it's a REFUND transaction but the account is not closed, return the account ID
+      return creditAccount?.creditAccountId;
+    } else if (
+      // Check if the credit account is not verified, or is not active
+      !creditAccount?.isVerified ||
+      creditAccount?.creditAccountStatusType !==
+        CreditAccountStatus.ACCOUNT_ACTIVE ||
+      // Check if eGARMS does not indicate the account is ACTIVE
+      egarmsCreditAccountDetails?.PPABalance?.return_code !==
+        EGARMS_CREDIT_ACCOUNT_ACTIVE
+    ) {
+      // Log an error for the credit account being in an invalid state
+      this.logger.error('Credit account is in an invalid state.');
+      // Throw an exception indicating the credit account is unavailable
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    }
+    const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
+      creditAccount.creditAccountId,
+    );
+
+    // Map current credit account details to DTO.
+    const readCreditAccountLimitDto = await this.classMapper.mapAsync(
+      creditAccount,
+      CreditAccount,
+      ReadCreditAccountLimitDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+          egarmsCreditAccountDetails: egarmsCreditAccountDetails,
+          orbcAmountToAdjust: orbcAmountToAdjust,
+        }),
+      },
+    );
+
+    // Check if the transaction exceeds available credit limit.
+    if (
+      +readCreditAccountLimitDto?.creditLimit <
+      readCreditAccountLimitDto?.creditBalance + totalTransactionAmount
+    ) {
+      throwUnprocessableEntityException(
+        `Credit account has insufficient balance.`,
+        { errorCode: 'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE' },
+      );
+    }
+
+    return creditAccount?.creditAccountId;
   }
 
   /**
@@ -1353,22 +1487,22 @@ export class CreditAccountService {
     }
   }
 
+  /**
+   * Finds detailed information about a credit account for a given Holder/User.
+   *
+   * This method retrieves credit account details based on the company ID, user information,
+   * and an optional credit account ID. It considers user roles and account statuses to return relevant account information.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {IUserJWT} currentUser - The current user authenticated with JWT.
+   * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
+   * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
+   */
   private async findCreditAccountDetails(
     companyId: number,
     currentUser: IUserJWT,
     creditAccountId?: Nullable<number>,
   ) {
-    /**
-     * Finds detailed information about a credit account for a given Holder/User.
-     *
-     * This method retrieves credit account details based on the company ID, user information,
-     * and an optional credit account ID. It considers user roles and account statuses to return relevant account information.
-     *
-     * @param {number} companyId - The ID of the company.
-     * @param {IUserJWT} currentUser - The current user authenticated with JWT.
-     * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
-     * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
-     */
     let creditAccount = await this.creditAccountRepository.findOne({
       where: {
         ...(creditAccountId && { creditAccountId }),
@@ -1469,5 +1603,84 @@ export class CreditAccountService {
         }
         break;
     }
+  }
+
+  /**
+   * Searches for an unsubmitted GARMS file based on the provided transaction type.
+   *
+   * @param {GarmsExtractType} transactionType - The type of GARMS transaction to search for.
+   * @returns {Promise<Nullable<GarmsExtractFile>>} A promise that resolves to the GARMS extract file or null if not found.
+   */
+  @LogAsyncMethodExecution()
+  async findUnsubmittedGarmsFile(
+    transactionType: GarmsExtractType,
+  ): Promise<Nullable<GarmsExtractFile>> {
+    return this.garmsExtractFileRepository.findOne({
+      where: {
+        fileSubmitTimestamp: IsNull(),
+        garmsExtractType: transactionType,
+      },
+    });
+  }
+
+  /**
+   * Calculates the total adjustment amount for a credit account by summing up transactions
+   * between certain time ranges, based on transaction type.
+   *
+   * @param {number} creditAccountId - The ID of the credit account for which the amount needs to be adjusted.
+   * @returns {Promise<number>} A promise resolving to the total adjustment amount.
+   */
+  @LogAsyncMethodExecution()
+  async getCreditAccountAmountToAdjust(
+    creditAccountId: number,
+  ): Promise<number> {
+    // Get the current timestamp for comparison purposes
+    const toTimestamp = getToDateForGarms();
+    // Find an unsubmitted GARMS file for CREDIT transaction type, if exists
+    const unsubmittedGarmsFile = await this.findUnsubmittedGarmsFile(
+      GarmsExtractType.CREDIT,
+    );
+
+    const queryBuilder = this.creditAccountRepository
+      .createQueryBuilder('creditAccount')
+      .innerJoinAndSelect('creditAccount.transactions', 'transactions')
+      // Filter transactions by the payment method type
+      .where('transactions.paymentMethodTypeCode = :paymentMethodTypeCode', {
+        paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT,
+      })
+      // Filter transactions belonging to the specific credit account
+      .andWhere('creditAccount.creditAccountId = :creditAccountId', {
+        creditAccountId: creditAccountId,
+      });
+
+    // If there's a fromTimestamp in unsubmitted GARMS file, include it in the filter
+    if (unsubmittedGarmsFile?.fromTimestamp) {
+      queryBuilder.andWhere(
+        'transactions.transactionApprovedDate >= :fromTimestamp',
+        { fromTimestamp: unsubmittedGarmsFile?.fromTimestamp },
+      );
+    }
+
+    // Get all transactions within the date range under consideration
+    queryBuilder.andWhere(
+      'transactions.transactionApprovedDate < :toTimestamp',
+      {
+        toTimestamp: toTimestamp,
+      },
+    );
+
+    const creditAccount = await queryBuilder.getOne();
+
+    // Calculate the total transaction amount, adjusting based on the transaction type
+    const totalTransactionAmount = creditAccount?.transactions?.reduce(
+      (accumulator, { transactionTypeId, totalTransactionAmount }) =>
+        transactionTypeId === TransactionType.PURCHASE
+          ? accumulator + totalTransactionAmount
+          : accumulator - totalTransactionAmount,
+      0,
+    );
+
+    // Return the calculated result
+    return totalTransactionAmount;
   }
 }

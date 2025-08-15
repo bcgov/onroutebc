@@ -40,6 +40,7 @@ import { getPermitTemplateName } from '../../../common/helper/template.helper';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { Nullable } from '../../../common/types/common';
 import { PolicyService } from '../../policy/policy.service';
+import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
 
 @Injectable()
 export class PermitReceiptDocumentService {
@@ -157,6 +158,8 @@ export class PermitReceiptDocumentService {
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
+      .leftJoinAndSelect('transaction.creditAccount', 'creditAccount')
+      .leftJoinAndSelect('creditAccount.company', 'creditAccountCompany')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .leftJoinAndSelect(
         'applicationOwner.userContact',
@@ -341,11 +344,22 @@ export class PermitReceiptDocumentService {
             );
           }
 
+          const transaction =
+            fetchedPermit?.permitTransactions?.at(0)?.transaction;
+
+          let creditAccountHolderEmail: string;
+          if (
+            transaction?.paymentMethodTypeCode === PaymentMethodType.ACCOUNT
+          ) {
+            creditAccountHolderEmail =
+              transaction?.creditAccount?.company?.email;
+          }
           try {
             const emailList = [
               permitDataForTemplate.permitData?.contactDetails?.email,
               permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
               company?.email,
+              creditAccountHolderEmail,
             ];
 
             const subject = `onRouteBC Permits - ${company?.legalName}`;
@@ -497,6 +511,9 @@ export class PermitReceiptDocumentService {
                       transaction?.transactionTypeId,
                       permitTransaction?.transaction?.totalTransactionAmount,
                     ),
+                    creditAccountHolderEmail:
+                      permitTransaction?.transaction?.creditAccount?.company
+                        ?.email,
                   };
                 }),
               ),
@@ -566,11 +583,17 @@ export class PermitReceiptDocumentService {
               documentId,
             );
 
+            //To handle refund to multiple payment methods where one of them is to a credit account.
+            const creditAccountHolderEmail = uniqueTransactionList?.find(
+              (transaction) => transaction?.creditAccountHolderEmail,
+            )?.creditAccountHolderEmail;
+
             try {
               const emailList = [
                 permitData?.contactDetails?.email,
                 permitData?.contactDetails?.additionalEmail,
                 company?.email,
+                creditAccountHolderEmail,
               ];
 
               const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
