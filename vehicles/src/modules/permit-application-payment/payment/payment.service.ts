@@ -374,43 +374,11 @@ export class PaymentService {
         for (const application of existingApplications) {
           if (application?.revision > 0) {
             // Query the database to retrieve permits related to the application
-            const permits = await queryRunner.manager
-              .createQueryBuilder()
-              .select('permit')
-              .from(Permit, 'permit')
-              .innerJoinAndSelect(
-                'permit.permitTransactions',
-                'permitTransactions',
-              )
-              .innerJoinAndSelect(
-                'permitTransactions.transaction',
-                'transaction',
-              )
-              .leftJoinAndSelect('transaction.creditAccount', 'creditAccount')
-              // Only select permits with a valid permit number
-              .where('permit.permitNumber IS NOT NULL')
-              // Ensure the permits are linked to the same original permit ID
-              .andWhere('permit.originalPermitId = :originalPermitId', {
-                originalPermitId: application?.originalPermitId,
-              })
-              // Only select transactions that have been approved
-              .andWhere('transaction.transactionApprovedDate IS NOT NULL')
-              // Filter transactions by payment method type and credit account ID
-              .andWhere(
-                'transaction.paymentMethodTypeCode = :paymentMethodTypeCode',
-                { paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT },
-              )
-              .andWhere('creditAccount.creditAccountId != :creditAccountId', {
-                creditAccountId: creditAccountId,
-              })
-              .getMany();
-            // If any permits were found, it indicates a credit account mismatch
-            if (permits?.length) {
-              throwUnprocessableEntityException(
-                'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
-                { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
-              );
-            }
+            await this.validateCreditAccountMismatch(
+              queryRunner,
+              application,
+              creditAccountId,
+            );
           }
         }
       }
@@ -579,6 +547,43 @@ export class PaymentService {
     }
 
     return readTransactionDto;
+  }
+
+  private async validateCreditAccountMismatch(
+    queryRunner: QueryRunner,
+    application: Permit,
+    creditAccountId: number,
+  ) {
+    const permits = await queryRunner.manager
+      .createQueryBuilder()
+      .select('permit')
+      .from(Permit, 'permit')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .leftJoinAndSelect('transaction.creditAccount', 'creditAccount')
+      // Only select permits with a valid permit number
+      .where('permit.permitNumber IS NOT NULL')
+      // Ensure the permits are linked to the same original permit ID
+      .andWhere('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: application?.originalPermitId,
+      })
+      // Only select transactions that have been approved
+      .andWhere('transaction.transactionApprovedDate IS NOT NULL')
+      // Filter transactions by payment method type and credit account ID
+      .andWhere('transaction.paymentMethodTypeCode = :paymentMethodTypeCode', {
+        paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT,
+      })
+      .andWhere('creditAccount.creditAccountId != :creditAccountId', {
+        creditAccountId: creditAccountId,
+      })
+      .getMany();
+    // If any permits were found, it indicates a credit account mismatch
+    if (permits?.length) {
+      throwUnprocessableEntityException(
+        'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
+        { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
+      );
+    }
   }
 
   /**
