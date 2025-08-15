@@ -14,6 +14,8 @@ import { PaymentMethodType } from '../../../../common/enum/payment-method-type.e
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PermitTransaction } from './permit-transaction.entity';
 import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
+import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
+import { Nullable } from '../../../../common/types/common';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -234,6 +236,18 @@ export class Transaction extends Base {
     nullable: false,
   })
   pgMessageText: string;
+
+  @AutoMap()
+  @ManyToOne(
+    () => CreditAccount,
+    (creditAccount) => creditAccount.transactions,
+    {
+      cascade: false,
+      eager: false,
+    },
+  )
+  @JoinColumn({ name: 'CREDIT_ACCOUNT_ID' })
+  public creditAccount?: Nullable<CreditAccount>;
 
   @ManyToOne(() => Receipt, (receipt) => receipt.transactions)
   @JoinColumn({ name: 'RECEIPT_ID' })
