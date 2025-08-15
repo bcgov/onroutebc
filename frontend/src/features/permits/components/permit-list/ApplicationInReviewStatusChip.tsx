@@ -45,6 +45,27 @@ const getStatusText = (
       return "";
   }
 };
+
+/**
+ * Returns the text corresponding to the status of a permit.
+ * @param permitStatus string representing the permit status
+ * @returns Display text string corresponding to permit status
+ */
+const getAbbreviatedStatusText = (
+  applicationQueueStatus?: ApplicationQueueStatus,
+): string => {
+  switch (applicationQueueStatus) {
+    case APPLICATION_QUEUE_STATUSES.PENDING_REVIEW:
+      return "PR";
+    case APPLICATION_QUEUE_STATUSES.IN_REVIEW:
+      return "IR";
+    case APPLICATION_QUEUE_STATUSES.CLOSED:
+      return "C";
+    default:
+      return "";
+  }
+};
+
 /**
  * A simple chip component to be displayed beside the permit number.
  */
@@ -57,7 +78,8 @@ export const ApplicationInReviewStatusChip = ({
   return chipTheme ? (
     <OnRouteBCChip
       className={`permit-chip permit-chip--${chipTheme}`}
-      message={getStatusText(applicationQueueStatus)}
+      message={getAbbreviatedStatusText(applicationQueueStatus)}
+      hoverText={getStatusText(applicationQueueStatus)}
     />
   ) : null;
 };
