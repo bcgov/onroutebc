@@ -62,6 +62,32 @@ const getStatusText = (permitStatus?: string): string => {
 };
 
 /**
+ * Returns the abbreviated text corresponding to the status of a permit.
+ * @param permitStatus string representing the permit status
+ * @returns Display abbreviated text string corresponding to permit status
+ */
+const getAbbreviatedStatusText = (permitStatus?: string): string => {
+  switch (permitStatus) {
+    case PERMIT_STATUSES.VOIDED:
+      return "V";
+    case PERMIT_STATUSES.REVOKED:
+      return "R";
+    case PERMIT_STATUSES.SUPERSEDED:
+      return "S";
+    case PERMIT_EXPIRED:
+      return "E";
+    case APPLICATION_QUEUE_STATUSES.PENDING_REVIEW:
+      return "PR";
+    case APPLICATION_QUEUE_STATUSES.IN_REVIEW:
+      return "IR";
+    case APPLICATION_QUEUE_STATUSES.CLOSED:
+      return "Closed";
+    default:
+      return "";
+  }
+};
+
+/**
  * A boolean indicating if a small badge has to be displayed beside the Permit Number.
  */
 const shouldShowPermitChip = (permitStatus?: string) => {
@@ -80,7 +106,8 @@ export const PermitChip = ({ permitStatus }: { permitStatus?: string }) => {
   return chipTheme ? (
     <OnRouteBCChip
       className={`permit-chip permit-chip--${chipTheme}`}
-      message={getStatusText(permitStatus)}
+      message={getAbbreviatedStatusText(permitStatus)}
+      hoverText={getStatusText(permitStatus)}
     />
   ) : null;
 };
