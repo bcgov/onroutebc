@@ -386,6 +386,7 @@ export class PaymentService {
                 'permitTransactions.transaction',
                 'transaction',
               )
+              .leftJoinAndSelect('transaction.creditAccount', 'creditAccount')
               // Only select permits with a valid permit number
               .where('permit.permitNumber IS NOT NULL')
               // Ensure the permits are linked to the same original permit ID
@@ -396,10 +397,10 @@ export class PaymentService {
               .andWhere('transaction.transactionApprovedDate IS NOT NULL')
               // Filter transactions by payment method type and credit account ID
               .andWhere(
-                'transaction.paymentMethodTypeCode =: paymentMethodTypeCode',
+                'transaction.paymentMethodTypeCode = :paymentMethodTypeCode',
                 { paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT },
               )
-              .andWhere('transaction.creditAccountId != : creditAccountId', {
+              .andWhere('creditAccount.creditAccountId != :creditAccountId', {
                 creditAccountId: creditAccountId,
               })
               .getMany();

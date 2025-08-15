@@ -22,7 +22,7 @@ export class EGARMSCreditAccountService {
     const options = {
       timeout: 10000,
       errorThresholdPercentage: 50,
-      resetTimeout: 30000,      
+      resetTimeout: 30000,
     };
 
     // Initialize CircuitBreaker with a function that returns a Promise
