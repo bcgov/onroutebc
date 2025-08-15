@@ -73,6 +73,7 @@ import { validatePaymentReceived } from '../../../common/helper/permit-fee.helpe
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
 import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
+import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class PaymentService {
@@ -336,6 +337,7 @@ export class PaymentService {
         (accumulator, item) => accumulator + item.transactionAmount,
         0,
       );
+
       const paymentValidationResult = validatePaymentReceived(
         validationResults?.cost?.at(0)?.cost,
         totalTransactionAmount,
@@ -360,6 +362,56 @@ export class PaymentService {
         );
       }
 
+      let creditAccountId: number = null;
+      for (const transaction of transactions) {
+        if (
+          transaction?.paymentMethodTypeCode === PaymentMethodTypeEnum.ACCOUNT
+        ) {
+          // Validate and retrieve the credit account ID for the transaction
+          creditAccountId =
+            await this.creditAccountService.validateCreditAccountPayment({
+              companyId: companyId,
+              currentUser,
+              transacationType: TransactionType.REFUND,
+              totalTransactionAmount: transaction?.transactionAmount,
+            });
+          // Query the database to retrieve permits related to the application
+          const permits = await queryRunner.manager
+            .createQueryBuilder()
+            .select('permit')
+            .from(Permit, 'permit')
+            .innerJoinAndSelect(
+              'permit.permitTransactions',
+              'permitTransactions',
+            )
+            .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+            // Only select permits with a valid permit number
+            .where('permit.permitNumber IS NOT NULL')
+            // Ensure the permits are linked to the same original permit ID
+            .andWhere('permit.originalPermitId = :originalPermitId', {
+              originalPermitId: existingApplication?.originalPermitId,
+            })
+            // Only select transactions that have been approved
+            .andWhere('transaction.transactionApprovedDate IS NOT NULL')
+            // Filter transactions by payment method type and credit account ID
+            .andWhere(
+              'transaction.paymentMethodTypeCode =: paymentMethodTypeCode',
+              { paymentMethodTypeCode: PaymentMethodTypeEnum.ACCOUNT },
+            )
+            .andWhere('transaction.creditAccountId != : creditAccountId', {
+              creditAccountId: creditAccountId,
+            })
+            .getMany();
+          // If any permits were found, it indicates a credit account mismatch
+          if (permits?.length) {
+            throwUnprocessableEntityException(
+              'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
+              { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
+            );
+          }
+        }
+      }
+
       let newTransactionList: Transaction[] = [];
       const date = new Date();
       for (const transaction of transactions) {
@@ -379,6 +431,12 @@ export class PaymentService {
         newTransaction.payerName = PPC_FULL_TEXT;
         if (transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.WEB) {
           newTransaction.pgApproved = 1;
+        }
+        if (
+          transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.ACCOUNT
+        ) {
+          newTransaction.creditAccount = new CreditAccount();
+          newTransaction.creditAccount.creditAccountId = creditAccountId;
         }
         setBaseEntityProperties<Transaction>({
           entity: newTransaction,
