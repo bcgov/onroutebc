@@ -19,8 +19,8 @@ export const throwUnprocessableEntityException = (
     error: [
       {
         message: message,
-        additionalInfo: additionalInfo,
         errorCode: errorCode,
+        additionalInfo: additionalInfo,
       },
     ] as ValidationExceptionDto[],
   } as ExceptionDto);
