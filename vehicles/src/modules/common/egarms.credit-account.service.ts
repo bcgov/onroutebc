@@ -50,10 +50,12 @@ export class EGARMSCreditAccountService {
           if (
             (error.response?.status as HttpStatus) === HttpStatus.UNAUTHORIZED
           ) {
-            throwUnprocessableEntityException(
-              `eGARMS threw an unauthorized exception. Please verify your credentials.`,
-              { errorCode: 'CREDIT_ACCOUNT_EGARMS_UNAUTHORIZED' },
+            this.logger.error(
+              'eGARMS threw an unauthorized exception. Please verify your credentials.',
             );
+            throwUnprocessableEntityException('Credit account is unavailable', {
+              errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+            });
           }
         } else {
           this.logger.error(error?.message, error?.stack);

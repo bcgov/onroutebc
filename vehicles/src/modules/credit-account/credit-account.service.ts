@@ -59,7 +59,11 @@ import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-acco
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 import { doesUserHaveRole } from '../../common/helper/auth.helper';
 import { EGARMSCreditAccountService } from '../common/egarms.credit-account.service';
-import { EGARMS_CREDIT_ACCOUNT_ACTIVE } from '../../common/constants/api.constant';
+import {
+  EGARMS_CREDIT_ACCOUNT_ACTIVE,
+  EGARMS_CREDIT_ACCOUNT_CLOSED,
+  EGARMS_CREDIT_ACCOUNT_NOT_FOUND,
+} from '../../common/constants/api.constant';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
 import { getToDateForGarms } from '../../common/helper/garms.helper';
@@ -1354,48 +1358,62 @@ export class CreditAccountService {
       currentUser,
     );
 
-    if (
-      transacationType === TransactionType.REFUND &&
-      creditAccount?.creditAccountStatusType ===
-        CreditAccountStatus.ACCOUNT_CLOSED
-    ) {
-      throwUnprocessableEntityException(
-        'Cannot refund to a closed Credit account.',
-        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
-      );
-    } else if (transacationType === TransactionType.REFUND) {
-      return creditAccount?.creditAccountId;
-    }
-
-    // Check if the credit account is non-existent, not verified, or not active.
-    if (
-      !creditAccount ||
-      !creditAccount?.isVerified ||
-      creditAccount?.creditAccountStatusType !==
-        CreditAccountStatus.ACCOUNT_ACTIVE
-    ) {
-      throwUnprocessableEntityException(
-        `Credit account is in an invalid state. Please contact PPC.`,
-        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
-      );
+    if (!creditAccount) {
+      this.logger.error('Credit account does not exist.');
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
     }
 
     const egarmsCreditAccountDetails =
       await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
-        creditAccount.creditAccountNumber,
+        creditAccount?.creditAccountNumber,
       );
 
-    // Ensure the EGARMS account is active.
     if (
-      egarmsCreditAccountDetails?.PPABalance?.return_code !==
-      EGARMS_CREDIT_ACCOUNT_ACTIVE
+      egarmsCreditAccountDetails?.PPABalance?.return_code ===
+      EGARMS_CREDIT_ACCOUNT_NOT_FOUND
     ) {
-      throwUnprocessableEntityException(
-        `Credit account is in an invalid state in eGARMS. Please contact PPC.`,
-        { errorCode: 'CREDIT_ACCOUNT_INVALID_STATE' },
-      );
+      this.logger.error('Credit account does not exist in eGARMS.');
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
     }
 
+    if (
+      // Check if the transaction type is a REFUND and the credit account status is CLOSED
+      transacationType === TransactionType.REFUND &&
+      (creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED ||
+        // Check if eGARMS credit account details indicate the account is CLOSED
+        egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_CLOSED)
+    ) {
+      // Log an error for attempting a refund on a closed credit account
+      this.logger.error('Cannot refund to a closed Credit account.');
+      // Throw an exception indicating the credit account is unavailable for refund
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    } else if (transacationType === TransactionType.REFUND) {
+      // If it's a REFUND transaction but the account is not closed, return the account ID
+      return creditAccount?.creditAccountId;
+    } else if (
+      // Check if the credit account is not verified, or is not active
+      !creditAccount?.isVerified ||
+      creditAccount?.creditAccountStatusType !==
+        CreditAccountStatus.ACCOUNT_ACTIVE ||
+      // Check if eGARMS does not indicate the account is ACTIVE
+      egarmsCreditAccountDetails?.PPABalance?.return_code !==
+        EGARMS_CREDIT_ACCOUNT_ACTIVE
+    ) {
+      // Log an error for the credit account being in an invalid state
+      this.logger.error('Credit account is in an invalid state.');
+      // Throw an exception indicating the credit account is unavailable
+      throwUnprocessableEntityException('Credit account is unavailable', {
+        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
+      });
+    }
     const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
       creditAccount.creditAccountId,
     );
@@ -1420,7 +1438,7 @@ export class CreditAccountService {
       readCreditAccountLimitDto?.creditBalance + totalTransactionAmount
     ) {
       throwUnprocessableEntityException(
-        `Credit account has insufficient balance. Please contact PPC.`,
+        `Credit account has insufficient balance.`,
         { errorCode: 'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE' },
       );
     }
