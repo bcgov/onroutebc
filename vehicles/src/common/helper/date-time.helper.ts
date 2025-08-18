@@ -58,3 +58,12 @@ export const getDuration = ({
 }: DurationDifference): duration.Duration => {
   return dayjs.duration(maxDiff, unit);
 };
+
+/**
+ * Returns the current date and time in the Pacific timezone.
+ *
+ * @returns {dayjs.Dayjs} The current Pacific date and time.
+ */
+export const getCurrentPacificDateTime = (): dayjs.Dayjs => {
+  return dayjs().tz('Canada/Pacific');
+};

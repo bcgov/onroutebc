@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material";
 import { getDefaultRequiredVal } from "../../helpers/util";
 import "./OnRouteBCChip.scss";
 
@@ -6,15 +7,19 @@ import "./OnRouteBCChip.scss";
  */
 export const OnRouteBCChip = ({
   message,
+  hoverText,
   className,
 }: {
   message: string;
+  hoverText: string;
   className?: string;
 }) => {
   const additionalClassName = getDefaultRequiredVal("", className);
 
   return (
-    <span className={`onroutebc-chip ${additionalClassName}`}>{message}</span>
+    <Tooltip title={hoverText}>
+      <span className={`onroutebc-chip ${additionalClassName}`}>{message}</span>
+    </Tooltip>
   );
 };
 

@@ -35,8 +35,9 @@ export enum TemplateName {
   PERMIT_STFR_REVOKED = 'PERMIT_STFR_REVOKED',
 }
 
-export type PermitTemplateMapping = {
-  [K in ApplicationStatus]?: {
-    [T in PermitType | 'default']?: TemplateName;
-  };
-};
+export type PermitTemplateMapping = Partial<
+  Record<
+    ApplicationStatus,
+    Partial<Record<PermitType | 'default', TemplateName>>
+  >
+>;

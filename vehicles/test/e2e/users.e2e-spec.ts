@@ -192,7 +192,7 @@ describe('Users (e2e)', () => {
     it('should return the user details.', async () => {
       jest
         .spyOn(repo, 'createQueryBuilder')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
         .mockImplementation(() =>
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),

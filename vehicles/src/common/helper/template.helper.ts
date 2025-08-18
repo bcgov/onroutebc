@@ -26,10 +26,8 @@ export const getPermitTemplateName = (
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS,
-      [PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE]:
-        TemplateName.PERMIT_NRSCV,
-      [PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE]:
-        TemplateName.PERMIT_NRQCV,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_LICENSE]: TemplateName.PERMIT_NRSCV,
+      [PermitType.NON_RESIDENT_QUARTERLY_LICENSE]: TemplateName.PERMIT_NRQCV,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_STFR,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
@@ -42,9 +40,9 @@ export const getPermitTemplateName = (
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_VOID,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_VOID,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_VOID,
-      [PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE]:
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_LICENSE]:
         TemplateName.PERMIT_NRSCV_VOID,
-      [PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE]:
+      [PermitType.NON_RESIDENT_QUARTERLY_LICENSE]:
         TemplateName.PERMIT_NRQCV_VOID,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_STFR_VOID,
@@ -58,9 +56,9 @@ export const getPermitTemplateName = (
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_REVOKED,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_REVOKED,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_REVOKED,
-      [PermitType.SINGLE_TRIP_NON_RESIDENT_REG_INS_COMMERCIAL_VEHICLE]:
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_LICENSE]:
         TemplateName.PERMIT_NRSCV_REVOKED,
-      [PermitType.QUARTERLY_NON_RESIDENT_REG_INS_COMM_VEHICLE]:
+      [PermitType.NON_RESIDENT_QUARTERLY_LICENSE]:
         TemplateName.PERMIT_NRQCV_REVOKED,
       [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_STFR_REVOKED,
