@@ -452,6 +452,7 @@ const MISCELLANEOUS = {
   },
   PAY_WITH_CREDIT_ACCOUNT: {
     allowedIDIRRoles: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
   },
 } as const;
 
