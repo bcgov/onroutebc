@@ -175,7 +175,8 @@ export const ShoppingCartPage = () => {
     reValidateMode: "onChange",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, watch } = formMethods;
+  const selectedPaymentMethod = watch("paymentMethod");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -191,7 +192,14 @@ export const ShoppingCartPage = () => {
       ) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else if ((isFeeZero || isStaffActingAsCompany) && !hasIssued) {
+      } else if (
+        (isFeeZero ||
+          isStaffActingAsCompany ||
+          // Payment by credit for BCeID users has no url and hence
+          // if payment transaction is successful, issue permits.
+          selectedPaymentMethod === PAYMENT_METHOD_TYPE_CODE.ACCOUNT) &&
+        !hasIssued
+      ) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
         issuePermitMutation.mutate({
@@ -206,7 +214,7 @@ export const ShoppingCartPage = () => {
         cartQuery.refetch();
         refetchCartCount();
       } else {
-        // CV Client payment, anticipate PayBC transaction url
+        // PayBC Payment by BCeID, anticipate PayBC transaction url
         if (!(transaction as StartTransactionResponseData)?.url) {
           // Failed to generate transaction url
           navigate(SHOPPING_CART_ROUTES.DETAILS(true));
