@@ -19,6 +19,7 @@ import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 import { isWebTransactionPurchase } from '../../../../common/helper/payment.helper';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -69,20 +70,49 @@ export class TransactionProfile extends AutomapperProfile {
         forMember(
           (transaction) => transaction.payerName,
 
-          mapWithArguments((source, { directory, firstName, lastName }) => {
-            // Check if the payment method is not WEB or the transaction is not a purchase
-            if (
-              source.paymentMethodTypeCode !== PaymentMethodType.WEB ||
-              source.transactionTypeId !== TransactionType.PURCHASE
-            ) {
-              // Determine the payer name based on the directory type
-              // If the directory is IDIR or SERVICE_ACCOUNT, use PPC_FULL_TEXT; otherwise, use firstName and lastName
-              return directory === Directory.IDIR ||
-                directory === Directory.SERVICE_ACCOUNT
-                ? PPC_FULL_TEXT
-                : String(firstName) + ' ' + String(lastName);
-            }
-          }),
+          mapWithArguments(
+            (
+              source,
+              {
+                directory,
+                firstName,
+                lastName,
+                creditAccount,
+              }: {
+                directory: Directory;
+                firstName: string;
+                lastName: string;
+                creditAccount: CreditAccount;
+              },
+            ) => {
+              const payerName = (() => {
+                // Check if the directory is IDIR or SERVICE_ACCOUNT
+                if (
+                  directory === Directory.IDIR ||
+                  directory === Directory.SERVICE_ACCOUNT
+                ) {
+                  // Return PPC_FULL_TEXT if the condition is true
+                  return PPC_FULL_TEXT;
+                }
+
+                // Check if the creditAccount has a valid creditAccountId
+                if (creditAccount?.creditAccountId) {
+                  // Return the legalName of the company associated with the credit account
+                  return creditAccount.company?.legalName;
+                }
+
+                // Check if the transaction type is not PURCHASE or payment method is not WEB as it will be set on PUT
+                if (
+                  source?.transactionTypeId !== TransactionType.PURCHASE ||
+                  source.paymentMethodTypeCode !== PaymentMethodType.WEB
+                ) {
+                  // Return the concatenated first and last name
+                  return `${firstName} ${lastName}`;
+                }
+              })();
+              return payerName;
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.transactionApprovedDate,
@@ -169,8 +199,8 @@ export class TransactionProfile extends AutomapperProfile {
         forMember(
           (transaction) => transaction?.creditAccount?.creditAccountId,
           mapWithArguments(
-            (source, { creditAccountId }: { creditAccountId: number }) =>
-              creditAccountId,
+            (source, { creditAccount }: { creditAccount: CreditAccount }) =>
+              creditAccount?.creditAccountId,
           ),
         ),
       );

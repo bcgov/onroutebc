@@ -78,6 +78,7 @@ import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
+import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class PaymentService {
@@ -356,14 +357,14 @@ export class PaymentService {
         queryRunner,
       );
 
-      let creditAccountId: number = null;
+      let creditAccount: CreditAccount = null;
       // Check if the transaction is using a credit account as the payment method
       if (
         createTransactionDto?.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.ACCOUNT
       ) {
         // Validate and retrieve the credit account ID for the transaction
-        creditAccountId =
+        creditAccount =
           await this.creditAccountService.validateCreditAccountPayment({
             companyId: existingApplications?.at(0)?.company?.companyId,
             currentUser,
@@ -377,7 +378,7 @@ export class PaymentService {
             await this.validateCreditAccountMismatch(
               queryRunner,
               application,
-              creditAccountId,
+              creditAccount?.creditAccountId,
             );
           }
         }
@@ -400,7 +401,7 @@ export class PaymentService {
             lastName: currentUser.orbcUserLastName,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
-            creditAccountId: creditAccountId,
+            creditAccount: creditAccount,
           }),
         },
       );

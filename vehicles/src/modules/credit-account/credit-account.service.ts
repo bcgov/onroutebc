@@ -1352,7 +1352,7 @@ export class CreditAccountService {
     currentUser: IUserJWT;
     transacationType: TransactionType;
     totalTransactionAmount: number;
-  }): Promise<number> {
+  }): Promise<CreditAccount> {
     const creditAccount = await this.findCreditAccountDetails(
       companyId,
       currentUser,
@@ -1397,7 +1397,7 @@ export class CreditAccountService {
       });
     } else if (transacationType === TransactionType.REFUND) {
       // If it's a REFUND transaction but the account is not closed, return the account ID
-      return creditAccount?.creditAccountId;
+      return creditAccount;
     } else if (
       // Check if the credit account is not verified, or is not active
       !creditAccount?.isVerified ||
@@ -1443,7 +1443,7 @@ export class CreditAccountService {
       );
     }
 
-    return creditAccount?.creditAccountId;
+    return creditAccount;
   }
 
   /**
