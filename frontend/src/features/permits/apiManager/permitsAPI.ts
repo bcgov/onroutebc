@@ -333,10 +333,14 @@ export const startTransaction = async (
           additionalInfo: string;
           errorCode: string;
         };
+        // Credit Account mismatch has a unique error message to be displayed
+        // and hence the component needs to know about it.
         if (errorCode === "CREDIT_ACCOUNT_MISMATCH") {
           return {
             errorCode,
           };
+        } else {
+          return null;
         }
       } else {
         return null;
