@@ -88,6 +88,10 @@ export interface StartTransactionResponseData
   url?: string;
 }
 
+export interface StartTransactionErrorData {
+  errorCode: string;
+}
+
 export type CompleteTransactionRequestData = NullableFields<PaymentGatewayData>;
 
 export interface CompleteTransactionResponseData

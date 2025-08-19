@@ -10,7 +10,10 @@ import {
 } from "@tanstack/react-query";
 
 import { IssuePermitsResponse } from "../types/permit";
-import { StartTransactionResponseData } from "../types/payment";
+import {
+  StartTransactionErrorData,
+  StartTransactionResponseData,
+} from "../types/payment";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/serialize/deserializeApplication";
@@ -220,18 +223,24 @@ export const usePermitDetailsQuery = (
  */
 export const useStartTransaction = () => {
   const [transaction, setTransaction] =
-    useState<Nullable<StartTransactionResponseData>>(undefined);
+    useState<
+      Nullable<StartTransactionResponseData | StartTransactionErrorData>
+    >(undefined);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: startTransaction,
     retry: false,
     onSuccess: (transactionData) => {
-      queryClient.invalidateQueries({
-        queryKey: ["transaction"],
-      });
-      queryClient.setQueryData(["transaction"], transactionData);
-      setTransaction(transactionData);
+      // If there are no errors from the API response body,
+      // set the transaction data and invalidate the transaction query.
+      if (!(transactionData as StartTransactionErrorData)?.errorCode) {
+        queryClient.invalidateQueries({
+          queryKey: ["transaction"],
+        });
+        queryClient.setQueryData(["transaction"], transactionData);
+        setTransaction(transactionData as StartTransactionResponseData);
+      }
     },
     onError: (error: AxiosError) => {
       console.error(error);
