@@ -651,14 +651,14 @@ export class PaymentService {
         totalTransactionAmount += validationResults?.cost?.at(0)?.cost;
       }
 
-      let creditAccountId: number = null;
+      let creditAccount: CreditAccount = null;
       // Check if the transaction is using a credit account as the payment method
       if (
         createTransactionDto?.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.ACCOUNT
       ) {
         // Validate and retrieve the credit account ID for the transaction
-        creditAccountId =
+        creditAccount =
           await this.creditAccountService.validateCreditAccountPayment({
             companyId: existingApplications?.at(0)?.company?.companyId,
             currentUser,
@@ -672,7 +672,7 @@ export class PaymentService {
             await this.validateCreditAccountMismatch(
               queryRunner,
               application,
-              creditAccountId,
+              creditAccount?.creditAccountId,
             );
           }
         }
@@ -691,9 +691,11 @@ export class PaymentService {
             totalTransactionAmount: totalTransactionAmount,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
+            firstName: currentUser.orbcUserFirstName,
+            lastName: currentUser.orbcUserLastName,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
-            creditAccountId: creditAccountId,
+            creditAccount: creditAccount,
           }),
         },
       );
