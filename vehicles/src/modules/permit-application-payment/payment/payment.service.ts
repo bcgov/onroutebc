@@ -362,13 +362,13 @@ export class PaymentService {
         );
       }
 
-      let creditAccountId: number = null;
+      let creditAccount: CreditAccount = null;
       for (const transaction of transactions) {
         if (
           transaction?.paymentMethodTypeCode === PaymentMethodTypeEnum.ACCOUNT
         ) {
           // Validate and retrieve the credit account ID for the transaction
-          creditAccountId =
+          creditAccount =
             await this.creditAccountService.validateCreditAccountPayment({
               companyId: companyId,
               currentUser,
@@ -379,7 +379,7 @@ export class PaymentService {
           await this.validateCreditAccountMismatch(
             queryRunner,
             existingApplication,
-            creditAccountId,
+            creditAccount?.creditAccountId,
           );
         }
       }
@@ -408,7 +408,8 @@ export class PaymentService {
           transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.ACCOUNT
         ) {
           newTransaction.creditAccount = new CreditAccount();
-          newTransaction.creditAccount.creditAccountId = creditAccountId;
+          newTransaction.creditAccount.creditAccountId =
+            creditAccount?.creditAccountId;
         }
         setBaseEntityProperties<Transaction>({
           entity: newTransaction,
