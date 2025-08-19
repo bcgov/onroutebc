@@ -396,6 +396,8 @@ export class PaymentService {
             totalTransactionAmount: totalTransactionAmount,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
+            firstName: currentUser.orbcUserFirstName,
+            lastName: currentUser.orbcUserLastName,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
             creditAccountId: creditAccountId,
