@@ -5,6 +5,8 @@ import {
   EGARMS_ERROR_CODE_TYPE,
 } from "../../types/creditAccount";
 import "./AccountDetails.scss";
+import { BcGovAlertBanner } from "../../../../common/components/banners/BcGovAlertBanner";
+import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 
 /**
  * Component that displays eGARMS error status if credit limit cannot be displayed.
@@ -22,8 +24,9 @@ export const AccountDetailsError = ({
   }
 
   return (
-    
-      <Box>eGARMS error {errorMessage}</Box>
-    
+    <Box>
+      <ErrorAltBcGovBanner msg={errorMessage} />
+      {/* eGARMS error {errorMessage} */}
+    </Box>
   );
 };
