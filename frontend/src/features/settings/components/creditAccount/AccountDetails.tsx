@@ -21,14 +21,17 @@ import {
   CREDIT_ACCOUNT_USER_TYPE,
   CreditAccountMetadata,
   CreditAccountStatusType,
+  EGARMS_ERROR_CODE_TYPE,
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
+  EGARMS_SUCCESS_CODE,
 } from "../../types/creditAccount";
 import "./AccountDetails.scss";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { VerifyCreditAccountModal } from "./VerifyCreditAccountModal";
+import { AccountDetailsError } from "./AccountDetailsError";
 
 /**
  * Component that displays credit limit, available balance etc.
@@ -54,10 +57,18 @@ export const AccountDetails = ({
   const isMenuOpen = Boolean(anchorEl);
   const queryClient = useQueryClient();
 
-  const { data: creditAccountLimitData } = useGetCreditAccountLimitsQuery({
+  const {
+    data: creditAccountLimitData,
+    isError: isCreditAccountLimitError,
+    isPending: isCreditAccountLimitPending,
+  } = useGetCreditAccountLimitsQuery({
     companyId,
     creditAccountId,
   });
+
+  const shouldDisplayCreditLimit =
+    !isCreditAccountLimitPending &&
+    creditAccountLimitData?.egarmsReturnCode === EGARMS_SUCCESS_CODE.I0001;
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
@@ -153,132 +164,149 @@ export const AccountDetails = ({
 
   return (
     <div className="account-details">
-      <Box className="account-details__table">
-        <Box className="account-details__header">
-          <Typography className="account-details__text account-details__text--white">
-            Credit Account Details
-          </Typography>
-
-          <RenderIf
-            component={
-              <Box>
-                <Tooltip title="Actions">
-                  <Button
-                    className="account-details__button"
-                    id="actions-button"
-                    aria-label="Expand credit account details actions menu"
-                    aria-controls={isMenuOpen ? "actions menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={isMenuOpen ? "true" : undefined}
-                    onClick={handleMenuOpen}
-                  >
-                    <FontAwesomeIcon
-                      icon={faEllipsisV}
-                      className="button__icon"
-                    />
-                  </Button>
-                </Tooltip>
-                <Menu
-                  className="account-details__menu"
-                  id="actions-menu"
-                  anchorEl={anchorEl}
-                  open={isMenuOpen}
-                  onClose={handleMenuClose}
-                  MenuListProps={{
-                    "aria-labelledby": "actions-button",
-                  }}
-                >
-                  {!isCreditAccountVerified && (
-                    <MenuItem
-                      onClick={() => setShowVerifyCreditAccountModal(true)}
-                      disabled={isPendingVerifyCreditAccount}
-                    >
-                      Verify Account
-                    </MenuItem>
-                  )}
-                  {creditAccountStatus ===
-                    CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
-                    <MenuItem
-                      onClick={() => setShowHoldCreditAccountModal(true)}
-                      disabled={isPending}
-                    >
-                      Put On Hold
-                    </MenuItem>
-                  )}
-                  {creditAccountStatus ===
-                    CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD && (
-                    <MenuItem
-                      onClick={() =>
-                        handleUpdateCreditAccountStatus({
-                          updateStatusAction:
-                            UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
-                        })
-                      }
-                      disabled={isPending}
-                    >
-                      Remove Hold
-                    </MenuItem>
-                  )}
-                  {creditAccountStatus !==
-                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
-                    <MenuItem
-                      onClick={() => setShowCloseCreditAccountModal(true)}
-                    >
-                      Close Credit Account
-                    </MenuItem>
-                  )}
-                  {creditAccountStatus ===
-                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
-                    <MenuItem
-                      onClick={() =>
-                        handleUpdateCreditAccountStatus({
-                          updateStatusAction:
-                            UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
-                        })
-                      }
-                      disabled={isPending}
-                    >
-                      Reopen Credit Account
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Box>
+      <RenderIf
+        component={
+          <AccountDetailsError
+            key={"account-details-error"}
+            eGARMSReturnCode={
+              creditAccountLimitData?.egarmsReturnCode as EGARMS_ERROR_CODE_TYPE
             }
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey:
-                "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
-            }}
-            additionalConditionToCheck={() => isAccountHolder}
           />
+        }
+        additionalConditionToCheck={() =>
+          !isCreditAccountLimitPending &&
+          (!shouldDisplayCreditLimit || isCreditAccountLimitError)
+        }
+      />
+      {shouldDisplayCreditLimit && (
+        <Box className="account-details__table">
+          <Box className="account-details__header">
+            <Typography className="account-details__text account-details__text--white">
+              Credit Account Details
+            </Typography>
+            <RenderIf
+              component={
+                <Box>
+                  <Tooltip title="Actions">
+                    <Button
+                      className="account-details__button"
+                      id="actions-button"
+                      aria-label="Expand credit account details actions menu"
+                      aria-controls={isMenuOpen ? "actions menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={isMenuOpen ? "true" : undefined}
+                      onClick={handleMenuOpen}
+                    >
+                      <FontAwesomeIcon
+                        icon={faEllipsisV}
+                        className="button__icon"
+                      />
+                    </Button>
+                  </Tooltip>
+                  <Menu
+                    className="account-details__menu"
+                    id="actions-menu"
+                    anchorEl={anchorEl}
+                    open={isMenuOpen}
+                    onClose={handleMenuClose}
+                    MenuListProps={{
+                      "aria-labelledby": "actions-button",
+                    }}
+                  >
+                    {!isCreditAccountVerified && (
+                      <MenuItem
+                        onClick={() => setShowVerifyCreditAccountModal(true)}
+                        disabled={isPendingVerifyCreditAccount}
+                      >
+                        Verify Account
+                      </MenuItem>
+                    )}
+                    {creditAccountStatus ===
+                      CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
+                      <MenuItem
+                        onClick={() => setShowHoldCreditAccountModal(true)}
+                        disabled={isPending}
+                      >
+                        Put On Hold
+                      </MenuItem>
+                    )}
+                    {creditAccountStatus ===
+                      CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD && (
+                      <MenuItem
+                        onClick={() =>
+                          handleUpdateCreditAccountStatus({
+                            updateStatusAction:
+                              UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
+                          })
+                        }
+                        disabled={isPending}
+                      >
+                        Remove Hold
+                      </MenuItem>
+                    )}
+                    {creditAccountStatus !==
+                      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
+                      <MenuItem
+                        onClick={() => setShowCloseCreditAccountModal(true)}
+                      >
+                        Close Credit Account
+                      </MenuItem>
+                    )}
+                    {creditAccountStatus ===
+                      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
+                      <MenuItem
+                        onClick={() =>
+                          handleUpdateCreditAccountStatus({
+                            updateStatusAction:
+                              UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
+                          })
+                        }
+                        disabled={isPending}
+                      >
+                        Reopen Credit Account
+                      </MenuItem>
+                    )}
+                  </Menu>
+                </Box>
+              }
+              permissionMatrixKeys={{
+                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                permissionMatrixFunctionKey:
+                  "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
+              }}
+              additionalConditionToCheck={() =>
+                isAccountHolder && shouldDisplayCreditLimit
+              }
+            />
+          </Box>
+          <Box className="account-details__body">
+            {creditAccountLimitData?.creditLimit !== undefined && (
+              <Box className="account-details__row">
+                <dt className="account-details__text">Credit Limit</dt>
+                <dd className="account-details__text">
+                  {renderValue(creditAccountLimitData.creditLimit)}
+                </dd>
+              </Box>
+            )}
+            {creditAccountLimitData?.creditBalance !== undefined && (
+              <Box className="account-details__row">
+                <dt className="account-details__text">Credit Balance</dt>
+                <dd className="account-details__text">
+                  {renderValue(creditAccountLimitData.creditBalance)}
+                </dd>
+              </Box>
+            )}
+            {creditAccountLimitData?.availableCredit !== undefined && (
+              <Box className="account-details__row">
+                <dt className="account-details__text">Available Credit</dt>
+                <dd className="account-details__text">
+                  {renderValue(creditAccountLimitData.availableCredit)}
+                </dd>
+              </Box>
+            )}
+          </Box>
         </Box>
-        <Box className="account-details__body">
-          {creditAccountLimitData?.creditLimit !== undefined && (
-            <Box className="account-details__row">
-              <dt className="account-details__text">Credit Limit</dt>
-              <dd className="account-details__text">
-                {renderValue(creditAccountLimitData.creditLimit)}
-              </dd>
-            </Box>
-          )}
-          {creditAccountLimitData?.creditBalance !== undefined && (
-            <Box className="account-details__row">
-              <dt className="account-details__text">Credit Balance</dt>
-              <dd className="account-details__text">
-                {renderValue(creditAccountLimitData.creditBalance)}
-              </dd>
-            </Box>
-          )}
-          {creditAccountLimitData?.availableCredit !== undefined && (
-            <Box className="account-details__row">
-              <dt className="account-details__text">Available Credit</dt>
-              <dd className="account-details__text">
-                {renderValue(creditAccountLimitData.availableCredit)}
-              </dd>
-            </Box>
-          )}
-        </Box>
-      </Box>
+      )}
       {showVerifyCreditAccountModal && (
         <VerifyCreditAccountModal
           showModal={showVerifyCreditAccountModal}
