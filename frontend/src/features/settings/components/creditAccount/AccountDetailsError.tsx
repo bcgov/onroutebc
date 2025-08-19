@@ -22,8 +22,8 @@ export const AccountDetailsError = ({
   }
 
   return (
-    <div className="account-details">
+    
       <Box>eGARMS error {errorMessage}</Box>
-    </div>
+    
   );
 };

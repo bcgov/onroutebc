@@ -164,6 +164,12 @@ export const AccountDetails = ({
 
   return (
     <div className="account-details">
+      <AccountDetailsError
+        key={"account-details-error"}
+        eGARMSReturnCode={
+          creditAccountLimitData?.egarmsReturnCode as EGARMS_ERROR_CODE_TYPE
+        }
+      />
       <RenderIf
         component={
           <AccountDetailsError
