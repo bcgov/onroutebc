@@ -58,6 +58,7 @@ import {
   PPC_EMAIL,
 } from "../../../../common/constants/constants";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -67,7 +68,10 @@ const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.GA,
 ];
 
-const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
+const AVAILABLE_CV_PAYMENT_METHODS = [
+  PAYMENT_METHOD_TYPE_CODE.WEB,
+  PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+];
 
 export const ShoppingCartPage = () => {
   const navigate = useNavigate();
@@ -129,11 +133,34 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
+  const {
+    data: creditAccountMetadata,
+    isPending: isCreditAccountMetadataPending,
+    isError: isCreditAccountMetadataError,
+  } = useGetCreditAccountMetadataQuery(companyId);
 
-  const availablePaymentMethods = isStaffActingAsCompany
+  let availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
     : AVAILABLE_CV_PAYMENT_METHODS;
 
+  if (!isCreditAccountMetadataPending) {
+    // If the credit account is not a valid payment method,
+    // filter it out from the available payment methods.
+    if (
+      !creditAccountMetadata?.isValidPaymentMethod ||
+      isCreditAccountMetadataError
+    ) {
+      if (isStaffActingAsCompany) {
+        availablePaymentMethods = AVAILABLE_STAFF_PAYMENT_METHODS.filter(
+          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+        );
+      } else {
+        availablePaymentMethods = AVAILABLE_CV_PAYMENT_METHODS.filter(
+          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+        );
+      }
+    }
+  }
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
       paymentMethod: availablePaymentMethods[0],
