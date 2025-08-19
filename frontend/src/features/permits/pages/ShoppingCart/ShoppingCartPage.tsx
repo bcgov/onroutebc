@@ -8,7 +8,11 @@ import { isZeroAmount } from "../../helpers/feeSummary";
 import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
-import { TRANSACTION_TYPES } from "../../types/payment";
+import {
+  StartTransactionErrorData,
+  StartTransactionResponseData,
+  TRANSACTION_TYPES,
+} from "../../types/payment";
 import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
 import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -59,6 +63,7 @@ import {
 import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 import { ApplicationErrorsDialog } from "./components/ApplicationErrorsDialog";
 import { PAYMENT_ERRORS } from "../../../policy/types/PaymentError";
+import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -68,7 +73,10 @@ const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.GA,
 ];
 
-const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
+const AVAILABLE_CV_PAYMENT_METHODS = [
+  PAYMENT_METHOD_TYPE_CODE.WEB,
+  PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+];
 
 export const ShoppingCartPage = () => {
   const navigate = useNavigate();
@@ -139,11 +147,34 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
+  const {
+    data: creditAccountMetadata,
+    isPending: isCreditAccountMetadataPending,
+    isError: isCreditAccountMetadataError,
+  } = useGetCreditAccountMetadataQuery(companyId);
 
-  const availablePaymentMethods = isStaffActingAsCompany
+  let availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
     : AVAILABLE_CV_PAYMENT_METHODS;
 
+  if (!isCreditAccountMetadataPending) {
+    // If the credit account is not a valid payment method,
+    // filter it out from the available payment methods.
+    if (
+      !creditAccountMetadata?.isValidPaymentMethod ||
+      isCreditAccountMetadataError
+    ) {
+      if (isStaffActingAsCompany) {
+        availablePaymentMethods = AVAILABLE_STAFF_PAYMENT_METHODS.filter(
+          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+        );
+      } else {
+        availablePaymentMethods = AVAILABLE_CV_PAYMENT_METHODS.filter(
+          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+        );
+      }
+    }
+  }
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
       paymentMethod: availablePaymentMethods[0],
@@ -158,7 +189,8 @@ export const ShoppingCartPage = () => {
     reValidateMode: "onChange",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, watch } = formMethods;
+  const selectedPaymentMethod = watch("paymentMethod");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -168,10 +200,20 @@ export const ShoppingCartPage = () => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined" && selectedIds.length > 0) {
-      if (!transaction) {
+      if (
+        !transaction ||
+        (transaction as StartTransactionErrorData)?.errorCode
+      ) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else if ((isFeeZero || isStaffActingAsCompany) && !hasIssued) {
+      } else if (
+        (isFeeZero ||
+          isStaffActingAsCompany ||
+          // Payment by credit for BCeID users has no url and hence
+          // if payment transaction is successful, issue permits.
+          selectedPaymentMethod === PAYMENT_METHOD_TYPE_CODE.ACCOUNT) &&
+        !hasIssued
+      ) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
         issuePermitMutation.mutate({
@@ -186,13 +228,16 @@ export const ShoppingCartPage = () => {
         cartQuery.refetch();
         refetchCartCount();
       } else {
-        // CV Client payment, anticipate PayBC transaction url
-        if (!transaction?.url) {
+        // PayBC Payment by BCeID, anticipate PayBC transaction url
+        if (!(transaction as StartTransactionResponseData)?.url) {
           // Failed to generate transaction url
           navigate(SHOPPING_CART_ROUTES.DETAILS(true));
         } else {
           // Redirect to PayBC transaction url to continue payment
-          window.open(transaction.url, "_self");
+          window.open(
+            (transaction as StartTransactionResponseData).url,
+            "_self",
+          );
         }
       }
     }
@@ -509,7 +554,15 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {showPaymentFailedBanner ? <PaymentFailedBanner /> : null}
+          {paymentFailed && showPaymentFailedBanner ? (
+            <PaymentFailedBanner
+              errorMessage={
+                (transaction as StartTransactionErrorData)?.errorCode
+                  ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
+                  : ""
+              }
+            />
+          ) : null}
 
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
