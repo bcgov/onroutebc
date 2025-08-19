@@ -8,7 +8,11 @@ import { isZeroAmount } from "../../helpers/feeSummary";
 import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
-import { TRANSACTION_TYPES } from "../../types/payment";
+import {
+  StartTransactionErrorData,
+  StartTransactionResponseData,
+  TRANSACTION_TYPES,
+} from "../../types/payment";
 import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
 import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -154,7 +158,10 @@ export const ShoppingCartPage = () => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined") {
-      if (!transaction) {
+      if (
+        !transaction ||
+        (transaction as StartTransactionErrorData)?.errorCode
+      ) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else if ((isFeeZero || isStaffActingAsCompany) && !hasIssued) {
@@ -173,12 +180,15 @@ export const ShoppingCartPage = () => {
         refetchCartCount();
       } else {
         // CV Client payment, anticipate PayBC transaction url
-        if (!transaction?.url) {
+        if (!(transaction as StartTransactionResponseData)?.url) {
           // Failed to generate transaction url
           navigate(SHOPPING_CART_ROUTES.DETAILS(true));
         } else {
           // Redirect to PayBC transaction url to continue payment
-          window.open(transaction.url, "_self");
+          window.open(
+            (transaction as StartTransactionResponseData).url,
+            "_self",
+          );
         }
       }
     }
@@ -444,7 +454,15 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {paymentFailed ? <PaymentFailedBanner /> : null}
+          {paymentFailed ? (
+            <PaymentFailedBanner
+              errorMessage={
+                (transaction as StartTransactionErrorData)?.errorCode
+                  ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
+                  : ""
+              }
+            />
+          ) : null}
 
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
