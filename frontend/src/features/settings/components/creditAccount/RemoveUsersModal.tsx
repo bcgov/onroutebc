@@ -37,6 +37,7 @@ export const RemoveUsersModal = ({
 
   const { data: creditAccount } = useGetCreditAccountMetadataQuery(
     getDefaultRequiredVal(0, companyId),
+    true,
   );
 
   const { mutateAsync, isPending } = useRemoveCreditAccountUsersMutation();

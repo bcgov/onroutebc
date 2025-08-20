@@ -137,12 +137,15 @@ export class CreditAccountProfile extends AutomapperProfile {
               {
                 currentUser,
                 egarmsCreditAccountDetails,
+                mapBasedonRole,
               }: {
                 currentUser: IUserJWT;
                 egarmsCreditAccountDetails: IEGARMSResponse;
+                mapBasedonRole: boolean;
               },
             ) => {
               if (
+                mapBasedonRole &&
                 doesUserHaveRole(currentUser?.orbcUserRole, [
                   IDIRUserRole.PPC_CLERK,
                   IDIRUserRole.CTPO,
@@ -164,13 +167,16 @@ export class CreditAccountProfile extends AutomapperProfile {
                 currentUser,
                 egarmsCreditAccountDetails,
                 orbcAmountToAdjust,
+                mapBasedonRole,
               }: {
                 currentUser: IUserJWT;
                 egarmsCreditAccountDetails: IEGARMSResponse;
                 orbcAmountToAdjust: number;
+                mapBasedonRole: boolean;
               },
             ) => {
               if (
+                mapBasedonRole &&
                 doesUserHaveRole(currentUser?.orbcUserRole, [
                   IDIRUserRole.PPC_CLERK,
                   IDIRUserRole.CTPO,
