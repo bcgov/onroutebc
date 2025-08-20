@@ -1250,10 +1250,12 @@ export class CreditAccountService {
     companyId,
     creditAccountId,
     currentUser,
+    mapBasedonRole,
   }: {
     companyId: number;
     creditAccountId: number;
     currentUser: IUserJWT;
+    mapBasedonRole?: Nullable<boolean>;
   }): Promise<ReadCreditAccountLimitDto> {
     const creditAccount = await this.findCreditAccountDetails(
       companyId,
@@ -1322,6 +1324,7 @@ export class CreditAccountService {
           currentUser: currentUser,
           egarmsCreditAccountDetails: egarmsCreditAccountDetails,
           orbcAmountToAdjust: orbcAmountToAdjust,
+          mapBasedonRole: mapBasedonRole,
         }),
       },
     );
