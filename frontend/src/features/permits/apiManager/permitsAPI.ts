@@ -27,7 +27,6 @@ import {
 import {
   CompleteTransactionRequestData,
   CompleteTransactionResponseData,
-  StartTransactionErrorData,
   StartTransactionRequestData,
   StartTransactionResponseData,
 } from "../types/payment";
@@ -318,7 +317,7 @@ export const downloadReceiptPdf = async (
 export const startTransaction = async (
   requestData: StartTransactionRequestData,
 ): Promise<
-  RequiredOrNull<StartTransactionResponseData | StartTransactionErrorData>
+  RequiredOrNull<StartTransactionResponseData>
 > => {
   try {
     const response = await httpPOSTRequest(
