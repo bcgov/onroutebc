@@ -83,14 +83,17 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
             return selectedUser.join(", ");
           }
 
+          // create Set of valid GUIDs
+          const permitIssuerGUIDs = new Set(Object.values(permitIssuers));
+
           // look up userName in the permitIssuers object from the selected userGUID
           const selectedUserNames = selectedUser.map((selectedUserGUID) => {
-            for (const userName in permitIssuers) {
-              if (Object(permitIssuers)[userName] === selectedUserGUID) {
-                return userName;
-              }
+            if (permitIssuerGUIDs.has(selectedUserGUID)) {
+              return Object.keys(permitIssuers).find(
+                (username) =>
+                  Object(permitIssuers)[username] === selectedUserGUID,
+              );
             }
-            return selectedUserGUID;
           });
 
           return selectedUserNames.join(", ");
