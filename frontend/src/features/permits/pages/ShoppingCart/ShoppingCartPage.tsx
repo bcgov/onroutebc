@@ -9,7 +9,6 @@ import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeS
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import {
-  StartTransactionErrorData,
   StartTransactionResponseData,
   TRANSACTION_TYPES,
 } from "../../types/payment";
@@ -194,10 +193,7 @@ export const ShoppingCartPage = () => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined") {
-      if (
-        !transaction ||
-        (transaction as StartTransactionErrorData)?.errorCode
-      ) {
+      if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else if (
@@ -497,15 +493,7 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {paymentFailed ? (
-            <PaymentFailedBanner
-              errorMessage={
-                (transaction as StartTransactionErrorData)?.errorCode
-                  ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
-                  : ""
-              }
-            />
-          ) : null}
+          {paymentFailed ? <PaymentFailedBanner /> : null}
 
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
