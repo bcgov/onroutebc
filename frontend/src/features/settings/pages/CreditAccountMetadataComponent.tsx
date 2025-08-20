@@ -19,7 +19,7 @@ export const CreditAccountMetadataComponent = ({
   companyId: number;
 }) => {
   const { data: creditAccountMetadata, isPending } =
-    useGetCreditAccountMetadataQuery(companyId);
+    useGetCreditAccountMetadataQuery(companyId, true);
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
   if (!isPending) {

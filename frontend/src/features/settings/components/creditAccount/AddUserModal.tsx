@@ -35,7 +35,7 @@ export const AddUserModal = ({
     return status === 200;
   };
   const { data: userCreditAccount, isLoading: isUserCreditAccountLoading } =
-    useGetCreditAccountMetadataQuery(userData.companyId);
+    useGetCreditAccountMetadataQuery(userData.companyId, true);
 
   const existingCreditAccountHolder =
     !isUserCreditAccountLoading && Boolean(userCreditAccount?.creditAccountId);
