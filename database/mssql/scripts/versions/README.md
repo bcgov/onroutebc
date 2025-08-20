@@ -340,5 +340,5 @@
 ### Version 86:
 - Update NRQCV and NRSCV names to Non-Resident Quarterly Licensing and Non-Resident Single Trip Licensing respectively
 
-### Version 87a:
+### Version 87:
 - Updates to policy config to support vehicle font display code
