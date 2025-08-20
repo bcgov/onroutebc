@@ -206,6 +206,7 @@ export class CreditAccountController {
         companyId,
         creditAccountId,
         currentUser: request.user as IUserJWT,
+        mapBasedonRole: true,
       });
     return readCreditAccountLimitDto;
   }
