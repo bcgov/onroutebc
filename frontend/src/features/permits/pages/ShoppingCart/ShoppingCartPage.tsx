@@ -9,7 +9,6 @@ import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeS
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import {
-  StartTransactionErrorData,
   StartTransactionResponseData,
   TRANSACTION_TYPES,
 } from "../../types/payment";
@@ -208,10 +207,7 @@ export const ShoppingCartPage = () => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined" && selectedIds.length > 0) {
-      if (
-        !transaction ||
-        (transaction as StartTransactionErrorData)?.errorCode
-      ) {
+      if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else if (
@@ -266,23 +262,35 @@ export const ShoppingCartPage = () => {
     error: startTransactionMutationError,
   } = startTransactionMutation;
 
+  const errorCodeFromStartTransacationMutation =
+    startTransactionMutationError?.response?.data?.error[0].errorCode;
+
   // TODO check LOA validation errors are being handled correctly
   useEffect(() => {
     if (startTransactionMutationFailed) {
-      const errorCode =
-        startTransactionMutationError.response?.data.error[0].errorCode;
+      if (
+        errorCodeFromStartTransacationMutation ===
+        PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
+      ) {
+        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+      }
       // application has been removed from cart
-      if (errorCode === PAYMENT_ERRORS.TRANS_INVALID_APPLICATION_STATUS) {
+      else if (
+        errorCodeFromStartTransacationMutation ===
+        PAYMENT_ERRORS.TRANS_INVALID_APPLICATION_STATUS
+      ) {
         setShowUpdateCartDialog(true);
       } else if (
         // application is no longer valid per policy due to changes to application
-        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        errorCodeFromStartTransacationMutation ===
+          PAYMENT_ERRORS.VALIDATION_FAILURE &&
         !isApplicationErrors
       ) {
         setShowUpdateCartDialog(true);
       } else if (
         // there are already applications with errors shown to the user that need to be resolved
-        errorCode === PAYMENT_ERRORS.VALIDATION_FAILURE &&
+        errorCodeFromStartTransacationMutation ===
+          PAYMENT_ERRORS.VALIDATION_FAILURE &&
         isApplicationErrors
       ) {
         setShowApplicationErrorsDialog(true);
@@ -565,7 +573,8 @@ export const ShoppingCartPage = () => {
           {paymentFailed && showPaymentFailedBanner ? (
             <PaymentFailedBanner
               errorMessage={
-                (transaction as StartTransactionErrorData)?.errorCode
+                errorCodeFromStartTransacationMutation ===
+                PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
                   ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
                   : ""
               }
