@@ -10,10 +10,7 @@ import {
 } from "@tanstack/react-query";
 
 import { IssuePermitsResponse } from "../types/permit";
-import {
-  StartTransactionErrorData,
-  StartTransactionResponseData,
-} from "../types/payment";
+import { StartTransactionResponseData } from "../types/payment";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/serialize/deserializeApplication";
@@ -223,36 +220,21 @@ export const usePermitDetailsQuery = (
  */
 export const useStartTransaction = () => {
   const [transaction, setTransaction] =
-    useState<
-      Nullable<StartTransactionResponseData | StartTransactionErrorData>
-    >(undefined);
+    useState<Nullable<StartTransactionResponseData>>(undefined);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: startTransaction,
     retry: false,
     onSuccess: (transactionData) => {
-      // If there are no errors from the API response body,
-      // set the transaction data and invalidate the transaction query.
-      if (!(transactionData as StartTransactionErrorData)?.errorCode) {
-        queryClient.invalidateQueries({
-          queryKey: ["transaction"],
-        });
-        queryClient.setQueryData(["transaction"], transactionData);
-        setTransaction(transactionData as StartTransactionResponseData);
-      } else {
-        // Set errorCode in the object to indicate there was an error.
-        setTransaction(transactionData as StartTransactionErrorData);
-      }
+      queryClient.invalidateQueries({
+        queryKey: ["transaction"],
+      });
+      queryClient.setQueryData(["transaction"], transactionData);
+      setTransaction(transactionData as StartTransactionResponseData);
     },
     onError: (error: AxiosError) => {
       console.error(error);
       setTransaction(undefined);
-      navigate(ERROR_ROUTES.UNEXPECTED, {
-        state: {
-          correlationId: error?.response?.headers["x-correlation-id"],
-        },
-      });
     },
   });
 

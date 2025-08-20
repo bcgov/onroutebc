@@ -9,7 +9,6 @@ import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeS
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import {
-  StartTransactionErrorData,
   StartTransactionResponseData,
   TRANSACTION_TYPES,
 } from "../../types/payment";
@@ -60,6 +59,7 @@ import {
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { UnproccessableEntityResponse } from "../../../../common/types/common";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -194,10 +194,7 @@ export const ShoppingCartPage = () => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined") {
-      if (
-        !transaction ||
-        (transaction as StartTransactionErrorData)?.errorCode
-      ) {
+      if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else if (
@@ -246,6 +243,27 @@ export const ShoppingCartPage = () => {
       navigate(PERMITS_ROUTES.SUCCESS, { replace: true });
     }
   }, [issueResults]);
+
+  const {
+    isError: startTransactionMutationFailed,
+    error: startTransactionMutationError,
+  } = startTransactionMutation;
+
+  const errorCodeFromStartTransacationMutation = (
+    startTransactionMutationError?.response
+      ?.data as UnproccessableEntityResponse
+  )?.error[0].errorCode;
+
+  useEffect(() => {
+    if (startTransactionMutationFailed) {
+      // application has been removed from cart
+      if (
+        errorCodeFromStartTransacationMutation === "CREDIT_ACCOUNT_MISMATCH"
+      ) {
+        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+      }
+    }
+  }, [startTransactionMutationFailed, errorCodeFromStartTransacationMutation]);
 
   const handlePayWithIcepay = (
     cardType: PaymentCardTypeCode,
@@ -500,7 +518,8 @@ export const ShoppingCartPage = () => {
           {paymentFailed ? (
             <PaymentFailedBanner
               errorMessage={
-                (transaction as StartTransactionErrorData)?.errorCode
+                errorCodeFromStartTransacationMutation ===
+                "CREDIT_ACCOUNT_MISMATCH"
                   ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
                   : ""
               }

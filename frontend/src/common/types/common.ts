@@ -173,6 +173,22 @@ export interface PaginatedResponse<T> {
   meta: PageMetadataInResponse;
 }
 
+/**
+ * The response structure for an unprocessable entity error.
+ * This is used when the API returns a 422 status code.
+ */
+export type UnproccessableEntityResponse = {
+  message: string;
+  status: number;
+  error: [
+    {
+      message: string;
+      additionalInfo: string;
+      errorCode: string;
+    },
+  ];
+};
+
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
 export type Nullable<T> = Optional<RequiredOrNull<T>>;
