@@ -61,7 +61,7 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const companyId = getDefaultRequiredVal(0, companyIdFromContext);
   const { data: creditAccountMetadata } =
-    useGetCreditAccountMetadataQuery(companyId);
+    useGetCreditAccountMetadataQuery(companyId, true);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
 

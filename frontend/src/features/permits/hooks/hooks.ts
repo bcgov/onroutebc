@@ -240,6 +240,9 @@ export const useStartTransaction = () => {
         });
         queryClient.setQueryData(["transaction"], transactionData);
         setTransaction(transactionData as StartTransactionResponseData);
+      } else {
+        // Set errorCode in the object to indicate there was an error.
+        setTransaction(transactionData as StartTransactionErrorData);
       }
     },
     onError: (error: AxiosError) => {
