@@ -15,7 +15,7 @@ import { TabComponentProps } from "../../../../common/components/tabs/types/TabC
 export const ManageSettingsDashboard = React.memo(() => {
   const { companyId } = useContext(OnRouteBCContext);
   const { data: creditAccountMetadata, isPending } =
-    useGetCreditAccountMetadataQuery(companyId as number);
+    useGetCreditAccountMetadataQuery(companyId as number, true);
 
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;

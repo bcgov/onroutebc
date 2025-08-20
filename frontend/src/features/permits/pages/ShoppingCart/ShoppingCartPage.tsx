@@ -64,6 +64,7 @@ import { ErrorAltBcGovBanner } from "../../../../common/components/banners/Error
 import { ApplicationErrorsDialog } from "./components/ApplicationErrorsDialog";
 import { PAYMENT_ERRORS } from "../../../policy/types/PaymentError";
 import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -147,11 +148,18 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
+  const shouldDisplayCreditAccount = usePermissionMatrix({
+    featureFlag: "CREDIT-ACCOUNT",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MISCELLANEOUS",
+      permissionMatrixFunctionKey: "PAY_WITH_CREDIT_ACCOUNT",
+    },
+  });
   const {
     data: creditAccountMetadata,
     isPending: isCreditAccountMetadataPending,
     isError: isCreditAccountMetadataError,
-  } = useGetCreditAccountMetadataQuery(companyId);
+  } = useGetCreditAccountMetadataQuery(companyId, shouldDisplayCreditAccount);
 
   let availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
