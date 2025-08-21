@@ -1,0 +1,55 @@
+@import "../../../../themes/orbcStyles";
+
+.account-details-error {
+  &__table {
+   border-radius: 4px;
+   overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: $bc-black;
+  }
+
+  & &__button, .button {
+    border: 1px solid transparent;
+    padding: .75rem 1.25rem;
+    &:hover {
+      background-color: transparent;
+      border-color: $white;        
+    }
+
+    &__icon {
+      color: $white;
+      font-size: 1.5rem;
+    }
+  }
+  
+  &__body {
+    padding: 0 1rem;
+    background-color: $banner-grey;
+  }
+
+  &__row {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $bc-border-grey;
+    }
+  }
+
+  & &__text{
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $bc-primary-blue;
+    
+    &--white {
+      color: $white;
+    }
+  }
+}

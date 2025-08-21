@@ -233,8 +233,45 @@ export interface CreditAccountHistoryData {
   comment: string;
 }
 
+/**
+ * The EGARMS success codes used for credit account operations.
+ */
+export const EGARMS_SUCCESS_CODE = { I0001: "I0001" } as const;
+
+export type EGARMS_SUCCESS_CODE_TYPE =
+  (typeof EGARMS_SUCCESS_CODE)[keyof typeof EGARMS_SUCCESS_CODE];
+
+/**
+ * The EGARMS error codes used for credit account operations.
+ */
+export const EGARMS_ERROR_CODE = {
+  E0001: "E0001",
+  E0002: "E0002",
+  E0003: "E0003",
+  E1739: "E1739",
+  E9999: "E9999",
+  E9998: "E9998",
+} as const;
+
+export type EGARMS_ERROR_CODE_TYPE =
+  (typeof EGARMS_ERROR_CODE)[keyof typeof EGARMS_ERROR_CODE];
+
+/**
+ * The EGARMS response codes used for credit account operations.
+ */
+export const EGARMS_CODE_ERROR_MESSAGES = {
+  E0001: "Credit Account not found.",
+  E0002: "Credit Account is inactive.",
+  E0003: "Credit Account on hold.",
+  E1739: "Credit Account has exceeded negative allowed amount.",
+  E9998: "Credit Account is unavailable.",
+  E9999: "Serious error.",
+  DEFAULT: "Credit Account is unavailable.",
+} as const;
+
 export interface CreditAccountLimitData {
   creditLimit: string;
   creditBalance: number;
   availableCredit: number;
+  egarmsReturnCode?: EGARMS_ERROR_CODE_TYPE | EGARMS_SUCCESS_CODE_TYPE;
 }
