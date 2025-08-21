@@ -81,7 +81,6 @@ export class PendingUsersService {
       ) {
         throwUnprocessableEntityException(
           'First user must be an Administrator.',
-          null,
           'FIRST_USER_ADMIN',
         );
       }
@@ -99,7 +98,6 @@ export class PendingUsersService {
       if (existingPendingUser?.length) {
         throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already added as a pending user to a company and is awaiting processing.',
-          null,
           'USER_ALREADY_EXISTS',
         );
       }
@@ -118,7 +116,6 @@ export class PendingUsersService {
       if (existingUser?.length) {
         throwUnprocessableEntityException(
           'The addition of a pending user is denied as the user is already associated with a company.',
-          null,
           'USER_ALREADY_EXISTS',
         );
       }

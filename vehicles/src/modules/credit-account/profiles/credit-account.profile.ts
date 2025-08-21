@@ -22,11 +22,12 @@ import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-acc
 import { ReadCreditAccountLimitDto } from '../dto/response/read-credit-account-limit.dto';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import {
-  CLIENT_USER_ROLE_LIST,
-  IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
+import { CLIENT_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import { IEGARMSResponse } from '../../../common/interface/egarms-response.interface';
+import {
+  isHideLimitDetails,
+  validEgarmsReturnCodesToDisplayCreditDetails,
+} from '../../../common/helper/credit-account.helper';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -145,16 +146,15 @@ export class CreditAccountProfile extends AutomapperProfile {
               },
             ) => {
               if (
-                mapBasedonRole &&
-                doesUserHaveRole(currentUser?.orbcUserRole, [
-                  IDIRUserRole.PPC_CLERK,
-                  IDIRUserRole.CTPO,
-                ])
+                isHideLimitDetails(
+                  mapBasedonRole,
+                  currentUser,
+                  egarmsCreditAccountDetails,
+                )
               ) {
                 return undefined;
-              } else {
-                return egarmsCreditAccountDetails?.PPABalance?.negative_limit;
               }
+              return egarmsCreditAccountDetails?.PPABalance?.negative_limit;
             },
           ),
         ),
@@ -176,22 +176,21 @@ export class CreditAccountProfile extends AutomapperProfile {
               },
             ) => {
               if (
-                mapBasedonRole &&
-                doesUserHaveRole(currentUser?.orbcUserRole, [
-                  IDIRUserRole.PPC_CLERK,
-                  IDIRUserRole.CTPO,
-                ])
+                isHideLimitDetails(
+                  mapBasedonRole,
+                  currentUser,
+                  egarmsCreditAccountDetails,
+                )
               ) {
                 return undefined;
-              } else {
-                return (
-                  Math.abs(
-                    egarmsCreditAccountDetails?.PPABalance?.account_balance,
-                  ) +
-                  (source.externalAdjustmentAmount ?? 0) +
-                  (orbcAmountToAdjust ?? 0)
-                );
               }
+              return (
+                Math.abs(
+                  egarmsCreditAccountDetails?.PPABalance?.account_balance,
+                ) +
+                (source.externalAdjustmentAmount ?? 0) +
+                (orbcAmountToAdjust ?? 0)
+              );
             },
           ),
         ),
@@ -208,6 +207,13 @@ export class CreditAccountProfile extends AutomapperProfile {
                 orbcAmountToAdjust: number;
               },
             ) => {
+              if (
+                !validEgarmsReturnCodesToDisplayCreditDetails(
+                  egarmsCreditAccountDetails,
+                )
+              ) {
+                return undefined;
+              }
               return (
                 egarmsCreditAccountDetails?.PPABalance?.negative_limit +
                 egarmsCreditAccountDetails?.PPABalance?.account_balance -
