@@ -792,6 +792,7 @@ export class CreditAccountService {
       );
       throwUnprocessableEntityException(
         'Client already associated with an active Credit Account',
+        null,
         existingAccountUserDetails,
       );
     }
@@ -1363,9 +1364,10 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       this.logger.error('Credit account does not exist.');
-      throwUnprocessableEntityException('Credit account is unavailable', {
-        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
-      });
+      throwUnprocessableEntityException(
+        'Credit account is unavailable',
+        'CREDIT_ACCOUNT_UNAVAILABLE',
+      );
     }
 
     const egarmsCreditAccountDetails =
@@ -1378,9 +1380,10 @@ export class CreditAccountService {
       EGARMS_CREDIT_ACCOUNT_NOT_FOUND
     ) {
       this.logger.error('Credit account does not exist in eGARMS.');
-      throwUnprocessableEntityException('Credit account is unavailable', {
-        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
-      });
+      throwUnprocessableEntityException(
+        'Credit account is unavailable',
+        'CREDIT_ACCOUNT_UNAVAILABLE',
+      );
     }
 
     if (
@@ -1395,9 +1398,10 @@ export class CreditAccountService {
       // Log an error for attempting a refund on a closed credit account
       this.logger.error('Cannot refund to a closed Credit account.');
       // Throw an exception indicating the credit account is unavailable for refund
-      throwUnprocessableEntityException('Credit account is unavailable', {
-        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
-      });
+      throwUnprocessableEntityException(
+        'Credit account is unavailable',
+        'CREDIT_ACCOUNT_UNAVAILABLE',
+      );
     } else if (transacationType === TransactionType.REFUND) {
       // If it's a REFUND transaction but the account is not closed, return the account ID
       return creditAccount;
@@ -1413,9 +1417,10 @@ export class CreditAccountService {
       // Log an error for the credit account being in an invalid state
       this.logger.error('Credit account is in an invalid state.');
       // Throw an exception indicating the credit account is unavailable
-      throwUnprocessableEntityException('Credit account is unavailable', {
-        errorCode: 'CREDIT_ACCOUNT_UNAVAILABLE',
-      });
+      throwUnprocessableEntityException(
+        'Credit account is unavailable',
+        'CREDIT_ACCOUNT_UNAVAILABLE',
+      );
     }
     const orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
       creditAccount.creditAccountId,
@@ -1442,7 +1447,7 @@ export class CreditAccountService {
     ) {
       throwUnprocessableEntityException(
         `Credit account has insufficient balance.`,
-        { errorCode: 'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE' },
+        'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE',
       );
     }
 
