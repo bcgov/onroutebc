@@ -49,7 +49,6 @@ import {
   APPLICATIONS_ROUTES,
   ERROR_ROUTES,
   PERMITS_ROUTES,
-  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
@@ -209,7 +208,7 @@ export const ShoppingCartPage = () => {
     if (typeof transaction !== "undefined" && selectedIds.length > 0) {
       if (!transaction) {
         // Payment failed - ie. transaction object is null
-        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+        setShowPaymentFailedBanner(true);
       } else if (
         (isFeeZero ||
           isStaffActingAsCompany ||
@@ -235,7 +234,7 @@ export const ShoppingCartPage = () => {
         // PayBC Payment by BCeID, anticipate PayBC transaction url
         if (!(transaction as StartTransactionResponseData)?.url) {
           // Failed to generate transaction url
-          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+          setShowPaymentFailedBanner(true);
         } else {
           // Redirect to PayBC transaction url to continue payment
           window.open(
@@ -272,7 +271,7 @@ export const ShoppingCartPage = () => {
         errorCodeFromStartTransacationMutation ===
         PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
       ) {
-        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+        setShowPaymentFailedBanner(true);
       }
       // application has been removed from cart
       else if (
@@ -570,7 +569,7 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {paymentFailed && showPaymentFailedBanner ? (
+          {(showPaymentFailedBanner) ? (
             <PaymentFailedBanner
               errorMessage={
                 errorCodeFromStartTransacationMutation ===
