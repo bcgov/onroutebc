@@ -451,6 +451,7 @@ export class PermitService {
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
+      .andWhere('transaction.transactionApprovedDate IS NOT NULL')
       .andWhere('company.companyId = :companyId', { companyId: companyId })
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
@@ -475,6 +476,11 @@ export class PermitService {
         transactionApprovedDate:
           permitTransaction.transaction.transactionApprovedDate,
         pgApproved: permitTransaction.transaction.pgApproved,
+        creditAccountId:
+          permitTransaction?.transaction?.creditAccount?.creditAccountId,
+        creditAccountStatusType:
+          permitTransaction?.transaction?.creditAccount
+            ?.creditAccountStatusType,
       })),
     ) as PermitHistoryDto[];
   }

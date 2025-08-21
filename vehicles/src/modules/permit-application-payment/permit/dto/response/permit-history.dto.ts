@@ -3,6 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PaymentCardType } from 'src/common/enum/payment-card-type.enum';
+import {
+  CreditAccountStatus,
+  CreditAccountStatusType,
+} from '../../../../../common/enum/credit-account-status-type.enum';
 
 export class PermitHistoryDto {
   @AutoMap()
@@ -112,4 +116,19 @@ export class PermitHistoryDto {
       'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
   })
   pgApproved: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Represents the credit account id used for a transaction.',
+  })
+  creditAccountId?: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: CreditAccountStatus.ACCOUNT_ACTIVE,
+    description:
+      'Represents the current status of the credit account used for transaction',
+  })
+  creditAccountStatusType?: CreditAccountStatusType;
 }
