@@ -99,7 +99,6 @@ export class CompanyPermitController {
     isArray: true,
   })
   @Permissions({
-    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
     allowedIdirRoles: IDIR_USER_ROLE_LIST,
   })
   @Get('/:permitId/history')

@@ -447,6 +447,7 @@ export class PermitService {
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .leftJoinAndSelect('transaction.creditAccount', 'creditAccount')
       .where('permit.permitNumber IS NOT NULL')
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
