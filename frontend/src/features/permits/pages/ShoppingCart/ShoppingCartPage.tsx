@@ -272,7 +272,7 @@ export const ShoppingCartPage = () => {
         errorCodeFromStartTransacationMutation ===
         PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
       ) {
-        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+        setShowPaymentFailedBanner(true);
       }
       // application has been removed from cart
       else if (
