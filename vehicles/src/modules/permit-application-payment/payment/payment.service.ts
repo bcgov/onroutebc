@@ -357,8 +357,8 @@ export class PaymentService {
       if (!isPolicyValidationSuccessful) {
         throwUnprocessableEntityException(
           'Policy Engine Validation Failure',
-          validationResults,
           'VALIDATION_FAILURE',
+          validationResults,
         );
       }
 
@@ -603,7 +603,6 @@ export class PaymentService {
         ) {
           throwUnprocessableEntityException(
             `${application.applicationNumber} in its current status cannot be processed for payment.`,
-            null,
             'TRANS_INVALID_APPLICATION_STATUS',
           );
         }
@@ -644,8 +643,8 @@ export class PaymentService {
         if (!isPolicyValidationSuccessful) {
           throwUnprocessableEntityException(
             'Policy Engine Validation Failure',
-            validationResults,
             'VALIDATION_FAILURE',
+            validationResults,
           );
         }
 
