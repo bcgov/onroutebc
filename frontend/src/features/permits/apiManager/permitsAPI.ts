@@ -62,8 +62,8 @@ import {
 
 import {
   RevokePermitRequestData,
+  VoidOrRevokePermitResponseData,
   VoidPermitRequestData,
-  VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
 
 /**
@@ -329,8 +329,10 @@ export const startTransaction = async (
     }
     return response.data as StartTransactionResponseData;
   } catch (err) {
+    // All HTTP status >= 400 are thrown and caught here.
+    // The error is logged, and rethrown.
     console.error(err);
-    return null;
+    throw err;
   }
 };
 
@@ -538,7 +540,7 @@ export const getPermitHistory = async (
  * @param voidData Void or revoke data to be sent to backend.
  * @returns Response data containing successfully voided/revoked permit ids, as well as failed ones.
  */
-export const voidPermit = async (voidPermitParams: {
+export const voidOrRevokePermit = async (voidPermitParams: {
   permitId: string;
   voidData: VoidPermitRequestData | RevokePermitRequestData;
 }) => {
@@ -551,7 +553,7 @@ export const voidPermit = async (voidPermitParams: {
 
     if (response.status === 201 && response.data) {
       return removeEmptyIdsFromPermitsActionResponse(
-        response.data as VoidPermitResponseData,
+        response.data as VoidOrRevokePermitResponseData,
       );
     }
 

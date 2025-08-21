@@ -138,6 +138,9 @@ const MANAGE_PERMITS = {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
+  PROCESS_AMENDMENT_REFUND: {
+    allowedIDIRRoles: [SA],
+  },
   /**
    * Expired Permits tab
    */
