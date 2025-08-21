@@ -10,8 +10,8 @@ import { BadRequestExceptionDto } from '../exception/badRequestException.dto';
 
 export const throwUnprocessableEntityException = (
   message: string,
-  additionalInfo?: object,
   errorCode?: string,
+  additionalInfo?: object,
 ) => {
   throw new UnprocessableEntityException({
     message: 'Unprocessable Entity',

@@ -792,6 +792,7 @@ export class CreditAccountService {
       );
       throwUnprocessableEntityException(
         'Client already associated with an active Credit Account',
+        null,
         existingAccountUserDetails,
       );
     }
@@ -1365,7 +1366,6 @@ export class CreditAccountService {
       this.logger.error('Credit account does not exist.');
       throwUnprocessableEntityException(
         'Credit account is unavailable',
-        null,
         'CREDIT_ACCOUNT_UNAVAILABLE',
       );
     }
@@ -1382,7 +1382,6 @@ export class CreditAccountService {
       this.logger.error('Credit account does not exist in eGARMS.');
       throwUnprocessableEntityException(
         'Credit account is unavailable',
-        null,
         'CREDIT_ACCOUNT_UNAVAILABLE',
       );
     }
@@ -1401,7 +1400,6 @@ export class CreditAccountService {
       // Throw an exception indicating the credit account is unavailable for refund
       throwUnprocessableEntityException(
         'Credit account is unavailable',
-        null,
         'CREDIT_ACCOUNT_UNAVAILABLE',
       );
     } else if (transacationType === TransactionType.REFUND) {
@@ -1421,7 +1419,6 @@ export class CreditAccountService {
       // Throw an exception indicating the credit account is unavailable
       throwUnprocessableEntityException(
         'Credit account is unavailable',
-        null,
         'CREDIT_ACCOUNT_UNAVAILABLE',
       );
     }
@@ -1450,7 +1447,6 @@ export class CreditAccountService {
     ) {
       throwUnprocessableEntityException(
         `Credit account has insufficient balance.`,
-        null,
         'CREDIT_ACCOUNT_INSUFFICIENT_BALANCE',
       );
     }

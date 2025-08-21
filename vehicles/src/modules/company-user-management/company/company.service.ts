@@ -877,7 +877,6 @@ export class CompanyService {
           if (company?.companyUsers?.length) {
             throwUnprocessableEntityException(
               `You do not have the necessary authorization to view this page. Please contact your administrator.`,
-              null,
               'COMPANY_CLAIMED',
             );
           } else if (
@@ -886,7 +885,6 @@ export class CompanyService {
           ) {
             throwUnprocessableEntityException(
               `A basic bceid user cannot claim a business bceid (BBCEID) account.`,
-              null,
               'BASIC_CLAIM_BUSINESS',
             );
           } else if (
@@ -896,7 +894,6 @@ export class CompanyService {
           ) {
             throwUnprocessableEntityException(
               `Business Guid mismatch between the current user and Company`,
-              null,
               'BUSINESS_GUID_MISMATCH',
             );
           }
