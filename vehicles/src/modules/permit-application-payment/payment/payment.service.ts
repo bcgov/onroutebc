@@ -584,7 +584,7 @@ export class PaymentService {
     if (permits?.length) {
       throwUnprocessableEntityException(
         'Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one.',
-        { errorCode: 'CREDIT_ACCOUNT_MISMATCH' },
+        'CREDIT_ACCOUNT_MISMATCH',
       );
     }
   }
