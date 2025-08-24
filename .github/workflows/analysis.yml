@@ -19,10 +19,10 @@ jobs:
   codeql:
     name: CodeQL
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript
@@ -39,12 +39,12 @@ jobs:
   trivy:
     name: Trivy Security Scan
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           format: "sarif"
           output: "trivy-results.sarif"
@@ -61,7 +61,7 @@ jobs:
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     services:
       postgres:
@@ -106,7 +106,7 @@ jobs:
             token: SONAR_TOKEN_PUBLIC
             triggers: ('public')
     steps:
-      - uses: bcgov/action-test-and-analyse@v1.2.1
+      - uses: bcgov/action-test-and-analyse@v1.3.0
         with:
           commands: |
             npm ci
@@ -127,7 +127,7 @@ jobs:
     name: Results
     needs: [codeql, trivy, tests]
     if: always() && (! failure())
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - run: echo "Success!"
