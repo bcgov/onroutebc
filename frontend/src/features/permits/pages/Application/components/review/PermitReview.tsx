@@ -128,8 +128,10 @@ export const PermitReview = (props: PermitReviewProps) => {
       : false;
 
   const hasToCartButton =
-    props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
-    (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser);
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
+      (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
+      Number(props.calculatedFee) > 0);
 
   return (
     <Box className="permit-review layout-box">

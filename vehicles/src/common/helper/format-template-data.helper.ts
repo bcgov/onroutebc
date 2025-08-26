@@ -79,6 +79,12 @@ export const formatTemplateData = (
     'MMM. D, YYYY',
   );
 
+  // Format Commodity Name
+  if (template.permitData?.permittedCommodity?.commodityType) {
+    template.permitData.permittedCommodity.commodityType =
+      fullNames.commodityTypeName;
+  }
+
   // Format Vehicle Details
   template.permitData.vehicleDetails.vehicleType = fullNames.vehicleTypeName;
   template.permitData.vehicleDetails.vehicleSubType =

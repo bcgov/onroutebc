@@ -1,6 +1,9 @@
+/**
+ * The tabs on the Permits page.
+ */
 export const PERMIT_TABS = {
-  APPLICATIONS_IN_PROGRESS: "applicationsInProgressTab",
-  APPLICATIONS_IN_REVIEW: "applicationsInReviewTab",
-  ACTIVE_PERMITS: "activePermitsTab",
-  EXPIRED_PERMITS: "expiredPermitsTab",
+  APPLICATIONS_IN_PROGRESS: "ApplicationsInProgressTab",
+  APPLICATIONS_IN_REVIEW: "ApplicationsInReviewTab",
+  ACTIVE_PERMITS: "ActivePermitsTab",
+  EXPIRED_PERMITS: "ExpiredPermitsTab",
 } as const;

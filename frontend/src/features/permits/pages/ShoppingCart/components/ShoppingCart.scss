@@ -4,50 +4,39 @@
   .cart-changed-warning-banner {
     margin-bottom: 1.5rem;
   }
+  
+  &__heading {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
 
-  &__header {
+  &__actions, .actions {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    gap: 2.5rem;
     padding-bottom: 1.5rem;
     width: 100%;
     border-bottom: 1px solid $bc-border-grey;
-  }
 
-  &__header-section {
-    &--main {
+    &__select, .select {
       display: flex;
-      align-items: flex-end;
-      width: 100%;
-    }
-    
-    &--actions {
-      display: flex;
-      justify-content: flex-end;
-      min-width: 12.25rem;
-    }
-  }
+      align-items: center;
+      gap: .5rem;
 
-  &__info {
-    display: flex;
-    align-items: center;
-    margin-top: 0.5rem;
-
-    .select-info {
-      &--select-all {
-        margin-left: 0.5rem;
+      &__checkbox {
+        padding: 0;
       }
     }
-  }
 
-  & &__filter {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-left: 2.5rem;
+    &__filter, .filter {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
 
-    .cart-filter {
-      &--my {
-        margin-left: 1.5rem;
+      &__options {
+        flex-direction: row;
+        gap: 1.5rem;
       }
 
       &__label {
@@ -69,11 +58,11 @@
         }
       }
     }
-  }
 
-  &__title {
-    font-size: 1.5rem;
-    font-weight: bold;
+    &__remove {
+      margin-left: auto;
+      white-space: nowrap;
+    }
   }
 
   &__empty {
