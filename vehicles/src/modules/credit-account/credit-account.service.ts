@@ -1406,6 +1406,7 @@ export class CreditAccountService {
       // If it's a REFUND transaction but the account is not closed, return the account ID
       return creditAccount;
     } else if (
+      creditAccount?.company?.isSuspended ||
       // Check if the credit account is not verified, or is not active
       !creditAccount?.isVerified ||
       creditAccount?.creditAccountStatusType !==
