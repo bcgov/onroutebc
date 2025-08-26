@@ -3,16 +3,13 @@
 .credit-account-page {
   color: $bc-black;
   padding-top: 1.5rem;
-  padding-bottom:  3rem;
+  padding-bottom: 3rem;
 
   &__split-container {
     display: flex;
     align-items: flex-start;
     gap: 80px;
-    
-    
   }
-
 
   .account-info {
     width: 66.6%;
@@ -24,7 +21,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding-top: .5rem;
+        padding-top: 0.5rem;
         padding-bottom: 1rem;
       }
 
@@ -33,30 +30,33 @@
         font-weight: bold;
         padding: 0;
       }
-    
+
       &__user-designation {
         text-transform: capitalize;
       }
 
       &__info-banner {
         padding-top: 1.5rem;
-        padding-bottom: .75rem;
+        padding-bottom: 0.75rem;
         &__banner {
           font-weight: normal;
         }
-      
+
         &__contact {
           font-weight: bold;
           margin-left: 0.25rem;
         }
-      }      
+      }
     }
   }
 }
 
 .account-details {
-  width: 33.3%;
-  max-width: 529px; 
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 529px;
 }
 
 .add-credit-account-action {
@@ -82,13 +82,12 @@
       align-self: center;
     }
   }
-  
 }
 
 @media screen and (max-width: 768px) {
   .add-credit-account-action {
     flex-direction: column;
-    
+
     & &__btn {
       align-self: flex-start;
       margin-top: 1rem;
@@ -113,5 +112,4 @@
       max-width: none;
     }
   }
- 
 }
