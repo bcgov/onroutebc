@@ -162,39 +162,41 @@ export const ViewCreditAccount = ({
               }
             />
           </Box>
-          <RenderIf
-            component={
-              <AccountDetails
-                companyId={companyId}
-                creditAccountMetadata={creditAccountMetadata}
-                creditAccountStatus={creditAccount?.creditAccountStatusType}
-                isCreditAccountVerified={creditAccount?.isVerified}
-              />
-            }
-            permissionMatrixKeys={
-              fromTab === "MANAGE_SETTINGS"
-                ? {
-                    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-                    permissionMatrixFunctionKey: isAccountHolder
-                      ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
-                      : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
-                  }
-                : {
-                    permissionMatrixFeatureKey: "MANAGE_PROFILE",
-                    permissionMatrixFunctionKey:
-                      "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
-                  }
-            }
-            additionalConditionToCheck={() =>
-              // In case of BCeID user, CV - CA is only allowed
-              // to see the account details if the status is active.
-              fromTab === "MANAGE_SETTINGS" ||
-              (fromTab === "MANAGE_PROFILE" &&
-                creditAccount.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE &&
-                creditAccount?.isVerified)
-            }
-          />
+          <Box className="account-details">
+            <RenderIf
+              component={
+                <AccountDetails
+                  companyId={companyId}
+                  creditAccountMetadata={creditAccountMetadata}
+                  creditAccountStatus={creditAccount?.creditAccountStatusType}
+                  isCreditAccountVerified={creditAccount?.isVerified}
+                />
+              }
+              permissionMatrixKeys={
+                fromTab === "MANAGE_SETTINGS"
+                  ? {
+                      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                      permissionMatrixFunctionKey: isAccountHolder
+                        ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
+                        : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
+                    }
+                  : {
+                      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                      permissionMatrixFunctionKey:
+                        "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER",
+                    }
+              }
+              additionalConditionToCheck={() =>
+                // In case of BCeID user, CV - CA is only allowed
+                // to see the account details if the status is active.
+                fromTab === "MANAGE_SETTINGS" ||
+                (fromTab === "MANAGE_PROFILE" &&
+                  creditAccount.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE &&
+                  creditAccount?.isVerified)
+              }
+            />
+          </Box>
         </Box>
       )}
     </div>

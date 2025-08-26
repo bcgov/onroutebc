@@ -4,8 +4,7 @@ import {
   EGARMS_CODE_ERROR_MESSAGES,
   EGARMS_ERROR_CODE_TYPE,
 } from "../../types/creditAccount";
-import "./AccountDetails.scss";
-import { BcGovAlertBanner } from "../../../../common/components/banners/BcGovAlertBanner";
+import "./AccountDetailsError.scss";
 import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 
 /**
@@ -16,17 +15,24 @@ export const AccountDetailsError = ({
 }: {
   eGARMSReturnCode?: EGARMS_ERROR_CODE_TYPE;
 }) => {
+  let headerErrorMessage;
   let errorMessage;
   if (eGARMSReturnCode && eGARMSReturnCode in EGARMS_CODE_ERROR_MESSAGES) {
+    headerErrorMessage = `eGARMS return code ${eGARMSReturnCode}`;
     errorMessage = EGARMS_CODE_ERROR_MESSAGES[eGARMSReturnCode];
   } else {
+    headerErrorMessage = "eGARMS error";
     errorMessage = EGARMS_CODE_ERROR_MESSAGES["DEFAULT"];
   }
 
   return (
-    <Box>
-      <ErrorAltBcGovBanner msg={errorMessage} />
-      {/* eGARMS error {errorMessage} */}
+    <Box className="account-details-error__container">
+      <div className="account-details-error__banner">
+        <ErrorAltBcGovBanner msg={headerErrorMessage} />
+      </div>
+      <div className="account-details-error__info">
+        <span>{errorMessage}</span>
+      </div>
     </Box>
   );
 };

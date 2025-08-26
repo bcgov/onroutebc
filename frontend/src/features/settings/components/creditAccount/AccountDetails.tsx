@@ -25,6 +25,7 @@ import {
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
   EGARMS_SUCCESS_CODE,
+  EGARMS_ERROR_CODE,
 } from "../../types/creditAccount";
 import "./AccountDetails.scss";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
@@ -66,9 +67,17 @@ export const AccountDetails = ({
     creditAccountId,
   });
 
+  const shouldDisplayEGARMSError =
+    !isCreditAccountLimitPending &&
+    (creditAccountLimitData?.egarmsReturnCode !== EGARMS_SUCCESS_CODE.I0001 ||
+      isCreditAccountLimitError);
+
   const shouldDisplayCreditLimit =
     !isCreditAccountLimitPending &&
-    creditAccountLimitData?.egarmsReturnCode === EGARMS_SUCCESS_CODE.I0001;
+    (creditAccountLimitData?.egarmsReturnCode === EGARMS_SUCCESS_CODE.I0001 ||
+      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E0003 ||
+      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E0004 ||
+      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E1739);
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
@@ -164,26 +173,13 @@ export const AccountDetails = ({
 
   return (
     <div className="account-details">
-      <AccountDetailsError
-        key={"account-details-error"}
-        eGARMSReturnCode={
-          creditAccountLimitData?.egarmsReturnCode as EGARMS_ERROR_CODE_TYPE
-        }
-      />
-      <RenderIf
-        component={
-          <AccountDetailsError
-            key={"account-details-error"}
-            eGARMSReturnCode={
-              creditAccountLimitData?.egarmsReturnCode as EGARMS_ERROR_CODE_TYPE
-            }
-          />
-        }
-        additionalConditionToCheck={() =>
-          !isCreditAccountLimitPending &&
-          (!shouldDisplayCreditLimit || isCreditAccountLimitError)
-        }
-      />
+      {shouldDisplayEGARMSError && (
+        <AccountDetailsError
+          eGARMSReturnCode={
+            creditAccountLimitData?.egarmsReturnCode as EGARMS_ERROR_CODE_TYPE
+          }
+        />
+      )}
       {shouldDisplayCreditLimit && (
         <Box className="account-details__table">
           <Box className="account-details__header">
@@ -280,9 +276,7 @@ export const AccountDetails = ({
                 permissionMatrixFunctionKey:
                   "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
               }}
-              additionalConditionToCheck={() =>
-                isAccountHolder && shouldDisplayCreditLimit
-              }
+              additionalConditionToCheck={() => isAccountHolder}
             />
           </Box>
           <Box className="account-details__body">
