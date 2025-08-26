@@ -94,7 +94,12 @@ export const ViewCreditAccount = ({
                   permissionMatrixFunctionKey:
                     "VIEW_CREDIT_ACCOUNT_INFO_BANNER_ACCOUNT_HOLDER",
                 }}
-                additionalConditionToCheck={() => isAccountHolder}
+                additionalConditionToCheck={() =>
+                  isAccountHolder &&
+                  (!creditAccount?.isVerified ||
+                    creditAccount?.creditAccountStatusType !==
+                      CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE)
+                }
               />
             </Box>
             <RenderIf
