@@ -59,6 +59,9 @@ import { NotificationType } from '../../../common/enum/notification-type.enum';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { validateEmailList } from '../../../common/helper/notification.helper';
 import { convertUtcToPt } from '../../../common/helper/date-time.helper';
+import { CreditAccountService } from '../../credit-account/credit-account.service';
+import { Nullable } from '../../../common/types/common';
+import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class PermitService {
@@ -72,6 +75,7 @@ export class PermitService {
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
     private paymentService: PaymentService,
+    private readonly creditAccountService: CreditAccountService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -443,6 +447,7 @@ export class PermitService {
   public async findPermitHistory(
     originalPermitId: string,
     companyId: number,
+    currentUser?: IUserJWT,
   ): Promise<PermitHistoryDto[]> {
     const permits = await this.permitRepository
       .createQueryBuilder('permit')
@@ -459,6 +464,29 @@ export class PermitService {
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
 
+    let creditAccountId: Nullable<number>;
+    let creditAccount: Nullable<CreditAccount>;
+    let creditAccountMismatch: Nullable<boolean>;
+
+    permits.some((permit) =>
+      permit.permitTransactions?.some((permitTransaction) => {
+        creditAccountId =
+          permitTransaction?.transaction?.creditAccount?.creditAccountId;
+        return !!creditAccountId;
+      }),
+    );
+    if (creditAccountId) {
+      creditAccount = await this.creditAccountService.findCreditAccountDetails(
+        companyId,
+        currentUser,
+      );
+      creditAccountMismatch =
+        creditAccountId !== creditAccount?.creditAccountId;
+    }
+
+    const isCreditAccountTransaction = (
+      paymentMethodTyeCode: PaymentMethodType,
+    ) => paymentMethodTyeCode === PaymentMethodType.ACCOUNT && creditAccountId;
     return permits.flatMap((permit) =>
       permit.permitTransactions.map((permitTransaction) => ({
         permitNumber: permit.permitNumber,
@@ -479,11 +507,16 @@ export class PermitService {
         transactionApprovedDate:
           permitTransaction.transaction.transactionApprovedDate,
         pgApproved: permitTransaction.transaction.pgApproved,
-        creditAccountId:
-          permitTransaction?.transaction?.creditAccount?.creditAccountId,
-        creditAccountStatusType:
-          permitTransaction?.transaction?.creditAccount
-            ?.creditAccountStatusType,
+        creditAccountMismatch: isCreditAccountTransaction(
+          permitTransaction.transaction.paymentMethodTypeCode,
+        )
+          ? creditAccountMismatch
+          : undefined,
+        creditAccountStatusType: isCreditAccountTransaction(
+          permitTransaction.transaction.paymentMethodTypeCode,
+        )
+          ? creditAccount?.creditAccountStatusType
+          : undefined,
       })),
     ) as PermitHistoryDto[];
   }

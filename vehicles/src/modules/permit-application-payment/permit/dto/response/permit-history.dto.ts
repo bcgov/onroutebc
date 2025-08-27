@@ -119,16 +119,17 @@ export class PermitHistoryDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
-    description: 'Represents the credit account id used for a transaction.',
+    example: false,
+    description:
+      'A boolean value that represents if the credit account used for the transaction is different from the current one.',
   })
-  creditAccountId?: number;
+  creditAccountMismatch?: boolean;
 
   @AutoMap()
   @ApiProperty({
     example: CreditAccountStatus.ACCOUNT_ACTIVE,
     description:
-      'Represents the current status of the credit account used for transaction',
+      'Represents the current status of the credit account mapped to the client',
   })
   creditAccountStatusType?: CreditAccountStatusType;
 }

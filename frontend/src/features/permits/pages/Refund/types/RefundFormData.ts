@@ -19,6 +19,6 @@ export interface RefundFormData {
   refundAmount: string;
   refundTransactionId: RequiredOrNull<string>;
   chequeRefund: boolean;
-  creditAccountId: RequiredOrNull<number>;
+  creditAccountMismatch: RequiredOrNull<boolean>;
   creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
 }

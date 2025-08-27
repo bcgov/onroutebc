@@ -83,7 +83,7 @@ export const RefundPage = ({
         paymentCardTypeCode: transaction.paymentCardTypeCode,
         paymentMethodTypeCode: transaction.paymentMethodTypeCode,
         transactionAmount: transaction.transactionAmount,
-        creditAccountId: transaction.creditAccountId,
+        creditAccountMismatch: transaction.creditAccountMismatch,
         creditAccountStatusType: transaction.creditAccountStatusType,
         refundAmount: "",
         refundTransactionId: "",
