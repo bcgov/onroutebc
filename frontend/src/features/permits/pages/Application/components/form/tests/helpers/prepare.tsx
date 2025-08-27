@@ -4,16 +4,19 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit } from "../../../../../../types/PermitType";
-import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
+import {
+  DEFAULT_PERMIT_TYPE,
+  isQuarterlyPermit,
+} from "../../../../../../types/PermitType";
+import {
+  getDefaultConditions,
+  getMandatoryConditions,
+} from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
 import { PermitCondition } from "../../../../../../types/PermitCondition";
 import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
 import { MAX_ALLOWED_FUTURE_DAYS_CV } from "../../../../../../constants/constants";
-import {
-  PAST_START_DATE_STATUSES,
-} from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 import {
   getStartOfDate,
@@ -26,6 +29,7 @@ import {
   getMinAllowedPermitPastStartDate,
   minDurationForPermitType,
 } from "../../../../../../helpers/dateSelection";
+import { PAST_START_DATE_STATUSES } from "../../../../../../../../common/types/PastStartDateStatus";
 
 const feature = ORBC_FORM_FEATURES.TEST_FEATURE;
 export const currentDt = getStartOfDate(now());
@@ -96,10 +100,11 @@ export const renderTestComponent = (
     duration,
   );
 
-  const allConditions = getDefaultConditions(permitType, false)
-    .map(condition => {
-      const existingCondition = selectedConditions
-        .find(c => c.condition === condition.condition);
+  const allConditions = getDefaultConditions(permitType, false).map(
+    (condition) => {
+      const existingCondition = selectedConditions.find(
+        (c) => c.condition === condition.condition,
+      );
 
       return {
         ...condition,
