@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
+import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../../settings/types/creditAccount";
 
 export const ChequeRefundCheckbox = ({
   cell,
@@ -24,11 +25,21 @@ export const ChequeRefundCheckbox = ({
     `refundData.${fieldIndex}.refundTransactionId`,
   );
   const paymentMethodTypeCode = refundData[fieldIndex].paymentMethodTypeCode;
-  const shouldRefundByCheque = [
-    PAYMENT_METHOD_TYPE_CODE.CASH,
-    PAYMENT_METHOD_TYPE_CODE.CHEQUE,
-    PAYMENT_METHOD_TYPE_CODE.GA,
-  ].includes(paymentMethodTypeCode);
+
+  const creditAccountStatusType = getValues(
+    `refundData.${fieldIndex}.creditAccountStatusType`,
+  );
+
+  const isCreditAccountClosed =
+    creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED;
+
+  const shouldRefundByCheque =
+    [
+      PAYMENT_METHOD_TYPE_CODE.CASH,
+      PAYMENT_METHOD_TYPE_CODE.CHEQUE,
+      PAYMENT_METHOD_TYPE_CODE.GA,
+    ].includes(paymentMethodTypeCode) || isCreditAccountClosed;
+
   const rowIsSelected = cell.row.getIsSelected();
 
   // local state necessary for 'chequeRefund' checkbox column to allow setting it to false when row is unselected
