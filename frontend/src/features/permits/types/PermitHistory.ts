@@ -5,6 +5,7 @@ import {
   PaymentMethodTypeCode,
   PaymentGatewayMethod,
 } from "../../../common/types/paymentMethods";
+import { CreditAccountStatusType } from "../../settings/types/creditAccount";
 
 export interface PermitHistory {
   permitNumber: string;
@@ -20,4 +21,6 @@ export interface PermitHistory {
   permitId: number;
   transactionSubmitDate: RequiredOrNull<string>;
   pgApproved: RequiredOrNull<number>;
+  creditAccountId: RequiredOrNull<number>;
+  creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
 }
