@@ -91,10 +91,7 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal(
-            originalRow.transactionOrderNumber,
-            originalRow.pgTransactionId,
-          ),
+          getDefaultRequiredVal("", originalRow.pgTransactionId),
         id: "providerTransactionId",
         header: "Provider Tran ID",
         size: 100,
