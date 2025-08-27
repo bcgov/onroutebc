@@ -1,9 +1,9 @@
 const wait_time = Cypress.env('wait_time');
 
-Cypress.Commands.add('userLoginBceid', () => {
+Cypress.Commands.add('userLoginBceid', (username, password) => {
     const wait_time = Cypress.env('wait_time');
-    const username = Cypress.env('username');
-    const password = Cypress.env('password');
+    // const username = Cypress.env('username');
+    // const password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 
@@ -45,10 +45,10 @@ Cypress.Commands.add('userLoginBceid', () => {
 
   });
 
-  Cypress.Commands.add('userLoginIdir', () => {
+  Cypress.Commands.add('userLoginIdir', (username, password) => {
     const wait_time = Cypress.env('wait_time');
-    const username = Cypress.env('username');
-    const password = Cypress.env('password');
+    // const username = Cypress.env('username');
+    // const password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 
@@ -67,13 +67,13 @@ Cypress.Commands.add('userLoginBceid', () => {
 
   });
 
-  Cypress.Commands.add('loginAs', (user_role) => {
+  Cypress.Commands.add('loginAs', (user_role, username, password) => {
     const role = user_role.toLowerCase();
     if(role === 'ca' || role === 'pa'){
-      cy.userLoginBceid();
+      cy.userLoginBceid(username, password);
     }
     else{
-      cy.userLoginIdir();
+      cy.userLoginIdir(username, password);
     }
   });
 
