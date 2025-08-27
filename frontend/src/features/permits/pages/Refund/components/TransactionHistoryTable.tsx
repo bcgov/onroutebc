@@ -85,13 +85,26 @@ export const TransactionHistoryTable = ({
         size: 100,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ row, cell }: { row: MRT_Row<RefundFormData> ;cell: MRT_Cell<RefundFormData> }) => (
+        Cell: ({
+          row,
+          cell,
+        }: {
+          row: MRT_Row<RefundFormData>;
+          cell: MRT_Cell<RefundFormData>;
+        }) => (
           <div className="cell__inner ">
-            <div className="cell__value">{cell.getValue<string>()}
-            <StatusChip status={row?.original?.creditAccountStatusType as CreditAccountStatusType} />
+            <div className="cell__value">
+              {cell.getValue<string>()}
+              {row?.original?.creditAccountStatusType && (
+                <StatusChip
+                  status={
+                    row?.original
+                      ?.creditAccountStatusType as CreditAccountStatusType
+                  }
+                />
+              )}
             </div>
-            
-            </div>
+          </div>
         ),
       },
       {
