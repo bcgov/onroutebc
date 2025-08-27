@@ -7,6 +7,7 @@ import {
   invalidTranactionIdLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 
 export const RefundTransactionIdInput = ({
   cell,
@@ -26,7 +27,11 @@ export const RefundTransactionIdInput = ({
   // must use getValues to access fields outside of the one we are rendering in order to get latest values
   const refundAmount = getValues(`refundData.${fieldIndex}.refundAmount`);
   const chequeRefund = getValues(`refundData.${fieldIndex}.chequeRefund`);
-
+  const paymentMethodTypeCode = getValues(
+    `refundData.${fieldIndex}.paymentMethodTypeCode`,
+  );
+  const isCreditAccount =
+    paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT;
   // clear refundTransactionId when refundAmount is empty or zero
   useEffect(() => {
     if (!refundAmount || Number(refundAmount) <= 0) {
@@ -51,7 +56,10 @@ export const RefundTransactionIdInput = ({
       rules={{
         required: {
           value:
-            refundAmount !== "" && Number(refundAmount) !== 0 && !chequeRefund,
+            refundAmount !== "" &&
+            Number(refundAmount) !== 0 &&
+            !chequeRefund &&
+            !isCreditAccount,
           message: requiredMessage(),
         },
         maxLength: {
@@ -69,7 +77,10 @@ export const RefundTransactionIdInput = ({
             value: fieldValue,
             onChange: ({ target: { value } }) => setValue(fieldName, value),
             disabled:
-              !refundAmount || Number(refundAmount) <= 0 || chequeRefund,
+              !refundAmount ||
+              Number(refundAmount) <= 0 ||
+              chequeRefund ||
+              isCreditAccount,
           }}
           helperText={
             error?.message

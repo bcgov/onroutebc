@@ -4,6 +4,7 @@ import {
   PaymentGatewayMethod,
   PaymentMethodTypeCode,
 } from "../../../../../common/types/paymentMethods";
+import { CreditAccountStatusType } from "../../../../settings/types/creditAccount";
 import { TransactionType } from "../../../types/payment";
 
 export interface RefundFormData {
@@ -16,6 +17,8 @@ export interface RefundFormData {
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionAmount: number;
   refundAmount: string;
-  refundTransactionId: string;
+  refundTransactionId: RequiredOrNull<string>;
   chequeRefund: boolean;
+  creditAccountId: RequiredOrNull<number>;
+  creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
 }
