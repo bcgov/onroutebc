@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, MutableRefObject } from "react";
 import { Dayjs } from "dayjs";
 import { Policy } from "onroute-policy-engine";
 
@@ -13,11 +13,11 @@ import {
   ORBCFormFeatureType,
 } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
+import { ApplicationRejectionHistory } from "../types/ApplicationRejectionHistory";
 import {
   PAST_START_DATE_STATUSES,
   PastStartDateStatus,
-} from "../../../common/components/form/subFormComponents/CustomDatePicker";
-import { ApplicationRejectionHistory } from "../types/ApplicationRejectionHistory";
+} from "../../../common/types/PastStartDateStatus";
 
 interface ApplicationFormContextType {
   initialFormData: ApplicationFormData;
@@ -38,6 +38,7 @@ interface ApplicationFormContextType {
   oldPermitStartDate?: Nullable<Dayjs>;
   createdDateTime?: Nullable<Dayjs>;
   updatedDateTime?: Nullable<Dayjs>;
+  datePickerRef?: MutableRefObject<HTMLDivElement | null>;
   pastStartDateStatus: PastStartDateStatus;
   companyLOAs: LOADetail[];
   revisionHistory: {
@@ -73,6 +74,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     oldPermitStartDate: undefined,
     createdDateTime: undefined,
     updatedDateTime: undefined,
+    datePickerRef: undefined,
     pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
     companyLOAs: [],
     revisionHistory: [],

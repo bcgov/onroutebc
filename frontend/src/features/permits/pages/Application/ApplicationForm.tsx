@@ -1,6 +1,6 @@
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { isAxiosError } from "axios";
 
@@ -26,7 +26,6 @@ import {
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
-import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
@@ -62,6 +61,7 @@ import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
+import { PAST_START_DATE_STATUSES } from "../../../../common/types/PastStartDateStatus";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -242,7 +242,13 @@ export const ApplicationForm = ({
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
-    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+    if (
+      !shouldOverridePolicyViolations(
+        updatedViolations,
+        isStaffUser,
+        data.permitType,
+      )
+    ) {
       console.error(updatedViolations);
       return;
     }
@@ -379,6 +385,8 @@ export const ApplicationForm = ({
     applicationContext.applicationData?.rejectionHistory,
   );
 
+  const datePickerRef = useRef<HTMLDivElement | null>(null);
+
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
@@ -395,6 +403,7 @@ export const ApplicationForm = ({
       isStaff: isStaffUser,
       createdDateTime,
       updatedDateTime,
+      datePickerRef,
       pastStartDateStatus,
       companyLOAs: applicableLOAs,
       revisionHistory: [],
@@ -405,7 +414,14 @@ export const ApplicationForm = ({
       onLeave: handleLeaveApplication,
       onSave,
       onCancel: undefined,
-      onContinue: handleSubmit(onContinue),
+      onContinue: handleSubmit(onContinue, () => {
+        if (pastStartDateStatus === PAST_START_DATE_STATUSES.FAIL) {
+          datePickerRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }),
     }),
     [
       initialFormData,
@@ -420,6 +436,7 @@ export const ApplicationForm = ({
       isStaffUser,
       createdDateTime,
       updatedDateTime,
+      datePickerRef,
       pastStartDateStatus,
       applicableLOAs,
       rejectionHistory,

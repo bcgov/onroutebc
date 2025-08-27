@@ -28,10 +28,7 @@ import {
   VehicleType,
 } from "../../../../../manageVehicles/types/Vehicle";
 
-import {
-  CustomDatePicker,
-  PAST_START_DATE_STATUSES,
-} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { CustomDatePicker } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 import {
   expiryMustBeAfterStart,
@@ -46,6 +43,7 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../common/constants/constants";
+import { PAST_START_DATE_STATUSES } from "../../../../../../common/types/PastStartDateStatus";
 
 const FEATURE = ORBC_FORM_FEATURES.LOA;
 

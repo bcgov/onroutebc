@@ -26,7 +26,6 @@ import {
 } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { getDatetimes } from "./helpers/getDatetimes";
-import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import {
@@ -58,6 +57,7 @@ import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCCont
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
+import { PAST_START_DATE_STATUSES } from "../../../../../common/types/PastStartDateStatus";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -205,7 +205,13 @@ export const AmendPermitForm = () => {
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
-    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+    if (
+      !shouldOverridePolicyViolations(
+        updatedViolations,
+        isStaffUser,
+        data.permitType,
+      )
+    ) {
       console.error(updatedViolations);
       return;
     }

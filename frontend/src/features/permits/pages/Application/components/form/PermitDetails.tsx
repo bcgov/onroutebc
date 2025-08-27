@@ -6,24 +6,35 @@ import { InfoBcGovBanner } from "../../../../../../common/components/banners/Inf
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { ConditionsTable } from "./ConditionsTable";
-import { invalidMaxStartDate, requiredMessage, warnPastStartDate } from "../../../../../../common/helpers/validationMessages";
+import {
+  invalidMaxStartDate,
+  requiredMessage,
+  warnPastStartDate,
+} from "../../../../../../common/helpers/validationMessages";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { DATE_FORMATS, now } from "../../../../../../common/helpers/formatDate";
-import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
-import { Optional, ORBCFormFeatureType } from "../../../../../../common/types/common";
 import {
-  CustomDatePicker,
-  PAST_START_DATE_STATUSES,
-  PastStartDateStatus,
-} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+  isQuarterlyPermit,
+  PERMIT_TYPES,
+  PermitType,
+} from "../../../../types/PermitType";
+import {
+  Optional,
+  ORBCFormFeatureType,
+} from "../../../../../../common/types/common";
+import { CustomDatePicker } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
+import {
+  PAST_START_DATE_STATUSES,
+  PastStartDateStatus,
+} from "../../../../../../common/types/PastStartDateStatus";
 
 export const PermitDetails = ({
   feature,
@@ -55,11 +66,9 @@ export const PermitDetails = ({
 }) => {
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
-  const showSingleRoundTripInfoBanner = ([
-    PERMIT_TYPES.STFR,
-    PERMIT_TYPES.NRSCV,
-    PERMIT_TYPES.NRQCV,
-  ] as PermitType[]).includes(permitType);
+  const showSingleRoundTripInfoBanner = (
+    [PERMIT_TYPES.STFR, PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
+  ).includes(permitType);
 
   const showValidQuarterInfoBanner = permitType === PERMIT_TYPES.QRFR;
 
@@ -103,7 +112,9 @@ export const PermitDetails = ({
             minAllowablePastDate={minAllowedPastStartDate}
             maxAllowableFutureDate={maxAllowedFutureStartDate}
             dateWarningMessage={startDateWarningMessage}
-            futureDateErrorMessage={invalidMaxStartDate(maxNumDaysAllowedInFuture)}
+            futureDateErrorMessage={invalidMaxStartDate(
+              maxNumDaysAllowedInFuture,
+            )}
           />
 
           {!isQuarterlyPermit(permitType) ? (

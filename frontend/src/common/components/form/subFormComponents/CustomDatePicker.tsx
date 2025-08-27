@@ -3,7 +3,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import {
   FieldValues,
@@ -28,15 +28,11 @@ import {
   invalidPastStartDate,
 } from "../../../helpers/validationMessages";
 import { getDefaultRequiredVal } from "../../../helpers/util";
-
-export const PAST_START_DATE_STATUSES = {
-  ALLOWED: "ALLOWED",
-  WARNING: "WARNING",
-  FAIL: "FAIL",
-} as const;
-
-export type PastStartDateStatus =
-  (typeof PAST_START_DATE_STATUSES)[keyof typeof PAST_START_DATE_STATUSES];
+import { ApplicationFormContext } from "../../../../features/permits/context/ApplicationFormContext";
+import {
+  PAST_START_DATE_STATUSES,
+  PastStartDateStatus,
+} from "../../../types/PastStartDateStatus";
 
 // Properties of the onrouteBC customized Date Picker MUI component/
 export interface CustomDatePickerProps<T extends FieldValues> {
@@ -144,8 +140,13 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
 
   const rulesViolationMessage = getErrorMessage(errors, name);
 
+  const { datePickerRef } = useContext(ApplicationFormContext);
+
   return (
-    <Box className={`custom-date-picker ${className ? className : ""}`}>
+    <Box
+      ref={datePickerRef}
+      className={`custom-date-picker ${className ? className : ""}`}
+    >
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}
