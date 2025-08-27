@@ -33,6 +33,8 @@ import { RefundFormData } from "../types/RefundFormData";
 import { RefundAmountInput } from "./RefundAmountInput";
 import { RefundTransactionIdInput } from "./RefundTransactionIdInput";
 import { ChequeRefundCheckbox } from "./ChequeRefundCheckbox";
+import { StatusChip } from "../../../../settings/components/creditAccount/StatusChip";
+import { CreditAccountStatusType } from "../../../../settings/types/creditAccount";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -83,9 +85,25 @@ export const TransactionHistoryTable = ({
         size: 100,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
+        Cell: ({
+          row,
+          cell,
+        }: {
+          row: MRT_Row<RefundFormData>;
+          cell: MRT_Cell<RefundFormData>;
+        }) => (
           <div className="cell__inner ">
-            <div className="cell__value">{cell.getValue<string>()}</div>
+            <div className="cell__value">
+              {cell.getValue<string>()}
+              {row?.original?.creditAccountStatusType && (
+                <StatusChip
+                  status={
+                    row?.original
+                      ?.creditAccountStatusType as CreditAccountStatusType
+                  }
+                />
+              )}
+            </div>
           </div>
         ),
       },
