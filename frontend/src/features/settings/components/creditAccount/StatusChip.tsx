@@ -1,3 +1,4 @@
+import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip";
 import {
   CreditAccountStatusType,
   CreditAccountStatusDisplayValues,
@@ -20,9 +21,11 @@ export const StatusChip = ({ status }: StatusChipProps) => {
   }
   if (status === "SUSPENDED") {
     return (
-      <span role="status" className="status-chip status-chip--suspended">
-        Suspended
-      </span>
+      <OnRouteBCChip
+        className="status-chip status-chip--suspended"
+        message="S"
+        hoverText="Suspended"
+      />
     );
   }
   if (status === "UNVERIFIED") {
