@@ -72,8 +72,10 @@ export const FinishVoid = () => {
 
   const [showRefundErrorModal, setShowRefundErrorModal] =
     useState<boolean>(false);
+  const [refundErrorMessage, setRefundErrorMessage] = useState<string>();
 
   const handleCloseRefundErrorModal = () => {
+    setRefundErrorMessage(undefined);
     setShowRefundErrorModal(false);
   };
 
@@ -84,6 +86,9 @@ export const FinishVoid = () => {
     );
 
     if (totalRefundAmount !== Math.abs(amountToRefund)) {
+      setRefundErrorMessage(
+        "Refund Amount does not match the Total Refund Due.",
+      );
       setShowRefundErrorModal(true);
       return;
     }
@@ -123,6 +128,7 @@ export const FinishVoid = () => {
           isOpen={showRefundErrorModal}
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
+          message={refundErrorMessage}
         />
       )}
     </>

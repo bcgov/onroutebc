@@ -9,7 +9,6 @@ import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
 import { useState } from "react";
-import { RefundErrorModal } from "./components/RefundErrorModal";
 import { MRT_RowSelectionState } from "material-react-table";
 
 export const PERMIT_REFUND_ACTIONS = {
@@ -62,13 +61,6 @@ export const RefundPage = ({
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
-
-  const [showRefundErrorModal, setShowRefundErrorModal] =
-    useState<boolean>(false);
-
-  const handleCloseRefundErrorModal = () => {
-    setShowRefundErrorModal(false);
-  };
 
   const formMethods = useForm<{
     refundData: RefundFormData[];
@@ -196,14 +188,6 @@ export const RefundPage = ({
           </Button>
         </div>
       </FormProvider>
-
-      {showRefundErrorModal && (
-        <RefundErrorModal
-          isOpen={showRefundErrorModal}
-          onCancel={handleCloseRefundErrorModal}
-          onConfirm={handleCloseRefundErrorModal}
-        />
-      )}
     </div>
   );
 };

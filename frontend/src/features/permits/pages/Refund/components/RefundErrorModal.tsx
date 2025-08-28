@@ -1,10 +1,12 @@
 import { Button, Dialog } from "@mui/material";
 import "./RefundErrorModal.scss";
+import { Nullable } from "../../../../../common/types/common";
 
 export const RefundErrorModal = ({
   isOpen,
   onCancel,
   onConfirm,
+  message,
 }: {
   /**
    * Boolean to control the open and close state of Dialog box.
@@ -16,6 +18,7 @@ export const RefundErrorModal = ({
    */
   onCancel: () => void;
   onConfirm: () => void;
+  message: Nullable<string>;
 }) => {
   return (
     <Dialog
@@ -31,9 +34,7 @@ export const RefundErrorModal = ({
       </div>
 
       <div className="refund-error-modal__body">
-        <p className="refund-error-modal__text">
-          Refund Amount does not match the Total Refund Due.
-        </p>
+        <p className="refund-error-modal__text">{message}</p>
       </div>
 
       <div className="refund-error-modal__footer">
