@@ -43,6 +43,10 @@ export const PermitSearchResultColumnDef = (
           return PERMIT_STATUSES.SUPERSEDED;
         }
 
+        if (permitStatus === PERMIT_STATUSES.REVOKED) {
+          return PERMIT_STATUSES.REVOKED;
+        }
+
         if (hasPermitExpired(expiryDate)) {
           return PERMIT_EXPIRED;
         }
