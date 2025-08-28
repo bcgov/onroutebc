@@ -10,12 +10,14 @@ import { PermitType } from './entities/permit-type.entity';
 import { PaymentModule } from '../payment/payment.module';
 import { CompanyPermitController } from './company-permit.controller';
 import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
+import { CreditAccountModule } from '../../credit-account/credit-account.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Permit, PermitData, PermitType]),
     PaymentModule,
     PermitReceiptDocumentModule,
+    CreditAccountModule,
   ],
   controllers: [PermitController, CompanyPermitController],
   providers: [PermitService, PermitProfile],

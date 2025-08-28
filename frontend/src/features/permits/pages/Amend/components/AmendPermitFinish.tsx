@@ -29,6 +29,7 @@ import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmount";
 import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
 import { isZeroAmount } from "../../../helpers/feeSummary";
+import { Nullable } from "../../../../../common/types/common";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export const AmendPermitFinish = () => {
   const amountToRefund = -1 * Number(calculatedRefundAmount.toFixed(2));
 
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
+  const [refundErrorMessage, setRefundErrorMessage] = useState<Nullable<string>>();
 
   // Refund mutation
   const { mutation: refundPermitMutation, transaction: refundTransaction } =
@@ -91,6 +93,9 @@ export const AmendPermitFinish = () => {
     );
 
     if (totalRefundAmount !== Math.abs(amountToRefund)) {
+      setRefundErrorMessage(
+        "Refund Amount does not match the Total Refund Due.",
+      );
       setShowRefundErrorModal(true);
       return;
     }
@@ -108,6 +113,7 @@ export const AmendPermitFinish = () => {
   };
 
   const handleCloseRefundErrorModal = () => {
+    setRefundErrorMessage(undefined);
     setShowRefundErrorModal(false);
   };
 
@@ -118,7 +124,10 @@ export const AmendPermitFinish = () => {
     if (refundTransaction !== undefined) {
       if (!refundTransaction) {
         console.error("Refund failed.");
-        navigate(ERROR_ROUTES.UNEXPECTED);
+        setRefundErrorMessage(
+          "Refund can’t be processed due to an unexpected error. Please try again later.",
+        );
+        setShowRefundErrorModal(true);
       } else {
         issuePermitMutation.mutate({
           companyId,
@@ -179,6 +188,7 @@ export const AmendPermitFinish = () => {
           isOpen={showRefundErrorModal}
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
+          message={refundErrorMessage}
         />
       )}
     </div>

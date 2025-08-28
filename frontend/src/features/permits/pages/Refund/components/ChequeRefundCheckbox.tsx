@@ -30,15 +30,27 @@ export const ChequeRefundCheckbox = ({
     `refundData.${fieldIndex}.creditAccountStatusType`,
   );
 
+  const creditAccountMismatch = getValues(
+    `refundData.${fieldIndex}.creditAccountMismatch`,
+  ) as boolean;
+
+  const isCreditAccount =
+    paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT;
+
   const isCreditAccountClosed =
+    isCreditAccount &&
     creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED;
+
+  const isCreditAccountMismatch = isCreditAccount && creditAccountMismatch;
 
   const shouldRefundByCheque =
     [
       PAYMENT_METHOD_TYPE_CODE.CASH,
       PAYMENT_METHOD_TYPE_CODE.CHEQUE,
       PAYMENT_METHOD_TYPE_CODE.GA,
-    ].includes(paymentMethodTypeCode) || isCreditAccountClosed;
+    ].includes(paymentMethodTypeCode) ||
+    isCreditAccountClosed ||
+    isCreditAccountMismatch;
 
   const rowIsSelected = cell.row.getIsSelected();
 
