@@ -129,7 +129,7 @@ export class PermitHistoryDto {
   @ApiProperty({
     example: CreditAccountStatus.ACCOUNT_ACTIVE,
     description:
-      'Represents the current status of the credit account mapped to the client',
+      'Represents the tatus of the credit account used at the time of the transanction',
   })
   creditAccountStatusType?: CreditAccountStatusType;
 }

@@ -512,11 +512,9 @@ export class PermitService {
         )
           ? creditAccountMismatch
           : undefined,
-        creditAccountStatusType: isCreditAccountTransaction(
-          permitTransaction.transaction.paymentMethodTypeCode,
-        )
-          ? creditAccount?.creditAccountStatusType
-          : undefined,
+        creditAccountStatusType:
+          permitTransaction?.transaction?.creditAccount
+            ?.creditAccountStatusType,
       })),
     ) as PermitHistoryDto[];
   }
