@@ -21,6 +21,6 @@ export interface PermitHistory {
   permitId: number;
   transactionSubmitDate: RequiredOrNull<string>;
   pgApproved: RequiredOrNull<number>;
-  creditAccountId: RequiredOrNull<number>;
+  creditAccountMismatch: RequiredOrNull<boolean>;
   creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
 }

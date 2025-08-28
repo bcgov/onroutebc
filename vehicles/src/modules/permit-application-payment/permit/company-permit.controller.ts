@@ -103,10 +103,16 @@ export class CompanyPermitController {
   })
   @Get('/:permitId/history')
   async getPermitHisory(
+    @Req() request: Request,
     @Param('permitId') permitId: string,
     @Param('companyId') companyId: number,
   ): Promise<PermitHistoryDto[]> {
-    return await this.permitService.findPermitHistory(permitId, companyId);
+    const currentUser = request.user as IUserJWT;
+    return await this.permitService.findPermitHistory(
+      permitId,
+      companyId,
+      currentUser,
+    );
   }
   @ApiOkResponse({
     description: 'Retrieves a specific Permit Resource by its ID.',

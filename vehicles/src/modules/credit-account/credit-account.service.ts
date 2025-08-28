@@ -1507,7 +1507,8 @@ export class CreditAccountService {
    * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
    * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
    */
-  private async findCreditAccountDetails(
+  @LogAsyncMethodExecution()
+  public async findCreditAccountDetails(
     companyId: number,
     currentUser: IUserJWT,
     creditAccountId?: Nullable<number>,
