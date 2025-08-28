@@ -32,12 +32,16 @@ export const ChequeRefundCheckbox = ({
 
   const creditAccountMismatch = getValues(
     `refundData.${fieldIndex}.creditAccountMismatch`,
-  );
+  ) as boolean;
+
+  const isCreditAccount =
+    paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT;
 
   const isCreditAccountClosed =
+    isCreditAccount &&
     creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED;
 
-  const isCreditAccountMismatch = !!creditAccountMismatch;
+  const isCreditAccountMismatch = isCreditAccount && creditAccountMismatch;
 
   const shouldRefundByCheque =
     [
