@@ -17,7 +17,11 @@ import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { usePermitHistoryQuery } from "../../../hooks/hooks";
+import {
+  useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
+  usePermitHistoryQuery,
+} from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import {
   invalidEmail,
@@ -108,7 +112,23 @@ export const VoidPermitForm = () => {
     setOpenRevokeDialog(false);
   };
 
-  const handleRevoke = (revokeData: VoidPermitFormData) => {
+  const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
+  const handleRevoke = async (revokeData: VoidPermitFormData) => {
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the revoke transaction
+    if (existingAmendmentApplicationId) {
+      await deleteApplications({
+        companyId,
+        applicationIds: [existingAmendmentApplicationId],
+      });
+    }
     revokePermitMutation.mutate({
       permitId,
       voidData: mapToRevokeRequestData(revokeData),
