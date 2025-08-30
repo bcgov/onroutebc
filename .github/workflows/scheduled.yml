@@ -30,7 +30,7 @@ jobs:
 
   generate-schema-spy:
     name: Generate SchemaSpy Documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres
@@ -47,7 +47,7 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: joshuaavalon/flyway-action@v3.0.0
         name: Generate SchemaSpy docs for node backend
         with:
