@@ -82,7 +82,7 @@ const searchRoute =
 
 export const AmendPermit = () => {
   const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
-
+  const { idirUserDetails } = useContext(OnRouteBCContext);
   const { state: stateFromNavigation } = useLocation();
 
   const companyId: number = applyWhenNotNullable(
@@ -221,7 +221,6 @@ export const AmendPermit = () => {
     ],
   );
 
-  const { idirUserDetails } = useContext(OnRouteBCContext);
   
   if (isLoadingState()) {
     return <Loading />;
