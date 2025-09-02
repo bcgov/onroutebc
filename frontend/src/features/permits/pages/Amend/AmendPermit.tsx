@@ -221,11 +221,12 @@ export const AmendPermit = () => {
     ],
   );
 
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  
   if (isLoadingState()) {
     return <Loading />;
   }
 
-  const { idirUserDetails } = useContext(OnRouteBCContext);
 
   // unable to use permission matrix in this component, using manual role check instead
   const canAmendPermit = (role?: string) => {
