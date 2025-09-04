@@ -97,6 +97,7 @@ export const AmendPermit = () => {
   // Query for permit data whenever this page is rendered, for the permit id
   const { data: permit } = usePermitDetailsQuery(companyId, permitId);
 
+  
   // Get original permit id for the permit
   const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
 
