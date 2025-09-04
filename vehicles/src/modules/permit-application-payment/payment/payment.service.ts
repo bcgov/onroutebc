@@ -38,6 +38,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import {
   calculatePermitAmount,
+  isValidTransaction,
   permitFee,
   validAmount,
 } from 'src/common/helper/permit-fee.helper';
@@ -856,11 +857,20 @@ export class PaymentService {
       queryRunner,
       companyId,
     );
+
+    const validPermitPaymentHistory = permitPaymentHistory.filter(
+      historyItem => isValidTransaction(
+        historyItem.paymentMethodTypeCode,
+        historyItem.pgApproved,
+      ),
+    );
+    
     const isNoFee = await this.specialAuthService.findNoFee(companyId);
     const oldAmount =
-      permitPaymentHistory.length > 0
-        ? calculatePermitAmount(permitPaymentHistory)
+      validPermitPaymentHistory.length > 0
+        ? calculatePermitAmount(validPermitPaymentHistory)
         : undefined;
+
     if (application.permitStatus === ApplicationStatus.VOIDED)
       return -oldAmount;
     const fee = permitFee(application, isNoFee, oldAmount);
