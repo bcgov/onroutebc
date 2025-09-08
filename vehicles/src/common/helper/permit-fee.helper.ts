@@ -16,6 +16,7 @@ import {
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
 import { Nullable } from '../types/common';
+import { PaymentMethodType } from '../enum/payment-method-type.enum';
 
 /**
  * Calculates the permit fee based on the application and old amount.
@@ -154,6 +155,25 @@ export const currentPermitFee = (
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount
     : pricePerTerm * permitTerms + oldAmount;
+};
+
+/**
+ * Determines whether or not transaction is valid based on payment method and if it's approved.
+ * @param paymentMethod Payment method used
+ * @param transactionApproved Approval status of the transaction
+ * @returns Whether or not the transaction is valid
+ */
+export const isValidTransaction = (
+  paymentMethod: PaymentMethodType,
+  transactionApproved?: Nullable<number>,
+) => {
+  // For payment methods using payment gateways (ie. PayBC), a payment is considered to have succeeded only if its
+  // pgApproved flag is 1, and transactions using all other payment methods (ie. IcePay) is automatically considered
+  // to have succeeded
+  return (
+    paymentMethod !== PaymentMethodType.WEB ||
+    (Boolean(transactionApproved) && transactionApproved > 0)
+  );
 };
 
 export const calculatePermitAmount = (
