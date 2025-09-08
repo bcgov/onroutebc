@@ -68,6 +68,7 @@ export const permitFee = (
         TROW_MIN_VALID_DURATION,
         TROW_MAX_VALID_DURATION,
       );
+      
       if (!validDuration) {
         throw new BadRequestException(
           `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
