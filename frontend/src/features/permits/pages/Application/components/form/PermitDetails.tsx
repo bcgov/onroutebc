@@ -58,10 +58,9 @@ export const PermitDetails = ({
   const showSingleRoundTripInfoBanner = ([
     PERMIT_TYPES.STFR,
     PERMIT_TYPES.NRSCV,
-    PERMIT_TYPES.NRQCV,
   ] as PermitType[]).includes(permitType);
 
-  const showValidQuarterInfoBanner = permitType === PERMIT_TYPES.QRFR;
+  const showValidQuarterInfoBanner = isQuarterlyPermit(permitType);
 
   const startDateWarningMessage =
     now().isAfter(startDate, "day") &&
