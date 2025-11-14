@@ -91,7 +91,10 @@ export const BCeIDAuthWall = ({
           redirectToLoginPage();
         }
       } catch (e) {
-        console.error("Unable to process token refresh; redirecting to login");
+        console.error(
+          "Unable to process token refresh; redirecting to login",
+          e,
+        );
         redirectToLoginPage();
       }
     }

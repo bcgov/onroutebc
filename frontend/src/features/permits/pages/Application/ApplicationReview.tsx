@@ -295,7 +295,9 @@ export const ApplicationReview = ({
 
   const handleCloseUnavailableApplicationModal = () => {
     setShowUnavailableApplicationModal(false);
-    showRejectApplicationModal && setShowRejectApplicationModal(false);
+    if (showRejectApplicationModal) {
+      setShowRejectApplicationModal(false);
+    }
   };
 
   useEffect(() => {
