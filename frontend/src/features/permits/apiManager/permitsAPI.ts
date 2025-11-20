@@ -250,8 +250,8 @@ export const getApplication = async (
     const url = APPLICATIONS_API_ROUTES.GET(companyId, permitId);
     const response = await httpGETRequest(url);
     return response.data;
-  } catch (err) {
-    return err as null;
+  } catch {
+    return null;
   }
 };
 
@@ -441,8 +441,8 @@ export const getCurrentAmendmentApplication = async (
     const response = await httpGETRequest(permitsURL.toString());
     if (!response.data) return null;
     return response.data as ApplicationResponseData;
-  } catch (err) {
-    return err as null;
+  } catch {
+    return null;
   }
 };
 
@@ -527,8 +527,8 @@ export const getPermitHistory = async (
       return response.data as PermitHistory[];
     }
     return [];
-  } catch (err) {
-    return [err as null];
+  } catch {
+    return [];
   }
 };
 

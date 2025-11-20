@@ -36,6 +36,7 @@ import { CustomFormComponent } from "../../../../../common/components/form/Custo
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AmendOrVoidFeeSummary } from "../../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
 import { VoidPermitContext } from "../context/VoidPermitContext";
+import { PermitHistory } from "../../../types/PermitHistory";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
@@ -63,10 +64,9 @@ export const VoidPermitForm = () => {
     originalPermitId,
   );
 
-  const transactionHistory = getDefaultRequiredVal([], permitHistory).filter(
-    (history) =>
-      isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
-  );
+  const transactionHistory = getDefaultRequiredVal([], permitHistory)
+    .filter((h): h is PermitHistory => h !== null)
+    .filter((h) => isValidTransaction(h.paymentMethodTypeCode, h.pgApproved));
 
   const amountToRefund =
     !permit || transactionHistory.length === 0

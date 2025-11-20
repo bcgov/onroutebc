@@ -79,8 +79,8 @@ export const AddVehicleButton = () => {
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = useRef(isMenuOpen);
   useEffect(() => {
-    if (prevOpen.current === true && isMenuOpen === false) {
-      anchorRef.current!.focus();
+    if (prevOpen.current && !isMenuOpen && anchorRef.current) {
+      anchorRef.current.focus();
     }
 
     prevOpen.current = isMenuOpen;

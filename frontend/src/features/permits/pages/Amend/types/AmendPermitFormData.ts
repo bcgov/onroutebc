@@ -15,8 +15,8 @@ import {
   toLocalDayjs,
 } from "../../../../../common/helpers/formatDate";
 
-export type AmendPermitFormData = ApplicationFormData;
-
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AmendPermitFormData extends ApplicationFormData {}
 /**
  * Get default values for form data from received Application object and company info.
  * @param companyInfo Company information
