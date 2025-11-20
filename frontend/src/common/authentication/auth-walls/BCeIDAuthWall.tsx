@@ -90,7 +90,7 @@ export const BCeIDAuthWall = ({
         } else {
           redirectToLoginPage();
         }
-      } catch (e) {
+      } catch {
         console.error("Unable to process token refresh; redirecting to login");
         redirectToLoginPage();
       }

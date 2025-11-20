@@ -64,7 +64,9 @@ export const ChequeRefundCheckbox = ({
 
   // clear chequeRefund when row is unselected
   useEffect(() => {
-    !rowIsSelected && setIsChecked(false);
+    if (!rowIsSelected) {
+      setIsChecked(false);
+    }
   }, [rowIsSelected]);
 
   // clear chequeRefund when refundAmount is cleared

@@ -250,7 +250,7 @@ export const getApplication = async (
     const url = APPLICATIONS_API_ROUTES.GET(companyId, permitId);
     const response = await httpGETRequest(url);
     return response.data;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -316,9 +316,7 @@ export const downloadReceiptPdf = async (
  */
 export const startTransaction = async (
   requestData: StartTransactionRequestData,
-): Promise<
-  RequiredOrNull<StartTransactionResponseData>
-> => {
+): Promise<RequiredOrNull<StartTransactionResponseData>> => {
   try {
     const response = await httpPOSTRequest(
       PAYMENT_API_ROUTES.START,
@@ -443,7 +441,7 @@ export const getCurrentAmendmentApplication = async (
     const response = await httpGETRequest(permitsURL.toString());
     if (!response.data) return null;
     return response.data as ApplicationResponseData;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -529,7 +527,7 @@ export const getPermitHistory = async (
       return response.data as PermitHistory[];
     }
     return [];
-  } catch (err) {
+  } catch {
     return [];
   }
 };

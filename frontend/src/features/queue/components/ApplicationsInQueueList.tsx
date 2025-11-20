@@ -112,7 +112,9 @@ export const ApplicationsInQueueList = () => {
   };
 
   useEffect(() => {
-    selectedApplication && handleClaimApplication(selectedApplication);
+    if (selectedApplication) {
+      handleClaimApplication(selectedApplication);
+    }
   }, [selectedApplication]);
 
   const handleCloseClaimedApplicationModal = () => {

@@ -15,8 +15,8 @@ import {
   toLocalDayjs,
 } from "../../../../../common/helpers/formatDate";
 
-export interface AmendPermitFormData extends ApplicationFormData {};
-
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AmendPermitFormData extends ApplicationFormData {}
 /**
  * Get default values for form data from received Application object and company info.
  * @param companyInfo Company information
@@ -27,7 +27,10 @@ export const getDefaultFormDataFromApplication = (
   companyInfo: Nullable<CompanyProfile>,
   application?: Nullable<Application>,
 ): AmendPermitFormData => {
-  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, application?.permitType);
+  const defaultPermitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    application?.permitType,
+  );
 
   // Default form values when application is not available (or period of time when loading)
   if (!application) {
@@ -37,11 +40,7 @@ export const getDefaultFormDataFromApplication = (
   }
 
   return {
-    ...getDefaultValues(
-      defaultPermitType,
-      companyInfo,
-      application,
-    ),
+    ...getDefaultValues(defaultPermitType, companyInfo, application),
   };
 };
 
@@ -74,23 +73,19 @@ export const getDefaultFormDataFromPermit = (
   } = permit;
 
   return {
-    ...getDefaultValues(
-      defaultPermitType,
-      companyInfo,
-      {
-        ...restOfPermit,
-        permitData: {
-          ...restOfPermit.permitData,
-          startDate: applyWhenNotNullable(
-            (startAt) => getStartOfDate(toLocalDayjs(startAt)),
-            restOfPermit.permitData?.startDate,
-          ),
-          expiryDate: applyWhenNotNullable(
-            (endAt) => getEndOfDate(toLocalDayjs(endAt)),
-            restOfPermit.permitData?.expiryDate,
-          ),
-        },
-      } as AmendPermitFormData,
-    ),
+    ...getDefaultValues(defaultPermitType, companyInfo, {
+      ...restOfPermit,
+      permitData: {
+        ...restOfPermit.permitData,
+        startDate: applyWhenNotNullable(
+          (startAt) => getStartOfDate(toLocalDayjs(startAt)),
+          restOfPermit.permitData?.startDate,
+        ),
+        expiryDate: applyWhenNotNullable(
+          (endAt) => getEndOfDate(toLocalDayjs(endAt)),
+          restOfPermit.permitData?.expiryDate,
+        ),
+      },
+    } as AmendPermitFormData),
   };
 };

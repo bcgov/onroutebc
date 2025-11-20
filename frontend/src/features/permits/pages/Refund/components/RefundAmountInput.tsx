@@ -21,7 +21,9 @@ export const RefundAmountInput = ({
 
   // clear refundAmount when row is unselected
   useEffect(() => {
-    !rowIsSelected && setValue(fieldName, "");
+    if (!rowIsSelected) {
+      setValue(fieldName, "");
+    }
   }, [rowIsSelected, setValue, fieldIndex]);
 
   return (

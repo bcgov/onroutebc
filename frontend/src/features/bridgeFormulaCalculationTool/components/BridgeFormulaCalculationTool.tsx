@@ -180,8 +180,9 @@ export const BridgeFormulaCalculationTool = () => {
       serializedAxleUnitData,
     );
 
-    bridgeCalculationResults &&
+    if (bridgeCalculationResults) {
       setBridgeCalculationResults(bridgeCalculationResults);
+    }
   };
 
   return (
