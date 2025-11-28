@@ -14,7 +14,7 @@ ENV PUPPETEER_SKIP_CHROME_DOWNLOAD=true
 ENV PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD=true
 
 # Install packages, build and keep only prod packages
-RUN npm ci
+RUN npm ci --ignore-scripts
 RUN npm run build
 RUN npm prune --production
 
