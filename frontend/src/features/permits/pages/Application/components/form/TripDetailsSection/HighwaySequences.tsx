@@ -104,12 +104,12 @@ export const HighwaySequences = ({
               Please refer to the
               <CustomExternalLink
                 className="highways-link"
-                href={ONROUTE_WEBPAGE_LINKS.LIST_OF_BC_HIGHWAYS}
+                href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_VEHICLE_ROUTING_TOOL}
                 openInNewTab={true}
                 withLinkIcon={true}
               >
                 <span className="highways-link__title">
-                  List of Highways in British Columbia
+                  Commercial Vehicle Routing Tool
                 </span>
               </CustomExternalLink>
               and the

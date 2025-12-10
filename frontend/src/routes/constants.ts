@@ -227,5 +227,6 @@ export const ONROUTE_WEBPAGE_LINKS = {
     "https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations",
   LIST_OF_BC_HIGHWAYS:
     "https://www2.gov.bc.ca/gov/content/transportation/transportation-reports-and-reference/reference-information/numbered-routes",
+  COMMERCIAL_VEHICLE_ROUTING_TOOL: "https://twm.th.gov.bc.ca/?c=cvrt",
   HEIGHT_CLEARANCE_TOOL: "https://www.drivebc.ca/cvrp/?c=hct",
 };
