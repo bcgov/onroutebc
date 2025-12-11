@@ -16,7 +16,7 @@ const clfLabelText = (clf: ConditionalLicensingFeeType) => {
     case CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE:
       return "Farm Tractor fee rate in accordance with";
     case CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE:
-      return "Commercial passenger vehicle rate in accordance with";
+      return "Commercial Passenger Vehicle rate in accordance with";
     case CONDITIONAL_LICENSING_FEE_TYPES.NONE:
     default:
       return "None";
