@@ -145,6 +145,25 @@ export const ConditionalLicensingFeeSection = ({
             }
             clf={CONDITIONAL_LICENSING_FEE_TYPES.FARM_TRACTOR_FEE_RATE}
           />
+
+          <ConditionalLicensingFeeOption
+            classes={{
+              root: "conditional-licensing-fee-type",
+              radio: "conditional-licensing-fee-type__radio",
+              disabled: "conditional-licensing-fee-type--disabled",
+              label: {
+                root: "conditional-licensing-fee-type__label-row",
+                label: "conditional-licensing-fee-type__label",
+                link: "conditional-licensing-fee-type__link",
+              },
+            }}
+            disabled={
+              !availableCLFs.includes(
+                CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE,
+              )
+            }
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE}
+          />
         </RadioGroup>
       </Box>
     </div>
