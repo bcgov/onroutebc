@@ -104,6 +104,7 @@
         color: orbcStyles.$white;
         list-style: none;
         padding-left: 8.551vw;
+        box-sizing: border-box;
 
         li {
           margin: 0;
@@ -143,10 +144,10 @@
 @media (width < 768px) {
   .header {
     &__main {
-      padding: 0 5.5rem;
+      padding: 0 1.5rem;
 
       .user-section {
-        display: none;
+        display: block;
       }
 
       .other {
@@ -201,7 +202,7 @@
         ul {
           flex-direction: column;
           margin: 0;
-          padding: 0 5.5rem;
+          padding: 0 1.5rem;
     
           li {
             margin: 5px 0;
