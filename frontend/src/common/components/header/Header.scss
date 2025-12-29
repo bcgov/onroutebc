@@ -145,7 +145,7 @@
   .header {
     &__main {
       padding: 0 1.5rem;
-
+      flex-wrap: nowrap;
       .user-section {
         display: block;
       }
