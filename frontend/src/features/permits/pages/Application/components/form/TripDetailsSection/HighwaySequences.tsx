@@ -115,12 +115,12 @@ export const HighwaySequences = ({
               and the
               <CustomExternalLink
                 className="highways-link"
-                href={ONROUTE_WEBPAGE_LINKS.HEIGHT_CLEARANCE_TOOL}
+                href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_VEHICLE_ROUTING_TOOL}
                 openInNewTab={true}
                 withLinkIcon={true}
               >
                 <span className="highways-link__title">
-                  Height Clearance Tool
+                  Commercial Vehicle Routing Tool
                 </span>
               </CustomExternalLink>
               to build your sequence.
