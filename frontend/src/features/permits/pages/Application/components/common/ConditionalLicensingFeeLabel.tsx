@@ -42,7 +42,7 @@ const clfLink = (clf: ConditionalLicensingFeeType) => {
       return {
         link: CONDITIONAL_LICENSING_FEE_LINKS.FARM_TRACTOR_FEE_RATE.URL,
         text: CONDITIONAL_LICENSING_FEE_LINKS.FARM_TRACTOR_FEE_RATE.LINK_TEXT,
-      };;
+      };
     case CONDITIONAL_LICENSING_FEE_TYPES.NONE:
     default:
       return null;
@@ -70,6 +70,7 @@ export const ConditionalLicensingFeeLabel = ({
       {link ? (
         <CustomExternalLink
           href={link.link}
+          openInNewTab
           className={classes?.link}
           data-testid={`conditional-licensing-fee-link-${clf}`}
           withLinkIcon={true}
