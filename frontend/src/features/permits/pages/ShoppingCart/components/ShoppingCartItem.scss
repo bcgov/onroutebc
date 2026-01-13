@@ -59,3 +59,14 @@
     padding: 0;
   }
 }
+
+@media (width<420px) {
+  .shopping-cart-item{
+    gap: 0.5rem;
+    &__info {
+      &#{&}--application-number {
+        font-size: 1rem;
+      }
+    }
+  }
+}

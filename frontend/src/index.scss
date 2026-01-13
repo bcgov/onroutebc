@@ -12,12 +12,7 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-   html {
-    font-size: 14px; /* or even 13px */
-  }
-  body{
-    width: fit-content;
-  }
+
   .feature-container {
     height: calc(100vh - 115px);
     

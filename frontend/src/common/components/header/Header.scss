@@ -143,9 +143,46 @@
 */
 @media (width < 768px) {
   .header {
+    header {
+      height: fit-content;
+      flex-direction: column;
+
+      .brand-section {
+        padding: 0;
+        justify-content: center;
+      }
+
+      .options-section {
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .auth-section {
+          flex-direction: column;
+
+          .user-section {
+            flex-direction: column;
+          }
+
+          .search-button {
+            padding-top: 1rem;
+            color: #fcba19;
+            background-color: #003366;
+          }
+        }
+
+        .other {
+          .nav-btn {
+            padding: 1rem 0;
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
     &__main {
       padding: 0 0.5rem;
-      flex-wrap: nowrap;
+
       .user-section {
         display: flex;
       }
@@ -209,7 +246,7 @@
     
             a {
               border: none;
-              
+
               &:hover {
                 text-decoration: underline;
               }

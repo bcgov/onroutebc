@@ -13,6 +13,11 @@
     outline: none;
   }
 }
+@media (width < 768px) {
+  .search-button {
+    margin-right: 0;
+  }
+}
 
 @media (width < 360px) {
   .search-button {
