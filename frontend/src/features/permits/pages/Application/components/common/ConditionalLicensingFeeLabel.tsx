@@ -77,6 +77,7 @@ export const ConditionalLicensingFeeLabel = ({
       {link ? (
         <CustomExternalLink
           href={link.link}
+          openInNewTab
           className={classes?.link}
           data-testid={`conditional-licensing-fee-link-${clf}`}
           withLinkIcon={true}
