@@ -143,6 +143,7 @@
 */
 @media (width < 768px) {
   .header {
+    position: relative;
     header {
       height: fit-content;
       flex-direction: column;
