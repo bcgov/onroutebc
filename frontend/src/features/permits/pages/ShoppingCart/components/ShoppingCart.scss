@@ -72,21 +72,3 @@
     padding-top: 1.5rem;
   }
 }
-@media (width < 768px) {
-  .shopping-cart {
-    text-align: center;
-    
-    &__actions,
-    .actions {
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .actions__filter {
-      flex-direction: column;
-    }
-    .actions__remove {
-      width: 100%;
-    }
-  }
-}
-

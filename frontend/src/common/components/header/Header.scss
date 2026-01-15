@@ -166,9 +166,10 @@
           }
 
           .search-button {
+            margin-right: 0;
             padding-top: 1rem;
-            color: #fcba19;
-            background-color: #003366;
+            color: orbcStyles.$bc-gold;
+            background-color: orbcStyles.$bc-primary-blue;
           }
         }
 
