@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     timeout-minutes: 1
     steps:
-      - uses: bcgov/action-pr-description-add@v1.1.2
+      - uses: bcgov/action-pr-description-add@v2.0.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@v0.1.0
 
   # https://github.com/bcgov/action-builder-ghcr
   builds:
@@ -66,7 +66,7 @@ jobs:
         package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 10
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.2.0
+      - uses: bcgov/action-builder-ghcr@v4.2.1
         with:
           #keep_versions: 50
           package: ${{ matrix.package }}
