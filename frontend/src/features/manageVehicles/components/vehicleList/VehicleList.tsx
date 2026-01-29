@@ -71,7 +71,6 @@ const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   return TrailerColumnDefinition;
 };
 
-/* eslint-disable react/prop-types */
 export const VehicleList = memo(
   ({
     vehicleType,

@@ -62,8 +62,8 @@ import {
 
 import {
   RevokePermitRequestData,
+  VoidOrRevokePermitResponseData,
   VoidPermitRequestData,
-  VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
 
 /**
@@ -250,7 +250,7 @@ export const getApplication = async (
     const url = APPLICATIONS_API_ROUTES.GET(companyId, permitId);
     const response = await httpGETRequest(url);
     return response.data;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -316,9 +316,7 @@ export const downloadReceiptPdf = async (
  */
 export const startTransaction = async (
   requestData: StartTransactionRequestData,
-): Promise<
-  RequiredOrNull<StartTransactionResponseData>
-> => {
+): Promise<RequiredOrNull<StartTransactionResponseData>> => {
   try {
     const response = await httpPOSTRequest(
       PAYMENT_API_ROUTES.START,
@@ -329,8 +327,10 @@ export const startTransaction = async (
     }
     return response.data as StartTransactionResponseData;
   } catch (err) {
+    // All HTTP status >= 400 are thrown and caught here.
+    // The error is logged, and rethrown.
     console.error(err);
-    return null;
+    throw err;
   }
 };
 
@@ -441,7 +441,7 @@ export const getCurrentAmendmentApplication = async (
     const response = await httpGETRequest(permitsURL.toString());
     if (!response.data) return null;
     return response.data as ApplicationResponseData;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -527,7 +527,7 @@ export const getPermitHistory = async (
       return response.data as PermitHistory[];
     }
     return [];
-  } catch (err) {
+  } catch {
     return [];
   }
 };
@@ -538,7 +538,7 @@ export const getPermitHistory = async (
  * @param voidData Void or revoke data to be sent to backend.
  * @returns Response data containing successfully voided/revoked permit ids, as well as failed ones.
  */
-export const voidPermit = async (voidPermitParams: {
+export const voidOrRevokePermit = async (voidPermitParams: {
   permitId: string;
   voidData: VoidPermitRequestData | RevokePermitRequestData;
 }) => {
@@ -551,7 +551,7 @@ export const voidPermit = async (voidPermitParams: {
 
     if (response.status === 201 && response.data) {
       return removeEmptyIdsFromPermitsActionResponse(
-        response.data as VoidPermitResponseData,
+        response.data as VoidOrRevokePermitResponseData,
       );
     }
 

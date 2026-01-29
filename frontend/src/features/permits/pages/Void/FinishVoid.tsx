@@ -1,9 +1,8 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
-import { Permit } from "../../types/permit";
 import {
   useAmendmentApplicationQuery,
   useDeleteApplicationsMutation,
@@ -12,25 +11,18 @@ import {
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
-import { useVoidPermit } from "./hooks/useVoidPermit";
+import { useVoidOrRevokePermit } from "./hooks/useVoidOrRevokePermit";
 import { isValidTransaction } from "../../helpers/payment";
-import { Nullable } from "../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
+import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
 
-export const FinishVoid = ({
-  permit,
-  onSuccess,
-  onFail,
-}: {
-  permit: Nullable<Permit>;
-  onSuccess: () => void;
-  onFail: () => void;
-}) => {
-  const { voidPermitData } = useContext(VoidPermitContext);
+export const FinishVoid = () => {
+  const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
+    useContext(VoidPermitContext);
   const { companyId: companyIdParam } = useParams();
 
   const { email, additionalEmail, reason } = voidPermitData;
@@ -57,15 +49,15 @@ export const FinishVoid = ({
       ? 0
       : -1 * calculateAmountForVoid(permit, transactionHistory);
 
-  const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
+  const { mutation: voidPermitMutation, voidResults } = useVoidOrRevokePermit();
 
   useEffect(() => {
     const voidFailed = hasPermitsActionFailed(voidResults);
     if (voidFailed) {
-      onFail();
+      handleFail();
     } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Void action was triggered, and has results (was successful)
-      onSuccess();
+      goHomeSuccess();
     }
   }, [voidResults]);
 
@@ -78,7 +70,28 @@ export const FinishVoid = ({
 
   const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
 
-  const handleFinish = async (refundData: RefundFormData) => {
+  const [showRefundErrorModal, setShowRefundErrorModal] =
+    useState<boolean>(false);
+  const [refundErrorMessage, setRefundErrorMessage] = useState<string>();
+
+  const handleCloseRefundErrorModal = () => {
+    setRefundErrorMessage(undefined);
+    setShowRefundErrorModal(false);
+  };
+
+  const handleFinish = async (refundData: RefundFormData[]) => {
+    const totalRefundAmount = refundData.reduce(
+      (sum: number, transaction) => sum + Number(transaction.refundAmount),
+      0,
+    );
+
+    if (totalRefundAmount !== Math.abs(amountToRefund)) {
+      setRefundErrorMessage(
+        "Refund Amount does not match the Total Refund Due.",
+      );
+      setShowRefundErrorModal(true);
+      return;
+    }
     // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the void transaction
     if (existingAmendmentApplicationId) {
       await deleteApplications({
@@ -86,28 +99,38 @@ export const FinishVoid = ({
         applicationIds: [existingAmendmentApplicationId],
       });
     }
-    const requestData = mapToVoidRequestData(
-      voidPermitData,
-      refundData,
-      -1 * amountToRefund,
-    );
     voidPermitMutation.mutate({
       permitId: voidPermitData.permitId,
-      voidData: requestData,
+      voidData: mapToVoidRequestData(
+        refundData,
+        voidPermitData,
+        amountToRefund,
+      ),
     });
   };
 
   return (
-    <RefundPage
-      permitHistory={transactionHistory}
-      amountToRefund={amountToRefund}
-      email={email}
-      additionalEmail={additionalEmail}
-      reason={reason}
-      permitNumber={permit?.permitNumber}
-      permitType={permit?.permitType}
-      permitAction={PERMIT_REFUND_ACTIONS.VOID}
-      onFinish={handleFinish}
-    />
+    <>
+      <RefundPage
+        permitHistory={transactionHistory}
+        amountToRefund={amountToRefund}
+        email={email}
+        additionalEmail={additionalEmail}
+        reason={reason}
+        permitNumber={permit?.permitNumber}
+        permitAction={PERMIT_REFUND_ACTIONS.VOID}
+        handleFinish={handleFinish}
+        disableSubmitButton={voidPermitMutation.isPending}
+        onCancel={goHome}
+      />
+      {showRefundErrorModal && (
+        <RefundErrorModal
+          isOpen={showRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+          message={refundErrorMessage}
+        />
+      )}
+    </>
   );
 };

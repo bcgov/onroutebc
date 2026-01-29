@@ -52,7 +52,7 @@ export const AddVehicleButton = () => {
 
     setIsMenuOpen(false);
   };
-  
+
   const handleMenuItemClick = (
     _event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
@@ -79,20 +79,15 @@ export const AddVehicleButton = () => {
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = useRef(isMenuOpen);
   useEffect(() => {
-    if (prevOpen.current === true && isMenuOpen === false) {
-      // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
-      anchorRef.current!.focus();
+    if (prevOpen.current && !isMenuOpen && anchorRef.current) {
+      anchorRef.current.focus();
     }
 
     prevOpen.current = isMenuOpen;
   }, [isMenuOpen]);
 
   return (
-    <Stack
-      direction="row"
-      spacing={2}
-      className="add-vehicle"
-    >
+    <Stack direction="row" spacing={2} className="add-vehicle">
       <div className="add-vehicle__container">
         <Button
           ref={anchorRef}

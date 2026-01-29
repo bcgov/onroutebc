@@ -82,7 +82,7 @@ const searchRoute =
 
 export const AmendPermit = () => {
   const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
-
+  const { idirUserDetails } = useContext(OnRouteBCContext);
   const { state: stateFromNavigation } = useLocation();
 
   const companyId: number = applyWhenNotNullable(
@@ -221,11 +221,11 @@ export const AmendPermit = () => {
     ],
   );
 
+  
   if (isLoadingState()) {
     return <Loading />;
   }
 
-  const { idirUserDetails } = useContext(OnRouteBCContext);
 
   // unable to use permission matrix in this component, using manual role check instead
   const canAmendPermit = (role?: string) => {

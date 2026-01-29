@@ -1,27 +1,27 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { Button, FormControl } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import "./VoidPermitForm.scss";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
-import { Permit } from "../../../types/permit";
 import { RevokeDialog } from "./RevokeDialog";
 import {
   calculateAmountForVoid,
   calculateNetAmount,
 } from "../../../helpers/feeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
-import { useVoidPermit } from "../hooks/useVoidPermit";
+import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
-import {
-  Nullable,
-  ORBC_FORM_FEATURES,
-} from "../../../../../common/types/common";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { usePermitHistoryQuery } from "../../../hooks/hooks";
+import {
+  useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
+  usePermitHistoryQuery,
+} from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import {
   invalidEmail,
@@ -35,25 +35,19 @@ import {
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AmendOrVoidFeeSummary } from "../../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
+import { VoidPermitContext } from "../context/VoidPermitContext";
 
 const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
-export const VoidPermitForm = ({
-  permit,
-  onRevokeSuccess,
-  onCancel,
-  onFail,
-}: {
-  permit: Nullable<Permit>;
-  onRevokeSuccess: () => void;
-  onCancel: () => void;
-  onFail: () => void;
-}) => {
+export const VoidPermitForm = () => {
+  const { permit, handleFail, goHomeSuccess, goHome } =
+    useContext(VoidPermitContext);
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
-  const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
+  const { mutation: revokePermitMutation, voidResults } =
+    useVoidOrRevokePermit();
   const { companyId: companyIdParam } = useParams();
 
   const companyId: number = getDefaultRequiredVal(
@@ -87,11 +81,11 @@ export const VoidPermitForm = ({
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
-      onFail();
+      handleFail();
     } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Revoke action was successful and has results
       setOpenRevokeDialog(false);
-      onRevokeSuccess();
+      goHomeSuccess();
     }
   }, [voidResults]);
 
@@ -118,7 +112,23 @@ export const VoidPermitForm = ({
     setOpenRevokeDialog(false);
   };
 
-  const handleRevoke = (revokeData: VoidPermitFormData) => {
+  const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
+  const handleRevoke = async (revokeData: VoidPermitFormData) => {
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the revoke transaction
+    if (existingAmendmentApplicationId) {
+      await deleteApplications({
+        companyId,
+        applicationIds: [existingAmendmentApplicationId],
+      });
+    }
     revokePermitMutation.mutate({
       permitId,
       voidData: mapToRevokeRequestData(revokeData),
@@ -252,7 +262,7 @@ export const VoidPermitForm = ({
               variant="contained"
               color="tertiary"
               className="void-permit-button void-permit-button--cancel"
-              onClick={onCancel}
+              onClick={goHome}
               data-testid="cancel-void-permit-button"
             >
               Cancel

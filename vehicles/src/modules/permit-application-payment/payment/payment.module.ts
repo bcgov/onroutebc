@@ -11,8 +11,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentReportService } from './payment-report.service';
 import { Permit } from '../permit/entities/permit.entity';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
-import { SpecialAuth } from '../../special-auth/entities/special-auth.entity';
-import { SpecialAuthService } from '../../special-auth/special-auth.service';
+import { PolicyModule } from '../../policy/policy.module';
 import { CreditAccountModule } from '../../credit-account/credit-account.module';
 
 @Module({
@@ -25,17 +24,12 @@ import { CreditAccountModule } from '../../credit-account/credit-account.module'
       PaymentCardType,
       PaymentMethodType,
       CfsTransactionDetail,
-      SpecialAuth,
     ]),
+    PolicyModule,
     CreditAccountModule,
   ],
   controllers: [PaymentController],
-  providers: [
-    PaymentService,
-    TransactionProfile,
-    PaymentReportService,
-    SpecialAuthService,
-  ],
+  providers: [PaymentService, TransactionProfile, PaymentReportService],
   exports: [PaymentService],
 })
 export class PaymentModule {}

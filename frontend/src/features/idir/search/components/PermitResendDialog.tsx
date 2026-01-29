@@ -115,7 +115,9 @@ export default function PermitResendDialog({
   }, [notificationTypes]);
 
   useEffect(() => {
-    additionalEmail && setValue("email", additionalEmail);
+    if (additionalEmail) {
+      setValue("email", additionalEmail);
+    }
   }, [additionalEmail]);
 
   const handleCancel = () => {

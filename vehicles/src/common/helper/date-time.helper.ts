@@ -2,11 +2,14 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as duration from 'dayjs/plugin/duration';
+import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DurationDifference } from '../interface/duration-difference.interface';
+import { Nullable } from '../types/common';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
+dayjs.extend(quarterOfYear);
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   const formattedDate = dayjs.utc(dateTime).tz('Canada/Pacific').format(format);
@@ -60,7 +63,116 @@ export const getDuration = ({
 };
 
 /**
- * Returns the current date and time in the Pacific timezone.
+ * Returns the start date of the quarter for a given date time.
+ *
+ * @param dateTime The dateTime as a string
+ * @returns The start date of the quarter as a Date object.
+ */
+export const startOfQuarterOfYear = (dateTime: string): Date => {
+  const result = dayjs(dateTime).startOf('quarter').toDate();
+  return result;
+};
+
+/**
+ * Returns the end date of the quarter for a given date time.
+ *
+ * @param dateTime The dateTime as a string
+ * @returns The end date of the quarter as a Date object.
+ */
+export const endOfQuarterOfYear = (dateTime: string): Date => {
+  const result = dayjs(dateTime).endOf('quarter').toDate();
+  return result;
+};
+
+/**
+ * Adds a specified number of days to a given date.
+ *
+ * @param dateTime The date as a Date object
+ * @param daysToAdd The number of days to add to the date
+ * @returns The new date with the added days as a Date object.
+ */
+export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
+  const result = dayjs.utc(dateTime).add(daysToAdd, 'days').toDate();
+  return result;
+};
+
+/**
+ * Determines if a date falls within the same calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is within the quarter of the referenceDate; otherwise, false.
+ */
+export const isWithinCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterEndDate = convertUtcToPt(
+    endOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+  const quarterStartDate = convertUtcToPt(
+    startOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return (
+    differenceBetween(dateToCheck, quarterEndDate) >= 0 &&
+    differenceBetween(dateToCheck, quarterStartDate) <= 0
+  );
+};
+
+/**
+ * Determines if a date falls before the start of the calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is before the start of the quarter of the referenceDate; otherwise, false.
+ */
+export const isBeforeCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterStartDate = convertUtcToPt(
+    startOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return differenceBetween(dateToCheck, quarterStartDate) <= 0;
+};
+
+/**
+ * Determines if a date falls after the end of the calendar quarter of a reference date.
+ *
+ * @param dateToCheck The date to check as a string.
+ * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @returns True if the dateToCheck is after the end of the quarter of the referenceDate; otherwise, false.
+ */
+export const isAfterCalendarQuarter = (
+  dateToCheck: string,
+  referenceDate?: Nullable<string>,
+): boolean => {
+  // Determine the quarter boundaries of the given or current date
+
+  const currentReferenceDate = referenceDate ?? new Date().toISOString();
+  const quarterEndDate = convertUtcToPt(
+    endOfQuarterOfYear(currentReferenceDate),
+    'YYYY-MM-DD',
+  );
+
+  // Check if the date to check is outside the quarter boundaries
+  return differenceBetween(dateToCheck, quarterEndDate) >= 0;
+};
+
+/* Returns the current date and time in the Pacific timezone.
  *
  * @returns {dayjs.Dayjs} The current Pacific date and time.
  */

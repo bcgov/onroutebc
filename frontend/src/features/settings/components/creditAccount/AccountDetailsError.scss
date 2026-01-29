@@ -1,0 +1,21 @@
+@import "../../../../themes/orbcStyles";
+
+.account-details-error {
+  &__container {
+    border: 1px solid;
+    border-radius: 0.25rem;
+    border-color: $bc-messages-red-text;
+  }
+
+  &__banner {
+    width: 100%;
+    background-color: $bc-messages-red-background;
+  }
+
+  &__info {
+    background-color: $bc-white;
+    color: $bc-black;
+    margin: 1.5rem;
+    font-size: 1rem;
+  }
+}
