@@ -19,19 +19,19 @@ jobs:
   codeql:
     name: CodeQL
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: javascript
     
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript"
 
@@ -39,12 +39,12 @@ jobs:
   trivy:
     name: Trivy Security Scan
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           format: "sarif"
           output: "trivy-results.sarif"
@@ -54,14 +54,14 @@ jobs:
           severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results.sarif"
 
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     services:
       postgres:
@@ -106,13 +106,13 @@ jobs:
             token: SONAR_TOKEN_PUBLIC
             triggers: ('public')
     steps:
-      - uses: bcgov/action-test-and-analyse@v1.2.1
+      - uses: bcgov/action-test-and-analyse@v1.4.0
         with:
           commands: |
             npm ci
             npm run test:cov
           dir: ${{ matrix.dir }}
-          node_version: "18"
+          node_version: "22"
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
             -Dsonar.organization=bcgov-sonarcloud
@@ -127,7 +127,7 @@ jobs:
     name: Results
     needs: [codeql, trivy, tests]
     if: always() && (! failure())
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - run: echo "Success!"

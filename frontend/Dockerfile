@@ -10,7 +10,7 @@ COPY ./package*.json ./
 RUN mkdir /.npm && chmod 777 /.npm
 
 # Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # Copy app files
 COPY . .
