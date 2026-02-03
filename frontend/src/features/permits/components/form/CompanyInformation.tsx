@@ -30,7 +30,7 @@ export const CompanyInformation = ({
           className="company-info__info-msg"
           data-testid="company-info-header-desc"
         >
-          If the Company Mailing Address is incorrect, please contact your
+          If the Client Mailing Address is incorrect, please contact your
           onRouteBC Administrator.
         </Typography>
       </Box>
@@ -51,7 +51,7 @@ export const CompanyInformation = ({
         {companyInfo?.mailingAddress ? (
           <Box className="company-info__mailing-addr">
             <h4 data-testid="company-mail-addr-title">
-              Company Mailing Address
+              Client Mailing Address
             </h4>
 
             <Box>

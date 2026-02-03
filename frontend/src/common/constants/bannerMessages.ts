@@ -6,7 +6,7 @@ export const BANNER_MESSAGES = {
   ALL_FIELDS_MANDATORY:
     "Please note, unless stated otherwise, all fields are mandatory.",
   PERMIT_SEND_TO:
-    "The permit will be sent to the email on your onRouteBC Company Information, in addition to any email listed below.",
+    "The permit will be sent to the email on your onRouteBC Client Information, in addition to any email listed below.",
   PERMIT_REFUND_REQUEST: `Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: ${TOLL_FREE_NUMBER}. Please have your permit number ready.`,
   POLICY_REMINDER:
     "The applicant is responsible for ensuring they are following Legislation, policies, standards and guidelines in the operation of a commercial transportation business in British Columbia.",
@@ -51,7 +51,7 @@ export const BANNER_MESSAGES = {
   CREDIT_ACCOUNT_CVSE_INFO: "Please contact CVSE Revenue. ",
   CLIENT_NAME_MUST_BE_REGISTERED_OWNER:
     "Client name must be the registered owner (company or individual) of the vehicles being permitted.",
-  KNOW_YOUR_SHOPPING_CART: `The shopping cart is shared between all users authorized in the company profile for this onRouteBC client account. These users can modify (edit, remove and purchase) any item in the cart.`,
+  KNOW_YOUR_SHOPPING_CART: `The shopping cart is shared between all users authorized in the client profile for this onRouteBC client account. These users can modify (edit, remove and purchase) any item in the cart.`,
   YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED:
     "The shopping cart contains Application(s) with one or more errors. Those applications must be deselected or removed from the cart to proceed with payment. Common errors include, but are not limited to, start date is in the past or an invalid vehicle.",
 };
