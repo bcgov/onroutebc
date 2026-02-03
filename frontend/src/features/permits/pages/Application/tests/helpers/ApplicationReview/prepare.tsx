@@ -59,8 +59,8 @@ export const defaultApplicationData = {
 export const companyInfo = getDefaultCompanyInfo();
 export const companyInfoTitle = "Client Information";
 export const companyInfoDescription =
-  "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
-export const companyMailAddrTitle = "Company Mailing Address";
+  "If the Client Mailing Address is incorrect, please contact your onRouteBC Administrator.";
+export const companyMailAddrTitle = "Client Mailing Address";
 export const contactInfoTitle = "Contact Information";
 export const vehicleSubtypes = [
   ...getDefaultPowerUnitSubTypes(),
