@@ -57,7 +57,7 @@ export const defaultApplicationData = {
 } as Application;
 
 export const companyInfo = getDefaultCompanyInfo();
-export const companyInfoTitle = "Company Information";
+export const companyInfoTitle = "Client Information";
 export const companyInfoDescription =
   "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
 export const companyMailAddrTitle = "Company Mailing Address";

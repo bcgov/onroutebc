@@ -93,7 +93,7 @@ export const SuspendModal = ({
             className="suspend-button suspend-button--suspend"
             data-testid="suspend-button"
           >
-            Suspend Company
+            Suspend Client
           </Button>
         </div>
       </FormProvider>

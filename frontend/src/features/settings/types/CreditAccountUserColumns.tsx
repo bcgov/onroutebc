@@ -9,7 +9,7 @@ export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CreditAccountUser
   [
     {
       accessorKey: "legalName",
-      header: "Company Name",
+      header: "Client Name",
       grow: true,
       Cell: (props: { row: MRT_Row<CreditAccountUser> }) => {
         return (

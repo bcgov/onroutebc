@@ -13,7 +13,9 @@ export const CompanyInformation = ({
   companyInfo?: Nullable<CompanyProfile>;
   doingBusinessAs?: Nullable<string>;
 }) => {
-  const countryFullName = getCountryFullName(companyInfo?.mailingAddress?.countryCode);
+  const countryFullName = getCountryFullName(
+    companyInfo?.mailingAddress?.countryCode,
+  );
   const provinceFullName = getProvinceFullName(
     companyInfo?.mailingAddress?.countryCode,
     companyInfo?.mailingAddress?.provinceCode,
@@ -22,10 +24,8 @@ export const CompanyInformation = ({
   return (
     <Box className="company-info">
       <Box className="company-info__header">
-        <h3 data-testid="company-info-header-title">
-          Company Information
-        </h3>
-        
+        <h3 data-testid="company-info-header-title">Client Information</h3>
+
         <Typography
           className="company-info__info-msg"
           data-testid="company-info-header-desc"
@@ -38,9 +38,7 @@ export const CompanyInformation = ({
       <Box className="company-info__body">
         {doingBusinessAs ? (
           <Box className="company-info__doing-business">
-            <h4 data-testid="doing-business-as-title">
-              Doing Business As
-            </h4>
+            <h4 data-testid="doing-business-as-title">Doing Business As</h4>
 
             <Box>
               <Typography data-testid="doing-business-as">
@@ -72,7 +70,7 @@ export const CompanyInformation = ({
                   {provinceFullName}
                 </Typography>
               ) : null}
-              
+
               <Typography data-testid="company-mail-addr-city-postal">
                 {`${companyInfo.mailingAddress.city} ${companyInfo.mailingAddress.postalCode}`}
               </Typography>
