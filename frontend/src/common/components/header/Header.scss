@@ -104,6 +104,7 @@
         color: orbcStyles.$white;
         list-style: none;
         padding-left: 8.551vw;
+        box-sizing: border-box;
 
         li {
           margin: 0;
@@ -142,11 +143,50 @@
 */
 @media (width < 768px) {
   .header {
+    position: relative;
+    header {
+      height: fit-content;
+      flex-direction: column;
+
+      .brand-section {
+        padding: 0;
+        justify-content: center;
+      }
+
+      .options-section {
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .auth-section {
+          flex-direction: column;
+
+          .user-section {
+            flex-direction: column;
+          }
+
+          .search-button {
+            margin-right: 0;
+            padding-top: 1rem;
+            color: orbcStyles.$bc-gold;
+            background-color: orbcStyles.$bc-primary-blue;
+          }
+        }
+
+        .other {
+          .nav-btn {
+            padding: 1rem 0;
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
     &__main {
-      padding: 0 5.5rem;
+      padding: 0 0.5rem;
 
       .user-section {
-        display: none;
+        display: flex;
       }
 
       .other {
@@ -201,14 +241,14 @@
         ul {
           flex-direction: column;
           margin: 0;
-          padding: 0 5.5rem;
+          padding: 0 1.5rem;
     
           li {
             margin: 5px 0;
     
             a {
               border: none;
-              
+
               &:hover {
                 text-decoration: underline;
               }

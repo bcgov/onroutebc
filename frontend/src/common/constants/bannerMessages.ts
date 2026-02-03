@@ -31,7 +31,7 @@ export const BANNER_MESSAGES = {
     "Rejected applications appear in Applications in Progress.",
   APPLICATION_NOTES:
     "Application notes can provide additional details to the Provincial Permit Centre when submitting a permit application for review.",
-  APPLICATION_NOTES_EXAMPLE: "e.g. Use the credit account for payment.",
+  APPLICATION_NOTES_EXAMPLE: "e.g. For extraordinary load approval AB1234",
   APPLICATION_NOTES_INFO:
     "Application notes will not appear on the permit document.",
   HIGHWAY_SEQUENCES: {

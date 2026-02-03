@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -85,13 +85,15 @@ export const ShoppingCartPage = () => {
     getCompanyIdFromSession(),
     0,
   );
+
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
     userDetails?.userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
   );
-  const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
-  const [searchParams] = useSearchParams();
 
+  const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
+
+  const [searchParams] = useSearchParams();
   const paymentFailed = applyWhenNotNullable(
     (queryParam) => queryParam === "true",
     searchParams.get("paymentFailed"),
@@ -123,6 +125,7 @@ export const ShoppingCartPage = () => {
   const selectedApplications = cartItemSelection.filter(
     (cartItem) => cartItem.selected,
   );
+
   const selectedIds = selectedApplications.map(
     (cartItem) => cartItem.applicationId,
   );
@@ -145,6 +148,7 @@ export const ShoppingCartPage = () => {
     useState<boolean>(false);
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
+
   const { data: featureFlags } = useFeatureFlagsQuery();
   const shouldDisplayCreditAccount = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
@@ -153,34 +157,39 @@ export const ShoppingCartPage = () => {
       permissionMatrixFunctionKey: "PAY_WITH_CREDIT_ACCOUNT",
     },
   });
+
   const {
     data: creditAccountMetadata,
     isPending: isCreditAccountMetadataPending,
     isError: isCreditAccountMetadataError,
   } = useGetCreditAccountMetadataQuery(companyId, shouldDisplayCreditAccount);
 
-  let availablePaymentMethods = isStaffActingAsCompany
-    ? AVAILABLE_STAFF_PAYMENT_METHODS
-    : AVAILABLE_CV_PAYMENT_METHODS;
+  const isCreditAccountNotValidPayment =
+    !shouldDisplayCreditAccount
+    || isCreditAccountMetadataPending
+    || !creditAccountMetadata?.isValidPaymentMethod
+    || isCreditAccountMetadataError;
 
-  if (!isCreditAccountMetadataPending) {
+  const availablePaymentMethods = useMemo(() => {
     // If the credit account is not a valid payment method,
     // filter it out from the available payment methods.
-    if (
-      !creditAccountMetadata?.isValidPaymentMethod ||
-      isCreditAccountMetadataError
-    ) {
-      if (isStaffActingAsCompany) {
-        availablePaymentMethods = AVAILABLE_STAFF_PAYMENT_METHODS.filter(
+    if (isCreditAccountNotValidPayment) {
+      return isStaffActingAsCompany ?
+        AVAILABLE_STAFF_PAYMENT_METHODS.filter(
+          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+        ) : AVAILABLE_CV_PAYMENT_METHODS.filter(
           (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
         );
-      } else {
-        availablePaymentMethods = AVAILABLE_CV_PAYMENT_METHODS.filter(
-          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
-        );
-      }
     }
-  }
+
+    return isStaffActingAsCompany
+      ? AVAILABLE_STAFF_PAYMENT_METHODS
+      : AVAILABLE_CV_PAYMENT_METHODS;
+  }, [
+    isStaffActingAsCompany,
+    isCreditAccountNotValidPayment,
+  ]);
+
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
       paymentMethod: availablePaymentMethods[0],

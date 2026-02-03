@@ -152,7 +152,7 @@ export const InPersonPPCPaymentOption = ({
         }}
         label={
           <div className="label__text">
-            In-person at a Provinicial Permit Centre
+            In-person at a Provincial Permit Centre
           </div>
         }
         value={paymentMethod}
