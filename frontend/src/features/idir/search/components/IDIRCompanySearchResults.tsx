@@ -79,7 +79,7 @@ export const IDIRCompanySearchResults = memo(
       () => [
         {
           accessorKey: "legalName",
-          header: "Company Name",
+          header: "Client Name",
           enableSorting: true,
           sortingFn: "alphanumeric",
           minSize: 220,

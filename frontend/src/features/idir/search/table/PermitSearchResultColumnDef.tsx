@@ -111,7 +111,7 @@ export const PermitSearchResultColumnDef = (
   },
   {
     accessorKey: "legalName",
-    header: "Company Name",
+    header: "Client Name",
     enableSorting: true,
     sortingFn: "alphanumeric",
     size: 180,

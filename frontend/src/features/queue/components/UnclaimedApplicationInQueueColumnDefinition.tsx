@@ -59,7 +59,7 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
     accessorKey: "legalName",
     id: "legalName",
     enableSorting: false,
-    header: "Company Name",
+    header: "Client Name",
     size: 200,
   },
   {
@@ -72,9 +72,9 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
   {
     accessorKey: "timeInQueue",
     enableSorting: true,
-    id: "updatedDateTime",    
+    id: "updatedDateTime",
     header: "Time in Queue (hh:mm)",
-    size: 200
+    size: 200,
   },
   {
     accessorKey: "claimedBy",

@@ -121,7 +121,7 @@ export const DisplayCompanyInfo = memo(
             <EmptyState />
           )}
 
-          <Typography variant="h3">Company Mailing Address</Typography>
+          <Typography variant="h3">Client Mailing Address</Typography>
           {shouldShowMailingAddress ? (
             <>
               {mailingAddressLine1 && (
@@ -138,7 +138,7 @@ export const DisplayCompanyInfo = memo(
             <EmptyState />
           )}
 
-          <Typography variant="h3">Company Contact Details</Typography>
+          <Typography variant="h3">Client Contact Details</Typography>
           {shouldShowContactDetails ? (
             <>
               {contactDetailsEmail && (
@@ -152,7 +152,7 @@ export const DisplayCompanyInfo = memo(
             <EmptyState />
           )}
 
-          <Typography variant="h3">Company Primary Contact</Typography>
+          <Typography variant="h3">Client Primary Contact</Typography>
           {shouldShowPrimaryContact ? (
             <>
               {primaryContactFullName && (
