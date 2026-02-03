@@ -136,7 +136,7 @@ export const RefundPage = ({
               </h2>
               {email && (
                 <div className="refund-page__info">
-                  <span className="info__label">Company Email: </span>
+                  <span className="info__label">Client Email: </span>
                   <span className="info__value" data-testid="send-to-email">
                     {email}
                   </span>
