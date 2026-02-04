@@ -21,7 +21,11 @@ export const getDefaultManualRoute = (
     totalDistance: permitType === PERMIT_TYPES.MFP
       ? getDefaultRequiredVal(null, manualRoute?.totalDistance)
       : null,
-    isReturnTrip: permitType === PERMIT_TYPES.STOS
+    isReturnTrip: ([
+      PERMIT_TYPES.STOS,
+      PERMIT_TYPES.STOW,
+      PERMIT_TYPES.STWS,
+    ] as PermitType[]).includes(permitType)
       ? getDefaultRequiredVal(false, manualRoute?.isReturnTrip)
       : null,
   };

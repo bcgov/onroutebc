@@ -47,7 +47,11 @@ export const TripOriginDestination = ({
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
   const showTotalDistance = permitType === PERMIT_TYPES.MFP;
-  const showReturnTrip = permitType === PERMIT_TYPES.STOS;
+  const showReturnTrip = ([
+    PERMIT_TYPES.STOS,
+    PERMIT_TYPES.STOW,
+    PERMIT_TYPES.STWS,
+  ] as PermitType[]).includes(permitType);
 
   const origin = getDefaultRequiredVal("", tripOrigin);
 
