@@ -81,7 +81,7 @@ export const AddUserModal = ({
         <div className="add-user-modal__body">
           <dl>
             <div className="add-user-modal__item">
-              <dt className="add-user-modal__key">Company Name</dt>
+              <dt className="add-user-modal__key">Client Name</dt>
               <dd className="add-user-modal__value">
                 {userData.legalName}{" "}
                 <span className="add-user-modal__suspend-chip">
@@ -114,7 +114,7 @@ export const AddUserModal = ({
               </div>
               <div className="info__body">
                 <div className="add-user-modal__item">
-                  <dt className="add-user-modal__key">Company Name</dt>
+                  <dt className="add-user-modal__key">Client Name</dt>
                   <dt className="add-user-modal__value">
                     {userData.legalName}
                   </dt>

@@ -129,7 +129,7 @@ export default function UserGroupsAndPermissionsModal({
                   <TableCell component="th" scope="row">
                     <Stack spacing={2}>
                       <span>
-                        <strong>Manage Company Information</strong>
+                        <strong>Manage Client Information</strong>
                       </span>
                       <span>View Profile</span>
                       <span>Update profile information</span>

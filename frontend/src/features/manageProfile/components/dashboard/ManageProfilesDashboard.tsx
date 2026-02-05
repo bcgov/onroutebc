@@ -60,8 +60,10 @@ export const ManageProfilesDashboard = React.memo(() => {
     useContext(OnRouteBCContext);
 
   const companyId = getDefaultRequiredVal(0, companyIdFromContext);
-  const { data: creditAccountMetadata } =
-    useGetCreditAccountMetadataQuery(companyId, true);
+  const { data: creditAccountMetadata } = useGetCreditAccountMetadataQuery(
+    companyId,
+    true,
+  );
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
 
@@ -136,7 +138,7 @@ export const ManageProfilesDashboard = React.memo(() => {
   const tabs: TabComponentProps[] = [
     canViewCompanyInformation
       ? {
-          label: "Company Information",
+          label: "Client Information",
           component: <CompanyInfo companyInfoData={companyInfoData} />,
           componentKey: PROFILE_TABS.COMPANY_INFORMATION,
         }

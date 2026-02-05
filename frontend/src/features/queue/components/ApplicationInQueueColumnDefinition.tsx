@@ -59,7 +59,7 @@ export const getApplicationInQueueColumnDefinition = (
     accessorKey: "legalName",
     id: "legalName",
     enableSorting: false,
-    header: "Company Name",
+    header: "Client Name",
     size: 200,
   },
   {
@@ -74,6 +74,6 @@ export const getApplicationInQueueColumnDefinition = (
     enableSorting: true,
     id: "updatedDateTime",
     header: "Time in Queue (hh:mm)",
-    size: 200,   
+    size: 200,
   },
 ];

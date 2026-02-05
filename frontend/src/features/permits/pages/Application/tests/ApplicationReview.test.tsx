@@ -131,7 +131,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Assert
       const { legalName, clientNumber } = companyInfo;
-      expect(await companyNameLabel()).toHaveTextContent("COMPANY NAME");
+      expect(await companyNameLabel()).toHaveTextContent("CLIENT NAME");
       expect(await companyName()).toHaveTextContent(legalName);
       expect(await companyClientLabel()).toHaveTextContent(
         "onRouteBC CLIENT NUMBER",
@@ -344,7 +344,7 @@ describe("Review and Confirm Application Details", () => {
         vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)
           ?.type,
       );
-      
+
       expect(await vehicleUnitNumber()).toHaveTextContent(unit);
       expect(await vehicleVIN()).toHaveTextContent(vin);
       expect(await vehiclePlate()).toHaveTextContent(plate);
