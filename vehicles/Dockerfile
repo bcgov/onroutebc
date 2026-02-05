@@ -1,5 +1,5 @@
 #  Build container
-FROM node:22.14.0-alpine AS builder
+FROM node:24.13.0-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:22.14.0-alpine
+FROM node:24.13.0-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
