@@ -201,6 +201,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           routeDetails={props.route}
           oldRouteDetails={props.oldFields?.permitData?.permittedRoute}
           showChangedFields={props.showChangedFields}
+          permitType={props.permitType}
         />
 
         <ThirdPartyLiabilitySection

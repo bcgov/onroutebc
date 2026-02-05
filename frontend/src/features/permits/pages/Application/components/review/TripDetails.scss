@@ -46,6 +46,11 @@
         }
       }
 
+      &__radio-group {
+        display: flex;
+        flex-direction: row;
+      }
+
       &__info {
         display: flex;
         flex-direction: row;
