@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run All JMeter Tests In tests Folder
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        uses: rbhadti94/apache-jmeter-action@v0.7.0
         with:
           testFilePath: loadtests
           outputReportsFolder: loadtests/results
@@ -48,7 +48,7 @@ jobs:
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
             -JRESULTS_DIR=loadtest/results
 
-      - uses: actions/upload-artifact@v4.3.6
+      - uses: actions/upload-artifact@v6.0.0
         with:
           name: jmeter-test-results
           path: loadtests/results
