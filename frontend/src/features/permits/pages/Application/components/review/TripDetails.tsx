@@ -6,14 +6,17 @@ import { DiffChip } from "./DiffChip";
 import { PermittedRoute } from "../../../../types/PermittedRoute";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { areOrderedSequencesEqual, areValuesDifferent } from "../../../../../../common/helpers/equality";
+import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 
 export const TripDetails = ({
   routeDetails,
   oldRouteDetails,
+  permitType,
   showChangedFields = false,
 }: {
   routeDetails?: Nullable<PermittedRoute>;
   oldRouteDetails?: Nullable<PermittedRoute>;
+  permitType?: Nullable<PermitType>;
   showChangedFields?: boolean;
 }) => {
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
@@ -70,6 +73,12 @@ export const TripDetails = ({
     return show ? <DiffChip /> : null;
   };
 
+  const showReturnTrip = permitType && ([
+    PERMIT_TYPES.STOS,
+    PERMIT_TYPES.STOW,
+    PERMIT_TYPES.STWS,
+  ] as PermitType[]).includes(permitType);
+
   return routeDetails ? (
     <Box className="review-trip-details">
       <Box className="review-trip-details__header">
@@ -115,7 +124,7 @@ export const TripDetails = ({
               </div>
             ) : null}
 
-            {isReturnTrip ? (
+            {showReturnTrip ? (
               <div className="manual-route__is-return-trip">
                 <RadioGroup
                   className="manual-route__radio-group"
@@ -129,7 +138,7 @@ export const TripDetails = ({
                       disabled: "return-trip-option--disabled",
                       label: "return-trip-option__label",
                     }}
-                    label="Return Trip"
+                    label={isReturnTrip ? "Return Trip" : "One Way"}
                     value={isReturnTrip}
                     control={
                       <Radio
@@ -137,15 +146,19 @@ export const TripDetails = ({
                         className="return-trip-option__radio return-trip-option__radio--disabled"
                       />}
                   />
+
+                  {showDiffChip(!isReturnTrip && changedFields.isReturnTrip)}
                 </RadioGroup>
 
-                <Typography className="manual-route__info">
-                  <span className="manual-route__info-text">
-                    Permitted for return trip along the same route.
-                  </span>
+                {isReturnTrip ? (
+                  <Typography className="manual-route__info">
+                    <span className="manual-route__info-text">
+                      Permitted for return trip along the same route.
+                    </span>
 
-                  {showDiffChip(changedFields.isReturnTrip)}
-                </Typography>
+                    {showDiffChip(changedFields.isReturnTrip)}
+                  </Typography>
+                ) : null}
               </div>
             ) : null}
 
