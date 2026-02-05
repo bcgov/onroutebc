@@ -20,9 +20,9 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting updates to policy config to support Commercial Passenger Vehicle conditional licensing fee type'
+SET @VersionDescription = 'Reverting Updates to policy config to support return trip for STOS and STOW'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (88, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (89, @VersionDescription, getutcdate())
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
