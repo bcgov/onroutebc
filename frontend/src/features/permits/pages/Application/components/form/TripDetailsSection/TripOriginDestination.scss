@@ -1,3 +1,5 @@
+@use "../../../../../../../themes/orbcStyles";
+
 .trip-origin-destination {
   display: flex;
   flex-direction: column;
@@ -17,6 +19,41 @@
     &--destination, &--total-distance {
       margin: 1.5rem 0 0 0;
       width: 100%;
+    }
+  }
+
+  .return-trip-options {
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.5rem;
+
+    &__label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+
+      &--return-trip {
+        margin-left: 2.5rem;
+      }
+    }
+
+    &__label-text {
+      margin: 0;
+    }
+
+    &__radio {
+      padding: 0;
+      margin-right: 0.5rem;
+
+      &:hover {
+        background-color: orbcStyles.$bc-border-grey;
+      }
+
+      &--checked {
+        &:hover {
+          background-color: transparent;
+        }
+      }
     }
   }
 
