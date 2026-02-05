@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 
 import "./TripDetails.scss";
 import { Nullable } from "../../../../../../common/types/common";
@@ -19,6 +19,7 @@ export const TripDetails = ({
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
   const destination = getDefaultRequiredVal("", routeDetails?.manualRoute?.destination);
   const exitPoint = getDefaultRequiredVal("", routeDetails?.manualRoute?.exitPoint);
+  const isReturnTrip = getDefaultRequiredVal(false, routeDetails?.manualRoute?.isReturnTrip);
   const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(2);
   const highwaySequence = getDefaultRequiredVal([], routeDetails?.manualRoute?.highwaySequence);
   const details = getDefaultRequiredVal("", routeDetails?.routeDetails);
@@ -36,6 +37,10 @@ export const TripDetails = ({
         exitPoint: areValuesDifferent(
           routeDetails?.manualRoute?.exitPoint,
           oldRouteDetails?.manualRoute?.exitPoint,
+        ),
+        isReturnTrip: areValuesDifferent(
+          routeDetails?.manualRoute?.isReturnTrip,
+          oldRouteDetails?.manualRoute?.isReturnTrip,
         ),
         totalDistance: areValuesDifferent(
           totalDistanceStr,
@@ -55,6 +60,7 @@ export const TripDetails = ({
         origin: false,
         destination: false,
         exitPoint: false,
+        isReturnTrip: false,
         totalDistance: false,
         highwaySequences: false,
         routeDetails: false,
@@ -105,6 +111,40 @@ export const TripDetails = ({
                   data-testid="permit-route-destination"
                 >
                   {destination}
+                </Typography>
+              </div>
+            ) : null}
+
+            {isReturnTrip ? (
+              <div className="manual-route__is-return-trip">
+                <RadioGroup
+                  className="manual-route__radio-group"
+                  defaultValue={isReturnTrip}
+                >
+                  <FormControlLabel
+                    key="is-return-trip"
+                    className="return-trip-option"
+                    disabled={true}
+                    classes={{
+                      disabled: "return-trip-option--disabled",
+                      label: "return-trip-option__label",
+                    }}
+                    label="Return Trip"
+                    value={isReturnTrip}
+                    control={
+                      <Radio
+                        key="is-return-trip-true"
+                        className="return-trip-option__radio return-trip-option__radio--disabled"
+                      />}
+                  />
+                </RadioGroup>
+
+                <Typography className="manual-route__info">
+                  <span className="manual-route__info-text">
+                    Permitted for return trip along the same route.
+                  </span>
+
+                  {showDiffChip(changedFields.isReturnTrip)}
                 </Typography>
               </div>
             ) : null}

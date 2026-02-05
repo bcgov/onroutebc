@@ -223,6 +223,9 @@ export const areManualRoutesEqual = (
     manualRoute1?.highwaySequence,
     manualRoute2?.highwaySequence,
     (seqNumber1, seqNumber2) => seqNumber1 === seqNumber2,
+  ) && (
+    getDefaultRequiredVal(false, manualRoute1?.isReturnTrip)
+      === getDefaultRequiredVal(false, manualRoute2?.isReturnTrip)
   );
 };
 

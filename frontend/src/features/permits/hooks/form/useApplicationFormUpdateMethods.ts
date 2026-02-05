@@ -135,6 +135,13 @@ export const useApplicationFormUpdateMethods = () => {
     );
   }, [setValue]);
 
+  const onUpdateIsReturnTrip = useCallback((updatedIsReturnTrip: boolean) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.isReturnTrip",
+      updatedIsReturnTrip,
+    );
+  }, [setValue]);
+
   const onUpdateTotalDistance = useCallback((updatedTotalDistance?: RequiredOrNull<number>) => {
     setValue(
       "permitData.permittedRoute.manualRoute.totalDistance",
@@ -234,6 +241,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateHighwaySequence,
     onUpdateTripOrigin,
     onUpdateTripDestination,
+    onUpdateIsReturnTrip,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
