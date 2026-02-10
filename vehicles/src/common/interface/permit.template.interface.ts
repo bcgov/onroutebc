@@ -91,6 +91,7 @@ interface ManualRoute {
   exitPoint?: string;
   totalDistance?: number;
   highwaySequence?: string[];
+  isReturnTrip?: Nullable<boolean>;
 }
 
 interface MailingAddress {
