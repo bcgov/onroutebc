@@ -20,7 +20,7 @@ jobs:
         name: [dops, frontend, vehicles, policy, scheduler, public]
     steps:
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@v0.13.0
         with:
           allow_issue_writing: true
           artifact_name: "zap_${{ matrix.name }}"
@@ -47,7 +47,7 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: joshuaavalon/flyway-action@v3.0.0
         name: Generate SchemaSpy docs for node backend
         with:

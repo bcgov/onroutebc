@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: github/codeql-action/init@v4
         with:
           languages: javascript
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.33.1
         with:
@@ -106,7 +106,7 @@ jobs:
             token: SONAR_TOKEN_PUBLIC
             triggers: ('public')
     steps:
-      - uses: bcgov/action-test-and-analyse@v1.4.0
+      - uses: bcgov/action-test-and-analyse@v2.0.0
         with:
           commands: |
             npm ci
