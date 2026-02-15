@@ -1,4 +1,4 @@
-FROM node:22.14.0-alpine AS builder
+FROM node:24.13.0-alpine AS builder
 
 #  Set the working directory to /app inside the container
 WORKDIR /app
@@ -25,7 +25,7 @@ USER app
 EXPOSE 3000
 
 # Have only the compiled app, ready for production with Nginx
-FROM nginx:1.27-alpine AS production-stage
+FROM nginx:1.29-alpine AS production-stage
 RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf

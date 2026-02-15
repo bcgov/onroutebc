@@ -79,7 +79,7 @@ jobs:
 
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Load credentials for ${{ matrix.role }}
         id: creds
@@ -89,7 +89,7 @@ jobs:
           echo "CYPRESS_PASSWORD=${{ secrets[format('PASSWORD_{0}', matrix.role)] }}" >> $GITHUB_ENV
 
       - name: Run Cypress tests for ${{ matrix.role }}
-        uses: cypress-io/github-action@v6.9.2
+        uses: cypress-io/github-action@v7.1.2
         env:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_wait_time: 2000
@@ -102,14 +102,14 @@ jobs:
           spec: cypress/e2e/smoke/${{matrix.test}}
           working-directory: tests
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}} video
