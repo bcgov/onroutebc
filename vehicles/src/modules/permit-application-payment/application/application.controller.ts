@@ -32,6 +32,8 @@ import {
   ApplicationQueueStatus,
   convertApplicationQueueStatus,
 } from '../../../common/enum/case-status-type.enum';
+import { Param } from '@nestjs/common';
+import { ReadApplicationDto } from './dto/response/read-application.dto';
 
 @ApiBearerAuth()
 @ApiTags('Application : API accessible exclusively to staff users and SA.')
@@ -114,5 +116,22 @@ export class ApplicationController {
       permit.ids,
     );
     return result;
+  }
+
+  @ApiOperation({
+    summary: 'Copy an issued permit into a new draft application',
+  })
+  @Post('/:permitId/copy')
+  async copyPermit(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+  ): Promise<ReadApplicationDto> {
+    const currentUser = request.user as IUserJWT;
+
+    return await this.applicationService.copyApplication(
+      permitId,
+      currentUser,
+      currentUser.companyId,
+    );
   }
 }

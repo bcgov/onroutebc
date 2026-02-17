@@ -1387,4 +1387,49 @@ export class ApplicationService {
       );
     return readPermitLoaDto;
   }
+
+  @LogAsyncMethodExecution()
+  async copyApplication(
+    permitId: string,
+    currentUser: IUserJWT,
+    companyId: number,
+  ): Promise<ReadApplicationDto> {
+    const original = await this.findOne(permitId, companyId);
+
+    if (!original) {
+      throw new DataNotFoundException();
+    }
+
+    if (original.permitStatus !== ApplicationStatus.ISSUED) {
+      throwUnprocessableEntityException('Only issued permits can be copied.');
+    }
+
+    const originalData = JSON.parse(
+      original.permitData.permitData,
+    ) as PermitData;
+
+    const today = dayjs().format('YYYY-MM-DD');
+
+    const duration = differenceBetween(
+      originalData.startDate,
+      originalData.expiryDate,
+      'days',
+    );
+    originalData.startDate = today;
+    originalData.expiryDate = dayjs(today)
+      .add(duration, 'day')
+      .format('YYYY-MM-DD');
+
+    const createDto: CreateApplicationDto = {
+      permitType: original.permitType,
+      permitId: null,
+      permitData: originalData as unknown as JSON,
+    };
+
+    return await this.create(
+      createDto,
+      currentUser,
+      original.company.companyId,
+    );
+  }
 }
