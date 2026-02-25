@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import "./TripDetails.scss";
 import { Nullable } from "../../../../../../common/types/common";
@@ -6,23 +6,19 @@ import { DiffChip } from "./DiffChip";
 import { PermittedRoute } from "../../../../types/PermittedRoute";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { areOrderedSequencesEqual, areValuesDifferent } from "../../../../../../common/helpers/equality";
-import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 
 export const TripDetails = ({
   routeDetails,
   oldRouteDetails,
-  permitType,
   showChangedFields = false,
 }: {
   routeDetails?: Nullable<PermittedRoute>;
   oldRouteDetails?: Nullable<PermittedRoute>;
-  permitType?: Nullable<PermitType>;
   showChangedFields?: boolean;
 }) => {
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
   const destination = getDefaultRequiredVal("", routeDetails?.manualRoute?.destination);
   const exitPoint = getDefaultRequiredVal("", routeDetails?.manualRoute?.exitPoint);
-  const isReturnTrip = getDefaultRequiredVal(false, routeDetails?.manualRoute?.isReturnTrip);
   const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(2);
   const highwaySequence = getDefaultRequiredVal([], routeDetails?.manualRoute?.highwaySequence);
   const details = getDefaultRequiredVal("", routeDetails?.routeDetails);
@@ -40,10 +36,6 @@ export const TripDetails = ({
         exitPoint: areValuesDifferent(
           routeDetails?.manualRoute?.exitPoint,
           oldRouteDetails?.manualRoute?.exitPoint,
-        ),
-        isReturnTrip: areValuesDifferent(
-          routeDetails?.manualRoute?.isReturnTrip,
-          oldRouteDetails?.manualRoute?.isReturnTrip,
         ),
         totalDistance: areValuesDifferent(
           totalDistanceStr,
@@ -63,7 +55,6 @@ export const TripDetails = ({
         origin: false,
         destination: false,
         exitPoint: false,
-        isReturnTrip: false,
         totalDistance: false,
         highwaySequences: false,
         routeDetails: false,
@@ -72,12 +63,6 @@ export const TripDetails = ({
   const showDiffChip = (show: boolean) => {
     return show ? <DiffChip /> : null;
   };
-
-  const showReturnTrip = permitType && ([
-    PERMIT_TYPES.STOS,
-    PERMIT_TYPES.STOW,
-    PERMIT_TYPES.STWS,
-  ] as PermitType[]).includes(permitType);
 
   return routeDetails ? (
     <Box className="review-trip-details">
@@ -121,44 +106,6 @@ export const TripDetails = ({
                 >
                   {destination}
                 </Typography>
-              </div>
-            ) : null}
-
-            {showReturnTrip ? (
-              <div className="manual-route__is-return-trip">
-                <RadioGroup
-                  className="manual-route__radio-group"
-                  defaultValue={isReturnTrip}
-                >
-                  <FormControlLabel
-                    key="is-return-trip"
-                    className="return-trip-option"
-                    disabled={true}
-                    classes={{
-                      disabled: "return-trip-option--disabled",
-                      label: "return-trip-option__label",
-                    }}
-                    label={isReturnTrip ? "Return Trip" : "One Way"}
-                    value={isReturnTrip}
-                    control={
-                      <Radio
-                        key="is-return-trip-true"
-                        className="return-trip-option__radio return-trip-option__radio--disabled"
-                      />}
-                  />
-
-                  {showDiffChip(!isReturnTrip && changedFields.isReturnTrip)}
-                </RadioGroup>
-
-                {isReturnTrip ? (
-                  <Typography className="manual-route__info">
-                    <span className="manual-route__info-text">
-                      Permitted for return trip along the same route.
-                    </span>
-
-                    {showDiffChip(changedFields.isReturnTrip)}
-                  </Typography>
-                ) : null}
               </div>
             ) : null}
 

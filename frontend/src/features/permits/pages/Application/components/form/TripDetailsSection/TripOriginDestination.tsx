@@ -1,5 +1,4 @@
 import { Controller } from "react-hook-form";
-import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
@@ -26,33 +25,23 @@ export const TripOriginDestination = ({
   tripOrigin,
   tripDestination,
   totalDistance,
-  isReturnTrip,
   onUpdateTripOrigin,
   onUpdateTripDestination,
   onUpdateTotalDistance,
-  onUpdateIsReturnTrip,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
   tripOrigin?: Nullable<string>;
   tripDestination?: Nullable<string>;
   totalDistance?: Nullable<number>;
-  isReturnTrip?: Nullable<boolean>;
   onUpdateTripOrigin: (updateTripOrigin: string) => void;
   onUpdateTripDestination: (updateTripDestination: string) => void;
   onUpdateTotalDistance: (
     updatedTotalDistance?: RequiredOrNull<number>,
   ) => void;
-  onUpdateIsReturnTrip: (updatedIsReturnTrip: boolean) => void;
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
   const showTotalDistance = permitType === PERMIT_TYPES.MFP;
-  const showReturnTrip = ([
-    PERMIT_TYPES.STOS,
-    PERMIT_TYPES.STOW,
-    PERMIT_TYPES.STWS,
-  ] as PermitType[]).includes(permitType);
-
   const origin = getDefaultRequiredVal("", tripOrigin);
 
   const handleUpdateTotalDistance = (numericStr: string) => {
@@ -119,51 +108,6 @@ export const TripOriginDestination = ({
           />
         )}
       />
-
-      {showReturnTrip ? (
-        <RadioGroup
-          className="return-trip-options"
-          defaultValue={Boolean(isReturnTrip)}
-          value={Boolean(isReturnTrip)}
-          onChange={(e) => onUpdateIsReturnTrip(e.target.value === "true")}
-        >
-          <FormControlLabel
-            className="return-trip-options__label return-trip-options__label--one-way"
-            classes={{
-              label: "return-trip-options__label-text",
-            }}
-            label="One Way"
-            value={false}
-            control={
-              <Radio
-                key="one-way"
-                className="return-trip-options__radio"
-                classes={{
-                  checked: "return-trip-options__radio--checked",
-                }}
-              />
-            }
-          />
-
-          <FormControlLabel
-            className="return-trip-options__label return-trip-options__label--return-trip"
-            classes={{
-              label: "return-trip-options__label-text",
-            }}
-            label="Return Trip"
-            value={true}
-            control={
-              <Radio
-                key="return-trip"
-                className="return-trip-options__radio"
-                classes={{
-                  checked: "return-trip-options__radio--checked",
-                }}
-              />
-            }
-          />
-        </RadioGroup>
-      ) : null}
 
       {showExitPoint ? (
         <CustomFormComponent
