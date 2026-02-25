@@ -18,12 +18,10 @@ export const TripDetailsSection = ({
   tripOrigin,
   tripDestination,
   totalDistance,
-  isReturnTrip,
   onUpdateHighwaySequence,
   onUpdateTripOrigin,
   onUpdateTripDestination,
   onUpdateTotalDistance,
-  onUpdateIsReturnTrip,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
@@ -31,14 +29,12 @@ export const TripDetailsSection = ({
   tripOrigin?: Nullable<string>;
   tripDestination?: Nullable<string>;
   totalDistance?: Nullable<number>;
-  isReturnTrip?: Nullable<boolean>;
   onUpdateHighwaySequence: (updatedHighwaySequence: string[]) => void;
   onUpdateTripOrigin: (updateTripOrigin: string) => void;
   onUpdateTripDestination: (updateTripDestination: string) => void;
   onUpdateTotalDistance: (
     updatedTotalDistance?: RequiredOrNull<number>,
   ) => void;
-  onUpdateIsReturnTrip: (updatedIsReturnTrip: boolean) => void;
 }) => {
   return permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.MFP ? (
     <Box className="trip-details-section">
@@ -53,11 +49,9 @@ export const TripDetailsSection = ({
           tripOrigin={tripOrigin}
           tripDestination={tripDestination}
           totalDistance={totalDistance}
-          isReturnTrip={isReturnTrip}
           onUpdateTripOrigin={onUpdateTripOrigin}
           onUpdateTripDestination={onUpdateTripDestination}
           onUpdateTotalDistance={onUpdateTotalDistance}
-          onUpdateIsReturnTrip={onUpdateIsReturnTrip}
         />
 
         {permitType === PERMIT_TYPES.STOS ? (

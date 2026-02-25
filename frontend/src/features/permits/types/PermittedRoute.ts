@@ -6,7 +6,6 @@ export interface ManualRoute {
   destination: string;
   exitPoint?: Nullable<string>;
   totalDistance?: Nullable<number>;
-  isReturnTrip?: Nullable<boolean>;
 }
 
 export interface PermittedRoute {
