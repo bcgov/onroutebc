@@ -143,6 +143,7 @@ export const getExpiryDateOrDefault = (
  * @param companyInfo Company profile information (can be undefined, but must be passed as param)
  * @param applicationData Existing application data, if already exists
  * @param userDetails User details of current user, if any
+ * @param shouldInitAsCopy Whether or not getting the application data is part of a copying operation
  * @returns Default values for the application data
  */
 export const getDefaultValues = (
@@ -150,10 +151,54 @@ export const getDefaultValues = (
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
+  shouldInitAsCopy: boolean = false,
 ): ApplicationFormData => {
+  const defaultPermitType = getDefaultRequiredVal(
+    permitType,
+    applicationData?.permitType,
+  );
+
+  const defaultPermitId = !shouldInitAsCopy
+    ? getDefaultRequiredVal("", applicationData?.permitId)
+    : "";
+  
+  const defaultOriginalPermitId = !shouldInitAsCopy
+    ? getDefaultRequiredVal(
+      "",
+      applicationData?.originalPermitId,
+    ) : "";
+
+  const defaultApplicationNumber = !shouldInitAsCopy
+    ? getDefaultRequiredVal(
+      "",
+      applicationData?.applicationNumber,
+    ) : "";
+
+  const defaultPermitNumber = !shouldInitAsCopy
+    ? getDefaultRequiredVal("", applicationData?.permitNumber)
+    : "";
+
+  const defaultCompanyName = getDefaultRequiredVal(
+    "",
+    !shouldInitAsCopy
+      ? applicationData?.permitData?.companyName
+      : companyInfo?.legalName,
+    companyInfo?.legalName,
+  );
+
+  const defaultClientNumber = getDefaultRequiredVal(
+    "",
+    !shouldInitAsCopy
+      ? applicationData?.permitData?.clientNumber
+      : companyInfo?.clientNumber,
+    companyInfo?.clientNumber,
+  );
+
   const startDateOrDefault = getStartDateOrDefault(
     now(),
-    applicationData?.permitData?.startDate,
+    !shouldInitAsCopy
+      ? applicationData?.permitData?.startDate
+      : now(),
   );
 
   const durationOrDefault = getDurationOrDefault(
@@ -165,17 +210,17 @@ export const getDefaultValues = (
     startDateOrDefault,
     isQuarterlyPermit(permitType),
     durationOrDefault,
-    applicationData?.permitData?.expiryDate,
+    !shouldInitAsCopy
+      ? applicationData?.permitData?.expiryDate
+      : undefined, // let expiry be automatically calculated/derived for initializing copied permits
   );
 
-  const defaultPermitType = getDefaultRequiredVal(
-    permitType,
-    applicationData?.permitType,
-  );
-
-  const defaultApplicationNumber = getDefaultRequiredVal(
-    "",
-    applicationData?.applicationNumber,
+  const defaultConditions = getDefaultRequiredVal(
+    getMandatoryConditions(permitType),
+    applyWhenNotNullable(
+      (conditions) => conditions.map((condition) => ({ ...condition })),
+      applicationData?.permitData?.commodities,
+    ),
   );
 
   const defaultPermittedRoute = getDefaultPermittedRoute(
@@ -184,55 +229,39 @@ export const getDefaultValues = (
   );
 
   return {
-    originalPermitId: getDefaultRequiredVal(
-      "",
-      applicationData?.originalPermitId,
-    ),
-    comment: getDefaultRequiredVal("", applicationData?.comment),
-    applicationNumber: defaultApplicationNumber,
-    permitId: getDefaultRequiredVal("", applicationData?.permitId),
-    permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: defaultPermitType,
+    permitId: defaultPermitId,
+    originalPermitId: defaultOriginalPermitId,
+    applicationNumber: defaultApplicationNumber,
+    permitNumber: defaultPermitNumber,    
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
     ),
     permitData: {
-      companyName: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.companyName,
-        companyInfo?.legalName,
-      ),
+      companyName: defaultCompanyName,
       doingBusinessAs: getDefaultRequiredVal(
         "",
         companyInfo?.alternateName, // always use the latest DBA fetched from company info
       ),
-      clientNumber: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.clientNumber,
-        companyInfo?.clientNumber,
-      ),
-      startDate: startDateOrDefault,
-      permitDuration: durationOrDefault,
-      expiryDate: expiryDateOrDefault,
-      commodities: getDefaultRequiredVal(
-        getMandatoryConditions(permitType),
-        applyWhenNotNullable(
-          (conditions) => conditions.map((condition) => ({ ...condition })),
-          applicationData?.permitData?.commodities,
-        ),
-      ),
+      clientNumber: defaultClientNumber,
       contactDetails: getDefaultContactDetails(
-        defaultApplicationNumber.trim() === "",
+        defaultApplicationNumber.trim() === "" || shouldInitAsCopy,
         applicationData?.permitData?.contactDetails,
         userDetails,
         companyInfo?.email,
       ),
       // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: getDefaultMailingAddress(
-        applicationData?.permitData?.mailingAddress,
+        !shouldInitAsCopy
+          ? applicationData?.permitData?.mailingAddress
+          : companyInfo?.mailingAddress,
         companyInfo?.mailingAddress,
       ),
+      startDate: startDateOrDefault,
+      permitDuration: durationOrDefault,
+      expiryDate: expiryDateOrDefault,
+      commodities: defaultConditions,
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
@@ -267,5 +296,6 @@ export const getDefaultValues = (
           applicationData?.permitData?.conditionalLicensingFee,
         ) : null,
     },
+    comment: getDefaultRequiredVal("", applicationData?.comment),
   };
 };

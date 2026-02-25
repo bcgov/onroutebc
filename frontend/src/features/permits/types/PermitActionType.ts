@@ -3,6 +3,7 @@ export const PERMIT_ACTION_TYPES = {
   VIEW_RECEIPT: "viewReceipt",
   AMEND: "amend",
   VOID_REVOKE: "voidRevoke",
+  COPY: "copy",
 } as const;
 
 export type PermitActionType =

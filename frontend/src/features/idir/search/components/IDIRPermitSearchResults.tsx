@@ -31,6 +31,7 @@ import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 import { PermitRowOptions } from "../../../permits/components/permit-list/PermitRowOptions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { canUserCopyPermit } from "../../../permits/helpers/canUserCopyPermit";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -169,6 +170,16 @@ export const IDIRPermitSearchResults = memo(
       },
     });
 
+    const canCopyPermit = true; // testing
+    /*
+    const canCopyPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "COPY_PERMIT",
+      },
+    });
+    */
+
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: getDefaultRequiredVal([], data?.items),
@@ -223,6 +234,13 @@ export const IDIRPermitSearchResults = memo(
             hasPermitExpired(row.original.expiryDate) ||
             isPermitInactive(row.original.permitStatus);
 
+          const canPermitBeCopied = canUserCopyPermit(
+            row.original.permitApplicationOrigin,
+            idirUserDetails?.userRole,
+            row.original.permitStatus,
+            row.original.permitApprovalSource,
+          );
+
           if (shouldShowRowActions(idirUserDetails?.userRole)) {
             return (
               <Box className="idir-search-results__row-actions">
@@ -238,6 +256,7 @@ export const IDIRPermitSearchResults = memo(
                     canViewPermitReceipt,
                     canViewExpiredPermitReceipt,
                     canVoidPermit,
+                    canCopyPermit: canCopyPermit && canPermitBeCopied,
                   }}
                 />
               </Box>

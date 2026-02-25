@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import {
   MRT_GlobalFilterTextField,
   MRT_PaginationState,
@@ -16,20 +16,25 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { getPermits } from "../../apiManager/permitsAPI";
 import { PermitListItem } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
-import { useNavigate } from "react-router-dom";
+import { hasPermitExpired } from "../../helpers/permitState";
+import { isPermitInactive } from "../../types/PermitStatus";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
+import { PermitRowOptions } from "./PermitRowOptions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import { canUserCopyPermit } from "../../helpers/canUserCopyPermit";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { hasPermitExpired } from "../../helpers/permitState";
-import { isPermitInactive } from "../../types/PermitStatus";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
-import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
-import { PermitRowOptions } from "./PermitRowOptions";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+
+import {
+  applyWhenNotNullable,
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -40,7 +45,16 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
-  const { companyId: companyIdFromContext } = useContext(OnRouteBCContext);
+  const {
+    companyId: companyIdFromContext,
+    idirUserDetails,
+    userDetails,
+  } = useContext(OnRouteBCContext);
+
+  const userRole = getDefaultNullableVal(
+    idirUserDetails?.userRole,
+    userDetails?.userRole,
+  );
 
   const companyId: number = applyWhenNotNullable(
     (id) => Number(id),
@@ -146,6 +160,16 @@ export const BasePermitList = ({
     },
   });
 
+  const canCopyPermit = true; // testing
+  /*
+  const canCopyPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "COPY_PERMIT",
+    },
+  });
+  */
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition(
@@ -189,15 +213,16 @@ export const BasePermitList = ({
     manualSorting: true,
     muiSearchTextFieldProps: {
       ...defaultTableOptions.muiSearchTextFieldProps,
-      helperText: globalFilter?.length >= 100 && "100 characters maximum.",
+      helperText: getDefaultRequiredVal(0, globalFilter?.length) >= 100
+        && "100 characters maximum.",
       placeholder: "Search by Unit No., Plate or Permit No.",
       sx: {
         minWidth: "450px",
         backgroundColor: "white",
       },
     },
-    rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.pageCount ?? 0,
+    rowCount: getDefaultRequiredVal(0, data?.meta?.totalItems),
+    pageCount: getDefaultRequiredVal(0, data?.meta?.pageCount),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
@@ -209,6 +234,14 @@ export const BasePermitList = ({
         const isInactive =
           hasPermitExpired(row.original.expiryDate) ||
           isPermitInactive(row.original.permitStatus);
+
+        const canPermitBeCopied = canUserCopyPermit(
+          row.original.permitApplicationOrigin,
+          userRole,
+          row.original.permitStatus,
+          row.original.permitApprovalSource,
+        );
+        
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions
@@ -223,6 +256,7 @@ export const BasePermitList = ({
                 canViewPermitReceipt,
                 canViewExpiredPermitReceipt,
                 canVoidPermit,
+                canCopyPermit: canCopyPermit && canPermitBeCopied,
               }}
             />
           </Box>

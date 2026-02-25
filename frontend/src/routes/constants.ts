@@ -94,6 +94,16 @@ export const PERMITS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/amend`,
+  COPY: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
+      PERMITS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/copy`,
 };
 
 // Applications
@@ -112,6 +122,7 @@ export type ApplicationStep =
 export const APPLICATION_STEP_CONTEXTS = {
   APPLY: 0,
   QUEUE: 1,
+  COPY: 2,
 } as const;
 
 export type ApplicationStepContext =

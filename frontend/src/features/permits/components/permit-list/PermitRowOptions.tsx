@@ -55,6 +55,7 @@ export const PermitRowOptions = ({
     canViewExpiredPermitReceipt: boolean;
     canAmendPermit: boolean;
     canVoidPermit: boolean;
+    canCopyPermit: boolean;
   };
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
@@ -96,6 +97,9 @@ export const PermitRowOptions = ({
       // which will in turn look for any existing associated amendment applications,
       // which is used to show info in the modal (or not show the modal at all)
       choosePermitToAmend(companyId, permitId);
+    } else if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
+      // TODO: Actual copying of the permit/application
+      console.log("Copy permit");
     }
   };
 
@@ -131,9 +135,14 @@ export const PermitRowOptions = ({
     canViewExpiredPermitReceipt,
     canAmendPermit,
     canVoidPermit,
+    canCopyPermit,
   } = permissions;
 
   const permitActions = [
+    {
+      action: PERMIT_ACTION_TYPES.COPY,
+      isAuthorized: () => canCopyPermit,
+    },
     {
       action: PERMIT_ACTION_TYPES.RESEND,
       isAuthorized: () => canResendPermit,
