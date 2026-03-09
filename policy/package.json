@@ -163,6 +163,9 @@
       "@nestjs/common": "^11.0.0",
       "@nestjs/core": "^11.0.0",
       "rxjs": "^7.8.2"
+    },
+    "@nestjs/mapped-types": {
+      "class-validator": "^0.15.1"
     }
   }
 }
