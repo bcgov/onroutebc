@@ -483,8 +483,7 @@ export class UsersService {
         currentUser.bceid_business_guid,
       );
       if (
-        company &&
-        company.accountSource === AccountSource.TpsAccount &&
+        company?.accountSource === AccountSource.TpsAccount &&
         !company?.companyUsers?.length
       ) {
         userContextDto.unclaimedClient =
