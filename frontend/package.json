@@ -27,8 +27,8 @@
     "react-hook-form": "^7.50.1",
     "react-modal": "^3.16.1",
     "react-oidc-context": "^3.2.0",
-    "react-router-dom": "^6.28.0",
-    "sass": "^1.82.0",
+    "react-router-dom": "^6.30.3",
+    "sass": "^1.97.3",
     "uuid": "^9.0.1",
     "validator": "^13.15.26"
   },
@@ -92,6 +92,7 @@
   },
   "overrides": {
     "crypto-js": "^4.2.0",
-    "@adobe/css-tools": "^4.3.2"
+    "@adobe/css-tools": "^4.3.2",
+    "immutable": "5.1.5"
   }
 }
