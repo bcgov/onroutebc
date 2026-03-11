@@ -6,9 +6,7 @@ import {
 import { CaseActivityType } from '../enum/case-activity-type.enum';
 
 @ValidatorConstraint({ name: 'SuspendComment', async: false })
-export class CaseActivityCommentConstraint
-  implements ValidatorConstraintInterface
-{
+export class CaseActivityCommentConstraint implements ValidatorConstraintInterface {
   validate(comment: string | undefined, args: ValidationArguments) {
     const caseActivityType = (
       args.object as {
