@@ -12,9 +12,7 @@ import {
   name: 'CreditAccountStatusCommentConstraint',
   async: false,
 })
-export class CreditAccountStatusCommentConstraint
-  implements ValidatorConstraintInterface
-{
+export class CreditAccountStatusCommentConstraint implements ValidatorConstraintInterface {
   validate(comment: string | undefined, args: ValidationArguments) {
     const creditAccountStatusType = (
       args.object as {
