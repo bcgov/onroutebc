@@ -27,19 +27,17 @@ import { getEligibleVehicleSubtypes } from "../../helpers/vehicles/subtypes/getE
  * @param policyEngine Instance of the policy engine, if it's available
  * @returns Current application form data, methods to manage the form, and selectable input options
  */
-export const useInitApplicationFormData = (
-  data: {
-    permitType: PermitType;
-    isLcvDesignated: boolean;
-    companyLOAs: LOADetail[];
-    inventoryVehicles: (PowerUnit | Trailer)[];
-    companyInfo: Nullable<CompanyProfile>;
-    applicationData?: Nullable<Application>;
-    userDetails?: BCeIDUserDetailContext;
-    policyEngine?: Nullable<Policy>;
-    isStaff: boolean,
-  },
-) => {
+export const useInitApplicationFormData = (data: {
+  permitType: PermitType;
+  isLcvDesignated: boolean;
+  companyLOAs: LOADetail[];
+  inventoryVehicles: (PowerUnit | Trailer)[];
+  companyInfo: Nullable<CompanyProfile>;
+  applicationData?: Nullable<Application>;
+  userDetails?: BCeIDUserDetailContext;
+  policyEngine?: Nullable<Policy>;
+  isStaff: boolean;
+}) => {
   const {
     permitType,
     isLcvDesignated,
@@ -63,12 +61,7 @@ export const useInitApplicationFormData = (
 
     return applyUpToDateLOAsToApplication(
       applyLCVToApplicationData(
-        getDefaultValues(
-          permitType,
-          companyInfo,
-          applicationData,
-          userDetails,
-        ),
+        getDefaultValues(permitType, companyInfo, applicationData, userDetails),
         isLcvDesignated,
       ),
       companyLOAs,
