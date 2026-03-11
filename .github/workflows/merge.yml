@@ -33,17 +33,7 @@ jobs:
         uses: bcgov/action-get-pr@v0.0.1
       - name: PR Number
         id: pr
-        run: |
-          PR="${{ steps.pr_no.outputs.pr }}"
-          if [ -z "$PR" ]; then
-          PR="${{ github.event.inputs.pr }}"
-          fi
-
-          echo "Detected PR from push: '${{ steps.pr_no.outputs.pr }}'"
-          echo "PR input: '${{ github.event.inputs.pr }}'"
-          echo "Final PR: '$PR'"
-
-          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+        run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
 
   deploys-test-silver:
     name: Deploys Test - Silver
