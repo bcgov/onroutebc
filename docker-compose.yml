@@ -45,7 +45,8 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - /sql_data
+      # use a named volume mounted at the server data directory
+      - sql_data:/var/opt/mssql
 
   vehicles-api:
     container_name: vehicles-api
@@ -339,3 +340,7 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
+
+volumes:
+  sql_data:
+

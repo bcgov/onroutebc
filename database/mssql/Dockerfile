@@ -19,6 +19,8 @@ WORKDIR /usr/config
 COPY ./scripts/ /usr/config/
 COPY ./entrypoint.sh /usr/config/
 COPY ./configure-db.sh /usr/config/
+
+# ensure any helper scripts are executable regardless of host OS
 RUN chmod +x /usr/config/*.sh
 
 # Copy unit tests
