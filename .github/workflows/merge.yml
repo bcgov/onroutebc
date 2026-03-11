@@ -36,7 +36,7 @@ jobs:
         run: |
           PR="${{ steps.pr_no.outputs.pr }}"
           if [ -z "$PR" ]; then
-            PR="${{ github.event.inputs.pr }}"
+          PR="${{ github.event.inputs.pr }}"
           fi
 
           echo "Detected PR from push: '${{ steps.pr_no.outputs.pr }}'"
