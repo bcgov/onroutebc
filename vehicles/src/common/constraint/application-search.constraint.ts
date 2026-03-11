@@ -8,9 +8,7 @@ import { ApplicationSearch } from '../enum/application-search.enum';
 import { ApplicationQueueStatus } from '../enum/case-status-type.enum';
 
 @ValidatorConstraint({ name: 'ApplicationSearch', async: false })
-export class ApplicationSearchConstraint
-  implements ValidatorConstraintInterface
-{
+export class ApplicationSearchConstraint implements ValidatorConstraintInterface {
   validate(
     value: ApplicationSearch | boolean | undefined | ApplicationQueueStatus[],
     args: ValidationArguments,
