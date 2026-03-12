@@ -145,6 +145,7 @@ export const ApplicationReview = ({
       );
       return;
     }
+
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
@@ -236,6 +237,7 @@ export const ApplicationReview = ({
       },
     );
   };
+
   const continueBtnText =
     permitType === PERMIT_TYPES.STOS && !isStaffUser
       ? "Submit for Review"

@@ -160,15 +160,12 @@ export const BasePermitList = ({
     },
   });
 
-  const canCopyPermit = true; // testing
-  /*
   const canCopyPermit = usePermissionMatrix({
     permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey: "COPY_PERMIT",
     },
   });
-  */
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,

@@ -25,11 +25,13 @@ import {
 } from "../../types/PermitType";
 
 import {
+  APPLICATION_STEP_CONTEXTS,
   APPLICATION_STEPS,
   ApplicationStep,
   ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
@@ -47,9 +49,11 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
 export const ApplicationStepPage = ({
   applicationStep,
   applicationStepContext,
+  isStaffNotActingAsCompany,
 }: {
   applicationStep: ApplicationStep;
   applicationStepContext: ApplicationStepContext;
+  isStaffNotActingAsCompany: boolean;
 }) => {
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
@@ -120,14 +124,31 @@ export const ApplicationStepPage = ({
     return allowedPermitTypes.includes(applicationPermitType);
   };
 
-  // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
-  // (ie. empty status for new application, or in progress and in queue)
+  // Permit status must be one of the following in order to be considered valid to be processed here:
+  // a) Has no status, indicating that the application is brand new and hasn't been saved yet
+  // b) In application in progress status, meaning that the application is saved but not processed nor issued
+  // c) Application is in queue
+  // d) Permit status can be ignored only if the application is being copied from another permit
   const isValidApplicationStatus = () => {
     return (
-      !isInvalidApplication &&
-      (!applicationData?.permitStatus ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
+      !isInvalidApplication && (
+        (
+          applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            typeof applicationData === "undefined" ||
+            applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+          )
+        ) ||
+        (
+          applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            !applicationData?.permitStatus ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
+          )
+        )
+      )
     );
   };
 
@@ -142,7 +163,9 @@ export const ApplicationStepPage = ({
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
       return (
-        <ApplicationReview applicationStepContext={applicationStepContext} />
+        <ApplicationReview
+          applicationStepContext={applicationStepContext}
+        />
       );
     }
     return (
@@ -150,6 +173,7 @@ export const ApplicationStepPage = ({
         permitType={applicationPermitType}
         companyId={companyId}
         applicationStepContext={applicationStepContext}
+        isStaffNotActingAsCompany={isStaffNotActingAsCompany}
       />
     );
   };

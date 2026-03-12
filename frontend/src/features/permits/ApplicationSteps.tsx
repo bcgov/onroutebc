@@ -12,15 +12,18 @@ export const ApplicationSteps = React.memo(
   ({
     applicationStep,
     applicationStepContext,
+    isStaffNotActingAsCompany,
   }: {
     applicationStep: ApplicationStep;
     applicationStepContext: ApplicationStepContext;
+    isStaffNotActingAsCompany: boolean;
   }) => {
     return (
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <ApplicationStepPage
           applicationStep={applicationStep}
           applicationStepContext={applicationStepContext}
+          isStaffNotActingAsCompany={isStaffNotActingAsCompany}
         />
       </ErrorBoundary>
     );

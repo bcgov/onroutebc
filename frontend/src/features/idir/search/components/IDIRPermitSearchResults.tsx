@@ -170,15 +170,12 @@ export const IDIRPermitSearchResults = memo(
       },
     });
 
-    const canCopyPermit = true; // testing
-    /*
     const canCopyPermit = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "GLOBAL_SEARCH",
         permissionMatrixFunctionKey: "COPY_PERMIT",
       },
     });
-    */
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,

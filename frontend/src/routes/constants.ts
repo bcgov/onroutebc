@@ -94,7 +94,11 @@ export const PERMITS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/amend`,
-  COPY: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+  COPY: (
+    isStaffWithoutCompany: boolean,
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       "/companies",
       ROUTE_PLACEHOLDERS.COMPANY_ID,
@@ -103,7 +107,7 @@ export const PERMITS_ROUTES = {
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
-    )}/copy`,
+    )}/${isStaffWithoutCompany ? "idir-copy" : "copy"}`,
 };
 
 // Applications
@@ -133,6 +137,19 @@ export const APPLICATIONS_ROUTES = {
   BASE: APPLICATIONS_ROUTE_BASE,
   DETAILS: (permitId?: string) =>
     `${DYNAMIC_ROUTE_URI(
+      APPLICATIONS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}`,
+  DETAILS_FOR_COMPANY: (
+    permitId?: Nullable<string>,
+    companyId?: Nullable<string | number>,
+  ) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
       APPLICATIONS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,

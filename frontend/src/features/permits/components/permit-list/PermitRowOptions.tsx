@@ -11,13 +11,10 @@ import { EmailNotificationType } from "../../types/EmailNotificationType";
 import { useAttemptAmend } from "../../hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { PermitActionOrigin } from "../../../idir/search/types/types";
+import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../../idir/search/types/types";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
 import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
 
-/**
- * Component for row actions on IDIR Search Permit.
- */
 export const PermitRowOptions = ({
   permitId,
   isPermitInactive,
@@ -26,29 +23,14 @@ export const PermitRowOptions = ({
   permitActionOrigin,
   permissions,
 }: {
-  /**
-   * The permit id.
-   */
   permitId: string;
-  /**
-   * Is the permit inactive (voided/superseded/revoked) or expired?
-   */
+  // Is the permit inactive (voided/superseded/revoked) or expired?
   isPermitInactive: boolean;
-  /**
-   * The permit number
-   */
   permitNumber: string;
-  /**
-   * The company id
-   */
   companyId: number;
-  /**
-   * The application location from where the permit action (amend / void / revoke) originated
-   */
+  // The application location from where the permit action (amend/void/revoke/copy) originated
   permitActionOrigin: PermitActionOrigin;
-  /**
-   * An object containing the relevant permission matrix checks for each action
-   */
+  // Object containing the relevant permission matrix checks for each action
   permissions: {
     canResendPermit: boolean;
     canViewPermitReceipt: boolean;
@@ -98,8 +80,13 @@ export const PermitRowOptions = ({
       // which is used to show info in the modal (or not show the modal at all)
       choosePermitToAmend(companyId, permitId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
-      // TODO: Actual copying of the permit/application
-      console.log("Copy permit");
+      const copyPermitRoute = routes.PERMITS_ROUTES.COPY(
+        permitActionOrigin === PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH,
+        companyId,
+        permitId,
+      );
+      
+      navigate(copyPermitRoute);
     }
   };
 

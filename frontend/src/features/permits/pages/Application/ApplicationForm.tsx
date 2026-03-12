@@ -73,10 +73,12 @@ export const ApplicationForm = ({
   permitType,
   companyId,
   applicationStepContext,
+  isStaffNotActingAsCompany,
 }: {
   permitType: PermitType;
   companyId: number;
   applicationStepContext: ApplicationStepContext;
+  isStaffNotActingAsCompany: boolean;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -121,6 +123,8 @@ export const ApplicationForm = ({
       userDetails,
       policyEngine,
       isStaff: isStaffUser,
+      shouldInitAsCopy:
+        applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY,
     });
 
   // Applicable LOAs must be:
@@ -255,9 +259,13 @@ export const ApplicationForm = ({
 
     // Save application before continuing
     await onSaveApplication((permitId) => {
+      if (isQueueContext) {
+        return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
+      }
+
       return navigate(
-        isQueueContext
-          ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)
+        isStaffNotActingAsCompany
+          ? IDIR_ROUTES.STAFF_HOME
           : APPLICATIONS_ROUTES.REVIEW(permitId),
       );
     }, savedVehicleDetails);
@@ -339,30 +347,44 @@ export const ApplicationForm = ({
   };
 
   const onSave = async () => {
-    await onSaveApplication((permitId) =>
+    await onSaveApplication((permitId) => {
+      if (isQueueContext) {
+        return navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId));
+      }
+
       navigate(
-        isQueueContext
-          ? APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId)
+        isStaffNotActingAsCompany
+          ? APPLICATIONS_ROUTES.DETAILS_FOR_COMPANY(permitId, companyId)
           : APPLICATIONS_ROUTES.DETAILS(permitId),
-      ),
-    );
+      );
+    });
   };
 
   // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
+    } else if (isQueueContext) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
     } else {
       navigate(
-        isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
+        isStaffNotActingAsCompany
+          ? IDIR_ROUTES.STAFF_HOME
+          : APPLICATIONS_ROUTES.BASE,
       );
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate(
-      isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
-    );
+    if (isQueueContext) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
+    } else {
+      navigate(
+        isStaffNotActingAsCompany
+          ? IDIR_ROUTES.STAFF_HOME
+          : APPLICATIONS_ROUTES.BASE,
+      );
+    }
   };
 
   const handleStayOnApplication = () => {

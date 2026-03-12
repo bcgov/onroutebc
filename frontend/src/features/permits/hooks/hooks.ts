@@ -180,7 +180,7 @@ export const useApplicationDetailsQuery = ({
 
   // This won't fetch anything (ie. query.data will be undefined) if shouldEnableQuery is false
   const query = useQuery({
-    queryKey: ["application"],
+    queryKey: ["application", companyId, permitId],
     queryFn: () => getApplication(companyId, permitId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted

@@ -234,10 +234,10 @@ export const getDefaultValues = (
     originalPermitId: defaultOriginalPermitId,
     applicationNumber: defaultApplicationNumber,
     permitNumber: defaultPermitNumber,    
-    permitStatus: getDefaultRequiredVal(
+    permitStatus: !shouldInitAsCopy ? getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
-    ),
+    ) : PERMIT_STATUSES.IN_PROGRESS,
     permitData: {
       companyName: defaultCompanyName,
       doingBusinessAs: getDefaultRequiredVal(
