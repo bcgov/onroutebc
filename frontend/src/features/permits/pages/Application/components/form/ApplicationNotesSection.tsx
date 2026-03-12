@@ -14,7 +14,8 @@ export const ApplicationNotesSection = ({
   feature: ORBCFormFeatureType;
   permitType: PermitType;
 }) => {
-  return permitType === PERMIT_TYPES.STOS ? (
+  return permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STOW ? (
     <Box className="application-notes-section">
       <Box className="application-notes-section__header">
         <h3 className="application-notes-section__title">Application Notes</h3>
@@ -47,6 +48,7 @@ export const ApplicationNotesSection = ({
               required: false,
             },
             label: "Application Notes",
+            showOptionalLabel: true,
           }}
         />
       </Box>

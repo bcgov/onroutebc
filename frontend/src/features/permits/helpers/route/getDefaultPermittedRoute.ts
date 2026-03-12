@@ -8,8 +8,13 @@ export const getDefaultPermittedRoute = (
   permitType: PermitType,
   permittedRoute?: Nullable<PermittedRoute>,
 ): RequiredOrNull<PermittedRoute> => {
-  if (permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.MFP) return null;
-  
+  if (
+    permitType !== PERMIT_TYPES.STOS &&
+    permitType !== PERMIT_TYPES.STOW &&
+    permitType !== PERMIT_TYPES.MFP
+  )
+    return null;
+
   return {
     manualRoute: getDefaultManualRoute(permitType, permittedRoute?.manualRoute),
     routeDetails: getDefaultRequiredVal("", permittedRoute?.routeDetails),

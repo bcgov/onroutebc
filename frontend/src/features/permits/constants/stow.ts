@@ -1,3 +1,27 @@
+import { PermitCondition } from "../types/PermitCondition";
+
+export const STOW_CONDITIONS: PermitCondition[] = [
+  {
+    description: "Permit Scope and Limitation",
+    condition: "CVSE-1070",
+    conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261",
+    checked: true,
+    disabled: true,
+  },
+  {
+    description: "Highways with Restrictive Load Limits",
+    condition: "CVSE-1011",
+    conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1258",
+    checked: false,
+    disabled: false,
+  },
+];
+
+export const MANDATORY_STOW_CONDITIONS: PermitCondition[] =
+  STOW_CONDITIONS.filter(
+    ({ condition }: PermitCondition) => condition === "CVSE-1070",
+  );
+
 export const MIN_STOW_DURATION = 1;
 export const MAX_STOW_CV_DURATION = 7;
 export const MAX_STOW_STAFF_DURATION = 30;

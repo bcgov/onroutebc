@@ -19,7 +19,8 @@ export const getDefaultPermittedCommodity = (
   permitType: PermitType,
   permittedCommodity?: Nullable<PermittedCommodity>,
 ): RequiredOrNull<PermittedCommodity> => {
-  if (permitType !== PERMIT_TYPES.STOS) return null;
+  if (permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.STOW)
+    return null;
 
   return {
     commodityType: getDefaultRequiredVal(
