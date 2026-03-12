@@ -27,7 +27,7 @@ source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 
 # This is intended to be run from the local docker sql-server-db container, or
 # a similar linux environment with the requisite env variables and sqlcmd
-# installed in /opt/mssql-tools/bin/. Note you must be connected to the BC Gov
+# installed in /opt/mssql-tools18/bin/. Note you must be connected to the BC Gov
 # Citrix VPN in order for the connection to be established.
 
 if [[ $1 != "force" ]]; then

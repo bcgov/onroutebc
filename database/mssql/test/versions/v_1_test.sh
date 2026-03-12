@@ -9,7 +9,7 @@ parse_options "${USAGE}" ${@}
 # TESTS_DIR variable set by the calling test-runner script.
 
 # Test 1.1 - verify the version table exists
-TEST_1_1_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_1_1_test.sql)
+TEST_1_1_RESULT=$(/opt/mssql-tools18/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_1_1_test.sql)
 
 if [[ $TEST_1_1_RESULT -eq 1 ]]; then
     echo "Test 1.1 passed: ORBC_SYS_VERSION table exists"

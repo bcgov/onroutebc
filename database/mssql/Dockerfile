@@ -1,14 +1,25 @@
 # Taken largely from https://github.com/microsoft/mssql-docker/blob/master/linux/preview/examples/mssql-customize/Dockerfile
 ARG TARGETPLATFORM=linux/amd64
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/mssql/server:2017-latest
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/mssql/server:2025-latest
 
 USER root
 
+# make sure PATH is defined for tools used during build
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# prerequisites for adding Microsoft repository
 RUN apt-get update && \
-    apt-get install -y software-properties-common  --no-install-recommends && \
+    apt-get install -y curl apt-transport-https gnupg && \
     rm -rf /var/lib/apt/lists/*
-RUN add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2017.list)" && \
-    apt-get install -y mssql-server-fts --no-install-recommends
+
+# add the Microsoft GPG key and repository explicitly
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/mssql-server-2025.list \
+    | tee /etc/apt/sources.list.d/mssql-server-2025.list
+
+# install full text search package (fails if unavailable)
+RUN apt-get update && \
+    apt-get install -y mssql-server-fts
 
 ENV ACCEPT_EULA=Y
 
@@ -39,4 +50,4 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 # Healthcheck
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
-    CMD /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
+    CMD /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
