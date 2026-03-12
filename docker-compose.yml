@@ -46,7 +46,7 @@ services:
       - "1433:1433"
     volumes:
       # use a named volume mounted at the server data directory
-      - sql_data:/var/opt/mssql
+      - sql_data:/var/opt/mssql            
 
   vehicles-api:
     container_name: vehicles-api
@@ -343,4 +343,3 @@ services:
 
 volumes:
   sql_data:
-

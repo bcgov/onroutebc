@@ -1,5 +1,6 @@
 # Taken largely from https://github.com/microsoft/mssql-docker/blob/master/linux/preview/examples/mssql-customize/Dockerfile
-FROM --platform=linux/amd64 mcr.microsoft.com/mssql/server:2017-latest
+ARG TARGETPLATFORM=linux/amd64
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/mssql/server:2017-latest
 
 USER root
 
