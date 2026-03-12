@@ -180,7 +180,8 @@ export const formatTemplateData = (
       template.conditionalLicensingFee = constants.FARM_TRACTOR_FEE_RATE_TEXT;
       break;
     case ConditionalLicensingFee.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE:
-      template.conditionalLicensingFee = constants.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE_TEXT;
+      template.conditionalLicensingFee =
+        constants.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE_TEXT;
       break;
     default:
       template.conditionalLicensingFee = '';
