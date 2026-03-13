@@ -30,10 +30,10 @@ jobs:
       - name: Get PR Number From Event
         if: github.event_name == 'push'
         id: pr_no
-        uses: bcgov/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@v0.1.0
       - name: PR Number
         id: pr
-        run: PR="${{ steps.pr_no.outputs.pr }}" if [ -z "$PR" ]; then PR="${{ github.event.inputs.pr }}" fi echo "pr=$PR" >> $GITHUB_OUTPUT
+        run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
 
   deploys-test-silver:
     name: Deploys Test - Silver
