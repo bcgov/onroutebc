@@ -40,10 +40,10 @@ RUN mkdir -p /usr/config/test/
 COPY ./test/ /usr/config/test/
 
 EXPOSE ${MSSQL_PORT}
-RUN mkdir -p /var/opt/mssql && chown -R mssql:mssql /var/opt/mssql
+RUN mkdir -p /var/opt/mssql && chown -R mssql:mssql /var/opt/mssql && chmod -R 755 /var/opt/mssql
 
 # Create tmp dir for scripts when reverting
-RUN mkdir -p /usr/config/tmp && chown -R mssql:mssql /usr/config/tmp
+RUN mkdir -p /usr/config/tmp && chown -R mssql:mssql /usr/config/tmp && chmod -R 755 /usr/config/tmp
 
 # Keep as root so entrypoint.sh can fix permissions at runtime
 # entrypoint.sh will use gosu to drop to mssql user
