@@ -12,19 +12,20 @@ RUN apt-get update && \
     apt-get install -y curl apt-transport-https gnupg && \
     rm -rf /var/lib/apt/lists/*
 
-# add the Microsoft GPG key and repository explicitly
-RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/mssql-server-2025.list \
-    | tee /etc/apt/sources.list.d/mssql-server-2025.list
-
-# install full text search package (fails if unavailable)
-RUN apt-get update && \
-    apt-get install -y mssql-server-fts
+# Setup Microsoft repository and install full-text search
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/mssql-server-2025.list | tee /etc/apt/sources.list.d/mssql-server-2025.list && \
+    apt-get update && \
+    apt-get install -y mssql-server-fts gosu && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV ACCEPT_EULA=Y
 
-# Create a config directory
-RUN mkdir -p /usr/config
+# Create config directory and set permissions
+RUN mkdir -p /usr/config /usr/config/test /usr/config/tmp /var/opt/mssql && \
+    chown -R mssql:mssql /var/opt/mssql /usr/config/tmp && \
+    chmod -R 755 /var/opt/mssql /usr/config/tmp
+
 WORKDIR /usr/config
 
 # Copy initialization scripts
@@ -33,23 +34,12 @@ COPY ./entrypoint.sh /usr/config/
 COPY ./configure-db.sh /usr/config/
 
 # ensure any helper scripts are executable regardless of host OS
-RUN chmod +x /usr/config/*.sh
+RUN find /usr/config -name "*.sh" -exec chmod +x {} \;
 
 # Copy unit tests
-RUN mkdir -p /usr/config/test/
 COPY ./test/ /usr/config/test/
 
 EXPOSE ${MSSQL_PORT}
-RUN mkdir -p /var/opt/mssql && chown -R mssql:mssql /var/opt/mssql && chmod -R 755 /var/opt/mssql
-
-# Create tmp dir for scripts when reverting
-RUN mkdir -p /usr/config/tmp && chown -R mssql:mssql /usr/config/tmp && chmod -R 755 /usr/config/tmp
-
-# Keep as root so entrypoint.sh can fix permissions at runtime
-# entrypoint.sh will use gosu to drop to mssql user
-
-# Install gosu for privilege dropping (lightweight alternative to sudo)
-RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["./entrypoint.sh"]
 

@@ -14,7 +14,7 @@ export TESTS_DIR=${SCRIPT_DIR}/test/versions
 
 # Create the unit test DB
 echo "Creating ${UNIT_TEST_DB_NAME} database."
-/opt/mssql-tools18/bin/sqlcmd -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${UNIT_TEST_DB_NAME}"
+/opt/mssql-tools18/bin/sqlcmd -C -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${UNIT_TEST_DB_NAME}"
 
 echo "Executing migration scripts and testing in sequence ..."
 nextver=1
@@ -56,6 +56,6 @@ export TEST_MOTI_HOST=${MSSQL_HOST}
 export TEST_MOTI_DB=${UNIT_TEST_DB_NAME}
 ${SCRIPT_DIR}/utility/reset-moti-db.sh force
 
-/opt/mssql-tools18/bin/sqlcmd -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "DROP DATABASE ${UNIT_TEST_DB_NAME}" 
+/opt/mssql-tools18/bin/sqlcmd -C-U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "DROP DATABASE ${UNIT_TEST_DB_NAME}" 
 
 echo "Finished executing unit tests."
