@@ -20,7 +20,10 @@ import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
-import { Nullable, ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
 
 export const VehicleInformationSection = ({
@@ -63,7 +66,8 @@ export const VehicleInformationSection = ({
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
 }) => {
-  const isSingleTrip = permitType === PERMIT_TYPES.STOS;
+  const isSingleTrip =
+    permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
   const infoSectionClassName =
     `vehicle-information-section__info` +
     `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;
@@ -73,7 +77,8 @@ export const VehicleInformationSection = ({
     `${isSingleTrip ? " vehicle-information-section__info-banner--single-trip" : ""}`;
 
   const isCommodityTypeSelected =
-    Boolean(selectedCommodityType) && (selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE);
+    Boolean(selectedCommodityType) &&
+    selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE;
 
   const isPowerUnitSelectedForSingleTrip =
     isSingleTrip && Boolean(vehicleFormData.vin);
@@ -152,7 +157,10 @@ export const VehicleInformationSection = ({
                     aria-label="Add Power Unit"
                     variant="contained"
                     color="tertiary"
-                    disabled={isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected}
+                    disabled={
+                      isPowerUnitSelectedForSingleTrip ||
+                      !isCommodityTypeSelected
+                    }
                     onClick={handleClickAddPowerUnit}
                   >
                     <FontAwesomeIcon

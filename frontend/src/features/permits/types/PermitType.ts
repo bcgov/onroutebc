@@ -91,7 +91,7 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
     case PERMIT_TYPES.STWS:
       return "Single Trip Overweight Oversize";
     case PERMIT_TYPES.STOW:
-      return "Single Trip Over Weight";
+      return "Single Trip Overweight";
     case PERMIT_TYPES.EPTOP:
       return "Extra-Provincial Temporary Operating";
     case PERMIT_TYPES.STOL:

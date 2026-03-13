@@ -2,7 +2,7 @@ import { PermitCondition } from "../types/PermitCondition";
 import {
   BASE_DAYS_IN_YEAR,
   TERM_PERMIT_DURATION_OPTIONS,
-  TERM_PERMIT_MIN_DURATION, 
+  TERM_PERMIT_MIN_DURATION,
   TERM_DURATION_INTERVAL_DAYS,
 } from "./constants";
 
@@ -36,7 +36,7 @@ export const TROW_CONDITIONS: PermitCondition[] = [
     disabled: true,
   },
   {
-    description: "Highways and Restrictive Load Limits",
+    description: "Highways with Restrictive Load Limits",
     condition: "CVSE-1011",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1258",
     checked: true,
@@ -44,7 +44,9 @@ export const TROW_CONDITIONS: PermitCondition[] = [
   },
 ];
 
-export const MANDATORY_TROW_CONDITIONS: PermitCondition[] = [...TROW_CONDITIONS];
+export const MANDATORY_TROW_CONDITIONS: PermitCondition[] = [
+  ...TROW_CONDITIONS,
+];
 export const MIN_TROW_DURATION = TERM_PERMIT_MIN_DURATION;
 export const MAX_TROW_DURATION = BASE_DAYS_IN_YEAR;
 export const TROW_DURATION_OPTIONS = [...TERM_PERMIT_DURATION_OPTIONS];
