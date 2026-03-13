@@ -9,14 +9,14 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # prerequisites for adding Microsoft repository
 RUN apt-get update && \
-    apt-get install -y curl apt-transport-https gnupg && \
+    apt-get install -y --no-install-recommends curl apt-transport-https gnupg && \
     rm -rf /var/lib/apt/lists/*
 
 # Setup Microsoft repository and install full-text search
 RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/mssql-server-2025.list | tee /etc/apt/sources.list.d/mssql-server-2025.list && \
     apt-get update && \
-    apt-get install -y mssql-server-fts gosu && \
+    apt-get install -y --no-install-recommends mssql-server-fts gosu && \
     rm -rf /var/lib/apt/lists/*
 
 ENV ACCEPT_EULA=Y
