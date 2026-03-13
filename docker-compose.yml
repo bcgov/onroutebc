@@ -36,7 +36,7 @@ services:
       MSSQL_MOTI_PASSWORD: ${MSSQL_MOTI_PASSWORD}
       SCRIPT_DIR: /usr/config
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
       interval: 20s
       timeout: 10s
       retries: 3
@@ -45,7 +45,8 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - /sql_data
+      # use a named volume mounted at the server data directory
+      - sql_data:/var/opt/mssql            
 
   vehicles-api:
     container_name: vehicles-api
@@ -339,3 +340,6 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
+
+volumes:
+  sql_data:
