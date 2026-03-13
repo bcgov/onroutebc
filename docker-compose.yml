@@ -36,7 +36,7 @@ services:
       MSSQL_MOTI_PASSWORD: ${MSSQL_MOTI_PASSWORD}
       SCRIPT_DIR: /usr/config
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
       interval: 20s
       timeout: 10s
       retries: 3

@@ -45,4 +45,4 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 # Healthcheck
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
-    CMD /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
+    CMD /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
