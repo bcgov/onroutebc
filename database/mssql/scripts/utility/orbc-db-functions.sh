@@ -7,13 +7,16 @@ function echo_param_usage {
   echo "If parameters are not supplied, the connection details will be read from the following environment variables:"
   echo "    MSSQL_MOTI_USER  MSSQL_MOTI_PASSWORD  MSSQL_MOTI_HOST  MSSQL_MOTI_DB"
 }
-
+# Wrapper function for sqlcmd that automatically trusts certificates
+function sqlcmd {
+  /opt/mssql-tools18/bin/sqlcmd -C "$@"
+}
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist then a value of zero (0) will
 # be returned from the SQL query.
 # Sets the database version to a global var named orbc_db_version.
 function get_orbc_db_version {
-  orbc_db_version=$( sqlcmd -C -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql )
+  orbc_db_version=$( sqlcmd -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql )
   if (( $? > 0 )); then
     echo "Error retrieving ORBC db version for user '${1}' on server '${3}'."
     return 1
@@ -74,10 +77,10 @@ function revert_db_complete {
 
 # Reverts a single version upgrade to the ORBC database
 function revert_db_single {
-  REVERT_SCRIPT=$( sqlcmd -C -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -y 0 -i ${SCRIPT_DIR}/get-orbc-db-revert-script.sql )
+  REVERT_SCRIPT=$( sqlcmd -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -y 0 -i ${SCRIPT_DIR}/get-orbc-db-revert-script.sql )
   if (( $? == 0 )); then
     printf "${REVERT_SCRIPT}" | base64 -di > ${SCRIPT_DIR}/tmp/revert.tmp.sql
-    sqlcmd -C -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
+    sqlcmd -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
 
     if (( $? == 0 )); then
       echo "Reverted ORBC database version."
@@ -126,7 +129,7 @@ function migrate_db_single {
       # that breaks the ARG_MAX limit we will have to separate into multiple versions.
       export UPDATE_SCRIPT="Refer to git repository"
       export REVERT_SCRIPT=$( base64 -w 0 <${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql )
-      sqlcmd -C -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql
+      sqlcmd -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql
       if (( $? > 0 )); then
         echo "Error upgrading database, exiting migrate script."
         exit 1
