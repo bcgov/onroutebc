@@ -584,7 +584,10 @@ export const ShoppingCartPage = () => {
                 errorCodeFromStartTransacationMutation ===
                 PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
                   ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
-                  : ""
+                  : errorCodeFromStartTransacationMutation ===
+                      PAYMENT_ERRORS.CREDIT_ACCOUNT_INSUFFICIENT_BALANCE
+                    ? "Credit account unavailable."
+                    : ""
               }
             />
           ) : null}
