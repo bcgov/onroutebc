@@ -335,8 +335,7 @@ export const createGarmsCreditFileDetails = (
   //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable
   //and should always be present once we set up credit account on onRoute
   gcd.wsAccount =
-    permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber ??
-    'WS0341'; // got WS0341 from GARM team. This weigh scale number can be used as credit account number for testing in dev
+    permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber;
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
