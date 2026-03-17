@@ -11,7 +11,7 @@ echo "Executing configure-db.sh ..."
 
 source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 
-export PATH="/opt/mssql-tools/bin:$PATH"
+export PATH="/opt/mssql-tools18/bin:$PATH"
 
 DBSTATUS=1
 ERRCODE=1
@@ -20,7 +20,7 @@ i=0
 while ([[ ${DBSTATUS} -ne 0 ]] || [[ ${ERRCODE} -ne 0 ]]) && [[ ${i} -lt 60 ]]; do
   echo "Checking db status..."
   ((i=i+1))
-  DBSTATUS=$(/opt/mssql-tools/bin/sqlcmd -h -1 -t 1 -U ${MSSQL_SA_USER} -P ${MSSQL_SA_PASSWORD} -S ${MSSQL_HOST} -Q "SET NOCOUNT ON; Select SUM(state) from sys.databases")
+  DBSTATUS=$(/opt/mssql-tools18/bin/sqlcmd -C -h -1 -t 1 -U ${MSSQL_SA_USER} -P ${MSSQL_SA_PASSWORD} -S ${MSSQL_HOST} -Q "SET NOCOUNT ON; Select SUM(state) from sys.databases")
   ERRCODE=$?
   sleep 1
   echo "DBSTATUS: ${DBSTATUS}"
@@ -42,7 +42,7 @@ fi
 
 # Run the setup script to create the DB
 echo "Creating ORBC database..."
-/opt/mssql-tools/bin/sqlcmd -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${MSSQL_DB}"
+/opt/mssql-tools18/bin/sqlcmd -C -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${MSSQL_DB}"
 
 # Load current schema into the database from all DDL version scripts
 migrate_db_current ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${MSSQL_DB}
