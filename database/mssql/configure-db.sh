@@ -44,6 +44,9 @@ fi
 echo "Creating ORBC database..."
 /opt/mssql-tools18/bin/sqlcmd -C -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${MSSQL_DB}"
 
+# Set compatibility level to 140 to match current moti DB (14.0.3485.1). Remove or adjust when upgrading.
+/opt/mssql-tools18/bin/sqlcmd -C -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "ALTER DATABASE ${MSSQL_DB} SET COMPATIBILITY_LEVEL = 140"
+
 # Load current schema into the database from all DDL version scripts
 migrate_db_current ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${MSSQL_DB}
 
