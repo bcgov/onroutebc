@@ -9,6 +9,7 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_ROLE } from "../../../../common/authentication/types";
@@ -52,14 +53,6 @@ const shouldShowRowActions = (userRole: Optional<string>): boolean => {
   return allowableRoles.includes(userRole);
 };
 
-/*
- *
- * The search results component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
- */
 export const IDIRPermitSearchResults = memo(
   ({
     searchParams,
