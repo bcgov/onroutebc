@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
@@ -14,6 +14,8 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../../idir/search/types/types";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
 import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
+import { useSetCompanyHandler } from "../../../idir/search/helpers/useSetCompanyHandler";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
 
 export const PermitRowOptions = ({
   permitId,
@@ -44,6 +46,23 @@ export const PermitRowOptions = ({
   const navigate = useNavigate();
   const resendPermitMutation = useResendPermit();
   const { setSnackBar } = useContext(SnackBarContext);
+  const { handleSelectCompany } = useSetCompanyHandler();
+
+  // This is used to trigger a query fetch of the company info when
+  // copying a permit in staff global search
+  const [companyIdForCopy, setCompanyIdForCopy] = useState<number>(0);
+  const { data: selectedCompanyInfo } = useCompanyInfoDetailsQuery(companyIdForCopy);
+  useEffect(() => {
+    if (selectedCompanyInfo && companyId && permitId) {
+      handleSelectCompany(
+        selectedCompanyInfo,
+        routes.PERMITS_ROUTES.COPY(
+          companyId,
+          permitId,
+        )
+      );
+    }
+  }, [selectedCompanyInfo, companyId, permitId]);
 
   const {
     choosePermitToAmend,
@@ -80,13 +99,21 @@ export const PermitRowOptions = ({
       // which is used to show info in the modal (or not show the modal at all)
       choosePermitToAmend(companyId, permitId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
-      const copyPermitRoute = routes.PERMITS_ROUTES.COPY(
-        permitActionOrigin === PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH,
-        companyId,
-        permitId,
-      );
-      
-      navigate(copyPermitRoute);
+      // If copying permit from staff global search, we need to act as company first.
+      // ie. set companyId which will trigger the company info query fetch, and in turn
+      // set the company info in the context
+      if (permitActionOrigin === PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH) {
+        setCompanyIdForCopy(companyId);
+      } else {
+        // The copying action is initiated after already acting as company
+        // Simply redirect to the copy permit form page
+        const copyPermitRoute = routes.PERMITS_ROUTES.COPY(
+          companyId,
+          permitId,
+        );
+        
+        navigate(copyPermitRoute);
+      }
     }
   };
 

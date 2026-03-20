@@ -49,11 +49,9 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
 export const ApplicationStepPage = ({
   applicationStep,
   applicationStepContext,
-  isStaffNotActingAsCompany,
 }: {
   applicationStep: ApplicationStep;
   applicationStepContext: ApplicationStepContext;
-  isStaffNotActingAsCompany: boolean;
 }) => {
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
@@ -173,7 +171,6 @@ export const ApplicationStepPage = ({
         permitType={applicationPermitType}
         companyId={companyId}
         applicationStepContext={applicationStepContext}
-        isStaffNotActingAsCompany={isStaffNotActingAsCompany}
       />
     );
   };

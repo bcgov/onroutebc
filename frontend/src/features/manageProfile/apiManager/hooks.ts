@@ -56,7 +56,7 @@ export const useCompanyInfoQuery = () => {
  */
 export const useCompanyInfoDetailsQuery = (companyId: number) => {
   return useQuery({
-    queryKey: ["companyInfo"],
+    queryKey: ["companyInfo", companyId],
     queryFn: () => getCompanyInfoById(companyId),
     enabled: Boolean(companyId),
     refetchInterval: FIVE_MINUTES,

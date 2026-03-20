@@ -150,7 +150,6 @@ export const AppRoutes = () => {
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.REVIEW}
               applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.QUEUE}
-              isStaffNotActingAsCompany={true}
             />
           }
         />
@@ -161,7 +160,6 @@ export const AppRoutes = () => {
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.DETAILS}
               applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.QUEUE}
-              isStaffNotActingAsCompany={true}
             />
           }
         />
@@ -207,54 +205,6 @@ export const AppRoutes = () => {
         }
       >
         <Route path={routes.PERMITS_ROUTES.AMEND()} element={<AmendPermit />} />
-      </Route>
-
-      <Route
-        element={
-          <IDIRAuthWall
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-              permissionMatrixFunctionKey: "COPY_PERMIT",
-            }}
-          />
-        }
-      >
-        <Route
-          path={routes.PERMITS_ROUTES.COPY(true)}
-          element={
-            <ApplicationSteps
-              applicationStep={routes.APPLICATION_STEPS.DETAILS}
-              applicationStepContext={
-                routes.APPLICATION_STEP_CONTEXTS.COPY
-              }
-              isStaffNotActingAsCompany={true}
-            />
-          }
-        />
-      </Route>
-
-      <Route
-        element={
-          <IDIRAuthWall
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-              permissionMatrixFunctionKey: "COPY_PERMIT",
-            }}
-          />
-        }
-      >
-        <Route
-          path={routes.APPLICATIONS_ROUTES.DETAILS_FOR_COMPANY()}
-          element={
-            <ApplicationSteps
-              applicationStep={routes.APPLICATION_STEPS.DETAILS}
-              applicationStepContext={
-                routes.APPLICATION_STEP_CONTEXTS.APPLY
-              }
-              isStaffNotActingAsCompany={true}
-            />
-          }
-        />
       </Route>
 
       <Route
@@ -395,7 +345,6 @@ export const AppRoutes = () => {
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.DETAILS}
               applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.APPLY}
-              isStaffNotActingAsCompany={false}
             />
           }
         />
@@ -438,7 +387,6 @@ export const AppRoutes = () => {
                   applicationStepContext={
                     routes.APPLICATION_STEP_CONTEXTS.APPLY
                   }
-                  isStaffNotActingAsCompany={false}
                 />
               }
             />
@@ -450,7 +398,6 @@ export const AppRoutes = () => {
                   applicationStepContext={
                     routes.APPLICATION_STEP_CONTEXTS.APPLY
                   }
-                  isStaffNotActingAsCompany={false}
                 />
               }
             />
@@ -469,14 +416,13 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={routes.PERMITS_ROUTES.COPY(false)}
+          path={routes.PERMITS_ROUTES.COPY()}
           element={
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.DETAILS}
               applicationStepContext={
                 routes.APPLICATION_STEP_CONTEXTS.COPY
               }
-              isStaffNotActingAsCompany={false}
             />
           }
         />

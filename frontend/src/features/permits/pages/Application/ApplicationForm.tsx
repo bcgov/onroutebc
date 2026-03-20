@@ -73,12 +73,10 @@ export const ApplicationForm = ({
   permitType,
   companyId,
   applicationStepContext,
-  isStaffNotActingAsCompany,
 }: {
   permitType: PermitType;
   companyId: number;
   applicationStepContext: ApplicationStepContext;
-  isStaffNotActingAsCompany: boolean;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -263,11 +261,7 @@ export const ApplicationForm = ({
         return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
       }
 
-      return navigate(
-        isStaffNotActingAsCompany
-          ? IDIR_ROUTES.STAFF_HOME
-          : APPLICATIONS_ROUTES.REVIEW(permitId),
-      );
+      return navigate(APPLICATIONS_ROUTES.REVIEW(permitId));
     }, savedVehicleDetails);
   };
 
@@ -352,11 +346,7 @@ export const ApplicationForm = ({
         return navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId));
       }
 
-      navigate(
-        isStaffNotActingAsCompany
-          ? APPLICATIONS_ROUTES.DETAILS_FOR_COMPANY(permitId, companyId)
-          : APPLICATIONS_ROUTES.DETAILS(permitId),
-      );
+      navigate(APPLICATIONS_ROUTES.DETAILS(permitId));
     });
   };
 
@@ -367,11 +357,7 @@ export const ApplicationForm = ({
     } else if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     } else {
-      navigate(
-        isStaffNotActingAsCompany
-          ? IDIR_ROUTES.STAFF_HOME
-          : APPLICATIONS_ROUTES.BASE,
-      );
+      navigate(APPLICATIONS_ROUTES.BASE);
     }
   };
 
@@ -379,11 +365,7 @@ export const ApplicationForm = ({
     if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     } else {
-      navigate(
-        isStaffNotActingAsCompany
-          ? IDIR_ROUTES.STAFF_HOME
-          : APPLICATIONS_ROUTES.BASE,
-      );
+      navigate(APPLICATIONS_ROUTES.BASE);
     }
   };
 
