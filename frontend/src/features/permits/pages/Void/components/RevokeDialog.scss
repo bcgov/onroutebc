@@ -39,26 +39,6 @@
         font-size: 0.9rem;
         color: $bc-black;
       }
-
-      &__input {
-        border: 1.5px solid $bc-text-box-border-grey;
-        border-radius: 4px;
-        resize: none;
-        margin-top: 1em;
-
-        &--err {
-          border: 2px solid $bc-red;
-    
-          &:focus {
-            outline: transparent;
-          }
-        }
-      }
-      
-      &__err {
-        margin: 0.25rem 0 0 0;
-        color: $bc-red;
-      }
     }
 
     &__msg {

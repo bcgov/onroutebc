@@ -1,52 +1,82 @@
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
+import { Dayjs } from "dayjs";
+import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material";
 import { useState, useEffect } from "react";
+
 import {
   FieldValues,
   FieldPath,
   useFormContext,
   useController,
+  Controller,
+  RegisterOptions,
 } from "react-hook-form";
 
 import "./CustomDatePicker.scss";
-import { ORBC_FormTypes, RequiredOrNull } from "../../../types/common";
-import { now } from "../../../helpers/formatDate";
+import { getStartOfDate, now } from "../../../helpers/formatDate";
+import { getErrorMessage } from "../CustomFormComponents";
+import {
+  Nullable,
+  ORBC_FormTypes,
+  RequiredOrNull,
+} from "../../../types/common";
+
 import {
   invalidDate,
-  invalidMaxStartDate,
   invalidPastStartDate,
 } from "../../../helpers/validationMessages";
+import { getDefaultRequiredVal } from "../../../helpers/util";
 
-/**
- * Properties of the onrouteBC customized Date Picker MUI component
- */
+export const PAST_START_DATE_STATUSES = {
+  ALLOWED: "ALLOWED",
+  WARNING: "WARNING",
+  FAIL: "FAIL",
+} as const;
+
+export type PastStartDateStatus =
+  (typeof PAST_START_DATE_STATUSES)[keyof typeof PAST_START_DATE_STATUSES];
+
+// Properties of the onrouteBC customized Date Picker MUI component/
 export interface CustomDatePickerProps<T extends FieldValues> {
   feature: string;
   name: FieldPath<T>;
   disabled?: boolean;
   readOnly?: boolean;
+  className?: string;
+  rules: RegisterOptions;
+  label?: string;
+  pastStartDateStatus: PastStartDateStatus;
+  minAllowablePastDate?: Dayjs;
+  maxAllowableFutureDate?: Dayjs;
+  dateWarningMessage?: Nullable<string>;
+  futureDateErrorMessage?: Nullable<string>;
+  onChangeOverride?: (value: Dayjs | null) => void;
 }
 
-/**
- * An onRouteBC customized MUI Date Picker component
- * Based on https://mui.com/x/react-date-pickers/date-picker/
- *
- */
+// An onRouteBC customized MUI Date Picker component based
+// on https://mui.com/x/react-date-pickers/date-picker/
 export const CustomDatePicker = <T extends ORBC_FormTypes>({
   feature,
   name,
   disabled,
   readOnly,
+  className,
+  rules,
+  label,
+  pastStartDateStatus,
+  minAllowablePastDate,
+  maxAllowableFutureDate,
+  dateWarningMessage,
+  futureDateErrorMessage,
+  onChangeOverride,
 }: CustomDatePickerProps<T>): JSX.Element => {
   const {
     trigger,
-    formState: { isSubmitted },
+    formState: { isSubmitted, errors },
     control,
   } = useFormContext();
-
-  // User can only select a date that is up to 14 days into the future of the current date
-  const maxDate = now().add(14, "day");
 
   /**
    * DatePicker is tricky, because in theory, you have two components with event listeners.
@@ -65,70 +95,134 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
    * There may be a better solution.
    * Reference: https://mui.com/x/react-date-pickers/validation/#show-the-error
    */
-  const { setError, clearErrors } = useFormContext();
-  const [muiError, setMuiError] =
+  const [dateError, setDateError] =
     useState<RequiredOrNull<DateValidationError>>(null);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const datePickerRules = {
+    ...rules,
+    validate: {
+      ...rules.validate,
+      disablePast: (value: Nullable<Dayjs>) => {
+        return (
+          pastStartDateStatus !== PAST_START_DATE_STATUSES.FAIL ||
+          (dateError !== "disablePast" && dateError !== "minDate") ||
+          !value ||
+          value.isAfter(getStartOfDate(now())) ||
+          value.isSame(getStartOfDate(now())) ||
+          invalidPastStartDate()
+        );
+      },
+      maxDate: (value: Nullable<Dayjs>) => {
+        return (
+          dateError !== "maxDate" ||
+          !maxAllowableFutureDate ||
+          !value ||
+          value.isBefore(getStartOfDate(maxAllowableFutureDate)) ||
+          value.isSame(getStartOfDate(maxAllowableFutureDate)) ||
+          getDefaultRequiredVal(invalidDate(), futureDateErrorMessage)
+        );
+      },
+      invalidDate: () => {
+        return dateError !== "invalidDate" || invalidDate();
+      },
+    },
+  };
+
+  const handleDateChange = (value: Dayjs | null) => {
+    if (!onChangeOverride) {
+      onChange(value);
+      trigger(name);
+    } else {
+      onChangeOverride(value);
+    }
+  };
 
   useEffect(() => {
-    switch (muiError) {
-      case "minDate":
-      case "disablePast": {
-        setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage(invalidPastStartDate());
-        break;
-      }
-      case "maxDate": {
-        setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage(invalidMaxStartDate(14));
-        break;
-      }
-      case "invalidDate": {
-        setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage(invalidDate());
-        break;
-      }
-      default: {
-        clearErrors(name);
-        setErrorMessage("");
-        break;
-      }
-    }
-  }, [muiError]);
+    // Revalidate whenever the date picker error is updated (new error or no errors)
+    trigger(name);
+  }, [dateError]);
+
+  const rulesViolationMessage = getErrorMessage(errors, name);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
-        className={`custom-date-picker ${disabled ? "custom-date-picker--disabled" : ""}`}
-        key={`${feature}-date-picker`}
-        ref={ref}
-        value={value}
-        disabled={disabled}
-        readOnly={readOnly}
-        onChange={onChange}
-        disablePast
-        maxDate={maxDate}
-        onError={(newError) => setMuiError(newError)}
-        slotProps={{
-          textField: {
-            helperText: errorMessage,
-            inputProps: {
-              className: "custom-date-picker__input-container",
-            },
-          },
-        }}
-        // This onClose function fixes a bug where the Select component does not immediately
-        // revalidate when selecting an option after an invalid form submission.
-        // The validation needed to be triggered again manually
-        onClose={async () => {
-          if (isSubmitted) {
-            const output = await trigger(name);
-            if (!output) {
-              trigger(name);
-            }
-          }
-        }}
+    <Box className={`custom-date-picker ${className ? className : ""}`}>
+      <Controller
+        key={`controller-${feature}-${name}`}
+        name={name}
+        control={control}
+        rules={datePickerRules}
+        render={({ fieldState: { invalid } }) => (
+          <FormControl
+            className="custom-date-picker__form-control"
+            margin="normal"
+            error={invalid}
+          >
+            <FormLabel
+              className="custom-date-picker__label"
+              id={`${feature}-${name}-label`}
+            >
+              {label}
+            </FormLabel>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                className={`custom-date-picker__picker ${disabled ? "custom-date-picker__picker--disabled" : ""}`}
+                key={`${feature}-date-picker`}
+                ref={ref}
+                value={value}
+                disabled={disabled}
+                readOnly={readOnly}
+                onChange={(value) => handleDateChange(value)}
+                disablePast={
+                  pastStartDateStatus === PAST_START_DATE_STATUSES.FAIL
+                }
+                minDate={minAllowablePastDate}
+                maxDate={maxAllowableFutureDate}
+                onError={(dateValidationError) =>
+                  setDateError(dateValidationError)
+                }
+                slotProps={{
+                  textField: {
+                    inputProps: {
+                      className: "custom-date-picker__input-container",
+                    },
+                  },
+                }}
+                // This onClose function fixes a bug where the Select component does not immediately
+                // revalidate when selecting an option after an invalid form submission.
+                // The validation needed to be triggered again manually
+                onClose={async () => {
+                  if (isSubmitted) {
+                    const output = await trigger(name);
+                    if (!output) {
+                      trigger(name);
+                    }
+                  }
+                }}
+              />
+            </LocalizationProvider>
+
+            {rulesViolationMessage ? (
+              <FormHelperText
+                className="custom-date-picker__helper-text custom-date-picker__helper-text--error"
+                data-testid={`custom-date-picker-${name}-error`}
+                error
+              >
+                {rulesViolationMessage}
+              </FormHelperText>
+            ) : null}
+
+            {dateWarningMessage ? (
+              <FormHelperText
+                className="custom-date-picker__helper-text custom-date-picker__helper-text--warning"
+                data-testid={`custom-date-picker-${name}-warning`}
+              >
+                {dateWarningMessage}
+              </FormHelperText>
+            ) : null}
+          </FormControl>
+        )}
       />
-    </LocalizationProvider>
+    </Box>
   );
 };

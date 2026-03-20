@@ -3,6 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PaymentCardType } from 'src/common/enum/payment-card-type.enum';
+import {
+  CreditAccountStatus,
+  CreditAccountStatusType,
+} from '../../../../../common/enum/credit-account-status-type.enum';
 
 export class PermitHistoryDto {
   @AutoMap()
@@ -99,9 +103,33 @@ export class PermitHistoryDto {
 
   @AutoMap()
   @ApiProperty({
+    example: '2023-01-01 10:00:00.000000',
+    description:
+      'Represents the date that the transaction was approved in ORBC.',
+  })
+  transactionApprovedDate: Date;
+
+  @AutoMap()
+  @ApiProperty({
     example: '1',
     description:
       'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
   })
   pgApproved: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: false,
+    description:
+      'A boolean value that represents if the credit account used for the transaction is different from the current one.',
+  })
+  creditAccountMismatch?: boolean;
+
+  @AutoMap()
+  @ApiProperty({
+    example: CreditAccountStatus.ACCOUNT_ACTIVE,
+    description:
+      'Represents the status of the credit account used at the time of the transanction',
+  })
+  creditAccountStatusType?: CreditAccountStatusType;
 }

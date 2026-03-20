@@ -6,3 +6,26 @@ export const PPC_FULL_TEXT = 'Provincial Permit Centre';
 export const TPS_MIGRATED_USER = 'TPS Migrated User';
 export const CRYPTO_ALGORITHM_MD5 = 'md5';
 export const CRYPTO_ALGORITHM_SHA256 = 'sha256';
+export const TOKEN_EXPIRY_BUFFER = 15;
+export const PERMISSIONS_KEY = 'permissions';
+export const TIMEZONE_PACIFIC = 'America/Vancouver';
+export const GL_PROJ_CODE_PLACEHOLDER = 'PROJECT';
+export const THIRD_PARTY_LIABILITY_DANGEROUS_GOODS =
+  'Dangerous Goods ($2,000,000)';
+export const THIRD_PARTY_LIABILITY_GENERAL_GOODS = 'General Goods ($1,000,000)';
+export const CONDITIONAL_LICENSING_NONE_TEXT = 'none';
+export const CONDITIONAL_LICENSING_FEE_RATE_TEXT = 'Conditional license';
+export const INDUSTRIAL_X_PLATE_TYPE_FEE_RATE_TEXT =
+  'Industrial (X-Plate Type)';
+export const FARM_VEHICLE_FEE_RATE_TEXT = 'Farm Vehicle';
+export const FARM_TRACTOR_FEE_RATE_TEXT = 'Farm Tractor';
+export const COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE_TEXT =
+  'Commercial Passenger Vehicle';
+export const EGARMS_CREDIT_API_SYSTEM_ID = 'ONROUTE';
+export const EGARMS_CREDIT_ACCOUNT_ACTIVE = 'I0001';
+export const EGARMS_CREDIT_ACCOUNT_NOT_FOUND = 'E0001';
+export const EGARMS_CREDIT_ACCOUNT_CLOSED = 'E0002';
+export const EGARMS_CREDIT_ACCOUNT_HOLD = 'E0003';
+export const EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT = 'E0004';
+export const EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT_2 = 'E1739';
+export const EGARMS_CREDIT_ACCOUNT_ERROR = 'E9999';

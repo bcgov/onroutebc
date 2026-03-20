@@ -1,7 +1,11 @@
 @import "../../../themes/orbcStyles";
 
 .delete-confirmation-dialog {
-  & &__title {
+  & &__container {
+    min-width: 683px;
+  }
+
+  & &__header {
     background-color: $bc-background-light-grey;
     color: $bc-red;
     font-size: 1.5rem;
@@ -16,6 +20,10 @@
     color: $bc-messages-red-background;
   }
 
+  & &__title {
+    margin-left: 1rem;
+  }
+
   & &__content {
     border-bottom: none;
   }
@@ -28,7 +36,7 @@
     padding: 0 1.5rem 1.5rem 1.5rem;
   }
 
-  .delete-confirmation-btn {
+  & &__btn {
     font-size: 1rem;
 
     &--cancel {
@@ -52,6 +60,14 @@
       &:hover {
         background-color: $bc-messages-red-text;
       }
+    }
+  }
+}
+
+@media (width < 768px) {
+  .delete-confirmation-dialog {
+    & &__container {
+      min-width: auto;
     }
   }
 }

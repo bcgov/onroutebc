@@ -12,16 +12,16 @@ import {
   ControllerRenderProps,
   FieldValues,
 } from "react-hook-form";
-import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
+import { BCeID_USER_ROLE } from "../../../../../common/authentication/types";
 
 /**
- * A reusable react component for capturing user auth group in add/edit user forms.
+ * A reusable react component for capturing user role in add/edit user forms.
  */
 export const UserAuthRadioGroup = ({
   field,
   fieldState,
 }: {
-  field: ControllerRenderProps<FieldValues, "userAuthGroup">;
+  field: ControllerRenderProps<FieldValues, "userRole">;
   fieldState: ControllerFieldState;
 }) => {
   const { invalid } = fieldState;
@@ -33,7 +33,7 @@ export const UserAuthRadioGroup = ({
         aria-labelledby="radio-buttons-group-label"
       >
         <FormControlLabel
-          value={BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR}
+          value={BCeID_USER_ROLE.COMPANY_ADMINISTRATOR}
           control={
             <Radio
               key={`radio-bceid-administrator`}
@@ -47,7 +47,7 @@ export const UserAuthRadioGroup = ({
           label="Administrator"
         />
         <FormControlLabel
-          value={BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT}
+          value={BCeID_USER_ROLE.PERMIT_APPLICANT}
           control={
             <Radio
               key={`radio-bceid-permit-applicant`}

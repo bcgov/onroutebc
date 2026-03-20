@@ -2,23 +2,31 @@ import { Button } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
-import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
+import "./MyInfoForm.scss";
+import { updateMyInfo } from "../../../apiManager/manageProfileAPI";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
+import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { updateMyInfo } from "../../../apiManager/manageProfileAPI";
+
 import {
   ReadUserInformationResponse,
   UserInfoRequest,
 } from "../../../types/manageProfile";
-import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
-import "./MyInfoForm.scss";
+
 import {
-  BCeIDUserAuthGroupType,
-  BCeID_USER_AUTH_GROUP,
+  BCeIDUserRoleType,
+  BCeID_USER_ROLE,
 } from "../../../../../common/authentication/types";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+
+const FEATURE = ORBC_FORM_FEATURES.MY_INFORMATION;
 
 export const MyInfoForm = memo(
   ({
@@ -29,22 +37,30 @@ export const MyInfoForm = memo(
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const formMethods = useForm<UserInfoRequest>({
       defaultValues: {
         firstName: getDefaultRequiredVal("", myInfo?.firstName),
         lastName: getDefaultRequiredVal("", myInfo?.lastName),
         email: getDefaultRequiredVal("", myInfo?.email),
-        phone1: applyWhenNotNullable(formatPhoneNumber, myInfo?.phone1, ""),
+        phone1: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          myInfo?.phone1,
+          "",
+        ),
         phone1Extension: getDefaultRequiredVal("", myInfo?.phone1Extension),
-        phone2: applyWhenNotNullable(formatPhoneNumber, myInfo?.phone2, ""),
+        phone2: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          myInfo?.phone2,
+          "",
+        ),
         phone2Extension: getDefaultRequiredVal("", myInfo?.phone2Extension),
-        fax: applyWhenNotNullable(formatPhoneNumber, myInfo?.fax, ""),
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
-          myInfo?.userAuthGroup as BCeIDUserAuthGroupType,
+        userRole: getDefaultRequiredVal(
+          BCeID_USER_ROLE.PERMIT_APPLICANT,
+          myInfo?.userRole as BCeIDUserRoleType,
         ),
       },
     });
@@ -61,6 +77,11 @@ export const MyInfoForm = memo(
           setIsEditing(false);
         }
       },
+      onError: (error: AxiosError) => {
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
+      },
     });
 
     const onUpdateMyInfo = (data: UserInfoRequest) => {
@@ -69,13 +90,12 @@ export const MyInfoForm = memo(
       });
     };
 
-    const FEATURE = "my-info-form";
-
     return (
       <div className="my-info-form">
         <FormProvider {...formMethods}>
           <ReusableUserInfoForm feature={FEATURE} />
         </FormProvider>
+
         <div className="my-info-form__submission">
           <Button
             key="update-my-info-cancel-button"
@@ -87,6 +107,7 @@ export const MyInfoForm = memo(
           >
             Cancel
           </Button>
+
           <Button
             key="update-my-info-button"
             className="submit-btn"

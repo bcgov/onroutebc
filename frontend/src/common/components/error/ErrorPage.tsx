@@ -1,29 +1,29 @@
-import { Divider } from "@mui/material";
-
 import "./ErrorPage.scss";
 
 export const ErrorPage = ({
   errorTitle,
   msgNode,
+  imgSrc = "/Error_Screen_Graphic.svg",
 }: {
   errorTitle: string;
   msgNode: React.ReactNode;
+  imgSrc?: string; 
 }) => {
   return (
     <div className="error-page">
       <div className="error-page__wrapper">
         <img
           className="error-page__img"
-          height="168"
-          width="178"
-          src="/Error_Screen_Graphic.svg"
+          src={imgSrc}
           alt="Error Screen Graphic"
         />
-        <div className="error-page__title">{errorTitle}</div>
+
+        <div className="error-page__title">
+          {errorTitle}
+        </div>
+
         <div className="error-page__msg">
-          <Divider />
-          <p className="msg">{msgNode}</p>
-          <Divider />
+          {msgNode}
         </div>
       </div>
     </div>

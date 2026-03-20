@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  Allow,
   ArrayMinSize,
   IsEmail,
   IsEnum,
@@ -28,14 +27,24 @@ export class NotificationDto {
   to: string[];
 
   @ApiProperty({
-    description: 'Notification cc email ids.',
+    description: 'Notification cc emails.',
     example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
   })
   @IsOptional()
   @IsEmail(undefined, {
     each: true,
   })
-  cc: string[];
+  cc?: string[];
+
+  @ApiProperty({
+    description: 'Notification bcc emails.',
+    example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
+  })
+  @IsOptional()
+  @IsEmail(undefined, {
+    each: true,
+  })
+  bcc?: string[];
 
   @ApiProperty({
     enum: NotificationTemplate,
@@ -52,6 +61,6 @@ export class NotificationDto {
     },
     description: 'Data to be inserted into the template',
   })
-  @Allow()
+  @IsOptional()
   data: object;
 }

@@ -25,7 +25,7 @@ import { getFromCache } from '../../helper/cache.helper';
 import * as Handlebars from 'handlebars';
 import { CacheKey } from '../../enum/cache-key.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
-import puppeteer, { Browser } from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { convertUtcToPt } from '../../helper/date-time.helper';
@@ -69,10 +69,12 @@ export class DgenService {
             .select('template_name')
             .addSelect('MAX(template.templateVersion)', 'max_version')
             .from(DocumentTemplate, 'template')
+            .where('template.isActive = :isActive', { isActive: 'Y' })
             .groupBy('template_name'),
         'documentTemplateLatest',
         'documentTemplate.templateName = documentTemplateLatest.template_name AND documentTemplate.templateVersion = documentTemplateLatest.max_version',
       )
+      .where('documentTemplate.isActive = :isActive', { isActive: 'Y' })
       .getMany();
 
     return latestTemplates;
@@ -221,41 +223,62 @@ export class DgenService {
     };
 
     let browser: Browser;
+    let page: Page;
     try {
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         args: [
           '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
           '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-infobars',
+          '--disable-dev-shm-usage',
+          '--disable-web-security', // Use with caution
+          '--disable-sync',
+          '--disable-translate',
+          '--disable-popup-blocking',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-breakpad',
+          '--disable-client-side-phishing-detection',
+          '--disable-extensions',
+          '--disable-plugins',
+          '--disable-setuid-sandbox',
         ],
+        pipe: true,
         headless: true,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
-      const page = await browser.newPage();
+      page = await browser.newPage();
       await page.setContent(htmlBody);
       await page.emulateMediaType('print');
 
-      generatedDocument.buffer = await page.pdf({
-        timeout: 0, // Set to 0 for indefinite wait
-        format: 'letter',
-        displayHeaderFooter: true,
-        printBackground: true,
-        landscape: true,
-        footerTemplate: `
+      generatedDocument.buffer = Buffer.from(
+        await page.pdf({
+          timeout: 0, // Set to 0 for indefinite wait
+          format: 'letter',
+          displayHeaderFooter: true,
+          printBackground: true,
+          landscape: true,
+          footerTemplate: `
         <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
           <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
         </div>
        `,
-      });
+        }),
+      );
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (error) {
       this.logger.error(error);
       throw error;
     } finally {
+      if (page) {
+        await page.close();
+      }
       if (browser) {
+        const pages = await browser.pages();
+        await Promise.allSettled(pages?.map((page) => page.close()));
         await browser.close();
       }
     }
@@ -302,8 +325,14 @@ export class DgenService {
       },
     );
 
+    Handlebars.registerHelper('defaultToPending', function (value: string) {
+      return value ?? 'Pending';
+    });
+
     Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
-      return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
+      return utcDate
+        ? convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z')
+        : null;
     });
 
     Handlebars.registerHelper(

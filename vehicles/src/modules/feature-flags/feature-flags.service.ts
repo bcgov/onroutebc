@@ -36,6 +36,12 @@ export class FeatureFlagsService {
    */
   @LogAsyncMethodExecution()
   async findAllFromCache(): Promise<Record<string, string>> {
-    return await getMapFromCache(this.cacheManager, CacheKey.FEATURE_FLAG_TYPE);
+    const featureFlagMap = await getMapFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+    );
+    return featureFlagMap?.size
+      ? (Object.fromEntries(featureFlagMap) as Record<string, string>)
+      : undefined;
   }
 }

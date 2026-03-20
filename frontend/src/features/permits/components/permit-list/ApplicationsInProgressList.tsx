@@ -1,13 +1,7 @@
-import { Delete } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_PaginationState,
-  MRT_Row,
-  MRT_SortingState,
-  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -17,103 +11,116 @@ import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressCo
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationListItem } from "../../types/application";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { canUserAccessApplication } from "../../helpers/mappers";
+import { canUserAccessApplication } from "../../helpers/canUserAccessApplication";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { UserAuthGroupType } from "../../../../common/authentication/types";
-import { Nullable } from "../../../../common/types/common";
 import {
-  deleteApplications,
-} from "../../apiManager/permitsAPI";
-
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
+import { UserRoleType } from "../../../../common/authentication/types";
+import { Nullable } from "../../../../common/types/common";
+import { deleteApplications } from "../../apiManager/permitsAPI";
+import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
+import {
+  useApplicationsInProgressQuery,
+  usePendingPermitsQuery,
+} from "../../hooks/hooks";
+import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
+import { PendingPermitsDialog } from "../dialog/PendingPermitsDialog/PendingPermitsDialog";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
-import { useApplicationsInProgressQuery } from "../../hooks/hooks";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
-/**
- * Dynamically set the column
- * @returns An array of column headers/accessor keys for Material React Table
- */
-const getColumns = (
-  userAuthGroup?: Nullable<UserAuthGroupType>,
-): MRT_ColumnDef<ApplicationListItem>[] => {
-  return ApplicationInProgressColumnDefinition(userAuthGroup);
-};
+export const ApplicationsInProgressList = ({
+  companyId,
+}: {
+  companyId: number;
+}) => {
+  const {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useApplicationsInProgressQuery(companyId);
 
-/**
- * A wrapper with the query to load the table with expired permits.
- */
-export const ApplicationsInProgressList = ({ onCountChange }: 
-  { onCountChange: (count: number) => void; }) => {
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-  const [sorting, setSorting] = useState<MRT_SortingState>([
-    {
-      id: "updatedDateTime",
-      desc: true,
-    },
-  ]);
+  const {
+    pendingPermits,
+    pagination: pendingPermitPagination,
+    setPagination: setPendingPermitPagination,
+  } = usePendingPermitsQuery(companyId);
 
-  const applicationsQuery = useApplicationsInProgressQuery({
-    page: pagination.pageIndex,
-    take: pagination.pageSize,
-    sorting: sorting.length > 0
-    ? [
-        {
-          column: sorting.at(0)?.id as string,
-          descending: Boolean(sorting.at(0)?.desc),
-        },
-      ]
-    : [],
-  });
+  const {
+    data: applicationsInProgress,
+    isError,
+    isPending,
+    isFetching,
+  } = applicationsInProgressQuery;
 
-  const { data, isError, isPending, isFetching } = applicationsQuery;
+  const pendingCount = getDefaultRequiredVal(
+    0,
+    pendingPermits?.meta?.totalItems,
+  );
+  const canShowPendingBanner = pendingCount > 0;
+
+  const [showAIPTable, setShowAIPTable] = useState<boolean>(false);
 
   useEffect(() => {
-
-    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
-    onCountChange(totalCount);
-    
-  }, [data?.meta?.totalItems])
+    const totalCount = getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.totalItems,
+    );
+    setShowAIPTable(totalCount > 0);
+  }, [applicationsInProgress?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
-  const userAuthGroup = getDefaultNullableVal(
-    idirUserDetails?.userAuthGroup,
-    userDetails?.userAuthGroup,
+  const userRole = getDefaultNullableVal(
+    idirUserDetails?.userRole,
+    userDetails?.userRole,
   );
 
   const snackBar = useContext(SnackBarContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+  const [showPendingPermitsModal, setShowPendingPermitsModal] =
+    useState<boolean>(false);
+
+  const canEditIndividualApplicationInProgressDetails = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey:
+        "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+    },
+  });
+
+  const getColumns = (
+    userRole?: Nullable<UserRoleType>,
+  ): MRT_ColumnDef<ApplicationListItem>[] => {
+    return ApplicationInProgressColumnDefinition(
+      canEditIndividualApplicationInProgressDetails,
+      userRole,
+    );
+  };
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
-    () => getColumns(userAuthGroup),
-    [userAuthGroup],
+    () => getColumns(userRole),
+    [userRole],
   );
 
-  /**
-   * Callback function for clicking on the Trash icon above the Table.
-   */
-  const onClickTrashIcon = useCallback(() => {
+  const onClickDelete = useCallback(() => {
     setIsDeleteDialogOpen(() => true);
   }, []);
 
-  /**
-   * Function that deletes a application once the user confirms the delete action
-   * in the confirmation dialog.
-   */
   const onConfirmApplicationDelete = async () => {
     const applicationIds: string[] = Object.keys(rowSelection);
-    const response = await deleteApplications(applicationIds);
+    const response = await deleteApplications(companyId, applicationIds);
     if (response.status === 200) {
       const responseBody = response.data;
       setIsDeleteDialogOpen(() => false);
@@ -135,20 +142,14 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       setRowSelection(() => {
         return {};
       });
-      applicationsQuery.refetch();
+      applicationsInProgressQuery.refetch();
     }
   };
 
-  /**
-   * Determines if a row can be selected
-   */
   const canRowBeSelected = useCallback(
     (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
-      canUserAccessApplication(
-        permitApplicationOrigin,
-        userAuthGroup,
-      ),
-    [userAuthGroup],
+      canUserAccessApplication(permitApplicationOrigin, userRole),
+    [userRole],
   );
 
   useEffect(() => {
@@ -162,9 +163,6 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     }
   }, [isError]);
 
-  /**
-   * Function that clears the delete related states when the user clicks on cancel.
-   */
   const onCancelApplicationDelete = useCallback(() => {
     setRowSelection(() => {
       return {};
@@ -175,7 +173,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
-    data: data?.items ?? [],
+    data: getDefaultRequiredVal([], applicationsInProgress?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -189,57 +187,24 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       pagination,
       sorting,
     },
-    enableRowSelection:
-      (row) => canRowBeSelected(
-        row?.original?.permitApplicationOrigin,
-      ),
-    onRowSelectionChange: useCallback(
-      setRowSelection,
-      [userAuthGroup],
-    ),
+    displayColumnDefOptions: {
+      "mrt-row-select": {
+        size: 10,
+      },
+    },
+    enableRowActions: false,
+    enableRowSelection: (row) =>
+      canRowBeSelected(row?.original?.permitApplicationOrigin),
+    onRowSelectionChange: useCallback(setRowSelection, [userRole]),
     getRowId: (originalRow) => {
       const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
     },
-    renderEmptyRowsFallback: () => <NoRecordsFound />,
-    renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<ApplicationListItem>;
-        row: MRT_Row<ApplicationListItem>;
-      }) => canUserAccessApplication(
-        row?.original?.permitApplicationOrigin,
-        userAuthGroup,
-      ) ? (
-        <Box className="table-container__row-actions">
-          <Tooltip arrow placement="top" title="Delete">
-            <IconButton
-              color="error"
-              onClick={() => {
-                setIsDeleteDialogOpen(() => true);
-                setRowSelection(() => {
-                  const newObject: { [key: string]: boolean } = {};
-                  // Setting the selected row to false so that
-                  // the row appears unchecked.
-                  newObject[row.original.permitId] = false;
-                  return newObject;
-                });
-              }}
-              disabled={false}
-            >
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ) : (
-        <></>
-      ),
-      [userAuthGroup],
-    ),
-    renderToolbarInternalActions: useCallback(
+    renderTopToolbar: useCallback(
       () => (
-        <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+        <div className="applications-in-progress-list__top-toolbar">
+          <DeleteButton onClick={onClickDelete} disabled={hasNoRowsSelected} />
+        </div>
       ),
       [hasNoRowsSelected],
     ),
@@ -248,8 +213,14 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.pageCount ?? 0,
+    rowCount: getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.totalItems,
+    ),
+    pageCount: getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.pageCount,
+    ),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
@@ -263,13 +234,41 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   });
 
   return (
-    <div className="table-container">
-      <MaterialReactTable table={table} />
+    <div className="applications-in-progress-list table-container">
+      {canShowPendingBanner ? (
+        <WarningBcGovBanner
+          className="pending-permits-warning"
+          msg={
+            <div className="pending-permits-warning__msg">
+              <span>
+                Some of your applications weren&apos;t processed. See your
+              </span>
+              <CustomActionLink
+                className="pending-permits-warning__link"
+                onClick={() => setShowPendingPermitsModal(true)}
+              >
+                Pending Permits
+              </CustomActionLink>
+            </div>
+          }
+        />
+      ) : null}
+
+      <PendingPermitsDialog
+        showModal={showPendingPermitsModal}
+        onCancel={() => setShowPendingPermitsModal(false)}
+        pendingPermits={pendingPermits}
+        pagination={pendingPermitPagination}
+        setPagination={setPendingPermitPagination}
+      />
+
+      {showAIPTable ? <MaterialReactTable table={table} /> : <NoRecordsFound />}
+
       <DeleteConfirmationDialog
-        onClickDelete={onConfirmApplicationDelete}
-        isOpen={isDeleteDialogOpen}
-        onClickCancel={onCancelApplicationDelete}
-        caption="application"
+        onDelete={onConfirmApplicationDelete}
+        showDialog={isDeleteDialogOpen}
+        onCancel={onCancelApplicationDelete}
+        itemToDelete="application"
       />
     </div>
   );

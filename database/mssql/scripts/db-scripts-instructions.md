@@ -6,6 +6,8 @@ cd ~/tmp/onroutebc
 git restore *
 git pull
 cd database/mssql/scripts/utility
+rm -rf ../tmp
+mkdir ../tmp
 chmod u+x ./*.sh
 ./get-db-status.sh
 ```

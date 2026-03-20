@@ -76,7 +76,6 @@ export class Company extends Base {
     length: 10,
     name: 'COMPANY_DIRECTORY',
     nullable: false,
-    update: false,
   })
   directory: Directory;
 
@@ -101,13 +100,6 @@ export class Company extends Base {
   @AutoMap()
   @Column({ length: 5, name: 'EXTENSION', nullable: false })
   extension: string;
-
-  /**
-   * The company's fax number.
-   */
-  @AutoMap()
-  @Column({ length: 20, name: 'FAX', nullable: false })
-  fax: string;
 
   /**
    * The company's email address.

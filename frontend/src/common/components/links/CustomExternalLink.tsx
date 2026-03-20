@@ -3,7 +3,7 @@ import { ExternalLinkProps } from "./types/LinkProps";
 import { CustomLinkContent } from "./CustomLinkContent";
 
 export const CustomExternalLink = (props: ExternalLinkProps) => {
-  const { withLinkIcon, ...linkProps } = props;
+  const { withLinkIcon, openInNewTab, ...linkProps } = props;
 
   const className = () => {
     const baseClassName = "custom-link";
@@ -12,8 +12,16 @@ export const CustomExternalLink = (props: ExternalLinkProps) => {
       : baseClassName;
   };
 
+  const linkTarget = openInNewTab ? {
+    target: "_blank",
+  } : {};
+
   return (
-    <a {...linkProps} className={className()}>
+    <a
+      {...linkProps}
+      {...linkTarget}
+      className={className()}
+    >
       <CustomLinkContent withLinkIcon={withLinkIcon}>
         {linkProps.children}
       </CustomLinkContent>

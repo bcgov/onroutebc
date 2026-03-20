@@ -1,0 +1,113 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+BEGIN TRANSACTION
+GO
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION], 
+    [FILE_NAME],
+    [IS_ACTIVE],
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP]
+) 
+VALUES (
+    N'PERMIT_STOW',
+    1,
+    'stow-template-v1.docx',
+    'Y',
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE()
+   );
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION], 
+    [FILE_NAME],
+    [IS_ACTIVE],
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP]
+) 
+VALUES (
+    N'PERMIT_STOW_VOID',
+    1,
+    'stow-void-template-v1.docx',
+    'Y',
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE()
+   );
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION], 
+    [FILE_NAME],
+    [IS_ACTIVE],
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP]
+) 
+VALUES (
+    N'PERMIT_STOW_REVOKED',
+    1,
+    'stow-revoked-template-v1.docx',
+    'Y',
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE()
+   );   
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Configure STOW permit templates'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (82, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+DECLARE @Success AS BIT
+SET @Success = 1
+SET NOEXEC OFF
+IF (@Success = 1) PRINT 'The database update succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database update failed'
+END
+GO

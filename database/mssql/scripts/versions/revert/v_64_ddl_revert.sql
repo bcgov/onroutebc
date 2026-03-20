@@ -1,0 +1,499 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+
+BEGIN TRANSACTION
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrscl-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrscl-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrscl-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrscl-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrscl-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrscl-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrqcl-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrqcl-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrqcl-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrqcl-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'nrqcl-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'nrqcl-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stfr-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stfr-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stfr-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stfr-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stfr-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stfr-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'qrfr-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'qrfr-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'qrfr-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'qrfr-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'qrfr-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'qrfr-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'mfp-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'mfp-template-v3.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'mfp-void-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'mfp-void-template-v3.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'mfp-revoked-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'mfp-revoked-template-v3.docx'        
+
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stos-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stos-template-v3.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stos-void-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stos-void-template-v3.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'stos-revoked-template-v3.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'stos-revoked-template-v3.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'trow-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'trow-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'trow-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'trow-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'trow-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'trow-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'tros-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'tros-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'tros-void-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'tros-void-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE DOCUMENT_ID IN (
+		SELECT ID
+		FROM [dops].[ORBC_DOCUMENT]
+		WHERE FILE_NAME = 'tros-revoked-template-v2.docx'
+		)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DELETE [dops].[ORBC_DOCUMENT]
+WHERE FILE_NAME = 'tros-revoked-template-v2.docx'
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DECLARE @VersionDescription VARCHAR(255)
+
+SET @VersionDescription = 'Revert LOA configuration/update from all permit templates'
+
+INSERT [dbo].[ORBC_SYS_VERSION] (
+	[VERSION_ID]
+	,[DESCRIPTION]
+	,[RELEASE_DATE]
+	)
+VALUES (
+	63
+	,@VersionDescription
+	,getutcdate()
+	)
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DECLARE @Success AS BIT
+
+SET @Success = 1
+SET NOEXEC OFF
+
+IF (@Success = 1)
+	PRINT 'The database revert succeeded'
+ELSE
+BEGIN
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION
+
+	PRINT 'The database revert failed'
+END
+GO

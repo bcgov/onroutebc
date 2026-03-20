@@ -13,9 +13,12 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
-import { Nullable, Optional } from "../../../../../../../common/types/common";
+import { APPLICATION_STEP_CONTEXTS, APPLICATION_STEPS } from "../../../../../../../routes/constants";
+import { Nullable } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
+import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
+import { getCountryFullName } from "../../../../../../../common/helpers/countries/getCountryFullName";
+import { getProvinceFullName } from "../../../../../../../common/helpers/countries/getProvinceFullName";
 import {
   PowerUnit,
   Trailer,
@@ -36,11 +39,6 @@ import {
   getApplication,
   updateApplication,
 } from "../fixtures/getActiveApplication";
-
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../../../common/helpers/formatCountryProvince";
 
 import OnRouteBCContext, {
   OnRouteBCContextType,
@@ -67,37 +65,40 @@ export const companyInfo = getDefaultCompanyInfo();
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
-  http.post(APPLICATIONS_API_ROUTES.CREATE, async ({ request }) => {
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.post(
+    `${VEHICLES_URL}/companies/:companyId/applications`,
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as CreateApplicationRequestData),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as CreateApplicationRequestData),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    const createdApplication = createApplication(
-      applicationData,
-      newApplicationNumber,
-      newPermitId,
-      currDtUtcStr,
-      currDtUtcStr,
-    ); // add to mock application store
+      const createdApplication = createApplication(
+        applicationData,
+        newApplicationNumber,
+        newPermitId,
+        currDtUtcStr,
+        currDtUtcStr,
+      ); // add to mock application store
 
-    return HttpResponse.json(
-      {
-        ...createdApplication,
-      },
-      { status: 201 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...createdApplication,
+        },
+        { status: 201 },
+      );
+    },
+  ),
 
   // Mock updating/saving application
   http.put(
-    `${APPLICATIONS_API_ROUTES.UPDATE}/:id`,
+    `${VEHICLES_URL}/companies/:companyId/applications/:id`,
     async ({ request, params }) => {
       const { id } = params;
       const reqBody = await request.json();
@@ -127,12 +128,15 @@ const server = setupServer(
   ),
 
   // Mock getting application
-  http.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, () => {
-    return HttpResponse.json({
-      // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
-      data: getApplication(),
-    });
-  }),
+  http.get(
+    `${APPLICATIONS_API_ROUTES.GET(getDefaultUserDetails().companyId.toString(), ":permitId")}`,
+    () => {
+      return HttpResponse.json({
+        // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
+        data: getApplication(),
+      });
+    },
+  ),
 
   // Mock getting power unit types
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
@@ -244,6 +248,20 @@ const server = setupServer(
       });
     },
   ),
+
+  http.get(
+    `${SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.GET(companyInfo.companyId.toString())}`,
+    () => {
+      return HttpResponse.json(
+        {
+          companyId: companyInfo.companyId,
+          specialAuthId: 1,
+          isLcvAllowed: false,
+          noFeeType: null,
+        },
+      );
+    },
+  ),
 );
 
 export const listenToMockServer = () => {
@@ -262,15 +280,16 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   return (
     <ThemeProvider theme={bcGovTheme}>
       <OnRouteBCContext.Provider value={userDetails}>
-        <ApplicationStepPage applicationStep={APPLICATION_STEPS.DETAILS} />
+        <ApplicationStepPage
+          applicationStep={APPLICATION_STEPS.DETAILS}
+          applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
+        />
       </OnRouteBCContext.Provider>
     </ThemeProvider>
   );
 };
 
-export const renderTestComponent = (
-  userDetails: OnRouteBCContextType,
-) => {
+export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
   const user = userEvent.setup();
   const component = renderForTests(ComponentWithWrapper(userDetails));
 
@@ -311,10 +330,10 @@ export const getVehicleDetails = (
       plate: vehicle.plate,
       make: vehicle.make,
       year: getDefaultRequiredVal(0, vehicle.year as Nullable<number>),
-      country: formatCountry(vehicle.countryCode as Optional<string>),
-      province: formatProvince(
-        vehicle.countryCode as Optional<string>,
-        vehicle.provinceCode as Optional<string>,
+      country: getCountryFullName(vehicle.countryCode),
+      province: getProvinceFullName(
+        vehicle.countryCode,
+        vehicle.provinceCode,
       ),
       vehicleType: "Power Unit",
       vehicleSubtype,

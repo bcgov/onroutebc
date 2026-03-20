@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 
 import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
@@ -18,9 +18,9 @@ import {
   deleteCompanyActiveUsers,
   getCompanyInfo,
   getCompanyInfoById,
-  getIDIRUserRoles,
+  getIDIRUserClaims,
   getUserContext,
-  getUserRolesByCompanyId,
+  getUserClaimsByCompanyId,
 } from "./manageProfileAPI";
 
 import OnRouteBCContext, {
@@ -29,15 +29,15 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 
 import {
-  BCeIDUserAuthGroupType,
+  BCeIDUserRoleType,
   BCeIDUserContextType,
   IDIRUserContextType,
-  UserRolesType,
+  UserClaimsType,
 } from "../../../common/authentication/types";
 
 /**
  * Fetches company info of current user.
- * @returns company info of current user, or error if failed
+ * @returns Query object containing company info of current user
  */
 export const useCompanyInfoQuery = () => {
   return useQuery({
@@ -51,13 +51,14 @@ export const useCompanyInfoQuery = () => {
 
 /**
  * Fetches company info of specific company.
- * @returns company info or error if failed
+ * @param companyId Id of the company to get the info for
+ * @returns Query object containing company info
  */
 export const useCompanyInfoDetailsQuery = (companyId: number) => {
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: () => getCompanyInfoById(companyId),
-    enabled: !!companyId,
+    enabled: Boolean(companyId),
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
     retry: false,
@@ -96,7 +97,7 @@ export const useUserContext = (
     setIsCompanySuspended,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedClient,
+    setUnclaimedClient,
     setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
 
@@ -118,15 +119,15 @@ export const useUserContext = (
           lastName: user.lastName,
           userName: user.userName,
           email: user.email,
-          userAuthGroup: user.userAuthGroup,
+          userRole: user.userRole,
         } as IDIRUserDetailContext;
-        
+
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
-      const { user, associatedCompanies, pendingCompanies, migratedClient } =
+      const { user, associatedCompanies, pendingCompanies, unclaimedClient } =
         userContextResponseBody as BCeIDUserContextType;
-      
+
       /**
        * User exists => the user is already in the system.
        */
@@ -150,8 +151,7 @@ export const useUserContext = (
           phone2: user.phone2,
           phone2Extension: user.phone2Extension,
           email: user.email,
-          fax: user.fax,
-          userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
+          userRole: user.userRole as BCeIDUserRoleType,
         } as BCeIDUserDetailContext;
 
         setUserDetails?.(() => userDetails);
@@ -165,9 +165,9 @@ export const useUserContext = (
       }
 
       /**
-       * The user has been added to a company.
+       * The user has been invited to a company.
        */
-      if (pendingCompanies.length > 0) {
+      else if (pendingCompanies.length > 0) {
         const { companyId, legalName, isSuspended } = pendingCompanies[0];
 
         setCompanyId?.(() => companyId);
@@ -182,10 +182,10 @@ export const useUserContext = (
       }
 
       /**
-       * The user has been migrated.
+       * The user has been migrated or added to a staff created company.
        */
-      if (migratedClient?.clientNumber) {
-        setMigratedClient?.(() => migratedClient);
+      else if (unclaimedClient?.clientNumber) {
+        setUnclaimedClient?.(() => unclaimedClient);
       }
 
       /**
@@ -200,61 +200,61 @@ export const useUserContext = (
 };
 
 /**
- * Hook to fetching the user roles data from the api.
+ * Hook to fetching the user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyIdQuery = () => {
+export const useUserClaimsByCompanyIdQuery = () => {
   return useQuery({
-    queryKey: ["userRoles"],
+    queryKey: ["userClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getUserRolesByCompanyId,
+    queryFn: getUserClaimsByCompanyId,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the user roles after fetching the data from the api.
- * @param userRolesResponseBody Response data for the user roles fetched.
+ * Hook to set up the user claims after fetching the data from the api.
+ * @param userClaimsResponseBody Response data for the user claims fetched.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyId = (
-  userRolesResponseBody: Nullable<UserRolesType[]>,
+export const useUserClaimsByCompanyId = (
+  userClaimsResponseBody: Nullable<UserClaimsType[]>,
 ) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRolesResponseBody) {
-      setUserRoles?.(() => userRolesResponseBody);
+    if (userClaimsResponseBody) {
+      setUserClaims?.(() => userClaimsResponseBody);
     }
-  }, [userRolesResponseBody]);
+  }, [userClaimsResponseBody]);
 };
 
 /**
- * Hook to fetching the IDIR user roles data from the api.
+ * Hook to fetching the IDIR user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRolesQuery = () => {
+export const useIDIRUserClaimsQuery = () => {
   return useQuery({
-    queryKey: ["userIDIRRoles"],
+    queryKey: ["userIDIRClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getIDIRUserRoles,
+    queryFn: getIDIRUserClaims,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the IDIR user roles after fetching the data from the api.
- * @param userRoles User roles data response from the api.
+ * Hook to set up the IDIR user claims after fetching the data from the api.
+ * @param userClaims User claims data response from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+export const useIDIRUserClaims = (userClaims: Nullable<UserClaimsType[]>) => {
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRoles) {
-      setUserRoles?.(() => userRoles);
+    if (userClaims) {
+      setUserClaims?.(() => userClaims);
     }
-  }, [userRoles]);
+  }, [userClaims]);
 };
 
 /**
@@ -265,12 +265,19 @@ export const useDeleteCompanyActiveUsers = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: deleteCompanyActiveUsers,
-    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    onError: (error: AxiosError) => {
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: { correlationId: error.response?.headers["x-correlation-id"] },
+      });
+    },
     onSuccess: (response: AxiosResponse) => {
-      const { data: companyUserResponse } = response;
+      const { data: companyUserResponse, headers } = response;
+
       const { failure } = companyUserResponse as DeleteResponse;
       if (failure?.length > 0) {
-        navigate(ERROR_ROUTES.UNEXPECTED);
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: headers["x-correlation-id"] },
+        });
       }
     },
   });
@@ -284,12 +291,18 @@ export const useDeleteCompanyPendingUsers = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: deleteCompanyPendingUsers,
-    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    onError: (error: AxiosError) => {
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: { correlationId: error.response?.headers["x-correlation-id"] },
+      });
+    },
     onSuccess: (response: AxiosResponse) => {
-      const { data: companyUserResponse } = response;
+      const { data: companyUserResponse, headers } = response;
       const { failure } = companyUserResponse as DeleteResponse;
       if (failure?.length > 0) {
-        navigate(ERROR_ROUTES.UNEXPECTED);
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: headers["x-correlation-id"] },
+        });
       }
     },
   });

@@ -3,12 +3,14 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
 
 // Need to add these plugins here
 dayjs.extend(utc); // for using utc
 dayjs.extend(timezone); // for using timezones
 dayjs.extend(localizedFormat); // for using localized datetime formats (eg. LLL)
 dayjs.extend(advancedFormat); // for using advanced datetime formats
+dayjs.extend(quarterOfYear); // for calculating dates based on quarters of a year
 
 export const DATE_FORMATS = {
   DATEONLY: "YYYY-MM-DD",
@@ -35,22 +37,22 @@ export const now = () => dayjs();
 export const nowUtc = () => dayjs.utc();
 
 /**
- * Get local datetime string in a specified format for a given DayJS object.
- * @param dayjsObj DayJS object that could be in any timezone
+ * Get local datetime string in a specified format for a given local DayJS object.
+ * @param localDayjs Local DayJS object
  * @param formatStr datetime format to display the datetime in (default ISO-8601)
  * @returns datetime string representing local datetime in the format specified
  */
-export const dayjsToLocalStr = (dayjsObj: Dayjs, formatStr?: string) =>
-  dayjs(dayjsObj).local().format(formatStr);
+export const dayjsToLocalStr = (localDayjs: Dayjs, formatStr?: string) =>
+  dayjs(localDayjs).format(formatStr);
 
 /**
- * Get UTC datetime string in a specified format for a given DayJS object.
- * @param dayjsObj DayJS object that could be in any timezone
+ * Get UTC datetime string in a specified format for a given local DayJS object.
+ * @param localDayjs Local DayJS object
  * @param formatStr datetime format to display the datetime in (default ISO-8601)
  * @returns datetime string representing UTC datetime in the format specified
  */
-export const dayjsToUtcStr = (dayjsObj: Dayjs, formatStr?: string) =>
-  dayjs(dayjsObj).utc().format(formatStr);
+export const dayjsToUtcStr = (localDayjs: Dayjs, formatStr?: string) =>
+  dayjs(localDayjs).utc().format(formatStr);
 
 /**
  * Get UTC datetime string in a specified format for a given datetime string
@@ -65,10 +67,17 @@ export const toUtc = (dateTimeStr: string, formatStr?: string) =>
  * Get local datetime string in a specified format for a given datetime string
  * @param dateTimeStr datetime string that could be in any timezone
  * @param formatStr datetime format to display in (default ISO-8601)
+ * @param isDateTimeStrLocal Whether or not the provided datetime string is already local
  * @returns datetime string representing local datetime in the format specified
  */
-export const toLocal = (dateTimeStr: string, formatStr?: string) =>
-  dayjs(dateTimeStr).local().format(formatStr);
+export const toLocal = (
+  dateTimeStr: string,
+  formatStr?: string,
+  isDateTimeStrLocal?: boolean,
+) =>
+  isDateTimeStrLocal
+    ? dayjs(dateTimeStr).format(formatStr)
+    : dayjs(dateTimeStr).local().format(formatStr);
 
 /**
  * Get local DayJS object for a given UTC datetime string
@@ -106,7 +115,7 @@ export const toTimeZone = (
 ) =>
   ianaId
     ? dayjs(datetimeStr).tz(ianaId).format(formatStr)
-    : toLocal(datetimeStr, formatStr);
+    : toLocal(datetimeStr, formatStr, true);
 
 /**
  * Gets the number of days between two datetimes (should both be in the same timezone).
@@ -120,7 +129,7 @@ export const getDateDiffInDays = (laterDt: Dayjs, earlierDt: Dayjs) => {
 
 /**
  * Get the start of any datetime (ie. the date + time of 00:00:00 am).
- * @param date Any Dayjs object
+ * @param date Any Dayjs object or date string representation
  * @returns Dayjs object representing the start of the datetime (with time 00:00:00 am)
  */
 export const getStartOfDate = (date: Dayjs | string) => {
@@ -129,9 +138,46 @@ export const getStartOfDate = (date: Dayjs | string) => {
 
 /**
  * Get the end of any datetime (ie. the date + time of 23:59:59 pm).
- * @param date Any Dayjs object
+ * @param date Any Dayjs object or date string representation
  * @returns Dayjs object representing the end of the datetime (with time 23:59:59 pm)
  */
 export const getEndOfDate = (date: Dayjs | string) => {
   return dayjs(date).hour(23).minute(59).second(59).millisecond(999);
+};
+
+/**
+ * Get the start of the quarter for any given datetime (ie. the date + time of 00:00:00 am).
+ * @param date Any Dayjs object or date string representation
+ * @returns Dayjs object representing the start of the quarter for the datetime (with time 00:00:00 am)
+ */
+export const getStartOfQuarter = (date: Dayjs | string) => {
+  return dayjs(date)
+    .startOf("quarter")
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+};
+
+/**
+ * Get the end of the quarter for any given datetime (ie. the date + time of 23:59:59 pm).
+ * @param date Any Dayjs object or date string representation
+ * @returns Dayjs object representing the end of the quarter for the datetime (with time 23:59:59 pm)
+ */
+export const getEndOfQuarter = (date: Dayjs | string) => {
+  return dayjs(date)
+    .endOf("quarter")
+    .hour(23)
+    .minute(59)
+    .second(59)
+    .millisecond(999);
+};
+
+/**
+ * Get the quarter number for a given date.
+ * @param date Any Dayjs object or date string representation
+ * @returns Number representing the quarter that the date is in
+ */
+export const getQuarterForDate = (date: Dayjs | string) => {
+  return dayjs(date).quarter();
 };

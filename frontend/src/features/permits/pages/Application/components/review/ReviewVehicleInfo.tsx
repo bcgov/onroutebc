@@ -4,60 +4,63 @@ import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 import "./ReviewVehicleInfo.scss";
 import { DiffChip } from "./DiffChip";
-import { areValuesDifferent } from "../../../../../../common/helpers/util";
+import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 import { Nullable } from "../../../../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { getCountryFullName } from "../../../../../../common/helpers/countries/getCountryFullName";
+import { getProvinceFullName } from "../../../../../../common/helpers/countries/getProvinceFullName";
+import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { PowerUnitInfoDisplay } from "../common/PowerUnitInfoDisplay";
+import { SelectedVehicleSubtypeList } from "../common/SelectedVehicleSubtypeList";
+import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
+import { VehicleInConfiguration } from "../../../../types/PermitVehicleConfiguration";
+import { getSubtypeNameByCode } from "../../../../helpers/mappers";
+import { isTrailerSubtypeNone } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 import {
-  mapTypeCodeToObject,
-  vehicleTypeDisplayText,
-} from "../../../../helpers/mappers";
-
-import {
-  VehicleSubType,
+  DEFAULT_VEHICLE_TYPE,
+  VEHICLE_TYPES,
   VehicleType,
+  vehicleTypeDisplayText,
 } from "../../../../../manageVehicles/types/Vehicle";
 
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../../common/helpers/formatCountryProvince";
-
 export const ReviewVehicleInfo = ({
+  permitType,
   vehicleDetails,
   vehicleWasSaved,
-  powerUnitSubTypes,
-  trailerSubTypes,
+  powerUnitSubtypeNamesMap,
+  trailerSubtypeNamesMap,
   showChangedFields = false,
   oldFields,
+  selectedVehicleConfigSubtypes,
 }: {
+  permitType?: Nullable<PermitType>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
-  powerUnitSubTypes?: Nullable<VehicleSubType[]>;
-  trailerSubTypes?: Nullable<VehicleSubType[]>;
+  powerUnitSubtypeNamesMap: Map<string, string>;
+  trailerSubtypeNamesMap: Map<string, string>;
   showChangedFields?: boolean;
   oldFields?: Nullable<PermitVehicleDetails>;
+  selectedVehicleConfigSubtypes?: Nullable<VehicleInConfiguration[]>;
 }) => {
-  const DisplayVehicleType = () => {
-    const vehicleTypeCode = vehicleDetails?.vehicleType;
-    if (!vehicleTypeCode) return "";
-    return vehicleTypeDisplayText(vehicleTypeCode as VehicleType);
-  };
+  const vehicleType = getDefaultRequiredVal(
+    DEFAULT_VEHICLE_TYPE,
+    vehicleDetails?.vehicleType,
+  ) as VehicleType;
 
-  const DisplayVehicleSubType = () => {
-    const code = vehicleDetails?.vehicleSubType;
-    const vehicleTypeCode = vehicleDetails?.vehicleType;
+  const vehicleSubtype = getSubtypeNameByCode(
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    vehicleType,
+    getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+  );
 
-    if (!code || !vehicleTypeCode) return "";
-
-    const typeObject = mapTypeCodeToObject(
-      code,
-      vehicleTypeCode,
-      powerUnitSubTypes,
-      trailerSubTypes,
-    );
-
-    return typeObject?.type;
-  };
+  const showLicensedGVW = Boolean(permitType)
+    && ([
+      PERMIT_TYPES.STOS,
+      PERMIT_TYPES.MFP,
+    ] as PermitType[]).includes(permitType as PermitType)
+    && vehicleType === VEHICLE_TYPES.POWER_UNIT;
 
   const changedFields = showChangedFields
     ? {
@@ -85,6 +88,10 @@ export const ReviewVehicleInfo = ({
           vehicleDetails?.vehicleSubType,
           oldFields?.vehicleSubType,
         ),
+        licensedGVW: areValuesDifferent(
+          vehicleDetails?.licensedGVW,
+          oldFields?.licensedGVW,
+        ),
       }
     : {
         unit: false,
@@ -96,120 +103,230 @@ export const ReviewVehicleInfo = ({
         province: false,
         type: false,
         subtype: false,
+        licensedGVW: false,
       };
+
+  const provinceDisplay = getProvinceFullName(
+    vehicleDetails?.countryCode,
+    vehicleDetails?.provinceCode,
+  );
+
+  const selectedSubtypesDisplay = useMemoizedArray(
+    getDefaultRequiredVal(
+      [],
+      selectedVehicleConfigSubtypes,
+    ).map(({ vehicleSubType }) => {
+      if (isTrailerSubtypeNone(vehicleSubType)) return "None";
+      return getDefaultRequiredVal(
+        vehicleSubType,
+        trailerSubtypeNamesMap.get(vehicleSubType),
+        powerUnitSubtypeNamesMap.get(vehicleSubType),
+      );
+    }),
+    (selectedSubtype) => selectedSubtype,
+    (subtype1, subtype2) => subtype1 === subtype2,
+  );
+
+  const showDiffChip = (show: boolean) => {
+    return show ? <DiffChip /> : null;
+  };
 
   return (
     <Box className="review-vehicle-info">
       <Box className="review-vehicle-info__header">
         <Typography variant={"h3"}>Vehicle Information</Typography>
       </Box>
+
       <Box className="review-vehicle-info__body">
-        <Box className="info-section">
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Unit #</span>
-            {changedFields.unit ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-unit-number"
-          >
-            {vehicleDetails?.unitNumber}
-          </Typography>
-          <Typography className="info-section__label">
-            VIN{" "}
-            <span className="info-section__label--indicator">
-              (last 6 digits)
-            </span>
-            {changedFields.vin ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-vin"
-          >
-            {vehicleDetails?.vin}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Plate</span>
-            {changedFields.plate ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-plate"
-          >
-            {vehicleDetails?.plate}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Make</span>
-            {changedFields.make ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-make"
-          >
-            {vehicleDetails?.make}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Year</span>
-            {changedFields.year ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-year"
-          >
-            {vehicleDetails?.year}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Country</span>
-            {changedFields.country ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-country"
-          >
-            {formatCountry(vehicleDetails?.countryCode)}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Province / State</span>
-            {changedFields.province ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-province"
-          >
-            {formatProvince(
-              vehicleDetails?.countryCode,
-              vehicleDetails?.provinceCode,
-            )}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Vehicle Type</span>
-            {changedFields.type ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-type"
-          >
-            {DisplayVehicleType()}
-          </Typography>
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Vehicle Sub-type</span>
-            {changedFields.subtype ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-subtype"
-          >
-            {DisplayVehicleSubType()}
-          </Typography>
-          {vehicleWasSaved && (
-            <Typography className="info-section__msg">
-              <FontAwesomeIcon className="icon" icon={faCircleCheck} />
-              <span data-testid="review-vehicle-saved-msg">
-                This vehicle has been added/updated to your Vehicle Inventory.
-              </span>
-            </Typography>
-          )}
-        </Box>
+        {permitType !== PERMIT_TYPES.STOS ? (
+          <Box className="info-section">
+            <div className="info-section__info info-section__info--unit">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Unit #</span>
+                {showDiffChip(changedFields.unit)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-unit-number"
+              >
+                {vehicleDetails?.unitNumber}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                VIN{" "}
+                <span className="info-section__label--indicator">
+                  (last 6 digits)
+                </span>
+                {showDiffChip(changedFields.vin)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-vin"
+              >
+                {vehicleDetails?.vin}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Plate</span>
+                {showDiffChip(changedFields.plate)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-plate"
+              >
+                {vehicleDetails?.plate}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Make</span>
+                {showDiffChip(changedFields.make)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-make"
+              >
+                {vehicleDetails?.make}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Year</span>
+                {showDiffChip(changedFields.year)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-year"
+              >
+                {vehicleDetails?.year}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Country</span>
+                {showDiffChip(changedFields.country)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-country"
+              >
+                {getCountryFullName(vehicleDetails?.countryCode)}
+              </Typography>
+            </div>
+
+            {provinceDisplay ? (
+              <div className="info-section__info">
+                <Typography className="info-section__label">
+                  <span className="info-section__label-text">Province / State</span>
+                  {showDiffChip(changedFields.province)}
+                </Typography>
+
+                <Typography
+                  className="info-section__data"
+                  data-testid="review-vehicle-province"
+                >
+                  {provinceDisplay}
+                </Typography>
+              </div>
+            ) : null}
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Vehicle Type</span>
+                {showDiffChip(changedFields.type)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-type"
+              >
+                {vehicleTypeDisplayText(vehicleType)}
+              </Typography>
+            </div>
+
+            <div className="info-section__info">
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Vehicle Sub-type</span>
+                {showDiffChip(changedFields.subtype)}
+              </Typography>
+
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-subtype"
+              >
+                {vehicleSubtype}
+              </Typography>
+            </div>
+
+            {showLicensedGVW && vehicleDetails?.licensedGVW ? (
+              <div className="info-section__info">
+                <Typography className="info-section__label">
+                  <span className="info-section__label-text">Licensed GVW (kg)</span>
+                  {showDiffChip(changedFields.licensedGVW)}
+                </Typography>
+
+                <Typography
+                  className="info-section__data"
+                  data-testid="review-vehicle-gvw"
+                >
+                  {vehicleDetails.licensedGVW.toLocaleString()}
+                </Typography>
+              </div>
+            ) : null}
+
+            {vehicleWasSaved ? (
+              <Typography className="info-section__msg">
+                <FontAwesomeIcon className="icon" icon={faCircleCheck} />
+                <span data-testid="review-vehicle-saved-msg">
+                  This vehicle has been added/updated to your Vehicle Inventory.
+                </span>
+              </Typography>
+            ) : null}
+          </Box>
+        ) : (
+          <Box className="selected-power-unit-and-trailers">
+            {vehicleDetails ? (
+              <Box className="selected-power-unit">
+                <Typography variant="h4">Power Unit</Typography>
+
+                <PowerUnitInfoDisplay
+                  powerUnitInfo={vehicleDetails}
+                  powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+                />
+              </Box>
+            ) : null}
+
+            <Box className="selected-trailers">
+              <Typography variant="h4">Trailer(s)</Typography>
+
+              <SelectedVehicleSubtypeList
+                selectedSubtypesDisplay={selectedSubtypesDisplay}
+              />
+            </Box>
+
+            {vehicleWasSaved ? (
+              <Typography className="vehicle-saved">
+                <FontAwesomeIcon className="icon" icon={faCircleCheck} />
+                <span data-testid="review-vehicle-saved-msg">
+                  This vehicle has been added/updated to your Vehicle Inventory.
+                </span>
+              </Typography>
+            ) : null}
+          </Box>
+        )}
       </Box>
     </Box>
   );

@@ -1,23 +1,28 @@
 import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
-import { PermitData } from '../interface/permit.template.interface';
+import {
+  PermitData,
+  VehicleDetails,
+} from '../interface/permit.template.interface';
 import { getFromCache } from './cache.helper';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { Cache } from 'cache-manager';
 import { CacheKey } from '../enum/cache-key.enum';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { callDatabaseSequence } from './database.helper';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
-import {
-  ApplicationStatus,
-  IDIR_ACTIVE_APPLICATION_STATUS,
-  CVCLIENT_ACTIVE_APPLICATION_STATUS,
-} from '../enum/application-status.enum';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../enum/user-auth-group.enum';
-import { IUserJWT } from '../interface/user-jwt.interface';
-import { doesUserHaveAuthGroup } from './auth.helper';
+import { Directory } from '../enum/directory.enum';
+import { doesUserHaveRole } from './auth.helper';
+import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-role.enum';
+import { PPC_FULL_TEXT } from '../constants/api.constant';
+import { User } from '../../modules/company-user-management/users/entities/user.entity';
+import { ApplicationStatus } from '../enum/application-status.enum';
+import { PermitType } from '../enum/permit-type.enum';
+import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
+import * as dayjs from 'dayjs';
+import { PermitHistoryDto } from '../../modules/permit-application-payment/permit/dto/response/permit-history.dto';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -83,6 +88,28 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     permit.permitType,
   );
 
+  const vehicleConfigurationTrailers = permitData?.vehicleConfiguration
+    ?.trailers?.length
+    ? await Promise.all(
+        permitData.vehicleConfiguration.trailers?.map(async (trailer) => {
+          const vehicleSubType = await getFromCache(
+            cacheManager,
+            CacheKey.TRAILER_TYPE,
+            trailer?.vehicleSubType,
+          );
+          return { ...trailer, vehicleSubType } as VehicleDetails;
+        }),
+      )
+    : [];
+
+  const commodityTypeName = permitData?.permittedCommodity?.commodityType
+    ? await getFromCache(
+        cacheManager,
+        CacheKey.POLICY_ENGINE_COMMODITIES,
+        permitData?.permittedCommodity?.commodityType,
+      )
+    : null;
+
   return {
     vehicleTypeName,
     vehicleSubTypeName,
@@ -91,6 +118,8 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
     vehicleCountryName,
     vehicleProvinceName,
     permitName,
+    vehicleConfigurationTrailers,
+    commodityTypeName,
   };
 };
 
@@ -181,7 +210,7 @@ export const generatePermitNumber = async (
 
   let sequence: string;
   let randomNumber: string;
-  let revision: string = ''; // Initialize as empty string
+  let revision = ''; // Initialize as empty string
 
   // Use permitNumber for amendments and applicationNumber for new applications
   if (permit.permitNumber) {
@@ -198,14 +227,160 @@ export const generatePermitNumber = async (
   return permitNumber;
 };
 
-export const getActiveApplicationStatus = (currentUser: IUserJWT) => {
-  const applicationStatus: Readonly<ApplicationStatus[]> =
-    doesUserHaveAuthGroup(
-      currentUser.orbcUserAuthGroup,
-      IDIR_USER_AUTH_GROUP_LIST,
-    )
-      ? IDIR_ACTIVE_APPLICATION_STATUS
-      : CVCLIENT_ACTIVE_APPLICATION_STATUS;
+/**
+ * Determines the appropriate display name for the applicant based on their directory type and the
+ * current user's authorization group.
+ * - For users from the IDIR directory, it returns the user's username if the current user has the
+ *   correct authorization group. Otherwise, it returns a predefined full text constant.
+ * - For users from other directories, it returns the user's first and last name, concatenated.
+ * @param applicationOwner The user object representing the owner of the application.
+ * @param currentUserRole The authorization group of the current user.
+ * @returns The display name of the application owner as a string.
+ */
+export const getApplicantDisplay = (
+  applicationOwner: User,
+  currentUserRole: UserRole,
+): string => {
+  if (applicationOwner?.directory === Directory.IDIR) {
+    if (doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)) {
+      return applicationOwner?.userName;
+    } else {
+      return PPC_FULL_TEXT;
+    }
+  } else {
+    const firstName = applicationOwner?.userContact?.firstName ?? '';
+    const lastName = applicationOwner?.userContact?.lastName ?? '';
+    return (firstName + ' ' + lastName).trim();
+  }
+};
 
-  return applicationStatus;
+/**
+ * Determines if the given permit application is an amendment.
+ * An application is considered an amendment if:
+ * - The application status is 'IN_PROGRESS'
+ * - The original permit ID is different from the current permit ID
+ * - The revision number is greater than 0
+ *
+ * @param {Permit} permit - The permit object to check.
+ * @param {ApplicationStatus} permit.permitStatus - The current status of the permit application.
+ * @param {string} permit.originalPermitId - The ID of the original permit.
+ * @param {string} permit.permitId - The ID of the current permit.
+ * @param {number} permit.revision - The revision number of the permit.
+ * @returns {boolean} - Returns true if the application is an amendment, otherwise false.
+ */
+export const isAmendmentApplication = ({
+  permitStatus,
+  originalPermitId,
+  permitId,
+  revision,
+}: Permit) => {
+  return (
+    permitStatus === ApplicationStatus.IN_PROGRESS &&
+    originalPermitId !== permitId &&
+    revision > 0
+  );
+};
+
+/**
+ * Checks if the given permit type is eligible to be added to a specific processing queue.
+ * This method essentially acts as a filter, determining whether the provided permit type
+ * exists in a predefined list of types that require additional processing in a queue.
+
+ * @param {PermitType} permitType - The type of the permit being checked.
+ * @returns {boolean} - Returns true if the permit type is in the list of types
+ * that are eligible for the queue, otherwise returns false.
+ */
+export const isPermitTypeEligibleForQueue = (
+  permitType: PermitType,
+): boolean => {
+  return PERMIT_TYPES_FOR_QUEUE.includes(permitType);
+};
+
+export const validApplicationDates = (
+  application: Permit,
+  timezone: string,
+): boolean => {
+  const todayUTC = dayjs(new Date());
+  const todayPacific = todayUTC.tz(timezone).format('YYYY-MM-DD');
+  const { startDate, expiryDate } = application.permitData;
+  return startDate >= todayPacific && startDate <= expiryDate;
+};
+
+export const isApplicationInCart = (permitStatus: ApplicationStatus) => {
+  return permitStatus === ApplicationStatus.IN_CART;
+};
+
+export const isVoidorRevoked = (permitStatus: ApplicationStatus) => {
+  return (
+    permitStatus === ApplicationStatus.VOIDED ||
+    permitStatus === ApplicationStatus.REVOKED
+  );
+};
+
+export const findPermitHistory = async (
+  originalPermitId: string,
+  companyId: number,
+  queryRunner: QueryRunner,
+): Promise<PermitHistoryDto[]> => {
+  const permits = await queryRunner.manager
+    .createQueryBuilder()
+    .select('permit')
+    .from(Permit, 'permit')
+    .leftJoinAndSelect('permit.company', 'company')
+    .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+    .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+    .where('permit.permitNumber IS NOT NULL')
+    .andWhere('permit.originalPermitId = :originalPermitId', {
+      originalPermitId: originalPermitId,
+    })
+    .andWhere('company.companyId = :companyId', { companyId: companyId })
+    .orderBy('transaction.transactionSubmitDate', 'DESC')
+    .getMany();
+
+  return permits.flatMap((permit) =>
+    permit.permitTransactions.map((permitTransaction) => ({
+      permitNumber: permit.permitNumber,
+      comment: permit.comment,
+      transactionOrderNumber:
+        permitTransaction.transaction.transactionOrderNumber,
+      transactionAmount: permitTransaction.transactionAmount,
+      transactionTypeId: permitTransaction.transaction.transactionTypeId,
+      pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+      pgTransactionId: permitTransaction.transaction.pgTransactionId,
+      paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+      paymentMethodTypeCode:
+        permitTransaction.transaction.paymentMethodTypeCode,
+      commentUsername: permit.createdUser,
+      permitId: +permit.permitId,
+      transactionSubmitDate:
+        permitTransaction.transaction.transactionSubmitDate,
+      transactionApprovedDate:
+        permitTransaction.transaction.transactionApprovedDate,
+      pgApproved: permitTransaction.transaction.pgApproved,
+    })),
+  ) as PermitHistoryDto[];
+};
+
+/**
+ * @deprecated This function is deprecated and should only be used within the Policy Module.
+ * It is not intended for use outside of this context and may be removed in future releases.
+ */
+export const findApplicationForPE = async (
+  queryRunner: QueryRunner,
+  applicationId: string,
+  companyId: number,
+): Promise<Permit> => {
+  const application = await queryRunner.manager
+    .createQueryBuilder()
+    .select('permit')
+    .from(Permit, 'permit')
+    .leftJoinAndSelect('permit.company', 'company')
+    .leftJoinAndSelect('permit.permitData', 'permitData')
+    .where('permit.permitId = :applicationId', {
+      applicationId: applicationId,
+    })
+    .andWhere('company.companyId = :companyId', { companyId: companyId })
+    .getOne();
+
+  return application;
 };

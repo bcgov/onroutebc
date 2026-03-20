@@ -12,53 +12,88 @@ import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
-import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserAuthGroupType, UserRolesType } from "../types";
-import { DoesUserHaveRole } from "../util";
+import { BCeIDUserRoleType } from "../types";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
+import { getUserStorage } from "../../apiManager/httpRequestHandler";
+import {
+  checkPermissionMatrix,
+  PermissionMatrixKeysType,
+} from "../PermissionMatrix";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
 
 export const BCeIDAuthWall = ({
-  requiredRole,
-  allowedIDIRAuthGroups,
+  permissionMatrixKeys,
 }: {
-  requiredRole?: UserRolesType;
   /**
-   * The collection of auth groups allowed to have access to a page or action.
-   * IDIR System Admin is assumed to be allowed regardless of it being passed.
-   * If not provided, only a System Admin will be allowed to access.
+   * The permission matrix keys.
    */
-  allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
+  permissionMatrixKeys: PermissionMatrixKeysType;
 }) => {
   const {
     isAuthenticated,
     isLoading: isAuthLoading,
     user: userFromToken,
+    signinSilent,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userClaims, companyId, isNewBCeIDUser, userDetails } =
+    useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
   const navigate = useNavigate();
 
   /**
-   * Redirect the user back to login page if they are trying to directly access
-   * a protected page but are unauthenticated.
+   * Redirects the user to the login page.
+   * This function captures the current URL and passes it as a redirect parameter
+   * to the login page so that after successful authentication, the user can be
+   * redirected back to the page they initially requested.
+   */
+  const redirectToLoginPage = () => {
+    setRedirectInSession(window.location.href);
+    navigate({
+      pathname: HOME,
+      search: createSearchParams({
+        r: window.location.href,
+      }).toString(),
+    });
+  };
+
+  /**
+   * Try refreshing the access token,
+   * if still logged out redirect the user back to login page if
+   * they are trying to directly access a protected page but are unauthenticated.
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      setRedirectInSession(window.location.href);
-      navigate({
-        pathname: HOME,
-        search: createSearchParams({
-          r: window.location.href,
-        }).toString(),
-      });
+      try {
+        const userSessionJSON = getUserStorage();
+        if (userSessionJSON?.refresh_token) {
+          signinSilent()
+            .then((value) => {
+              if (!value?.access_token) {
+                // If sign in is unsuccessful, redirect to home page.
+                redirectToLoginPage();
+              }
+              // else, silent sign in is complete and token is refreshed.
+              // AuthContext will be updated and the component rerenders which
+              // takes care of directing the user as appropriate.
+            })
+            .catch(() => {
+              redirectToLoginPage();
+            });
+        } else {
+          redirectToLoginPage();
+        }
+      } catch {
+        console.error("Unable to process token refresh; redirecting to login");
+        redirectToLoginPage();
+      }
     }
   }, [isAuthLoading, isAuthenticated]);
 
@@ -76,7 +111,7 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        return <IDIRAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />;
+        return <IDIRAuthWall permissionMatrixKeys={permissionMatrixKeys} />;
       } else {
         return (
           <Navigate
@@ -96,17 +131,24 @@ export const BCeIDAuthWall = ({
           </>
         );
       }
-      if (!userRoles) {
+      if (!userClaims) {
         return (
           <>
-            <LoadBCeIDUserRolesByCompany />
+            <LoadBCeIDUserClaimsByCompany />
             <Loading />
           </>
         );
       }
     }
 
-    if (!DoesUserHaveRole(userRoles, requiredRole)) {
+    const isAllowed = checkPermissionMatrix({
+      permissionMatrixKeys,
+      isIdir: false,
+      currentUserRole: userDetails?.userRole as BCeIDUserRoleType,
+    });
+    if (isAllowed) {
+      return <Outlet />;
+    } else {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}
@@ -115,7 +157,6 @@ export const BCeIDAuthWall = ({
         />
       );
     }
-    return <Outlet />;
   }
   return <></>;
 };

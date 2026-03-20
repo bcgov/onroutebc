@@ -13,11 +13,46 @@ import {
   PowerUnit,
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
+import { LOAFormData } from "../../features/settings/types/LOAFormData";
+import { RefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
+import { VoidPermitFormData } from "../../features/permits/pages/Void/types/VoidPermit";
 
-export interface ApiErrorResponse {
+export interface ErrorResponseData<T = any> {
+  error: T[];
+  message: string;
   status: number;
-  errorMessage: string; // array?
 }
+
+/**
+ * The names of onRouteBC forms, used in classNames and determining which fields to show in reusable/shared forms
+ */
+export const ORBC_FORM_FEATURES = {
+  ADD_USER: "add-user",
+  AMEND_PERMIT: "amend-permit",
+  APPLICATION: "application",
+  CLIENT_SEARCH: "client-search",
+  CLOSE_CREDIT_ACCOUNT: "close-credit-account",
+  COMPANY_INFORMATION_WIZARD: "company-information-wizard",
+  COMPANY_PROFILE: "company-profile",
+  HOLD_CREDIT_ACCOUNT: "hold-credit-account",
+  LOA: "loa",
+  MY_INFORMATION: "my-information",
+  MY_INFORMATION_WIZARD: "my-information-wizard",
+  PERMIT_RESEND: "permit-resend",
+  POWER_UNIT: "power-unit",
+  REJECT_APPLICATION: "reject-application",
+  REVOKE_PERMIT: "revoke-permit",
+  SUSPEND_ACCOUNT: "suspend-account",
+  TEST_FEATURE: "test-feature",
+  TRAILER: "trailer",
+  USER_INFORMATION: "user-information",
+  USER_INFORMATION_WIZARD: "user-information-wizard",
+  VERIFY_MIGRATED_CLIENT: "verify-migrated-client",
+  VOID_PERMIT: "void-permit",
+} as const;
+
+export type ORBCFormFeatureType =
+  (typeof ORBC_FORM_FEATURES)[keyof typeof ORBC_FORM_FEATURES];
 
 /**
  * The types of onRouteBC forms that are supported by the custom form components
@@ -32,12 +67,15 @@ export type ORBC_FormTypes =
   | BCeIDAddUserRequest
   | SearchFields
   | VerifyClientRequest
-  | PermitContactDetails;
+  | PermitContactDetails
+  | LOAFormData
+  | VoidPermitFormData
+  | { refundData: RefundFormData[] };
 
 /**
  * The options for pagination.
  */
-export type PaginationOptions = {
+export interface PaginationOptions {
   /**
    * The page number to fetch.
    */
@@ -47,7 +85,7 @@ export type PaginationOptions = {
    * Max. value is 25.
    */
   take: number;
-};
+}
 
 /**
  * The sort directions.
@@ -63,7 +101,7 @@ export type SortDirectionsType =
 /**
  * The config for sorting data.
  */
-export type SortingConfig = {
+export interface SortingConfig {
   /**
    * The field to order by.
    */
@@ -73,46 +111,39 @@ export type SortingConfig = {
    * If not given a value, defaulted to false.
    */
   descending?: boolean;
-};
+}
 
 /**
  * Additional data filters that could be used for
  * filtering data further.
  */
-export type DataFilterOptions = {
+export interface DataFilterOptions {
   /**
    * The search value entered by the user.
    */
   searchString?: string;
   /**
+   * The column to which the searchString will be applied.
+   */
+  // TODO create a type for the searchColumn which provides "applicationNumber" & "plate" and ensure that a default value is passed where necessary
+  searchColumn?: string;
+  /**
    * The sorting configuration selected by the user.
    */
   orderBy?: Array<SortingConfig>;
-};
+}
 
 /**
  * The options for pagination and filtering data.
  */
-export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
-
-/**
- * A generic paginated response structure for all the paginated responses from APIs.
- */
-export type PaginatedResponse<T> = {
-  /**
-   * An array of items containing the response T.
-   */
-  items: T[];
-  /**
-   * Metadata about a page.
-   */
-  meta: PageMetadataInResponse;
-};
+export interface PaginationAndFilters
+  extends PaginationOptions,
+    DataFilterOptions {}
 
 /**
  * The metadata containing info about a page in the paginated response.
  */
-export type PageMetadataInResponse = {
+export interface PageMetadataInResponse extends PaginationOptions {
   /**
    * The total items matching the query in the database.
    */
@@ -129,11 +160,33 @@ export type PageMetadataInResponse = {
    * Is there a next page?
    */
   hasNextPage: boolean;
-} & PaginationOptions;
+}
+
+/**
+ * A generic paginated response structure for all the paginated responses from APIs.
+ */
+export interface PaginatedResponse<T> {
+  /**
+   * An array of items containing the response T.
+   */
+  items: T[];
+  /**
+   * Metadata about a page.
+   */
+  meta: PageMetadataInResponse;
+}
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
 export type Nullable<T> = Optional<RequiredOrNull<T>>;
 export type NullableFields<T> = {
   [P in keyof T]?: Nullable<T[P]>;
+};
+
+export const isNull = <T>(val?: Nullable<T>) => {
+  return !val && typeof val !== "undefined" && val == null;
+};
+
+export const isUndefined = <T>(val?: Nullable<T>) => {
+  return typeof val === "undefined";
 };

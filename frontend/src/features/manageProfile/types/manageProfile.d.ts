@@ -1,7 +1,7 @@
 import { Nullable } from "../../../common/types/common";
 import { BCeID_USER_STATUS } from "./userManagement";
 import {
-  BCeIDUserAuthGroupType,
+  BCeIDUserRoleType,
   VerifiedClient,
 } from "../../../common/authentication/types";
 
@@ -25,7 +25,7 @@ export type BCeIDUserStatusType =
  */
 export type BCeIDAddUserRequest = {
   userName: string;
-  userAuthGroup: BCeIDAuthGroup;
+  userRole: BCeIDAuthGroup;
 };
 
 /**
@@ -33,7 +33,7 @@ export type BCeIDAddUserRequest = {
  */
 type Address = {
   addressLine1: string;
-  addressLine2?: string;
+  addressLine2?: Nullable<string>;
   city: string;
   provinceCode: string;
   countryCode: string;
@@ -51,7 +51,6 @@ export type Contact = {
   phone2?: string;
   phone2Extension?: string;
   email: string;
-  fax?: string;
   city: string;
   provinceCode: string;
   countryCode: string;
@@ -69,7 +68,6 @@ export type CompanyProfile = {
   email: string;
   phone: string;
   extension?: Nullable<string>;
-  fax?: Nullable<string>;
   primaryContact: Contact;
   migratedClientHash?: Nullable<string>;
   alternateName?: Nullable<string>;
@@ -81,15 +79,14 @@ export type CompanyProfile = {
  */
 export type UpdateCompanyProfileRequest = Omit<
   CompanyProfile,
-  "clientNumber"
-  | "isSuspended"
+  "clientNumber" | "isSuspended"
 >;
 
 /**
  * The response structure of get user info API.
  */
 export type ReadUserInformationResponse = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
   userGUID: string;
   userName: string;
   statusCode: BCeID_USER_STATUS;
@@ -101,7 +98,7 @@ export type ReadUserInformationResponse = Contact & {
  * The edit user info request body.
  */
 export type UserInfoRequest = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
 };
 
 /**
@@ -115,7 +112,6 @@ export type CreateCompanyRequest = {
   email: string;
   phone: string;
   extension?: Nullable<string>;
-  fax?: Nullable<string>;
   primaryContact: Contact;
   adminUser?: Nullable<Contact>;
   clientNumber?: Nullable<string>;
@@ -169,9 +165,11 @@ export type DeleteResponse = {
 /**
  * The tabs on the user profile management page.
  */
-export const BCEID_PROFILE_TABS = {
+export const PROFILE_TABS = {
   COMPANY_INFORMATION: "CompanyInformationTab",
   MY_INFORMATION: "MyInformationTab",
   USER_MANAGEMENT: "UserManagementTab",
   PAYMENT_INFORMATION: "PaymentInformationTab",
+  SPECIAL_AUTH: "SpecialAuthorizationsTab",
+  CREDIT_ACCOUNT: "CreditAccountTab",
 } as const;

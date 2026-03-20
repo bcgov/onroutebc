@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -7,9 +7,8 @@ import { useAuth } from "react-oidc-context";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../../../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
-import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
@@ -24,8 +23,9 @@ import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPe
 import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClientForm";
-import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
+import { WizardClientBanner } from "../../subcomponents/WizardClientBanner";
 import "./CreateProfileSteps.scss";
+import { AxiosError } from "axios";
 
 /**
  * The stepper component containing the necessary forms for creating profile.
@@ -33,16 +33,15 @@ import "./CreateProfileSteps.scss";
 export const ChallengeProfileSteps = React.memo(() => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  const steps = ["Verify Profile", "Company Information", "My Information"];
   const [activeStep, setActiveStep] = useState(0);
-  const [isClientVerified, setIsClientVerified] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
+  const isBusinessBCeID = Boolean(user?.profile?.bceid_business_name);
 
   const defaultCompanyAndUserInfoValues = {
     legalName: getDefaultRequiredVal(
       "",
       user?.profile?.bceid_business_name as string,
+      user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
     ),
     email: getDefaultRequiredVal("", user?.profile?.email),
     adminUser: {
@@ -53,7 +52,6 @@ export const ChallengeProfileSteps = React.memo(() => {
       phone1Extension: "",
       phone2: "",
       phone2Extension: "",
-      fax: "",
       countryCode: "",
       provinceCode: "",
       city: "",
@@ -86,12 +84,16 @@ export const ChallengeProfileSteps = React.memo(() => {
       if (foundClient && foundPermit && verifiedClient) {
         // Clear form errors (if any)
         clearVerifyClientErrors();
-
-        setIsClientVerified(() => true);
         setActiveStep(() => 1);
 
         resetCompanyAndUserForm({
           ...defaultCompanyAndUserInfoValues,
+          legalName: getDefaultRequiredVal(
+            "",
+            user?.profile?.bceid_business_name as string,
+            user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
+            verifiedClient?.legalName,
+          ),
           migratedClientHash: getDefaultRequiredVal(
             "",
             verifiedClient?.migratedClientHash,
@@ -128,7 +130,6 @@ export const ChallengeProfileSteps = React.memo(() => {
           },
           phone: getDefaultRequiredVal("", verifiedClient?.phone),
           extension: getDefaultRequiredVal("", verifiedClient?.extension),
-          fax: getDefaultRequiredVal("", verifiedClient?.fax),
           primaryContact: {
             firstName: getDefaultRequiredVal(
               "",
@@ -138,13 +139,11 @@ export const ChallengeProfileSteps = React.memo(() => {
               "",
               verifiedClient?.primaryContact?.lastName,
             ),
-            email: getDefaultRequiredVal(
-              "",
-              verifiedClient?.primaryContact?.email,
-            ),
+            email: getDefaultRequiredVal("", verifiedClient?.email),
             phone1: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.phone1,
+              verifiedClient?.phone,
             ),
             phone1Extension: getDefaultRequiredVal(
               "",
@@ -186,8 +185,18 @@ export const ChallengeProfileSteps = React.memo(() => {
         }
       }
     },
-    onError: () => {
-      navigate(ERROR_ROUTES.UNEXPECTED);
+    onError: (error: AxiosError) => {
+      if (error.response?.status === 422) {
+        // The new user is trying to claim a profile that is already claimed.
+        // Redirect to the error page.
+        navigate(ERROR_ROUTES.CLAIM_PROFILE_ERROR, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
+      } else {
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
+      }
     },
   });
 
@@ -202,7 +211,7 @@ export const ChallengeProfileSteps = React.memo(() => {
   if (clientNumber) {
     return (
       <>
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
       </>
     );
@@ -216,14 +225,11 @@ export const ChallengeProfileSteps = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText="Claim an existing Profile"
-          bannerSubtext="Please follow the steps below to claim an existing profile"
-        />
+        <Banner bannerText="Claim an existing Profile" />
       </Box>
 
       <div
-        className="tabpanel-container create-profile-steps"
+        className="challenge-profile-steps create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
         style={{ paddingBottom: "10em" }}
@@ -232,100 +238,60 @@ export const ChallengeProfileSteps = React.memo(() => {
           className="create-profile-steps__create-profile"
           style={{ width: "50%" }}
         >
-          <div className="create-profile-section create-profile-section--steps">
-            <Stepper
-              className="stepper"
-              activeStep={activeStep}
-              alternativeLabel
-              connector={
-                <StepConnector
-                  className="step__connector"
-                  classes={{ line: "step__connector-line" }}
-                />
-              }
-            >
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel
-                    className="step__label"
-                    classes={{
-                      labelContainer: "step__label-container",
-                      active: "step__label--active",
-                      disabled: "step__label--disabled",
-                      completed: "step__label--completed",
-                    }}
-                    StepIconProps={{
-                      className: "step__icon",
-                      classes: {
-                        text: "step__step-number",
-                        active: "step__icon--active",
-                        completed: "step__icon--completed",
-                      }
-                    }}
-                  >{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </div>
           {activeStep === 0 && (
             <FormProvider {...verifyMigratedClientFormMethods}>
               <div className="create-profile-section create-profile-section--company">
-                <WizardCompanyBanner
-                  legalName={getDefaultRequiredVal(
-                    "",
-                    user?.profile?.bceid_business_name as string,
-                  )}
-                />
+                {isBusinessBCeID && (
+                  <WizardClientBanner
+                    legalName={getDefaultRequiredVal(
+                      "",
+                      user?.profile?.bceid_business_name as string,
+                    )}
+                  />
+                )}
                 <VerifyMigratedClientForm />
                 <div className="create-profile-section create-profile-section--nav">
-                  {activeStep === 0 && (
-                    <Stack direction="row" spacing={3}>
-                      <Button
-                        key="cancel-create-profile-button"
-                        aria-label="Cancel Create Profile"
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => {
-                          // Go back
-                          navigate(-1);
-                        }}
-                        disableElevation
-                        sx={{
-                          ":hover": {
-                            background: BC_COLOURS.bc_background_light_grey,
-                            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-                          },
-                          border: `2px solid ${BC_COLOURS.white}`,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="proceed-btn proceed-btn--next"
-                        onClick={handleVerifyClientSubmit(
-                          handleNextVerifyClientStep,
-                        )}
-                        variant="contained"
-                        color="primary"
-                        endIcon={<FontAwesomeIcon icon={faArrowRight} />}
-                      >
-                        Next
-                      </Button>
-                    </Stack>
-                  )}
+                  <Stack direction="row" spacing={3}>
+                    <Button
+                      key="cancel-create-profile-button"
+                      aria-label="Cancel Create Profile"
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        // Go back
+                        navigate(-1);
+                      }}
+                      disableElevation
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_background_light_grey,
+                          border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.white}`,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="proceed-btn proceed-btn--next"
+                      onClick={handleVerifyClientSubmit(
+                        handleNextVerifyClientStep,
+                      )}
+                      variant="contained"
+                      color="primary"
+                      endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+                    >
+                      Next
+                    </Button>
+                  </Stack>
                 </div>
               </div>
             </FormProvider>
           )}
-          {activeStep !== 0 && isClientVerified && (
+          {activeStep === 1 && (
             <FormProvider {...companyAndUserFormMethods}>
-              <CompanyAndUserInfoSteps
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                setClientNumber={setClientNumber}
-                totalSteps={3}
-              />
+              <CompanyAndUserInfoSteps setClientNumber={setClientNumber} />
             </FormProvider>
           )}
         </div>

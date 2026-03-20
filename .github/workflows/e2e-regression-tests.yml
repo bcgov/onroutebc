@@ -1,0 +1,75 @@
+name: E2E Regression Tests
+
+on:
+  workflow_call:
+    inputs:
+      ### Required
+      target:
+        description: 'PR number, test, uat or prod.'
+        default: 'test'
+        required: true
+        type: string
+      show_artifact:
+        description: 'boolean to show artifacts on run (default is on failure)'
+        default: false
+        required: true
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      ### Required
+      target:
+        description: 'PR number, test, uat or prod.'
+        default: 'test'
+        required: true
+        type: string
+      show_artifact:
+        description: 'boolean to show artifacts on run (default is on failure)'
+        default: false
+        required: true
+        type: boolean
+        
+
+jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      target: ${{ steps.env.outputs.target }}
+      environment: ${{ steps.env.outputs.environment }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: env
+        id: env
+        run: |
+          pr="${{inputs.target}}"
+          pr=${pr,,}
+          if [[ $pr != 'test' && $pr != 'demo' && $pr != 'uat' && $pr != 'prod'  ]]; then
+            target="$pr"
+            environment="dev"
+          else
+            target=${{inputs.target}}
+            environment=${{inputs.target}}
+          fi
+          echo "target=$target" >> $GITHUB_OUTPUT
+          echo "environment=$environment" >> $GITHUB_OUTPUT
+
+  rbac-tests:
+    uses: ./.github/workflows/rbac-tests.yml
+    secrets: inherit
+    with:
+      target: ${{inputs.target}}
+      show_artifact: ${{inputs.show_artifact}}
+  
+  bceid-smoke-tests:
+    uses: ./.github/workflows/bceid-smoke-tests.yml
+    secrets: inherit
+    with:
+      target: ${{inputs.target}}
+      show_artifact: ${{inputs.show_artifact}}
+
+  
+  idir-smoke-tests:
+    uses: ./.github/workflows/idir-smoke-tests.yml
+    secrets: inherit
+    with:
+      target: ${{inputs.target}}
+      show_artifact: ${{inputs.show_artifact}}

@@ -1,13 +1,5 @@
 @import "../../../themes/orbcStyles";
 
-.tabpanel-container {
-  padding: 0 8.551vw;
-  overflow: hidden;
-  background-color: white;
-  min-height: calc(100vh - 306px);
-  height: 100%;
-}
-
 .layout-box {
   padding: 0 8.551vw;
 }
@@ -61,22 +53,36 @@
 }
 
 @media screen and (max-width: 768px) {
-  .tabpanel-container {
-    padding: 0 5.5rem;
-  }
-
   .layout-box {
     padding: 0 5.5rem;
   }
 }
 
 @media (width < 420px) {
-  .tabpanel-container {
-    padding: 0 1rem;
-  }
-
   .layout-box {
     padding: 0 1rem;
+  }
+}
+
+@mixin page-tabpanel-container-style($page-tabpanel-container) {
+  #{$page-tabpanel-container} {
+    padding: 0 8.551vw;
+    overflow: hidden;
+    background-color: white;
+    min-height: calc(100vh - 306px);
+    height: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
+    #{$page-tabpanel-container} {
+      padding: 0 5.5rem;
+    }
+  }
+
+  @media (width < 420px) {
+    #{$page-tabpanel-container} {
+      padding: 0 1rem;
+    }
   }
 }
 

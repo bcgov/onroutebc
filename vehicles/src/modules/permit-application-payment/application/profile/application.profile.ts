@@ -14,11 +14,24 @@ import { ReadApplicationMetadataDto } from '../dto/response/read-application-met
 import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
 import { Directory } from '../../../../common/enum/directory.enum';
 import {
-  UserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
+  UserRole,
+  IDIR_USER_ROLE_LIST,
+} from '../../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
+
+import { differenceBetween } from '../../../../common/helper/date-time.helper';
+import { Nullable } from '../../../../common/types/common';
+import {
+  CaseStatusType,
+  convertCaseStatus,
+} from '../../../../common/enum/case-status-type.enum';
+import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
+import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
+import { PermitLoa } from '../entities/permit-loa.entity';
+import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
+import * as dayjs from 'dayjs';
+import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -34,7 +47,9 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.company.companyId,
-          mapFrom((s) => s.companyId),
+          mapWithArguments((_, { companyId }) => {
+            return companyId;
+          }),
         ),
         forMember(
           (permit) => permit.permitApplicationOrigin,
@@ -178,12 +193,12 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
@@ -198,12 +213,31 @@ export class ApplicationProfile extends AutomapperProfile {
             }
           }),
         ),
+        forMember(
+          (d) => d.rejectionHistory,
+          mapWithArguments(
+            (
+              s,
+              {
+                readCaseActivityList,
+              }: { readCaseActivityList: ReadCaseActivityDto[] },
+            ) => {
+              if (readCaseActivityList?.length) {
+                return readCaseActivityList;
+              }
+            },
+          ),
+        ),
       );
 
       createMap(
         mapper,
         Permit,
         ReadApplicationMetadataDto,
+        forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
         forMember(
           (d) => d.startDate,
           mapFrom((s) => s.permitData?.startDate),
@@ -234,12 +268,12 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
@@ -254,6 +288,80 @@ export class ApplicationProfile extends AutomapperProfile {
             }
           }),
         ),
+        forMember(
+          (d) => d.applicationQueueStatus,
+          mapWithArguments(
+            (
+              s,
+              {
+                applicationQueueStatus,
+              }: { applicationQueueStatus?: Nullable<CaseStatusType[]> },
+            ) => {
+              if (applicationQueueStatus?.length && s.cases?.length) {
+                return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(
+                  0,
+                );
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.timeInQueue,
+          mapWithArguments(
+            (
+              s,
+              {
+                currentUserRole,
+                currentDateTime,
+                applicationQueueStatus,
+              }: {
+                currentUserRole: UserRole;
+                currentDateTime: Date;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
+              },
+            ) => {
+              if (
+                applicationQueueStatus?.length &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
+              ) {
+                const diff = differenceBetween(
+                  s?.cases?.at(0)?.caseOpenedDateTime?.toUTCString(),
+                  currentDateTime.toUTCString(),
+                  'minutes',
+                );
+                const hours = Math.floor(Math.abs(diff) / 60);
+                const minutes = Math.floor(Math.abs(diff) % 60);
+                // Format the output
+                const formattedHours = String(hours).padStart(2, '0');
+                const formattedMinutes = String(minutes).padStart(2, '0');
+                return `${formattedHours}:${formattedMinutes}`;
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.claimedBy,
+          mapWithArguments(
+            (
+              s,
+              {
+                currentUserRole,
+                applicationQueueStatus,
+              }: {
+                currentUserRole: UserRole;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
+              },
+            ) => {
+              if (
+                applicationQueueStatus?.length &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
+                s.cases?.length
+              ) {
+                return s.cases?.at(0)?.assignedUser?.userName;
+              }
+            },
+          ),
+        ),
       );
 
       createMap(
@@ -262,7 +370,9 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.company.companyId,
-          mapFrom((s) => s.companyId),
+          mapWithArguments((_, { companyId }) => {
+            return companyId;
+          }),
         ),
         forMember(
           (d) => d.updatedUserGuid,
@@ -336,6 +446,138 @@ export class ApplicationProfile extends AutomapperProfile {
           (d) => d.permitData.permitDataId,
           mapWithArguments((updateApplicationDto, { permitDataId }) => {
             return permitDataId;
+          }),
+        ),
+      );
+      createMap(
+        mapper,
+        CreatePermitLoaDto,
+        PermitLoa,
+        forMember(
+          (d) => d.permitId,
+          mapWithArguments((_, { permitId }) => {
+            return permitId;
+          }),
+        ),
+        forMember(
+          (d) => d.loa.loaId,
+          mapFrom((s) => {
+            return s.loaIds[0];
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+      );
+
+      createMap(
+        mapper,
+        PermitLoa,
+        ReadPermitLoaDto,
+        forMember(
+          (d) => d.permitLoaId,
+          mapFrom((s) => {
+            return s.permitLoaId;
+          }),
+        ),
+        forMember(
+          (d) => d.loaId,
+          mapFrom((s) => {
+            return s.loa.loaId;
+          }),
+        ),
+        forMember(
+          (d) => d.companyId,
+          mapFrom((s) => {
+            return s.loa.company.companyId;
+          }),
+        ),
+        forMember(
+          (d) => d.startDate,
+          mapFrom((s) => {
+            return dayjs(s.loa.startDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.expiryDate,
+          mapFrom((s) => {
+            if (s.loa.expiryDate)
+              return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.loaPermitType,
+          mapFrom((s) => {
+            return s.loa.loaPermitTypes.map((lpt) => lpt.permitType);
+          }),
+        ),
+        forMember(
+          (d) => d.vehicleType,
+          mapFrom((s) => {
+            if (s?.loa?.loaVehicle) {
+              return s?.loa?.loaVehicle?.powerUnitType
+                ? VehicleType.POWER_UNIT
+                : VehicleType.TRAILER;
+            }
+          }),
+        ),
+        forMember(
+          (d) => d.vehicleSubType,
+          mapFrom((s) => {
+            if (s?.loa?.loaVehicle) {
+              return (
+                s?.loa?.loaVehicle?.powerUnitType ??
+                s?.loa?.loaVehicle?.trailerType
+              );
+            }
           }),
         ),
       );

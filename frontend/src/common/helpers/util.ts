@@ -1,7 +1,4 @@
-import {
-  BCeIDUserAuthGroupType,
-  BCeID_USER_AUTH_GROUP,
-} from "../authentication/types";
+import { BCeIDUserRoleType, BCeID_USER_ROLE } from "../authentication/types";
 import {
   Nullable,
   Optional,
@@ -126,25 +123,6 @@ export const getDefaultRequiredVal = <T>(
 };
 
 /**
- * Check if two nullable values are different.
- * @param val1 First nullable value to be compared
- * @param val2 Second nullable value to be compared
- * @returns boolean value indicating if values are different.
- */
-export const areValuesDifferent = <T>(
-  val1?: Nullable<T>,
-  val2?: Nullable<T>,
-): boolean => {
-  if (!val1 && !val2) return false; // both empty === equal
-
-  if ((val1 && !val2) || (!val1 && val2) || (val1 && val2 && val1 !== val2)) {
-    return true; // one empty, or both non-empty but different === different
-  }
-
-  return false; // values are equal otherwise
-};
-
-/**
  * Returns the file name for a file from API response.
  * @param headers The collection of headers in an API response.
  * @returns string | undefined.
@@ -198,33 +176,14 @@ export const streamDownloadFile = async (response: Response) => {
 };
 
 /**
- * Convers a string to a number.
- * (Applicable for number fields in forms).
- *
- * @param str The string value.
- * @param valueToReturnWhenInvalid The value to return if invalid.
- * @returns A number or valueToReturnWhenInvalid.
- */
-export const convertToNumberIfValid = (
-  str?: Nullable<string>,
-  valueToReturnWhenInvalid?: 0 | Nullable<number> | Nullable<string>,
-) => {
-  // return input as a number if it's a valid number value,
-  // or original value if invalid number
-  return str != null && str !== "" && !isNaN(Number(str))
-    ? Number(str)
-    : valueToReturnWhenInvalid;
-};
-
-/**
- * Returns a label for the userAuthGroup.
- * @param userAuthGroup The userAuthGroup the user belongs to.
+ * Returns a label for the userRole.
+ * @param userRole The userRole the user belongs to.
  * @returns A string representing the label of the user.
  */
-export const getLabelForBCeIDUserAuthGroup = (
-  userAuthGroup: BCeIDUserAuthGroupType,
+export const getLabelForBCeIDUserRole = (
+  userRole: BCeIDUserRoleType,
 ): string => {
-  if (userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR) {
+  if (userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR) {
     return "Administrator";
   }
   return "Permit Applicant";

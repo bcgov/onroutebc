@@ -3,13 +3,28 @@ import { PermitsActionResponse } from "../../../types/permit";
 import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment";
 import { Nullable } from "../../../../../common/types/common";
 import {
-  PaymentCardTypeCode,
-  PaymentMethodTypeCode,
-  PaymentGatewayMethod,
   PAYMENT_METHOD_TYPE_CODE,
+  PaymentMethodTypeCode,
 } from "../../../../../common/types/paymentMethods";
+import { RefundTransactionItem } from "../../Refund/types/RefundPermitData";
 
 export interface VoidPermitFormData {
+  permitId: string;
+  reason: string;
+  revoke: boolean;
+  email?: Nullable<string>;
+  additionalEmail?: Nullable<string>;
+}
+
+export interface VoidPermitRequestData {
+  status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
+  transactions: RefundTransactionItem[];
+  transactionTypeId: TransactionType;
+  comment: string;
+  additionalEmail?: Nullable<string>;
+}
+
+export interface RevokePermitFormData {
   permitId: string;
   reason: string;
   revoke: boolean;
@@ -18,29 +33,24 @@ export interface VoidPermitFormData {
   fax?: Nullable<string>;
 }
 
-export interface VoidPermitRequestData {
-  status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
-  pgTransactionId?: string;
-  paymentMethodTypeCode: PaymentMethodTypeCode;
-  transactionAmount: number;
-  pgTransactionDate?: string;
-  pgPaymentMethod?: PaymentGatewayMethod;
-  pgCardType?: PaymentCardTypeCode;
-  comment: string;
-  transactionTypeId: TransactionType;
-  fax?: Nullable<string>;
-  additionalEmail?: Nullable<string>;
-}
+type RevokeTransactionItem = Pick<
+  RefundTransactionItem,
+  "transactionAmount" | "paymentMethodTypeCode"
+> & {
+  transactionAmount: 0;
+  paymentMethodTypeCode: Extract<
+    PaymentMethodTypeCode,
+    typeof PAYMENT_METHOD_TYPE_CODE.NP
+  >;
+};
 
 export interface RevokePermitRequestData {
   status: Extract<PermitStatus, typeof PERMIT_STATUSES.REVOKED>;
-  paymentMethodTypeCode: typeof PAYMENT_METHOD_TYPE_CODE.NP;
-  pgPaymentMethod?: PaymentGatewayMethod;
-  transactionAmount: 0;
+  transactions: RevokeTransactionItem[];
+  transactionTypeId: Extract<TransactionType, typeof TRANSACTION_TYPES.P>;
   comment: string;
-  transactionTypeId: typeof TRANSACTION_TYPES.P;
   fax?: Nullable<string>;
   additionalEmail?: Nullable<string>;
 }
 
-export type VoidPermitResponseData = PermitsActionResponse;
+export type VoidOrRevokePermitResponseData = PermitsActionResponse;

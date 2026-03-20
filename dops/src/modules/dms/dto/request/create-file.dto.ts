@@ -14,6 +14,6 @@ export class CreateFileDto {
   })
   @IsOptional()
   @IsString()
-  @Length(1, 50)
+  @Length(1, 250)
   fileName?: string;
 }

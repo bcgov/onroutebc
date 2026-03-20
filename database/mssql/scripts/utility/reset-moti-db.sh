@@ -27,7 +27,7 @@ source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 
 # This is intended to be run from the local docker sql-server-db container, or
 # a similar linux environment with the requisite env variables and sqlcmd
-# installed in /opt/mssql-tools/bin/. Note you must be connected to the BC Gov
+# installed in /opt/mssql-tools18/bin/. Note you must be connected to the BC Gov
 # Citrix VPN in order for the connection to be established.
 
 if [[ $1 != "force" ]]; then
@@ -60,6 +60,7 @@ if [[ "${REPLY}" == "yes" ]] || [[ $1 == "force" ]]; then
   if [[ ${MSSQL_LOAD_SAMPLE_DATA} -eq 1 ]]; then
     ${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p '"${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}"' -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
     ${SCRIPT_DIR}/utility/refresh-sample-idir-users.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p '"${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}"' -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+    ${SCRIPT_DIR}/utility/refresh-paybc-gl-code.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p '"${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}"' -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
   fi
 
   echo "Finished reset of ORBC database."

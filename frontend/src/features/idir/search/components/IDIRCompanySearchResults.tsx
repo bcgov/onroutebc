@@ -5,9 +5,8 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import { memo, useContext, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -23,8 +22,9 @@ import { CustomNavLink } from "../../../../common/components/links/CustomNavLink
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { useNavigate } from "react-router-dom";
-import { VerifiedClient } from "../../../../common/authentication/types";
+import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /*
  *
@@ -35,98 +35,19 @@ import { VerifiedClient } from "../../../../common/authentication/types";
  *
  */
 export const IDIRCompanySearchResults = memo(
-  ({
-    searchParams,
-  }: {
-    /**
-     * The search parameters entered by the user.
-     */
-    searchParams: SearchFields;
-  }) => {
+  ({ searchParams }: { searchParams: SearchFields }) => {
     const {
       searchString: searchString,
       searchByFilter,
       searchEntity,
     } = searchParams;
 
-    const {
-      setCompanyId,
-      setCompanyLegalName,
-      setOnRouteBCClientNumber,
-      setMigratedClient,
-      setIsCompanySuspended,
-    } = useContext(OnRouteBCContext);
-
-    const navigate = useNavigate();
-
-    /**
-     * On click event handler for the company link.
-     * Sets the company context and directs the user to the company page.
-     *
-     * @param selectedCompany The company that the staff user clicked on.
-     */
-    const onClickCompany = (
-      selectedCompany: CompanyProfile | VerifiedClient,
-    ) => {
-      const {
-        companyId,
-        legalName,
-        clientNumber,
-        primaryContact,
-        isSuspended,
-      } = selectedCompany;
-
-      if (primaryContact?.firstName) {
-        setCompanyId?.(() => companyId);
-        setCompanyLegalName?.(() => legalName);
-        setOnRouteBCClientNumber?.(() => clientNumber);
-        setIsCompanySuspended?.(() => isSuspended);
-        sessionStorage.setItem(
-          "onRouteBC.user.companyId",
-          companyId.toString(),
-        );
-        navigate(routes.APPLICATIONS_ROUTES.BASE);
-      } else {
-        setMigratedClient?.(() => {
-          const {
-            migratedClientHash,
-            mailingAddress,
-            email,
-            fax,
-            alternateName,
-            phone,
-            extension,
-            isSuspended,
-          } = selectedCompany as VerifiedClient;
-
-          return {
-            clientNumber,
-            companyId,
-            legalName,
-            migratedClientHash,
-            mailingAddress,
-            email,
-            phone,
-            extension,
-            fax,
-            alternateName,
-            isSuspended,
-          };
-        });
-        
-        setIsCompanySuspended?.(() => isSuspended);
-
-        navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
-      }
-    };
+    const { handleSelectCompany } = useSetCompanyHandler();
 
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
     });
-
-    // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
-    //  display the UX to allow the creation of a new Company Profile
     const searchResultsQuery = useQuery({
       queryKey: [
         "search-entity",
@@ -158,16 +79,21 @@ export const IDIRCompanySearchResults = memo(
       () => [
         {
           accessorKey: "legalName",
-          header: "Company Name",
+          header: "Client Name",
           enableSorting: true,
           sortingFn: "alphanumeric",
+          minSize: 220,
           Cell: (props: { row: any; cell: any }) => {
+            const isCompanySuspended = props.row.original.isSuspended;
             return (
-              <CustomActionLink
-                onClick={() => onClickCompany(props.row.original)}
-              >
-                {props.row.original.legalName}
-              </CustomActionLink>
+              <>
+                <CustomActionLink
+                  onClick={() => handleSelectCompany(props.row.original)}
+                >
+                  {props.row.original.legalName}
+                </CustomActionLink>
+                {isCompanySuspended && <StatusChip status="SUSPENDED" />}
+              </>
             );
           },
         },
@@ -210,6 +136,15 @@ export const IDIRCompanySearchResults = memo(
             children: "Error loading data",
           }
         : undefined,
+      muiTableBodyCellProps: {
+        className: "idir-company-search-results__cell",
+      },
+    });
+    const canCreateCompany = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "CREATE_COMPANY",
+      },
     });
 
     return (
@@ -219,24 +154,26 @@ export const IDIRCompanySearchResults = memo(
           <>
             <Stack display="flex" justifyContent="center" alignItems="center">
               <NoRecordsFound />
-              <Box className="create-company-btn">
-                <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
-                  <div className="button-outline">
-                    <CardMedia
-                      className="create-company-img"
-                      component="img"
-                      src="/Create_Company_Graphic.png"
-                      alt="Create Company"
-                      title="Create Company"
-                    />
-                    <Typography variant={"h3"}>
-                      Create
-                      <br />
-                      Company
-                    </Typography>
-                  </div>
-                </CustomNavLink>
-              </Box>
+              {canCreateCompany && (
+                <Box className="create-company-btn">
+                  <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
+                    <div className="button-outline">
+                      <CardMedia
+                        className="create-company-img"
+                        component="img"
+                        src="/Create_Company_Graphic.png"
+                        alt="Create Company"
+                        title="Create Company"
+                      />
+                      <Typography variant={"h3"}>
+                        Create
+                        <br />
+                        Company
+                      </Typography>
+                    </div>
+                  </CustomNavLink>
+                </Box>
+              )}
             </Stack>
           </>
         )}

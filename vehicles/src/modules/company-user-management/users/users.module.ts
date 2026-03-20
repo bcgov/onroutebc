@@ -10,10 +10,11 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersModule } from '../pending-idir-users/pending-idir-users.module';
+import { Login } from './entities/login.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, CompanyUser, PendingIdirUser]),
+    TypeOrmModule.forFeature([User, CompanyUser, PendingIdirUser, Login]),
     PendingUsersModule,
     PendingIdirUsersModule,
     CompanyModule,

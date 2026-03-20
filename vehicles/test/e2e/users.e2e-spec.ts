@@ -31,20 +31,27 @@ import {
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
 import { UsersController } from '../../src/modules/company-user-management/users/users.controller';
-import { Role } from '../../src/common/enum/roles.enum';
+import { Claim } from '../../src/common/enum/claims.enum';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock';
 import { App } from 'supertest/types';
 import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
+let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+
+let cacheManager: DeepMocked<Cache>;
 
 describe('Users (e2e)', () => {
   let app: INestApplication<Express.Application>;
@@ -54,14 +61,28 @@ describe('Users (e2e)', () => {
     repo = createMock<Repository<User>>();
     repoCompanyUser = createMock<Repository<CompanyUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
+    repoLogin = createMock<Repository<Login>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [
+        AutomapperModule,
+        ThrottlerModule.forRoot({
+          throttlers: [
+            {
+              ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+              limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
+            },
+          ],
+        }),
+      ],
       providers: [
         UsersService,
+        { provide: CACHE_MANAGER, useValue: cacheManager },
+        { provide: APP_GUARD, useValue: ThrottlerGuard },
         {
           provide: getRepositoryToken(User),
           useValue: repo,
@@ -69,6 +90,10 @@ describe('Users (e2e)', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(Login),
+          useValue: repoLogin,
         },
         {
           provide: getRepositoryToken(CompanyUser),
@@ -129,19 +154,19 @@ describe('Users (e2e)', () => {
     });
   });
 
-  describe('/users/roles?companyId=1 GET', () => {
+  describe('/users/claims?companyId=1 GET', () => {
     it('should return the ORBC userContext.', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_TYPE: Role.READ_SELF },
-        { ROLE_TYPE: Role.READ_USER },
-        { ROLE_TYPE: Role.WRITE_SELF },
-        { ROLE_TYPE: Role.WRITE_USER },
+        { ROLE_TYPE: Claim.READ_SELF },
+        { ROLE_TYPE: Claim.READ_USER },
+        { ROLE_TYPE: Claim.WRITE_SELF },
+        { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/users/roles?companyId=1')
+        .get('/users/claims?companyId=1')
         .expect(200);
-      expect(response.body).toContainEqual(Role.READ_SELF);
+      expect(response.body).toContainEqual(Claim.READ_SELF);
     });
   });
 
@@ -167,7 +192,7 @@ describe('Users (e2e)', () => {
     it('should return the user details.', async () => {
       jest
         .spyOn(repo, 'createQueryBuilder')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
         .mockImplementation(() =>
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),

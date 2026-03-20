@@ -34,12 +34,28 @@ import { CompanySuspendModule } from './modules/company-user-management/company-
 import { PermitModule } from './modules/permit-application-payment/permit/permit.module';
 import { ApplicationModule } from './modules/permit-application-payment/application/application.module';
 import { PaymentModule } from './modules/permit-application-payment/payment/payment.module';
+import { PermitReceiptDocumentModule } from './modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
+import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
+import { CreditAccountModule } from './modules/credit-account/credit-account.module';
+import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
+import { CaseManagementModule } from './modules/case-management/case-management.module';
+import { PolicyModule } from './modules/policy/policy.module';
+import { VersionMatchMiddleware } from './common/middleware/version.middleware';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: +process.env.VEHICLES_API_PUBLIC_AUTH_THROTTLER_TTL_MS || 60000,
+          limit: +process.env.VEHICLES_API_PUBLIC_AUTH_RATE_LIMIT || 100,
+        },
+      ],
+    }),
     // Register the ClsModule,
     ClsModule.forRoot({
       global: true,
@@ -52,7 +68,7 @@ const envPath = path.resolve(process.cwd() + '/../');
           const correlationId = req.headers['x-correlation-id'];
           return Array.isArray(correlationId)
             ? correlationId[0]
-            : correlationId ?? uuidv4();
+            : (correlationId ?? uuidv4());
         },
       },
     }),
@@ -71,6 +87,7 @@ const envPath = path.resolve(process.cwd() + '/../');
       logger: new TypeormCustomLogger(
         getTypeormLogLevel(process.env.VEHICLES_API_TYPEORM_LOG_LEVEL),
       ),
+      pool: { max: +process.env.VEHICLES_API_MSSQL_MAX_CONNECTION || 10 },
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
@@ -90,10 +107,16 @@ const envPath = path.resolve(process.cwd() + '/../');
     CommonModule,
     PendingUsersModule,
     AuthModule,
+    SpecialAuthModule,
     PaymentModule,
+    ShoppingCartModule,
+    PermitReceiptDocumentModule,
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
+    PolicyModule,
+    CreditAccountModule,
     FeatureFlagsModule,
+    CaseManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -103,6 +126,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(VersionMatchMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })

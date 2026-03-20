@@ -1,3 +1,9 @@
+import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
+import { PermitType } from '../enum/permit-type.enum';
+import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import { VehicleType } from '../enum/vehicle-type.enum';
+import { Nullable } from '../types/common';
+
 // Data used to populate a .docx template
 export interface PermitTemplateData {
   permitName: string;
@@ -11,6 +17,11 @@ export interface PermitTemplateData {
   issuedBy: string;
   revisions: Revision[];
   permitData?: PermitData;
+  loas?: string;
+  permitIssueDateTime?: string;
+  revisionIssueDateTime?: string;
+  thirdPartyLiability?: string;
+  conditionalLicensingFee?: string;
 }
 
 interface Revision {
@@ -26,9 +37,60 @@ export interface PermitData {
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
+  loas: Loas[]; //Letter of Authorizations
   mailingAddress: MailingAddress;
   companyName: string;
   clientNumber: string;
+  vehicleConfiguration?: VehicleConfiguration;
+  applicationNotes?: string;
+  permittedCommodity?: PermittedCommodity;
+  permittedRoute?: PermittedRoute;
+  /**
+   * Third Party Liability for Non resident ICBC permits
+   */
+  thirdPartyLiability?: ThirdPartyLiability;
+  conditionalLicensingFee?: Nullable<ConditionalLicensingFee>;
+}
+
+interface AxleConfiguration {
+  axleUnit: number;
+  numberOfAxles: number;
+  axleSpread?: Nullable<number>;
+  interaxleSpacing?: Nullable<number>;
+  axleUnitWeight: number;
+  numberOfTires?: Nullable<number>;
+  tireSize?: number;
+}
+
+interface VehicleConfiguration {
+  overallLength?: Nullable<number>;
+  overallWidth?: Nullable<number>;
+  overallHeight?: Nullable<number>;
+  frontProjection?: Nullable<number>;
+  rearProjection?: Nullable<number>;
+  trailers?: VehicleDetails[];
+  loadedGVW?: Nullable<number>;
+  netWeight?: Nullable<number>;
+  axleConfiguration?: Nullable<AxleConfiguration[]>;
+  vehicleDisplayCode?: Nullable<string>;
+}
+
+interface PermittedRoute {
+  routeDetails: string;
+  manualRoute: ManualRoute;
+}
+
+interface PermittedCommodity {
+  commodityType: string;
+  loadDescription: string;
+}
+
+interface ManualRoute {
+  origin: string;
+  destination: string;
+  exitPoint?: string;
+  totalDistance?: number;
+  highwaySequence?: string[];
 }
 
 interface MailingAddress {
@@ -49,10 +111,10 @@ interface ContactDetails {
   phone2Extension?: string;
   email: string;
   additionalEmail?: string;
-  fax?: string;
 }
 
-interface VehicleDetails {
+export interface VehicleDetails {
+  vehicleId: string;
   vin: string;
   plate: string;
   make: string;
@@ -61,6 +123,7 @@ interface VehicleDetails {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number;
   saveVehicle?: boolean;
 }
 
@@ -70,4 +133,17 @@ interface Commodities {
   conditionLink: string;
   checked: boolean;
   disabled?: boolean;
+}
+
+export interface Loas {
+  loaId: number;
+  loaNumber: number;
+  companyId: number;
+  loaPermitType: PermitType[];
+  startDate: string;
+  expiryDate?: Nullable<string>;
+  vehicleType: VehicleType;
+  vehicleSubType: string;
+  originalLoaId?: Nullable<number>;
+  previousLoaId?: Nullable<number>;
 }

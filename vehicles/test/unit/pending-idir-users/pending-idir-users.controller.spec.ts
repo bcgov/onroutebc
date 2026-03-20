@@ -8,7 +8,6 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { PendingIdirUsersController } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.controller';
 import {
   createPendingIdirUserMock,
-  pendingIdirUserEntityMock,
   readPendingIdirUserMock,
 } from 'test/util/mocks/data/pending-idir-user.mock';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -65,7 +64,7 @@ describe('PendingIdirUsersController', () => {
   describe('Pending users controller findAll function', () => {
     it('should find all pending idir users', async () => {
       pendingIdirUserService.findAll.mockResolvedValue(
-        Array(pendingIdirUserEntityMock),
+        Array(readPendingIdirUserMock),
       );
       const retPendingUser = await controller.findPendingIdirUser();
       expect(typeof retPendingUser).toBe('object');

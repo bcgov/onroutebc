@@ -16,7 +16,7 @@ describe("CompanyBanner display", () => {
     renderTestComponent();
 
     // Assert
-    expect(await companyNameLabel()).toHaveTextContent("COMPANY NAME");
+    expect(await companyNameLabel()).toHaveTextContent("CLIENT NAME");
     expect(await companyName()).toHaveTextContent("");
     expect(await companyClientLabel()).toHaveTextContent(
       "onRouteBC CLIENT NUMBER",
@@ -30,7 +30,7 @@ describe("CompanyBanner display", () => {
 
     // Assert
     const { legalName, clientNumber } = defaultCompanyInfo;
-    expect(await companyNameLabel()).toHaveTextContent("COMPANY NAME");
+    expect(await companyNameLabel()).toHaveTextContent("CLIENT NAME");
     expect(await companyName()).toHaveTextContent(legalName);
     expect(await companyClientLabel()).toHaveTextContent(
       "onRouteBC CLIENT NUMBER",

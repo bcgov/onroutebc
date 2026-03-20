@@ -90,8 +90,13 @@ describe('PowerUnitTypesService', () => {
 
   describe('Power unit type service remove function', () => {
     it('should delete the power unit type', async () => {
+      repo.delete.mockResolvedValue({
+        raw: powerUnitTypeEntityMock,
+        affected: 1,
+      });
       const deleteResult = await service.remove(TYPE_CODE);
       expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.affected).toEqual(1);
     });
   });
 });

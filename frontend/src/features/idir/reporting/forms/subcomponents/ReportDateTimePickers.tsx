@@ -6,7 +6,7 @@ import duration from "dayjs/plugin/duration";
 import { useFormContext } from "react-hook-form";
 
 import { useCallback, useEffect } from "react";
-import { RequiredOrNull } from "../../../../../common/types/common";
+import { Optional, RequiredOrNull } from "../../../../../common/types/common";
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
 
 dayjs.extend(duration);
@@ -14,9 +14,18 @@ const THIRTY_ONE_DAYS = 31;
 const roundingBuffer = dayjs.duration(1, "hour").asDays();
 
 /**
+ * The props used by the ReportDateTimePickers component.
+ */
+export type ReportDateTimePickersProps = {
+  enableDateRangeValidation?: Optional<boolean>;
+};
+
+/**
  * The date time pickers for reports.
  */
-export const ReportDateTimePickers = () => {
+export const ReportDateTimePickers = ({
+  enableDateRangeValidation = false,
+}: ReportDateTimePickersProps) => {
   const { setValue, watch, setError, formState, clearErrors } =
     useFormContext<PaymentAndRefundSummaryFormData>();
   const { errors } = formState;
@@ -42,8 +51,10 @@ export const ReportDateTimePickers = () => {
   }, [fromDateTime, toDateTime]);
 
   useEffect(() => {
-    validateToDateTime();
-  }, [fromDateTime, toDateTime]);
+    if (enableDateRangeValidation) {
+      validateToDateTime();
+    }
+  }, [fromDateTime, toDateTime, enableDateRangeValidation]);
 
   return (
     <>
@@ -114,8 +125,14 @@ export const ReportDateTimePickers = () => {
              * The reports API account for a rounding value which allows this buffer.
              *
              * Hence the decision to add 1 minute to 30 days, to make life easier for user.
+             * 
+             * Note: Date range validation is not applicable for Summary Reports.
              */
-            maxDateTime={fromDateTime.add(THIRTY_ONE_DAYS, "days").add(1, "minute")}
+            maxDateTime={
+              enableDateRangeValidation
+                ? fromDateTime.add(THIRTY_ONE_DAYS, "days").add(1, "minute")
+                : undefined
+            }
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{
               textField: {

@@ -11,6 +11,6 @@ export const createFile = async (
     const chunks: Buffer[] = [];
     data.on('data', (chunk: Buffer) => chunks.push(chunk));
     data.on('end', () => resolve(Buffer.concat(chunks)));
-    data.on('error', (err) => reject(err));
+    data.on('error', (err: Error) => reject(err));
   });
 };

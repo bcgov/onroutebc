@@ -5,15 +5,44 @@
 @include orbcStyles.permit-right-box-style(".permit-details__body");
 
 .permit-details {
-  & &__input-section {
-    display: flex;
-    gap: 2.5rem;
+  & &__info-banner {
+    &--top {
+      margin-bottom: 1.5rem;
+      width: auto;
+    }
   }
 
-  & &__commodities {
+  & &__date-selection {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 30.625rem;
+    
+    .custom-form-control, .custom-date-picker__form-control {
+      margin: 0;
+      width: 100%;
+    }
+  }
+
+  & &__input {
+    &--start-date {
+      max-width: 16.125rem;
+    }
+
+    &--duration {
+      max-width: 12rem;
+      width: 100%;
+    }
+  }
+
+  .permit-expiry-date-banner {
+    margin-top: 1.5rem;
+  }
+
+  & &__conditions {
     margin-top: 1.5rem;
     
-    .commodities-title {
+    .conditions-title {
       padding: 0;
     }
 
@@ -22,7 +51,7 @@
       margin-bottom: 1.5rem;
     }
 
-    .commodities-info {
+    .conditions-info {
       font-weight: normal;
 
       &__contact-methods {

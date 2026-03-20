@@ -90,8 +90,13 @@ describe('TrailerTypesService', () => {
 
   describe('Trailer type service remove function', () => {
     it('should delete the trailer type', async () => {
+      repo.delete.mockResolvedValue({
+        raw: trailerTypeEntityMock,
+        affected: 1,
+      });
       const deleteResult = await service.remove(TYPE_CODE);
       expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.affected).toEqual(1);
     });
   });
 });

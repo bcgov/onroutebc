@@ -56,7 +56,7 @@ export class Address extends Base {
    * characters.
    */
   @AutoMap()
-  @Column({ length: 7, name: 'POSTAL_CODE', nullable: false })
+  @Column({ length: 15, name: 'POSTAL_CODE', nullable: false })
   postalCode: string;
 
   /**

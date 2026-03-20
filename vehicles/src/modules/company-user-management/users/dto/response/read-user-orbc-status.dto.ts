@@ -17,7 +17,9 @@ export class ReadUserOrbcStatusDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The metadata of companies associated with the user.',
+    description:
+      'The metadata of companies associated with the user. ' +
+      'Associated companies indicate a company that is already claimed and active',
     type: [ReadCompanyMetadataDto],
   })
   associatedCompanies: ReadCompanyMetadataDto[];
@@ -32,8 +34,8 @@ export class ReadUserOrbcStatusDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The metadata of migrated client associated with the user.',
+    description: 'The metadata of unclaimed client associated with the user.',
     type: ReadCompanyDto,
   })
-  migratedClient: ReadCompanyDto;
+  unclaimedClient: ReadCompanyDto;
 }

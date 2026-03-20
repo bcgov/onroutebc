@@ -1,0 +1,3 @@
+@use "./Dashboard";
+
+@include Dashboard.page-tabpanel-container-style(".dashboard-tab-panels");

@@ -20,14 +20,14 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
-  ClientUserAuthGroup,
-  GenericUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
-} from 'src/common/enum/user-auth-group.enum';
+  ClientUserRole,
+  GenericUserRole,
+  IDIRUserRole,
+  UserRole,
+} from 'src/common/enum/user-role.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
@@ -42,6 +42,8 @@ import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-met
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { Directory } from '../../../common/enum/directory.enum';
+import { Login } from './entities/login.entity';
+import { setBaseEntityProperties } from '../../../common/helper/database.helper';
 
 @Injectable()
 export class UsersService {
@@ -53,6 +55,8 @@ export class UsersService {
     private companyUserRepository: Repository<CompanyUser>,
     @InjectRepository(PendingIdirUser)
     private pendingIdirUserRepository: Repository<PendingIdirUser>,
+    @InjectRepository(Login)
+    private loginRepository: Repository<Login>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly pendingUsersService: PendingUsersService,
@@ -105,7 +109,7 @@ export class UsersService {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
       );
-      if (pendingUsers.some((e) => e.companyId != company.companyId)) {
+      if (pendingUsers.some((e) => e.companyId != company?.companyId)) {
         throw new BadRequestException('User not invited for this company.');
       }
     }
@@ -114,9 +118,19 @@ export class UsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const existingUser = await queryRunner.manager.findOne<User>(User, {
+        where: {
+          userGUID: currentUser.userGUID,
+        },
+        relations: {
+          companyUsers: { company: true },
+          userContact: true,
+        },
+      });
+
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
-          userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
+          userRole: GenericUserRole.PUBLIC_VERIFIED,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -124,12 +138,17 @@ export class UsersService {
         }),
       });
 
+      user.userContact.contactId = existingUser?.userContact?.contactId;
+
       const newCompanyUser = new CompanyUser();
+      newCompanyUser.companyUserId = existingUser?.companyUsers
+        ?.filter((companyUser) => companyUser.company?.companyId === companyId)
+        ?.at(0).companyUserId;
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.statusCode = UserStatus.ACTIVE;
       newCompanyUser.user = user;
-      newCompanyUser.userAuthGroup = pendingUsers?.at(0).userAuthGroup;
+      newCompanyUser.userRole = pendingUsers?.at(0).userRole;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
@@ -158,6 +177,39 @@ export class UsersService {
   }
 
   /**
+   * The saveLoginInformation() method logs the login information of a user by creating
+   * a new Login entity. This includes attributes like userDirectory, userGUID, userName,
+   * company details, email, and login timestamp. The method uses the currentUser and
+   * readUserOrbcStatusDto to populate these fields and saves the Login entity to the database.
+   *
+   * @param currentUser The current user's details from the JWT token of type {@link IUserJWT}.
+   * @param readUserOrbcStatusDto Contains information about the user's associated companies from ORBC.
+   *
+   * @returns void
+   */
+  @LogAsyncMethodExecution()
+  async saveLoginInformation(
+    currentUser: IUserJWT,
+    readUserOrbcStatusDto: ReadUserOrbcStatusDto,
+  ): Promise<void> {
+    const login = new Login();
+    login.userDirectory = currentUser.orbcUserDirectory;
+    login.userGUID = currentUser.userGUID;
+    login.userName = currentUser.userName;
+    login.companyGUID =
+      readUserOrbcStatusDto?.associatedCompanies?.at(0)?.companyGUID ??
+      currentUser.bceid_business_guid;
+    login.companyLegalName =
+      readUserOrbcStatusDto?.associatedCompanies?.at(0)?.legalName ??
+      currentUser.bceid_business_name;
+    login.email = currentUser.email;
+    login.loginDateTime = new Date();
+    setBaseEntityProperties({ entity: login, currentUser });
+
+    await this.loginRepository.save(login);
+  }
+
+  /**
    * The update() method updates a user with the {@link updateUserDto} object
    * and userGUID parameters, and returns the updated user as a ReadUserDto
    * object. If the user is not found, it throws an error.
@@ -174,7 +226,7 @@ export class UsersService {
     userGUID: string,
     updateUserDto: UpdateUserDto,
     companyId: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUsersEntity(userGUID, [companyId]);
@@ -185,11 +237,11 @@ export class UsersService {
 
     //Searching with UserGuid will only return one result at max
     const companyUser = userDetails.at(0).companyUsers.at(0);
-    //A CV user's auth group should not be allowed to be downgraded from CVADMIN
+    //A CV user's role should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      companyUser.userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+      companyUser.userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&
+      companyUser.userRole !== updateUserDto.userRole
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -198,14 +250,14 @@ export class UsersService {
       const secondCVAdmin = employees.filter(
         (employee) =>
           employee.userGUID != userDetails.at(0).userGUID &&
-          employee.companyUsers.at(0).userAuthGroup ===
-            ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+          employee.companyUsers.at(0).userRole ===
+            ClientUserRole.COMPANY_ADMINISTRATOR,
       );
 
       //Throw BadRequestException if only one CVAdmin exists for the company.
       if (!secondCVAdmin?.length) {
         const badRequestExceptionDto = new BadRequestExceptionDto();
-        badRequestExceptionDto.field = 'userAuthGroup';
+        badRequestExceptionDto.field = 'userRole';
         badRequestExceptionDto.message = [
           'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
         ];
@@ -245,7 +297,6 @@ export class UsersService {
           extension1: updateUserDto.phone1Extension,
           phone2: updateUserDto.phone2,
           extension2: updateUserDto.phone2Extension,
-          fax: updateUserDto.fax,
           city: updateUserDto.city,
           province: {
             provinceId: getProvinceId(
@@ -257,18 +308,17 @@ export class UsersService {
         },
       );
 
-      // Should be allowed to update userAuthGroupID if current user is an
+      // Should be allowed to update userRole of current user is an
       // IDIR(PPC Clerk) or CVAdmin
       if (
-        (currentUser.orbcUserAuthGroup ===
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
+        (currentUser.orbcUserRole === ClientUserRole.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
-        companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+        companyUser.userRole !== updateUserDto.userRole
       ) {
         await queryRunner.manager.update(
           CompanyUser,
           { companyUserId: companyUser.companyUserId },
-          { userAuthGroup: updateUserDto.userAuthGroup, ...auditMetadata },
+          { userRole: updateUserDto.userRole, ...auditMetadata },
         );
       }
 
@@ -300,7 +350,7 @@ export class UsersService {
   async findUsersEntity(
     userGUID?: string,
     companyId?: number[],
-    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
+    userRole?: UserRole | IDIRUserRole | ClientUserRole,
     statusCode = [UserStatus.ACTIVE],
   ) {
     // Construct the query builder to retrieve user entities and associated data
@@ -350,9 +400,9 @@ export class UsersService {
       });
     }
 
-    if (userAuthGroup) {
-      userQB.andWhere('user.userAuthGroup = :userAuthGroup', {
-        userAuthGroup: userAuthGroup,
+    if (userRole) {
+      userQB.andWhere('user.userRole = :userRole', {
+        userRole: userRole,
       });
     }
 
@@ -372,13 +422,13 @@ export class UsersService {
     userGUID?: string,
     companyId?: number[],
     pendingUser?: boolean,
-    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
+    userRole?: UserRole | IDIRUserRole | ClientUserRole,
   ): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(
       userGUID,
       companyId,
-      userAuthGroup,
+      userRole,
     );
     let pendingUsersList: ReadUserDto[] = [];
     if (pendingUser && companyId?.length) {
@@ -433,11 +483,10 @@ export class UsersService {
         currentUser.bceid_business_guid,
       );
       if (
-        company &&
-        company.accountSource === AccountSource.TpsAccount &&
+        company?.accountSource === AccountSource.TpsAccount &&
         !company?.companyUsers?.length
       ) {
-        userContextDto.migratedClient =
+        userContextDto.unclaimedClient =
           await this.companyService.mapCompanyEntityToCompanyDto(company);
       } else if (company) {
         const companyMetadata =
@@ -495,13 +544,18 @@ export class UsersService {
     currentUser: IUserJWT,
     userContextDto: ReadUserOrbcStatusDto,
   ) {
-    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
-      currentUser.userName,
-      null,
-      null,
-    );
-    //Auto invite for TPS migrated client for second user onward.
-    if (!userContextDto.migratedClient) {
+    let pendingUsers: ReadPendingUserDto[] = [];
+
+    /* unClaimedClient - a company has been migrated from TPS
+      and the associated BCeID business GUID does not yet have any users attached to it.*/
+    if (!userContextDto.unclaimedClient) {
+      pendingUsers = await this.pendingUsersService.findPendingUsersDto(
+        currentUser.userName,
+        null,
+        null,
+      );
+
+      //Auto invite for TPS unclaimed client for second user onward.
       pendingUsers.push(
         ...(await this.pendingUsersService.findPendingUsersDto(
           null,
@@ -509,9 +563,21 @@ export class UsersService {
           currentUser.userGUID,
         )),
       );
+
+      if (pendingUsers?.at(0)?.companyId) {
+        const company =
+          await this.companyService.findOneCompanyWithAssociatedUsers(
+            pendingUsers?.at(0)?.companyId,
+          );
+
+        if (company && !company?.companyUsers?.length) {
+          userContextDto.unclaimedClient =
+            await this.companyService.mapCompanyEntityToCompanyDto(company);
+        }
+      }
     }
 
-    if (pendingUsers?.length) {
+    if (pendingUsers?.length && !userContextDto.unclaimedClient) {
       for (const pendingUser of pendingUsers) {
         if (
           !userContextDto.pendingCompanies?.some((company) => {
@@ -529,25 +595,25 @@ export class UsersService {
   }
 
   /**
-   * The getRolesForUser() method finds and returns a {@link Role} object
+   * The getRolesForUser() method finds and returns a {@link Claim} object
    * for a user with a specific userGUID and companyId parameters. CompanyId is
    * optional and defaults to 0
    *
    * @param userGUID The user GUID.
    * @param companyId The company Id. Optional - Defaults to 0
    *
-   * @returns The Roles as a promise of type {@link Role}
+   * @returns The claims as a promise of type {@link Claim}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
-    const queryResult = (await this.userRepository.query(
+  async getClaimsForUser(userGUID: string, companyId = 0): Promise<Claim[]> {
+    const queryResult: [{ ROLE_TYPE: Claim }] = await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
       [userGUID, companyId],
-    )) as [{ ROLE_TYPE: Role }];
+    );
 
-    const roles = queryResult.map((r) => r.ROLE_TYPE);
+    const claims = queryResult.map((r) => r.ROLE_TYPE);
 
-    return roles;
+    return claims;
   }
 
   /**
@@ -605,7 +671,7 @@ export class UsersService {
         try {
           let newUser: User = this.mapIdirToUserEntity(
             currentUser,
-            pendingUser.userAuthGroup,
+            pendingUser.userRole,
           );
           newUser = await queryRunner.manager.save(newUser);
           await queryRunner.manager.delete(PendingIdirUser, {
@@ -654,7 +720,7 @@ export class UsersService {
 
   private mapIdirToUserEntity(
     currentUser: IUserJWT,
-    userAuthGroup: IDIRUserAuthGroup,
+    userRole: IDIRUserRole,
   ): User {
     const user: User = new User();
     const currentDateTime = new Date();
@@ -663,7 +729,7 @@ export class UsersService {
     user.userName = currentUser.idir_username;
     user.statusCode = UserStatus.ACTIVE;
     user.directory = currentUser.orbcUserDirectory;
-    user.userAuthGroup = userAuthGroup;
+    user.userRole = userRole;
     user.userContact.firstName = currentUser.given_name;
     user.userContact.lastName = currentUser.family_name;
     user.userContact.email = currentUser.email;
@@ -736,8 +802,8 @@ export class UsersService {
     // Collect the company admin userGUIDs.
     const remainingCompanyAdmins = usersBeforeDelete
       .filter(
-        ({ userAuthGroup, user }) =>
-          userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+        ({ userRole, user }) =>
+          userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&
           Boolean(user?.userGUID),
       )
       .map(({ user: { userGUID } }) => userGUID)

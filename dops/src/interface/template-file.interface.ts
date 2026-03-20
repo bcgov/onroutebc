@@ -4,6 +4,7 @@ export interface TemplateFile {
   templateId: number;
   templateName: TemplateName;
   templateVersion: number;
-  documentId: string;
+  isActive: boolean;
+  fileName: string;
   templatefile: string;
 }

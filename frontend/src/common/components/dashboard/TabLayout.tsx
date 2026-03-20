@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 
-import "./Dashboard.scss";
-import { TabComponentProps } from "./components/tab/types/TabComponentProps";
-import { TabPanels } from "./components/tab/TabPanels";
+import { TabComponentProps } from "../tabs/types/TabComponentProps";
 import { TabBanner } from "./components/banner/TabBanner";
+import { DashboardTabPanels } from "./DashboardTabPanels";
 
 interface TabLayoutProps {
   bannerText: string;
@@ -51,7 +50,7 @@ export const TabLayout = React.memo(
           onTabChange={handleChange}
         />
 
-        <TabPanels value={selectedTab} componentList={componentList} />
+        <DashboardTabPanels value={selectedTab} componentList={componentList} />
       </>
     );
   },

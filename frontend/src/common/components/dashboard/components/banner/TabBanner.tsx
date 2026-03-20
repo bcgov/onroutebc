@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 
 import "./TabBanner.scss";
-import { TabsList } from "../tab/TabsList";
-import { TabComponentProps } from "../tab/types/TabComponentProps";
+import { TabsList } from "../../../tabs/TabsList";
+import { TabComponentProps } from "../../../tabs/types/TabComponentProps";
 
 export const TabBanner = ({
   bannerText,

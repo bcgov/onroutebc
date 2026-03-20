@@ -17,12 +17,13 @@ export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
 };
 
-export type MockQueryRunnerManager = {
+export interface MockQueryRunnerManager {
   delete: jest.Mock;
   update: jest.Mock;
   find: jest.Mock;
+  findOne?: jest.Mock;
   save: jest.Mock;
-};
+}
 
 export const dataSourceMockFactory = () => {
   return {
@@ -37,6 +38,7 @@ export const dataSourceMockFactory = () => {
       manager: {
         delete: jest.fn(),
         update: jest.fn(),
+        findOne: jest.fn(),
         save: jest.fn((saveObject: object) => {
           if (saveObject instanceof Company) {
             if (saveObject.legalName === constants.RED_COMPANY_LEGAL_NAME) {

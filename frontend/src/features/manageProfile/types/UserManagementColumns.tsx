@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { getLabelForBCeIDUserAuthGroup } from "../../../common/helpers/util";
+import { getLabelForBCeIDUserRole } from "../../../common/helpers/util";
 import { UserManagementChip } from "../components/user-management/UserManagementChip";
 import { ReadUserInformationResponse } from "./manageProfile";
 
@@ -40,10 +40,10 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadUserInformationR
       header: "Last Name",
     },
     {
-      accessorKey: "userAuthGroup",
+      accessorKey: "userRole",
       header: "User Group",
       Cell: (props: { cell: any }) => {
-        return <>{getLabelForBCeIDUserAuthGroup(props.cell.getValue())}</>;
+        return <>{getLabelForBCeIDUserRole(props.cell.getValue())}</>;
       },
     },
     {

@@ -39,20 +39,5 @@
         font-weight: 600;
       }
     }
-
-    &--view-permits {
-      .success-btn {
-        border: 1px solid orbcStyles.$bc-text-box-border-grey;
-
-        &--view-permits {
-          border: 2px solid orbcStyles.$bc-text-box-border-grey;
-        }
-
-        &--view-receipt {
-          margin-left: 1.5rem;
-          border: 2px solid orbcStyles.$bc-text-box-border-grey;
-        }
-      }
-    }
   }
 }

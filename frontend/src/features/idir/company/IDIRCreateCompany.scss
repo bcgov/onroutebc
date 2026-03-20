@@ -1,0 +1,3 @@
+@use "../../../common/components/dashboard/Dashboard";
+
+@include Dashboard.page-tabpanel-container-style(".idir-create-company");

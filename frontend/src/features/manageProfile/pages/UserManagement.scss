@@ -2,8 +2,10 @@
 @import "../../../themes/orbcStyles";
 
 .table-container {
-  & &__toolbar-internal-actions {
+  &__delete-button {
     display: flex;
+    justify-content: flex-end;
     background-color: $white;
+    padding-bottom: 1.5rem;
   }
 }

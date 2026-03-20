@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   RadioGroup,
@@ -24,19 +24,22 @@ import { getDefaultRequiredVal } from "../../../helpers/util";
 import { IDIR_ROUTES } from "../../../../routes/constants";
 import { Nullable } from "../../../types/common";
 import {
+  SEARCH_BY_FILTERS,
   SearchByFilter,
   SearchEntity,
   SearchFields,
 } from "../../../../features/idir/search/types/types";
 import { useFeatureFlagsQuery } from "../../../hooks/hooks";
+import OnRouteBCContext from "../../../authentication/OnRouteBCContext";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
   { label: "Plate Number", value: "plate" },
+  { label: "VIN (last 6 digits)", value: "vin" },
 ];
 
 const SEARCH_BY_COMPANY_OPTIONS = [
-  { label: "Company Name", value: "companyName" },
+  { label: "Client Name", value: "companyName" },
   { label: "Client Number", value: "clientNumber" },
 ];
 
@@ -90,6 +93,7 @@ export const SearchFilter = ({
    */
   closeFilter: () => void;
 }) => {
+  const { clearCompanyContext } = useContext(OnRouteBCContext);
   const [searchParams] = useSearchParams();
   const { data: featureFlags } = useFeatureFlagsQuery();
   const navigate = useNavigate();
@@ -116,7 +120,9 @@ export const SearchFilter = ({
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue, control } = formMethods;
+  const { handleSubmit, setValue, control, watch } = formMethods;
+
+  const searchByFilter = watch("searchByFilter");
 
   const handleSearchEntityChange = (searchEntity: string) => {
     setValue("searchEntity", searchEntity as SearchEntity);
@@ -126,11 +132,13 @@ export const SearchFilter = ({
       "searchByFilter",
       updatedSearchByOptions[0].value as SearchByFilter,
     );
+    setValue("searchString", "");
   };
 
   const handleSearchByChange = (event: SelectChangeEvent) => {
     const searchBy = event.target.value;
     setValue("searchByFilter", searchBy as SearchByFilter);
+    setValue("searchString", "");
   };
 
   const handleSearchValueChange = (
@@ -140,13 +148,20 @@ export const SearchFilter = ({
     setValue("searchString", searchString);
   };
 
+  const handleSearchValueKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleSubmit(onSubmit)();
+    }
+  };
+
   const onSubmit = (data: FieldValues) => {
     const searchFields = Object.entries(data)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join("&");
 
     if (data?.searchString?.trim()?.length < 1) return;
 
+    clearCompanyContext?.();
     closeFilter();
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
@@ -174,11 +189,11 @@ export const SearchFilter = ({
                     control={<Radio key="find-by-permit" />}
                   />
                   <FormControlLabel
-                    label="Company"
+                    label="Client"
                     value="companies"
                     control={<Radio key="find-by-company" />}
                   />
-                  {featureFlags?.["APPLICATION_SEARCH"] === "ENABLED" && (
+                  {featureFlags?.["APPLICATION-SEARCH"] === "ENABLED" && (
                     <FormControlLabel
                       label="Application"
                       value="applications"
@@ -228,7 +243,11 @@ export const SearchFilter = ({
                     className="search-by__value"
                     value={value}
                     onChange={handleSearchValueChange}
-                    inputProps={{ maxLength: 100 }}
+                    onKeyDown={handleSearchValueKeyDown}
+                    inputProps={{
+                      maxLength:
+                        searchByFilter === SEARCH_BY_FILTERS.VIN ? 6 : 100,
+                    }}
                   />
                 )}
               />

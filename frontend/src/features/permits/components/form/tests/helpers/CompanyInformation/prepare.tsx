@@ -1,10 +1,8 @@
 import { render } from "@testing-library/react";
 import { CompanyProfile } from "../../../../../../manageProfile/types/manageProfile";
 import { CompanyInformation } from "../../../CompanyInformation";
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../../../common/helpers/formatCountryProvince";
+import { getProvinceFullName } from "../../../../../../../common/helpers/countries/getProvinceFullName";
+import { getCountryFullName } from "../../../../../../../common/helpers/countries/getCountryFullName";
 
 export const defaultCompanyInfo = {
   companyId: 74,
@@ -32,18 +30,19 @@ export const defaultCompanyInfo = {
   isSuspended: false,
 };
 
-export const country = formatCountry(
+export const country = getCountryFullName(
   defaultCompanyInfo.mailingAddress.countryCode,
 );
-export const province = formatProvince(
+
+export const province = getProvinceFullName(
   defaultCompanyInfo.mailingAddress.countryCode,
   defaultCompanyInfo.mailingAddress.provinceCode,
 );
 
-export const companyInfoTitle = "Company Information";
+export const companyInfoTitle = "Client Information";
 export const companyInfoDescription =
-  "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
-export const companyMailAddrTitle = "Company Mailing Address";
+  "If the Client Mailing Address is incorrect, please contact your onRouteBC Administrator.";
+export const companyMailAddrTitle = "Client Mailing Address";
 
 export const renderTestComponent = (companyInfo?: CompanyProfile) => {
   return render(<CompanyInformation companyInfo={companyInfo} />);

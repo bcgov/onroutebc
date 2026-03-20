@@ -75,6 +75,6 @@ export class CreateAddressDto {
     required: true,
   })
   @IsString()
-  @Length(5, 7)
+  @Length(5, 15)
   postalCode: string;
 }

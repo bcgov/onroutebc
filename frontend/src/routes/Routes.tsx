@@ -3,10 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
 import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
 import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
-import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
-import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
@@ -32,16 +30,33 @@ import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
+import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
+import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
+import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
+import { StaffDashboard } from "../features/idir/StaffDashboard";
+import { BFCTDashboard } from "../features/bridgeFormulaCalculationTool/BFCTDashboard";
+import { ClaimProfileUnauthorized } from "../common/pages/ClaimProfileUnauthorized";
+import { ServiceUnavailable } from "../common/pages/ServiceUnavailable";
+import { VersionMismatchErrorPage } from "../common/pages/VersionMismatchErrorPage";
+// import { ReviewApplicationInQueue } from "../features/queue/pages/ReviewApplicationInQueue";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
-      <Route path={routes.HOME} element={<InitialLandingPage />} />
+      <Route path={routes.HOME} element={<IDPRedirect />} />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
         element={<CompanySuspended />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.CLAIM_PROFILE_ERROR}
+        element={<ClaimProfileUnauthorized />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.VERSION_MISMATCH}
+        element={<VersionMismatchErrorPage />}
       />
       <Route
         path={routes.ERROR_ROUTES.UNAUTHORIZED}
@@ -54,6 +69,14 @@ export const AppRoutes = () => {
       <Route
         path={routes.ERROR_ROUTES.ISSUANCE}
         element={<IssuanceErrorPage />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.SERVICE}
+        element={<ServiceUnavailable />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE}
+        element={<DocumentUnavailable />}
       />
       <Route path="*" element={<UniversalUnexpected />} />
 
@@ -89,13 +112,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedAuthGroups={[
-              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-              IDIR_USER_AUTH_GROUP.CTPO,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "VIEW_GLOBAL_SEARCH_SCREEN",
+            }}
           />
         }
       >
@@ -111,17 +131,91 @@ export const AppRoutes = () => {
 
       <Route
         element={
-          <IDIRAuthWall allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]} />
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+              permissionMatrixFunctionKey: "VIEW_QUEUE",
+            }}
+          />
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.VOID()}`}
-          element={<VoidPermit />}
+          path={routes.IDIR_ROUTES.STAFF_HOME}
+          element={<StaffDashboard />}
         />
+
         <Route
-          path={`${routes.PERMITS_ROUTES.AMEND()}`}
-          element={<AmendPermit />}
+          path={routes.APPLICATION_QUEUE_ROUTES.REVIEW()}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.REVIEW}
+              applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.QUEUE}
+            />
+          }
         />
+
+        <Route
+          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT()}`}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+              applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.QUEUE}
+            />
+          }
+        />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MISCELLANEOUS",
+              permissionMatrixFunctionKey: "BRIDGE_FORMULA_CALCULATION_TOOL",
+            }}
+          />
+        }
+      >
+        <Route
+          path={routes.IDIR_ROUTES.BRIDGE_FORMULA_CALCULATION_TOOL}
+          element={<BFCTDashboard />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "VOID_PERMIT",
+            }}
+          />
+        }
+      >
+        <Route path={routes.PERMITS_ROUTES.VOID()} element={<VoidPermit />} />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "AMEND_PERMIT",
+            }}
+          />
+        }
+      >
+        <Route path={routes.PERMITS_ROUTES.AMEND()} element={<AmendPermit />} />
+      </Route>
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "CREATE_COMPANY",
+            }}
+          />
+        }
+      >
         <Route
           path={routes.IDIR_ROUTES.CREATE_COMPANY}
           element={<IDIRCreateCompany />}
@@ -132,11 +226,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "REPORTS",
+              permissionMatrixFunctionKey: "PAYMENT_AND_REFUND_SUMMARY_REPORT",
+            }}
           />
         }
       >
@@ -152,8 +245,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.READ_VEHICLE}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+              permissionMatrixFunctionKey: "VIEW_VEHICLE_INVENTORY_SCREEN",
+            }}
           />
         }
       >
@@ -162,27 +257,25 @@ export const AppRoutes = () => {
           <Route
             path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
-              />
+              <EditVehicleDashboard vehicleType={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
             path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
+              <EditVehicleDashboard vehicleType={VEHICLE_TYPES.TRAILER} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
+              <AddVehicleDashboard vehicleType={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
+              <AddVehicleDashboard vehicleType={VEHICLE_TYPES.TRAILER} />
             }
           />
         </Route>
@@ -191,8 +284,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.READ_ORG}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "VIEW_COMPANY_INFORMATION",
+            }}
           />
         }
       >
@@ -205,8 +300,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_USER}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "ADD_USER",
+            }}
           />
         }
       >
@@ -214,6 +311,17 @@ export const AppRoutes = () => {
           path={routes.PROFILE_ROUTES.ADD_USER}
           element={<AddUserDashboard />}
         />
+      </Route>
+      <Route
+        element={
+          <BCeIDAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "EDIT_USER",
+            }}
+          />
+        }
+      >
         <Route
           path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
           element={<EditUserDashboard />}
@@ -223,8 +331,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
           />
         }
       >
@@ -233,15 +343,35 @@ export const AppRoutes = () => {
           element={
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.DETAILS}
+              applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.APPLY}
             />
           }
         />
       </Route>
+
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MISCELLANEOUS",
+              permissionMatrixFunctionKey: "VIEW_SHOPPING_CART",
+            }}
+          />
+        }
+      >
+        <Route
+          path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
+          element={<ShoppingCartDashboard />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "VIEW_LIST_OF_ACTIVE_PERMITS",
+            }}
           />
         }
       >
@@ -253,6 +383,9 @@ export const AppRoutes = () => {
               element={
                 <ApplicationSteps
                   applicationStep={routes.APPLICATION_STEPS.DETAILS}
+                  applicationStepContext={
+                    routes.APPLICATION_STEP_CONTEXTS.APPLY
+                  }
                 />
               }
             />
@@ -261,14 +394,9 @@ export const AppRoutes = () => {
               element={
                 <ApplicationSteps
                   applicationStep={routes.APPLICATION_STEPS.REVIEW}
-                />
-              }
-            />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.PAY}
+                  applicationStepContext={
+                    routes.APPLICATION_STEP_CONTEXTS.APPLY
+                  }
                 />
               }
             />
@@ -279,13 +407,15 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
           />
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          path={`${routes.PERMITS_ROUTES.SUCCESS}`}
           element={<SuccessPage />}
         />
       </Route>
@@ -293,7 +423,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
           />
         }
       >
@@ -303,16 +436,16 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={
-        <IDIRAuthWall 
-          allowedAuthGroups={[
-            IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-            IDIR_USER_AUTH_GROUP.FINANCE,
-            IDIR_USER_AUTH_GROUP.PPC_CLERK,
-            IDIR_USER_AUTH_GROUP.CTPO,
-          ]}
-        />
-      }>
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+              permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+            }}
+          />
+        }
+      >
         <Route
           path={routes.SETTINGS_ROUTES.MANAGE}
           element={<ManageSettings />}

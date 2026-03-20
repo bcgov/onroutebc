@@ -1,7 +1,14 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
@@ -11,11 +18,9 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
-import { VerifiedClient, UserRolesType } from "./common/authentication/types";
-import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
+import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
+import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -24,6 +29,7 @@ import {
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
+  OnRouteBCContextType,
 } from "./common/authentication/OnRouteBCContext";
 
 const authority =
@@ -38,6 +44,7 @@ const client_id =
  */
 const oidcConfig: AuthProviderProps = {
   authority: authority,
+  accessTokenExpiringNotificationTimeInSeconds: 120,
   client_id: client_id,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
@@ -54,8 +61,7 @@ export const SnackBarContext = createContext({
 });
 
 const App = () => {
-  const queryClient = new QueryClient();
-
+  const [queryClient] = useState(() => new QueryClient());
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({
     showSnackbar: false,
@@ -64,17 +70,18 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<Nullable<UserRolesType[]>>();
+  const [userClaims, setUserClaims] = useState<Nullable<UserClaimsType[]>>();
   const [companyId, setCompanyId] = useState<Optional<number>>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
-  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
+  const [isCompanySuspended, setIsCompanySuspended] =
+    useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
     useState<Optional<IDIRUserDetailContext>>();
-  const [migratedClient, setMigratedClient] =
+  const [unclaimedClient, setUnclaimedClient] =
     useState<Optional<VerifiedClient>>();
   const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
@@ -85,14 +92,14 @@ const App = () => {
     setCompanyId(() => undefined);
     setOnRouteBCClientNumber(() => undefined);
     setCompanyLegalName(() => undefined);
-    setMigratedClient(() => undefined);
+    setUnclaimedClient(() => undefined);
     setIsCompanySuspended(() => undefined);
     sessionStorage.removeItem("onRouteBC.user.companyId");
   }, [
     setCompanyId,
     setOnRouteBCClientNumber,
     setCompanyLegalName,
-    setMigratedClient,
+    setUnclaimedClient,
     setIsCompanySuspended,
   ]);
 
@@ -109,8 +116,8 @@ const App = () => {
           <OnRouteBCContext.Provider
             value={useMemo(() => {
               return {
-                userRoles,
-                setUserRoles,
+                userClaims,
+                setUserClaims,
                 companyId,
                 setCompanyId,
                 userDetails,
@@ -123,21 +130,21 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
-                migratedClient,
-                setMigratedClient,
+                unclaimedClient,
+                setUnclaimedClient,
                 isNewBCeIDUser,
                 setIsNewBCeIDUser,
                 clearCompanyContext,
-              };
+              } as OnRouteBCContextType;
             }, [
-              userRoles,
+              userClaims,
               companyId,
               userDetails,
               companyLegalName,
               isCompanySuspended,
               idirUserDetails,
               onRouteBCClientNumber,
-              migratedClient,
+              unclaimedClient,
               isNewBCeIDUser,
               clearCompanyContext,
             ])}
@@ -154,15 +161,13 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <div className="page-section">
-                <Router>
-                  <Header />
-                  <SuspendSnackBar />
-                  <NavIconSideBar>
-                    <NavIconHomeButton />
-                    <NavIconReportButton />
-                  </NavIconSideBar>
-                  <AppRoutes />
-                </Router>
+                <CartContextProvider>
+                  <Router>
+                    <Header />
+                    <NavIconSideBar />
+                    <AppRoutes />
+                  </Router>
+                </CartContextProvider>
               </div>
               <Footer />
             </SnackBarContext.Provider>

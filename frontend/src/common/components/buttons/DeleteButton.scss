@@ -1,0 +1,43 @@
+@import "../../../themes/orbcStyles";
+
+.delete-btn {
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  
+  & &__icon {
+    font-size: 1rem;
+  }
+
+  & &__text {
+    margin-left: 0.75rem;
+    font-size: 1rem;
+    font-family: $default-font;
+  }
+
+  &#{&}--disabled {
+    border: 2px solid $disabled-colour;
+    color: $disabled-colour;
+    background-color: $white;
+    outline: none;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  &#{&}--active {
+    color: $bc-red;
+    border: 2px solid $bc-messages-red-background;
+    background-color: $white;
+
+    &:hover {
+      background-color: $bc-messages-red-background;
+      cursor: pointer;
+    }
+
+    &:focus {
+      border-color: $bc-red;
+      background-color: $bc-messages-red-background;
+      outline: none;
+      cursor: pointer;
+    }
+  }
+}

@@ -51,7 +51,7 @@ export class Document extends Base {
     example: 'TROS_TEMPLATE_V1.docx',
     description: 'The file Name.',
   })
-  @Column({ length: '50', name: 'FILE_NAME', nullable: false })
+  @Column({ length: '250', name: 'FILE_NAME', nullable: false })
   fileName: string;
 
   @AutoMap()

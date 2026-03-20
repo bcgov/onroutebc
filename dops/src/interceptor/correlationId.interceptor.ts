@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Response } from 'express';
-import { ClsServiceManager } from 'nestjs-cls';
+import { setResHeaderCorrelationId } from '../helper/response-header.helper';
 
 @Injectable()
 export class CorrelationIdInterceptor implements NestInterceptor {
@@ -16,11 +16,7 @@ export class CorrelationIdInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       tap(() => {
-        const cls = ClsServiceManager.getClsService();
-        const correlationId = cls.getId();
-        if (!response.getHeader('x-correlation-id') && correlationId) {
-          response.setHeader('x-correlation-id', correlationId);
-        }
+        setResHeaderCorrelationId(response);
       }),
     );
   }

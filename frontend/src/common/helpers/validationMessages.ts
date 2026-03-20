@@ -13,7 +13,32 @@ const replacePlaceholders = (
 };
 
 export const requiredMessage = () => validationMessages.required.defaultMessage;
+export const selectionRequired = () =>
+  validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
+
+export const invalidInput = () => validationMessages.invalid.defaultMessage;
+
+export const mustBeGreaterThan = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.greaterThan;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeLessThan = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.lessThan;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeGreaterThanOrEqualTo = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.greaterThanOrEq;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeLessThanOrEqualTo = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.lessThanOrEq;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
 export const invalidCountryCode = () =>
   validationMessages.country.defaultMessage;
 export const invalidProvinceCode = () =>
@@ -22,10 +47,20 @@ export const invalidDate = () => validationMessages.date.defaultMessage;
 export const invalidPastStartDate = () =>
   validationMessages.date.start.past.defaultMessage;
 
+export const warnPastStartDate = () =>
+  validationMessages.date.start.past.warningMessage;
+
 export const invalidMaxStartDate = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.date.start.max;
   return replacePlaceholders(messageTemplate, placeholders, max);
 };
+
+export const expiryMustBeAfterStart = () => {
+  return validationMessages.date.expiry.beforeStart.defaultMessage;
+};
+
+export const pastStartOrExpiryDate = () =>
+  validationMessages.date.startOrExpiry.past.defaultMessage;
 
 export const invalidEmail = () => validationMessages.email.defaultMessage;
 
@@ -33,6 +68,9 @@ export const invalidPhoneLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.phone.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
+
+export const invalidExtension = () =>
+  validationMessages.extension.defaultMessage;
 
 export const invalidExtensionLength = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.extension.length;
@@ -43,6 +81,8 @@ export const invalidAddressLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.address.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
+
+export const invalidAddress = () => validationMessages.address.invalid;
 
 export const invalidCityLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.city.length;
@@ -77,9 +117,54 @@ export const invalidPlateLength = (max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, max);
 };
 
+export const licensedGVWExceeded = (max: number, localizeNumber?: boolean) => {
+  const { messageTemplate, placeholders } = validationMessages.licensedGVW.max;
+  return replacePlaceholders(
+    messageTemplate,
+    placeholders,
+    localizeNumber ? max.toLocaleString() : max,
+  );
+};
+
+export const invalidClientNameLength = (min: number, max: number) => {
+  const { messageTemplate, placeholders } =
+    validationMessages.clientName.length;
+  return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
 export const invalidDBALength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.dba.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
+export const invalidTranactionIdLength = (max: number) => {
+  const { messageTemplate, placeholders } =
+    validationMessages.transactionId.length;
+  return replacePlaceholders(messageTemplate, placeholders, max);
+};
+
+export const uploadSizeExceeded = () => {
+  return validationMessages.upload.fileSize.exceeded;
+};
+
+export const invalidUploadFormat = () => {
+  return validationMessages.upload.fileFormat.defaultMessage;
+};
+
+export const requiredUpload = (uploadItem: string) => {
+  const { messageTemplate, placeholders } = validationMessages.upload.required;
+  return replacePlaceholders(messageTemplate, placeholders, uploadItem);
+};
+
+export const requiredHighway = () => validationMessages.highway.missing;
+
+export const requiredPowerUnit = () => validationMessages.powerUnit.required;
+
+export const provinceVehicleDoesNotRequirePermit = (province: string) => {
+  const { messageTemplate, placeholders } =
+    validationMessages.province.provinceVehicleDoesNotRequirePermit;
+
+  return replacePlaceholders(messageTemplate, placeholders, province);
 };
 
 /**

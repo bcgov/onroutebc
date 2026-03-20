@@ -1,4 +1,8 @@
+@use "../../../../common/components/dashboard/Dashboard";
 @use "../../../../themes/orbcStyles";
+
+@include Dashboard.page-tabpanel-container-style(".challenge-profile-steps");
+@include Dashboard.page-tabpanel-container-style(".create-profile-steps-page");
 
 .create-profile-steps {
   display: flex;

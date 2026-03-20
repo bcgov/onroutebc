@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
@@ -16,7 +16,6 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { getPermits } from "../../apiManager/permitsAPI";
 import { PermitListItem } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
-import { PermitRowOptions } from "./PermitRowOptions";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
@@ -24,6 +23,13 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
+import { hasPermitExpired } from "../../helpers/permitState";
+import { isPermitInactive } from "../../types/PermitStatus";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
+import { PermitRowOptions } from "./PermitRowOptions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -34,6 +40,14 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
+  const { companyId: companyIdFromContext } = useContext(OnRouteBCContext);
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdFromContext,
+    0,
+  );
+
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -58,6 +72,7 @@ export const BasePermitList = ({
     ],
     queryFn: () =>
       getPermits(
+        companyId,
         { expired: isExpired },
         {
           page: pagination.pageIndex,
@@ -77,13 +92,68 @@ export const BasePermitList = ({
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
     retry: 1,
+    enabled: Boolean(companyId),
   });
 
   const { data, isError, isPending, isRefetching } = permitsQuery;
 
+  const canViewIndividualActivePermitPDF = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF",
+    },
+  });
+
+  const canViewIndividualExpiredPermitPDF = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_INDIVIDUAL_EXPIRED_PERMIT_PDF",
+    },
+  });
+
+  const canResendPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "RESEND_PERMIT",
+    },
+  });
+
+  const canViewPermitReceipt = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
+    },
+  });
+
+  const canViewExpiredPermitReceipt = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_EXPIRED_PERMIT_RECEIPT",
+    },
+  });
+
+  const canAmendPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "AMEND_PERMIT",
+    },
+  });
+
+  const canVoidPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "VOID_PERMIT",
+    },
+  });
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: PermitsColumnDefinition,
+    columns: PermitsColumnDefinition(
+      () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+      isExpired,
+      canViewIndividualActivePermitPDF,
+      canViewIndividualExpiredPermitPDF,
+    ),
     data: data?.items ?? [],
     enableRowSelection: false,
     initialState: {
@@ -120,6 +190,11 @@ export const BasePermitList = ({
     muiSearchTextFieldProps: {
       ...defaultTableOptions.muiSearchTextFieldProps,
       helperText: globalFilter?.length >= 100 && "100 characters maximum.",
+      placeholder: "Search by Unit No., Plate or Permit No.",
+      sx: {
+        minWidth: "450px",
+        backgroundColor: "white",
+      },
     },
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
@@ -129,16 +204,32 @@ export const BasePermitList = ({
     enablePagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    renderRowActions: useCallback((props: { row: MRT_Row<PermitListItem> }) => {
-      return (
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <PermitRowOptions
-            isExpired={isExpired}
-            permitId={props.row.original.permitId}
-          />
-        </Box>
-      );
-    }, []),
+    renderRowActions: useCallback(
+      ({ row }: { row: MRT_Row<PermitListItem> }) => {
+        const isInactive =
+          hasPermitExpired(row.original.expiryDate) ||
+          isPermitInactive(row.original.permitStatus);
+        return (
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <PermitRowOptions
+              isPermitInactive={isInactive}
+              permitNumber={row.original.permitNumber}
+              permitId={row.original.permitId}
+              companyId={row.original.companyId}
+              permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
+              permissions={{
+                canAmendPermit,
+                canResendPermit,
+                canViewPermitReceipt,
+                canViewExpiredPermitReceipt,
+                canVoidPermit,
+              }}
+            />
+          </Box>
+        );
+      },
+      [],
+    ),
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",

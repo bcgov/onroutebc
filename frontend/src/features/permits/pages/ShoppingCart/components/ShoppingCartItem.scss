@@ -1,0 +1,72 @@
+@import "../../../../../themes/orbcStyles";
+
+.shopping-cart-item {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid $bc-border-grey;
+  
+  &__details {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    &:first-child {
+      justify-content: flex-start;
+    }
+  }
+
+  &__label {
+    font-weight: bold;
+    color: $bc-black;
+    margin-right: 0.25rem;
+    font-size: 1rem;
+
+    &--application-number {
+      font-size: 1.25rem;
+    }
+  }
+
+  &__info {
+    font-size: 1rem;
+    color: $bc-black;
+
+    &#{&}--application-number {
+      font-size: 1.25rem;
+    }
+
+    &--invalid {
+      color: $bc-red;
+    }
+  }
+
+  &__detail {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  & &__checkbox {
+    padding: 0;
+  }
+}
+
+@media (width<420px) {
+  .shopping-cart-item {
+    gap: 0.5rem;
+    &__info {
+      &#{&}--application-number {
+        font-size: 1rem;
+      }
+    }
+  }
+}

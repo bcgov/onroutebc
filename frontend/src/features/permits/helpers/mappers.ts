@@ -1,10 +1,7 @@
-import { Permit, PermitsActionResponse } from "../types/permit";
+import { PermitsActionResponse } from "../types/permit";
 import { Nullable, Optional } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { PERMIT_APPLICATION_ORIGINS, PermitApplicationOrigin } from "../types/PermitApplicationOrigin";
-import { IDIR_USER_AUTH_GROUP, UserAuthGroupType } from "../../../common/authentication/types";
 import {
-  VehicleSubType,
   Vehicle,
   VehicleType,
   VEHICLE_TYPES,
@@ -13,91 +10,44 @@ import {
 } from "../../manageVehicles/types/Vehicle";
 
 /**
- * This helper function is used to get the vehicle object that matches the vehicleType and id.
- * @param vehicles List of existing vehicles
- * @param vehicleType Type of vehicle
- * @param id string used as a key to find the existing vehicle
- * @returns The found Vehicle object in the provided list, or undefined if not found
+ * Find a vehicle from a list of existing vehicles that matches the vehicle type and id.
+ * @param existingVehicles List of existing vehicles
+ * @param vehicleType Vehicle type
+ * @param vehicleId Vehicle id
+ * @returns The vehicle found in the provided list, or undefined if not found
  */
-export const mapToVehicleObjectById = (
-  vehicles: Optional<Vehicle[]>,
+export const findFromExistingVehicles = (
+  existingVehicles: Vehicle[],
   vehicleType: VehicleType,
-  id: Nullable<string>,
+  vehicleId?: Nullable<string>,
 ): Optional<Vehicle> => {
-  if (!vehicles) return undefined;
-
-  return vehicles.find((item) => {
-    return vehicleType === VEHICLE_TYPES.POWER_UNIT
-      ? item.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
-          (item as PowerUnit).powerUnitId === id
-      : item.vehicleType === VEHICLE_TYPES.TRAILER &&
-          (item as Trailer).trailerId === id;
+  return existingVehicles.find((existingVehicle) => {
+    if (existingVehicle.vehicleType !== vehicleType) return false;
+    return vehicleType === VEHICLE_TYPES.TRAILER
+      ? (existingVehicle as Trailer).trailerId === vehicleId
+      : (existingVehicle as PowerUnit).powerUnitId === vehicleId;
   });
 };
 
 /**
- * Maps the typeCode (Example: GRADERS) to the corresponding Trailer or PowerUnit subtype object, then return that object
- * @param typeCode
- * @param vehicleType
- * @param powerUnitSubTypes
- * @param trailerSubTypes
- * @returns A Vehicle Sub type object
+ * Get full vehicle subtype name by type code.
+ * @param powerUnitSubtypeNamesMap Map of power unit subtypes (typeCode to subtype name)
+ * @param trailerSubtypeNamesMap Map of trailer subtypes (typeCode to subtype name)
+ * @param vehicleType Vehicle type
+ * @param typeCode Type code for a subtype
+ * @returns The found vehicle subtype name, or undefined if not found
  */
-export const mapTypeCodeToObject = (
-  typeCode: string,
+export const getSubtypeNameByCode = (
+  powerUnitSubtypeNamesMap: Map<string, string>,
+  trailerSubtypeNamesMap: Map<string, string>,
   vehicleType: string,
-  powerUnitSubTypes: Nullable<VehicleSubType[]>,
-  trailerSubTypes: Nullable<VehicleSubType[]>,
+  typeCode: string,
 ) => {
-  let typeObject = undefined;
-
-  if (powerUnitSubTypes && vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-    typeObject = powerUnitSubTypes.find((v) => {
-      return v.typeCode == typeCode;
-    });
-  } else if (trailerSubTypes && vehicleType === VEHICLE_TYPES.TRAILER) {
-    typeObject = trailerSubTypes.find((v) => {
-      return v.typeCode == typeCode;
-    });
-  }
-
-  return typeObject;
-};
-
-/**
- * Gets display text for vehicle type.
- * @param vehicleType Vehicle type (powerUnit or trailer)
- * @returns display text for the vehicle type
- */
-export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
   if (vehicleType === VEHICLE_TYPES.TRAILER) {
-    return "Trailer";
+    return trailerSubtypeNamesMap.get(typeCode);
   }
-  return "Power Unit";
-};
 
-/**
- * Get a cloned permit.
- * @param permit Permit to clone
- * @returns Cloned permit with same fields and nested fields as old permit, but different reference
- */
-export const clonePermit = (permit: Permit): Permit => {
-  return {
-    ...permit,
-    permitData: {
-      ...permit.permitData,
-      contactDetails: {
-        ...permit.permitData.contactDetails,
-      },
-      vehicleDetails:{
-        ...permit.permitData.vehicleDetails,
-      },
-      commodities: [...permit.permitData.commodities],
-      mailingAddress: {
-        ...permit.permitData.mailingAddress,
-      },
-    },
-  };
+  return powerUnitSubtypeNamesMap.get(typeCode);
 };
 
 /**
@@ -118,22 +68,4 @@ export const removeEmptyIdsFromPermitsActionResponse = (
     success: successIds,
     failure: failedIds,
   };
-};
-
-/**
- * Determine whether or not a given user can access/delete an application.
- * @param permitApplicationOrigin Permit application origin
- * @param authGroup Auth group of the logged in user
- * @returns Whether or not the user can access/delete the application.
- */
-export const canUserAccessApplication = (
-  permitApplicationOrigin?: Nullable<PermitApplicationOrigin>,
-  authGroup?: Nullable<UserAuthGroupType>,
-) => {
-  if (!authGroup) return false;
-
-  // CV/PA can only access/delete applications whose origins are not "PPC"
-  // Staff can access/delete any application they have access to (including each others')
-  return permitApplicationOrigin !== PERMIT_APPLICATION_ORIGINS.PPC
-    || (Object.values(IDIR_USER_AUTH_GROUP) as UserAuthGroupType[]).includes(authGroup);
 };

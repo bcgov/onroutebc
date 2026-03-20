@@ -1,7 +1,8 @@
-import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { FormProvider } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { isAxiosError } from "axios";
 
 import "./ApplicationForm.scss";
 import { Application, ApplicationFormData } from "../../types/application";
@@ -10,16 +11,39 @@ import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/A
 import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
-import { areApplicationDataEqual } from "../../helpers/equality";
-import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
+import { areApplicationPermitDataEqual } from "../../helpers/equality";
+import { useInitApplicationFormData } from "../../hooks/form/useInitApplicationFormData";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { PERMIT_DURATION_OPTIONS } from "../../constants/constants";
-import { Nullable } from "../../../../common/types/common";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
+import {
+  isNull,
+  isUndefined,
+  Nullable,
+  ORBC_FORM_FEATURES,
+} from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { durationOptionsForPermitType } from "../../helpers/dateSelection";
+import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchLOAs } from "../../../settings/hooks/LOA";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
+import { ApplicationFormContext } from "../../context/ApplicationFormContext";
+import {
+  filterLOAsForPermitType,
+  filterNonExpiredLOAs,
+} from "../../helpers/permitLOA";
+import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
+import { Loading } from "../../../../common/pages/Loading";
+import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
+import { serializePermitData } from "../../helpers/serialize/serializePermitData";
+import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
+import {
+  serializeForCreateApplication,
+  serializeForUpdateApplication,
+} from "../../helpers/serialize/serializeApplication";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -27,53 +51,84 @@ import {
 
 import {
   APPLICATIONS_ROUTES,
+  APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
+  APPLICATION_STEP_CONTEXTS,
+  ApplicationStepContext,
   ERROR_ROUTES,
+  IDIR_ROUTES,
 } from "../../../../routes/constants";
+import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
+import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
+import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
+import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
+
+const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
 /**
- * The first step in creating and submitting an Application.
- * @returns A form for users to create an Application
+ * The first step in creating or saving an Application.
+ * @returns A form component for users to save an Application
  */
 export const ApplicationForm = ({
   permitType,
+  companyId,
+  applicationStepContext,
 }: {
   permitType: PermitType;
+  companyId: number;
+  applicationStepContext: ApplicationStepContext;
 }) => {
-  // The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "application";
-
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
 
+  const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
+
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
+
+  const { data: activeLOAs } = useFetchLOAs(companyId, false);
+  const companyLOAs = useMemo(
+    () => getDefaultRequiredVal([], activeLOAs),
+    [activeLOAs],
+  );
+
+  const { data: specialAuthorizations } =
+    useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
+
   const {
-    companyId,
-    companyLegalName,
-    userDetails,
-    idirUserDetails,
-    onRouteBCClientNumber,
-  } = useContext(OnRouteBCContext);
+    handleSaveVehicle,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+  } = usePermitVehicleManagement(companyId);
 
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
-
-  const companyInfoQuery = useCompanyInfoQuery();
+  const policyEngine = usePolicyEngine(specialAuthorizations);
 
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
-  // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
+  // 1. Get all data needed to initialize the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
-  // 4. Updates form default values when application context data values change
-  const {
-    defaultApplicationDataValues: applicationDefaultValues,
-    formMethods,
-  } = useDefaultApplicationFormData(
-    permitType,
-    applicationContext?.applicationData,
-    companyId,
-    userDetails,
-    companyInfoQuery.data,
+  // 4. Updates form values (override existing ones) whenever the application context data changes
+  const { initialFormData, currentFormData, formMethods } =
+    useInitApplicationFormData({
+      permitType,
+      isLcvDesignated,
+      companyLOAs,
+      inventoryVehicles: allVehiclesFromInventory,
+      companyInfo,
+      applicationData: applicationContext?.applicationData,
+      userDetails,
+      policyEngine,
+      isStaff: isStaffUser,
+    });
+
+  // Applicable LOAs must be:
+  // 1. Applicable for the current permit type
+  // 2. Have expiry date that is on or after the start date for an application
+  const applicableLOAs = filterNonExpiredLOAs(
+    filterLOAsForPermitType(companyLOAs, permitType),
+    currentFormData.permitData.startDate,
   );
 
   const createdDateTime = applyWhenNotNullable(
@@ -86,78 +141,129 @@ export const ApplicationForm = ({
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const companyInfo = companyInfoQuery.data;
-
-  const saveApplicationMutation = useSaveApplicationMutation();
+  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
-
-  const {
-    handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
-  } = usePermitVehicleManagement(
-    applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
-  );
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
 
-  // Helper method to return form field values as an Application object
-  const applicationFormData = (data: FieldValues) => {
-    return {
-      ...data,
-      applicationNumber: applicationContext.applicationData?.applicationNumber,
-      permitData: {
-        ...data.permitData,
-        companyName: companyLegalName,
-        clientNumber: onRouteBCClientNumber,
-        vehicleDetails: {
-          ...data.permitData.vehicleDetails,
-          // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
-          year: !isNaN(Number(data.permitData.vehicleDetails.year))
-            ? Number(data.permitData.vehicleDetails.year)
-            : data.permitData.vehicleDetails.year,
-        },
-      },
-    } as ApplicationFormData;
+  const [policyViolations, setPolicyViolations] = useState<
+    Record<string, string>
+  >({});
+
+  const clearViolation = (fieldReference: string) => {
+    if (fieldReference in policyViolations) {
+      const otherViolations = Object.entries(policyViolations).filter(
+        ([fieldRef]) => fieldRef !== fieldReference,
+      );
+
+      setPolicyViolations(Object.fromEntries(otherViolations));
+    }
+  };
+
+  const triggerPolicyValidation = async () => {
+    const validationResults = await policyEngine?.validate(
+      currentFormData.permitId
+        ? serializeForUpdateApplication(currentFormData)
+        : serializeForCreateApplication(currentFormData),
+    );
+
+    const violations = getDefaultRequiredVal(
+      [],
+      validationResults?.violations
+        .filter(({ fieldReference }) => Boolean(fieldReference))
+        .map((violation) => ({
+          fieldReference: violation.fieldReference as string,
+          message: violation.message,
+        })),
+    );
+
+    const policyViolations = Object.fromEntries(
+      violations.map(({ fieldReference, message }) => [
+        fieldReference,
+        message,
+      ]),
+    );
+
+    // Check if vehicle subtype violations can be overriden by LOA
+    const updatedViolations = shouldOverridePolicyInvalidSubtype(
+      policyViolations,
+      currentFormData.permitData.vehicleDetails.vehicleSubType,
+      currentFormData.permitData.loas,
+    )
+      ? Object.fromEntries(
+          Object.entries(policyViolations).filter(
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+          ),
+        )
+      : policyViolations;
+
+    setPolicyViolations(updatedViolations);
+    return updatedViolations;
+  };
+
+  const isQueueContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
+
+  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
+    {
+      applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+      companyId,
+    },
+  );
+
+  const [assignedUser, setAssignedUser] = useState<string>("");
+
+  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
+
+  const handleCloseApplication = () => {
+    navigate(IDIR_ROUTES.STAFF_HOME);
   };
 
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
-    const currentFormData = applicationFormData(getValues());
-    const savedData = applicationContext.applicationData;
-    if (!savedData) return false;
-
     // Check if all current form field values match field values already saved in application context
-    return areApplicationDataEqual(
-      currentFormData.permitData,
-      savedData.permitData,
+    return areApplicationPermitDataEqual(
+      serializePermitData(currentFormData.permitData),
+      serializePermitData(initialFormData.permitData),
     );
   };
 
   // When "Continue" button is clicked
-  const onContinue = async (data: FieldValues) => {
-    const applicationToBeSaved = applicationFormData(data);
-    const vehicleData = applicationToBeSaved.permitData.vehicleDetails;
+  const onContinue = async (data: ApplicationFormData) => {
+    const updatedViolations = await triggerPolicyValidation();
+
+    // If there are policy engine validation errors, form validation fails unless those violations
+    // can be overriden
+    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+      console.error(updatedViolations);
+      return;
+    }
+
+    const vehicleData = serializePermitVehicleDetails(
+      data.permitData.vehicleDetails,
+    );
+
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(
-      (permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
-      savedVehicleDetails,
-    );
+    await onSaveApplication((permitId) => {
+      return navigate(
+        isQueueContext
+          ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)
+          : APPLICATIONS_ROUTES.REVIEW(permitId),
+      );
+    }, savedVehicleDetails);
   };
 
-  const onSaveSuccess = (
-    savedApplication: Application,
-    status: number,
-  ) => {
+  const onSaveSuccess = (savedApplication: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -167,14 +273,8 @@ export const ApplicationForm = ({
       alertType: "success",
     });
 
-    applicationContext.setApplicationData(
-      savedApplication,
-    );
+    applicationContext.setApplicationData(savedApplication);
     return getDefaultRequiredVal("", savedApplication.permitId);
-  };
-
-  const onSaveFailure = () => {
-    navigate(ERROR_ROUTES.UNEXPECTED);
   };
 
   // Whenever application is to be saved (either through "Save" or "Continue")
@@ -182,51 +282,69 @@ export const ApplicationForm = ({
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (
-      !savedVehicleInventoryDetails &&
-      typeof savedVehicleInventoryDetails !== "undefined"
-    ) {
-      // save vehicle to inventory failed (result is null), go to unexpected error page
-      return onSaveFailure();
+    if (isNull(savedVehicleInventoryDetails)) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const formValues = getValues();
-    const applicationToBeSaved = applicationFormData(
-      !savedVehicleInventoryDetails
-        ? formValues
-        : {
-            ...formValues,
-            permitData: {
-              ...formValues.permitData,
-              vehicleDetails: {
-                ...savedVehicleInventoryDetails,
-                saveVehicle: true,
-              },
+    if (isQueueContext) {
+      const { data: applicationMetaData } = await refetchApplicationMetadata();
+
+      if (idirUserDetails?.userName !== applicationMetaData?.assignedUser) {
+        setAssignedUser(
+          getDefaultRequiredVal("", applicationMetaData?.assignedUser),
+        );
+        setShowUnavailableApplicationModal(true);
+        return;
+      }
+    }
+
+    const applicationToBeSaved = !savedVehicleInventoryDetails
+      ? currentFormData
+      : {
+          ...currentFormData,
+          permitData: {
+            ...currentFormData.permitData,
+            vehicleDetails: {
+              ...savedVehicleInventoryDetails,
+              saveVehicle: true,
             },
           },
-    );
+        };
 
-    const {
-      application: savedApplication,
-      status,
-    } = await saveApplicationMutation.mutateAsync(
-      applicationToBeSaved,
+    await saveApplication(
+      {
+        data: applicationToBeSaved,
+        companyId,
+      },
+      {
+        onSuccess: ({ data, status }) => {
+          const savedApplication = deserializeApplicationResponse(data);
+          const savedPermitId = onSaveSuccess(savedApplication, status);
+          additionalSuccessAction?.(savedPermitId);
+        },
+        onError: (e) => {
+          console.error(e);
+          if (isAxiosError(e)) {
+            navigate(ERROR_ROUTES.UNEXPECTED, {
+              state: {
+                correlationId: e?.response?.headers["x-correlation-id"],
+              },
+            });
+          } else {
+            navigate(ERROR_ROUTES.UNEXPECTED);
+          }
+        },
+      },
     );
-
-    if (savedApplication) {
-      const savedPermitId = onSaveSuccess(
-        savedApplication,
-        status,
-      );
-      additionalSuccessAction?.(savedPermitId);
-    } else {
-      onSaveFailure();
-    }
   };
 
   const onSave = async () => {
     await onSaveApplication((permitId) =>
-      navigate(APPLICATIONS_ROUTES.DETAILS(permitId)),
+      navigate(
+        isQueueContext
+          ? APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId)
+          : APPLICATIONS_ROUTES.DETAILS(permitId),
+      ),
     );
   };
 
@@ -235,45 +353,96 @@ export const ApplicationForm = ({
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
     } else {
-      navigate(APPLICATIONS_ROUTES.BASE);
+      navigate(
+        isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
+      );
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate(APPLICATIONS_ROUTES.BASE);
+    navigate(
+      isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
+    );
   };
 
   const handleStayOnApplication = () => {
     setShowLeaveApplicationDialog(false);
   };
 
+  const durationOptions = durationOptionsForPermitType(permitType, isStaffUser);
+  const pastStartDateStatus = isStaffUser
+    ? PAST_START_DATE_STATUSES.WARNING
+    : PAST_START_DATE_STATUSES.FAIL;
+
+  const rejectionHistory = getDefaultRequiredVal(
+    [],
+    applicationContext.applicationData?.rejectionHistory,
+  );
+
+  const applicationFormContextData = useMemo(
+    () => ({
+      initialFormData,
+      formData: currentFormData,
+      policyEngine,
+      durationOptions,
+      allVehiclesFromInventory,
+      powerUnitSubtypeNamesMap,
+      trailerSubtypeNamesMap,
+      isLcvDesignated,
+      feature: FEATURE,
+      companyInfo,
+      isAmendAction: false,
+      isStaff: isStaffUser,
+      createdDateTime,
+      updatedDateTime,
+      pastStartDateStatus,
+      companyLOAs: applicableLOAs,
+      revisionHistory: [],
+      rejectionHistory,
+      policyViolations,
+      clearViolation,
+      triggerPolicyValidation,
+      onLeave: handleLeaveApplication,
+      onSave,
+      onCancel: undefined,
+      onContinue: handleSubmit(onContinue),
+    }),
+    [
+      initialFormData,
+      currentFormData,
+      policyEngine,
+      durationOptions,
+      allVehiclesFromInventory,
+      powerUnitSubtypeNamesMap,
+      trailerSubtypeNamesMap,
+      isLcvDesignated,
+      companyInfo,
+      isStaffUser,
+      createdDateTime,
+      updatedDateTime,
+      pastStartDateStatus,
+      applicableLOAs,
+      rejectionHistory,
+      policyViolations,
+      clearViolation,
+      triggerPolicyValidation,
+      handleLeaveApplication,
+      onSave,
+      onContinue,
+    ],
+  );
+
+  if (isUndefined(policyEngine)) return <Loading />;
+  if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+
   return (
     <div className="application-form">
       <ApplicationBreadcrumb applicationStep={APPLICATION_STEPS.DETAILS} />
 
       <FormProvider {...formMethods}>
-        <PermitForm
-          feature={FEATURE}
-          onLeave={handleLeaveApplication}
-          onSave={onSave}
-          onContinue={handleSubmit(onContinue)}
-          isAmendAction={false}
-          permitType={applicationDefaultValues.permitType}
-          applicationNumber={applicationDefaultValues.applicationNumber}
-          permitNumber={applicationDefaultValues.permitNumber}
-          createdDateTime={createdDateTime}
-          updatedDateTime={updatedDateTime}
-          permitStartDate={applicationDefaultValues.permitData.startDate}
-          permitDuration={applicationDefaultValues.permitData.permitDuration}
-          permitCommodities={applicationDefaultValues.permitData.commodities}
-          vehicleDetails={applicationDefaultValues.permitData.vehicleDetails}
-          vehicleOptions={vehicleOptions}
-          powerUnitSubTypes={powerUnitSubTypes}
-          trailerSubTypes={trailerSubTypes}
-          companyInfo={companyInfo}
-          durationOptions={PERMIT_DURATION_OPTIONS}
-          doingBusinessAs={doingBusinessAs}
-        />
+        <ApplicationFormContext.Provider value={applicationFormContextData}>
+          <PermitForm />
+        </ApplicationFormContext.Provider>
       </FormProvider>
 
       <LeaveApplicationDialog
@@ -281,6 +450,15 @@ export const ApplicationForm = ({
         onContinueEditing={handleStayOnApplication}
         showDialog={showLeaveApplicationDialog}
       />
+
+      {showUnavailableApplicationModal && (
+        <UnavailableApplicationModal
+          showModal={showUnavailableApplicationModal}
+          onCancel={() => setShowUnavailableApplicationModal(false)}
+          onConfirm={handleCloseApplication}
+          assignedUser={assignedUser}
+        />
+      )}
     </div>
   );
 };

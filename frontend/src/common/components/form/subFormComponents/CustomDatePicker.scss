@@ -1,3 +1,68 @@
-@use "../CustomFormComponents";
+@import "../../../../themes/orbcStyles";
 
-@include CustomFormComponents.custom-form-component(".custom-date-picker");
+.custom-date-picker {
+  & &__form-control {
+    width: 100%;
+  }
+
+  & &__label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  & &__input-container {
+    z-index: 1;
+    color: $bc-black;
+    -webkit-text-fill-color: $bc-black;
+  }
+
+  &__picker {
+    &--disabled {
+      .custom-date-picker {
+        &__input-container {
+          z-index: 1;
+          color: $bc-black;
+          -webkit-text-fill-color: $bc-black;
+        }
+      }
+  
+      svg {
+        z-index: 1;
+      }
+  
+      fieldset {
+        background-color: $bc-background-light-grey;
+        border: 2px solid $bc-text-box-border-grey;
+      }
+    }
+
+    &.Mui-focused, & .Mui-focused {
+      fieldset {
+        border: 2px solid $focus-blue;
+      }
+    }
+
+    &--invalid.Mui-focused,
+    &--invalid .Mui-focused,
+    &--invalid,
+    .Mui-error {
+      fieldset {
+        border: 2px solid $bc-red;
+      }
+    }
+
+    fieldset {
+      border: 2px solid $bc-text-box-border-grey;   
+    }
+  }
+
+  &__helper-text {
+    .custom-date-picker &#{&}--warning {
+      color: $bc-black;
+    }
+
+    .custom-date-picker &#{&}--error {
+      color: $bc-red;
+    }
+  }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>onRouteBC Font Test</title>
+  <style>
+    @font-face {
+      font-family: 'onRouteBC_Configurations';
+      src: url('onRouteBC_Configurations.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: sans-serif;
+      font-size: 2rem;
+      padding: 2rem;
+    }
+
+    .preview-box {
+      font-size: 256pt;
+      border: 1px solid black;
+      padding: 20px;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .woff2 {
+      font-family: 'onRouteBC_Configurations', sans-serif;
+      text-rendering: optimizeLegibility;
+    }
+
+    input {
+      font-size: 1.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    label {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .button-group {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    .font-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <h3>onRouteBC Font Test</h3>
+
+  <label for="fontInput">Test the font below:</label>
+  <input type="text" id="fontInput" placeholder="Type here to test the font…">
+
+  <div class="button-group">
+    <button onclick="setInput('TT1S12D2-1J32T4')">Heavy haul</button>
+    <button onclick="setInput('MC2S1-2A2-3A3--2B4')">Mobile crane</button>
+    <button onclick="setInput('=1U1MU2U2=SU1U3LU2U4')">Universal configuration</button>
+    <button onclick="setInput('=2U1=MU4+U2===XUXUXUEU')">Many axles in a unit</button>
+  </div>
+
+  <section class="preview-box woff2">
+    <div id="previewOutput">Preview</div>
+    <div class="font-buttons">
+      <button onclick="setFontSize(64)">Small</button>
+      <button onclick="setFontSize(128)">Medium</button>
+      <button onclick="setFontSize(256)">Large</button>
+    </div>
+  </section>
+
+  <script>
+    const input = document.getElementById('fontInput');
+    const output = document.getElementById('previewOutput');
+
+    input.addEventListener('input', () => {
+      output.textContent = input.value || 'Preview';
+    });
+
+    function setInput(value) {
+      input.value = value;
+      output.textContent = value;
+    }
+
+    function setFontSize(size) {
+      output.style.fontSize = size + 'pt';
+    }
+  </script>
+</body>
+</html>

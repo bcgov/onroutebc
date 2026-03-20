@@ -1,144 +1,147 @@
-import { Box, MenuItem, Typography } from "@mui/material";
-import { useFormContext } from "react-hook-form";
+import { Box, MenuItem } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect } from "react";
 
 import "./PermitDetails.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
-import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
+import { invalidMaxStartDate, requiredMessage, warnPastStartDate } from "../../../../../../common/helpers/validationMessages";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
-import { getExpiryDate } from "../../../../helpers/permitState";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
-import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
+import { DATE_FORMATS, now } from "../../../../../../common/helpers/formatDate";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { Optional, ORBCFormFeatureType } from "../../../../../../common/types/common";
+import {
+  CustomDatePicker,
+  PAST_START_DATE_STATUSES,
+  PastStartDateStatus,
+} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
 
-import {
-  DATE_FORMATS,
-  getStartOfDate,
-} from "../../../../../../common/helpers/formatDate";
-
 export const PermitDetails = ({
   feature,
-  defaultStartDate,
-  defaultDuration,
-  commoditiesInPermit,
-  applicationNumber,
-  durationOptions,
-  disableStartDate,
   permitType,
+  startDate,
+  minAllowedPastStartDate,
+  maxAllowedFutureStartDate,
+  maxNumDaysAllowedInFuture,
+  expiryDate,
+  allConditions,
+  durationOptions,
+  pastStartDateStatus,
+  onSetConditions,
 }: {
-  feature: string;
-  defaultStartDate: Dayjs;
-  defaultDuration: number;
-  commoditiesInPermit: PermitCommodity[];
-  applicationNumber?: Nullable<string>;
+  feature: ORBCFormFeatureType;
+  permitType: PermitType;
+  startDate: Dayjs;
+  minAllowedPastStartDate?: Optional<Dayjs>;
+  maxAllowedFutureStartDate: Dayjs;
+  maxNumDaysAllowedInFuture: number;
+  expiryDate: Dayjs;
+  allConditions: PermitCondition[];
   durationOptions: {
     value: number;
     label: string;
   }[];
-  disableStartDate: boolean;
-  permitType: PermitType;
+  pastStartDateStatus: PastStartDateStatus;
+  onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const { watch, register, setValue } = useFormContext();
-
-  // watch() is subscribed to fields, and will always have the latest values from the fields
-  // thus, no need to use this in useState and useEffect
-  const rawStartDate = watch("permitData.startDate");
-  const duration = watch("permitData.permitDuration");
-
-  // Permit expiry date === Permit start date + Permit duration - 1
-  const startDate = getStartOfDate(rawStartDate);
-  const expiryDate = getExpiryDate(startDate, duration);
-
-  // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
-  // no need to use useState nor place inside useEffect
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
-  useEffect(() => {
-    // We do need to check if the root form default values (which are from ApplicationContext) are changed,
-    // as watch() doesn't capture when defaultValues are changed
-    // This will explicitly update the startDate and permitDuration fields, and in turn trigger the next useEffect
-    setValue("permitData.startDate", dayjs(defaultStartDate));
-    setValue("permitData.permitDuration", defaultDuration);
-  }, [defaultStartDate, defaultDuration]);
+  const showSingleRoundTripInfoBanner = ([
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.NRSCV,
+  ] as PermitType[]).includes(permitType);
 
-  register("permitData.expiryDate");
-  useEffect(() => {
-    // use setValue to explicitly set the invisible form field for expiry date
-    // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
-    // also, the form field component is accepting a dayJS object
-    setValue("permitData.expiryDate", dayjs(expiryDate));
-    setValue("permitData.feeSummary", `${calculateFeeByDuration(duration)}`);
-  }, [startDate, duration]);
+  const showValidQuarterInfoBanner = isQuarterlyPermit(permitType);
+
+  const startDateWarningMessage =
+    now().isAfter(startDate, "day") &&
+    pastStartDateStatus === PAST_START_DATE_STATUSES.WARNING
+      ? warnPastStartDate()
+      : null;
 
   return (
     <Box className="permit-details">
       <Box className="permit-details__header">
-        <Typography variant={"h3"}>Permit Details</Typography>
+        <h3>Permit Details</h3>
       </Box>
 
       <Box className="permit-details__body">
-        <Box className="permit-details__input-section">
-          <CustomFormComponent
-            type="datePicker"
+        {showSingleRoundTripInfoBanner ? (
+          <InfoBcGovBanner
+            className="permit-details__info-banner--top"
+            msg={BANNER_MESSAGES.PERMIT_SINGLE_ROUND_TRIP}
+          />
+        ) : null}
+
+        {showValidQuarterInfoBanner ? (
+          <InfoBcGovBanner
+            className="permit-details__info-banner--top"
+            msg={BANNER_MESSAGES.PERMIT_START_DATE_VALID_QUARTER}
+          />
+        ) : null}
+
+        <Box className="permit-details__date-selection">
+          <CustomDatePicker
+            className="permit-details__input permit-details__input--start-date"
             feature={feature}
-            options={{
-              name: "permitData.startDate",
-              rules: {
-                required: { value: true, message: requiredMessage() },
-              },
-              label: "Start Date",
-              width: PHONE_WIDTH,
+            name="permitData.startDate"
+            rules={{
+              required: { value: true, message: requiredMessage() },
             }}
-            disabled={disableStartDate}
-            readOnly={disableStartDate}
+            label="Start Date"
+            pastStartDateStatus={pastStartDateStatus}
+            minAllowablePastDate={minAllowedPastStartDate}
+            maxAllowableFutureDate={maxAllowedFutureStartDate}
+            dateWarningMessage={startDateWarningMessage}
+            futureDateErrorMessage={invalidMaxStartDate(maxNumDaysAllowedInFuture)}
           />
 
-          <CustomFormComponent
-            type="select"
-            feature={feature}
-            options={{
-              name: "permitData.permitDuration",
-              rules: {
-                required: { value: true, message: requiredMessage() },
-              },
-              label: "Permit Duration",
-              width: PHONE_WIDTH,
-            }}
-            menuOptions={durationOptions.map((data) => (
-              <MenuItem key={data.value} value={data.value}>
-                {data.label}
-              </MenuItem>
-            ))}
-          />
+          {!isQuarterlyPermit(permitType) ? (
+            <CustomFormComponent
+              className="permit-details__input permit-details__input--duration"
+              type="select"
+              feature={feature}
+              options={{
+                name: "permitData.permitDuration",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                },
+                label: "Permit Duration",
+              }}
+              menuOptions={durationOptions.map((data) => (
+                <MenuItem key={data.value} value={data.value}>
+                  {data.label}
+                </MenuItem>
+              ))}
+            />
+          ) : null}
         </Box>
 
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
 
-        <Box className="permit-details__commodities">
-          <Typography variant="h3" className="commodities-title">
-            Select the commodities below and their respective CVSE forms.
-          </Typography>
+        <Box className="permit-details__conditions">
+          <h4 className="conditions-title">
+            The following CVSE forms will be included in your permit
+          </h4>
 
           <InfoBcGovBanner
             msg={BANNER_MESSAGES.POLICY_REMINDER}
             additionalInfo={
-              <div className="commodities-info">
-                <div className="commodities-info__link">
+              <div className="conditions-info">
+                <div className="conditions-info__link">
                   <CustomExternalLink
                     className="procedures-link"
                     href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
+                    openInNewTab={true}
                     withLinkIcon={true}
                   >
                     <span className="procedures-link__title">
@@ -148,7 +151,7 @@ export const PermitDetails = ({
                   </CustomExternalLink>
                 </div>
 
-                <div className="commodities-info__contact-methods">
+                <div className="conditions-info__contact-methods">
                   For further assistance please contact the Provincial Permit
                   Centre at{" "}
                   <span className="contact-info contact-info--toll-free">
@@ -164,11 +167,8 @@ export const PermitDetails = ({
           />
 
           <ConditionsTable
-            commoditiesInPermit={commoditiesInPermit}
-            applicationWasCreated={
-              applicationNumber != null && applicationNumber !== ""
-            }
-            permitType={permitType}
+            allConditions={allConditions}
+            onSetConditions={onSetConditions}
           />
         </Box>
       </Box>

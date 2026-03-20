@@ -1,0 +1,74 @@
+@import "../../../../../themes/orbcStyles";
+
+.shopping-cart {
+  .cart-changed-warning-banner {
+    margin-bottom: 1.5rem;
+  }
+  
+  &__heading {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+
+  &__actions, .actions {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding-bottom: 1.5rem;
+    width: 100%;
+    border-bottom: 1px solid $bc-border-grey;
+
+    &__select, .select {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+
+      &__checkbox {
+        padding: 0;
+      }
+    }
+
+    &__filter, .filter {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+
+      &__options {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+
+      &__label {
+        margin: 0;
+      }
+
+      &__radio {
+        padding: 0;
+        margin-right: 0.5rem;
+
+        &:hover {
+          background-color: $bc-border-grey;
+        }
+
+        &--checked {
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+
+    &__remove {
+      margin-left: auto;
+      white-space: nowrap;
+    }
+  }
+
+  &__empty {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: $bc-black;
+    padding-top: 1.5rem;
+  }
+}

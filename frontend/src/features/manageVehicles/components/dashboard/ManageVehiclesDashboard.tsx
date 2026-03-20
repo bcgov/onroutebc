@@ -1,18 +1,19 @@
 import { useLocation } from "react-router-dom";
 import { memo } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
+import "./ManageVehiclesDashboard.scss";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
-import { List } from "../list/List";
-import "./ManageVehiclesDashboard.scss";
-import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
-import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
-import { ROLES } from "../../../../common/authentication/types";
+import { VehicleList } from "../vehicleList/VehicleList";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
 import { VEHICLE_TYPES } from "../../types/Vehicle";
+import { usePowerUnitsQuery } from "../../hooks/powerUnits";
+import { useTrailersQuery } from "../../hooks/trailers";
+import { RenderIf } from "../../../../common/components/reusable/RenderIf";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { TabComponentProps } from "../../../../common/components/tabs/types/TabComponentProps";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -35,54 +36,77 @@ const useTabIndexFromURL = (): number => {
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
+  const canViewListOfPowerUnits = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_POWER_UNITS",
+    },
+  });
+
+  const canViewListOfTrailers = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_TRAILERS",
+    },
+  });
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    getCompanyIdFromSession(),
+    0,
+  );
+
   const staleTime = 5000;
-  const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
+  const powerUnitsQuery = usePowerUnitsQuery(
+    companyId,
+    staleTime,
+    canViewListOfPowerUnits,
+  );
+  const trailersQuery = useTrailersQuery(
+    companyId,
+    staleTime,
+    canViewListOfTrailers,
+  );
 
-  const powerUnitQuery = useQuery({
-    queryKey: ["powerUnits"],
-    queryFn: () => getAllPowerUnits(companyId),
-    placeholderData: (prev) => keepPreviousData(prev),
-    staleTime: staleTime,
-  });
-
-  const trailerQuery = useQuery({
-    queryKey: ["trailers"],
-    queryFn: () => getAllTrailers(companyId),
-    placeholderData: (prev) => keepPreviousData(prev),
-    staleTime: staleTime,
-  });
-
-  const tabs = [
-    {
-      label: "Power Unit",
-      component: (
-        <List
-          vehicleType={VEHICLE_TYPES.POWER_UNIT}
-          query={powerUnitQuery}
-          companyId={companyId}
-        />
-      ),
-    },
-    {
-      label: "Trailer",
-      component: (
-        <List
-          vehicleType={VEHICLE_TYPES.TRAILER}
-          query={trailerQuery}
-          companyId={companyId}
-        />
-      ),
-    },
-  ];
+  const tabs: TabComponentProps[] = [
+    canViewListOfPowerUnits
+      ? {
+          label: "Power Unit",
+          component: (
+            <VehicleList
+              vehicleType={VEHICLE_TYPES.POWER_UNIT}
+              query={powerUnitsQuery}
+              companyId={companyId}
+            />
+          ),
+        }
+      : null,
+    canViewListOfTrailers
+      ? {
+          label: "Trailer",
+          component: (
+            <VehicleList
+              vehicleType={VEHICLE_TYPES.TRAILER}
+              query={trailersQuery}
+              companyId={companyId}
+            />
+          ),
+        }
+      : null,
+  ].filter((tab) => Boolean(tab)) as TabComponentProps[];
 
   return (
     <TabLayout
       bannerText="Vehicle Inventory"
       selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
-        DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
-          <AddVehicleButton />
-        ) : undefined
+        <RenderIf
+          component={<AddVehicleButton />}
+          permissionMatrixKeys={{
+            permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+            permissionMatrixFunctionKey: "ADD_VEHICLE",
+          }}
+        />
       }
       componentList={tabs}
     />

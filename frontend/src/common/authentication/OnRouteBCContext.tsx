@@ -1,9 +1,9 @@
 import React, { Dispatch, SetStateAction } from "react";
 import {
-  IDIRUserAuthGroupType,
+  IDIRUserRoleType,
   VerifiedClient,
-  UserRolesType,
-  BCeIDUserAuthGroupType,
+  UserClaimsType,
+  BCeIDUserRoleType,
 } from "./types";
 
 import { Nullable, Optional } from "../types/common";
@@ -16,7 +16,7 @@ export type IDIRUserDetailContext = {
   lastName: string;
   userName: string;
   email: string;
-  userAuthGroup: IDIRUserAuthGroupType;
+  userRole: IDIRUserRoleType;
 };
 
 /**
@@ -31,8 +31,7 @@ export interface BCeIDUserDetailContext {
   phone2?: string;
   phone2Extension?: string;
   email: string;
-  fax?: string;
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
 }
 
 /**
@@ -40,13 +39,13 @@ export interface BCeIDUserDetailContext {
  */
 export type OnRouteBCContextType = {
   /**
-   * React state setter for the user roles of the logged in user.
+   * React state setter for the claims of the logged in user.
    */
-  setUserRoles?: Dispatch<SetStateAction<Nullable<UserRolesType[]>>>;
+  setUserClaims?: Dispatch<SetStateAction<Nullable<UserClaimsType[]>>>;
   /**
-   * The user roles of the logged in user.
+   * The claims of the logged in user.
    */
-  userRoles?: Nullable<UserRolesType[]>;
+  userClaims?: Nullable<UserClaimsType[]>;
   /**
    * React state setter for the clientNumber of the company in context.
    */
@@ -105,15 +104,15 @@ export type OnRouteBCContextType = {
     SetStateAction<Optional<IDIRUserDetailContext>>
   >;
   /**
-   * React state setter for a legacy client details.
+   * React state setter for a legacy client or staff created client details.
    * Used only when the user is new and trying to claim their company.
    */
-  setMigratedClient?: Dispatch<SetStateAction<Optional<VerifiedClient>>>;
+  setUnclaimedClient?: Dispatch<SetStateAction<Optional<VerifiedClient>>>;
   /**
-   * The legacy client details.
+   * The unclaimed client details.
    * Used only when the user is new and trying to claim their company.
    */
-  migratedClient?: VerifiedClient;
+  unclaimedClient?: VerifiedClient;
   /**
    * Is the logged in user a new BCeID user?
    */

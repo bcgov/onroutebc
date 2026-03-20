@@ -1,0 +1,40 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-conditional-licensing-fees-section");
+@include orbcStyles.permit-left-box-style(".review-conditional-licensing-fees-section__header");
+@include orbcStyles.permit-right-box-style(".review-conditional-licensing-fees-section__body");
+
+.review-conditional-licensing-fees-section {
+  &__body {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  & &__radio-group {
+    .conditional-licensing-fee-type {
+      &__radio {
+        padding: 0;
+        margin-right: 0.5rem;
+        color: orbcStyles.$disabled-colour;
+      }
+
+      &__label {
+        color: orbcStyles.$bc-black;
+      }
+
+      &__link {
+        margin-left: 0.25rem;
+      }
+    }
+  }  
+}
+
+@media (width < 370px) {
+  .review-conditional-licensing-fees-section {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+      display: block;
+    }
+  }
+}

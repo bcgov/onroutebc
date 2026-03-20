@@ -12,11 +12,19 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER TABLE [dbo].[TABLENAME] ADD
-	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[DB_CREATE_USERID] [varchar](63) NOT NULL,
-	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
-	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
-	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL;
+   [APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
+   [APP_CREATE_USERID] [nvarchar](30) NULL,
+   [APP_CREATE_USER_GUID] [char](32) NULL,
+   [APP_CREATE_USER_DIRECTORY] [nvarchar](30) NULL,
+   [APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+   [APP_LAST_UPDATE_USER_GUID] [char](32) NULL,
+   [APP_LAST_UPDATE_USER_DIRECTORY] [nvarchar](30) NULL,
+   [CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+   [DB_CREATE_USERID] [varchar](63) NOT NULL,
+   [DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+   [DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+   [DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL
+
 
 ALTER TABLE [dbo].[TABLENAME] ADD  CONSTRAINT [DF_TABLENAME_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
@@ -28,6 +36,27 @@ ALTER TABLE [dbo].[TABLENAME] ADD  CONSTRAINT [DF_TABLENAME_DB_CREATE_USERID]  D
 GO
 
 ALTER TABLE [dbo].[TABLENAME] ADD  CONSTRAINT [DF_TABLENAME_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created by the application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The userid of the application user that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The guid of the application user that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory of the application user that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was last updated by the application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The guid of the application user that last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory of the application user that last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'TABLENAME', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'

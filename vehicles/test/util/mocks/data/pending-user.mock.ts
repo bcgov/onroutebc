@@ -1,5 +1,5 @@
 import { baseDtoMock, baseEntityMock } from './base.mock';
-import { ClientUserAuthGroup } from '../../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../src/common/enum/user-role.enum';
 import { PendingUser } from '../../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { UpdatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
 import { CreatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
@@ -10,17 +10,17 @@ export const redCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 1,
   companyId: constants.RED_COMPANY_ID,
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 
 export const updateRedCompanyPendingUserDtoMock: UpdatePendingUserDto = {
-  userAuthGroup: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+  userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
 };
 
 export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
 };
 
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
@@ -34,17 +34,17 @@ export const blueCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 2,
   companyId: constants.BLUE_COMPANY_ID,
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 
 export const updateBlueCompanyPendingUserDtoMock: UpdatePendingUserDto = {
-  userAuthGroup: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+  userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
 };
 
 export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
 };
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,

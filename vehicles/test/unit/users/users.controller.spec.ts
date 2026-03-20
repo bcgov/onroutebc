@@ -17,8 +17,11 @@ import {
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
-import { IDIRUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;
@@ -28,15 +31,32 @@ interface FindUsersDtoMockParameters {
   companyId?: number[];
 }
 
+let cacheManager: DeepMocked<Cache>;
+
 describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     userService = createMock<UsersService>();
+    cacheManager = createMock<Cache>();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ThrottlerModule.forRoot({
+          throttlers: [
+            {
+              ttl: +process.env.PUBLIC_API_THROTTLER_TTL_MS || 60000,
+              limit: +process.env.PUBLIC_API_RATE_LIMIT || 100,
+            },
+          ],
+        }),
+      ],
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: userService }],
+      providers: [
+        { provide: UsersService, useValue: userService },
+        { provide: CACHE_MANAGER, useValue: cacheManager },
+        { provide: APP_GUARD, useValue: ThrottlerGuard },
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -72,13 +92,13 @@ describe('UsersController', () => {
       request.user = redCompanyAdminUserJWTMock;
       const currentUser = request.user as IUserJWT;
 
-      userService.getRolesForUser.mockResolvedValue(currentUser.roles);
-      const retUserRoles = await controller.getRolesForUsers(request, {
+      userService.getClaimsForUser.mockResolvedValue(currentUser.claims);
+      const retUserRoles = await controller.getClaimsForUsers(request, {
         companyId: constants.RED_COMPANY_ID,
       });
       expect(typeof retUserRoles).toBe('object');
 
-      expect(userService.getRolesForUser).toHaveBeenCalledWith(
+      expect(userService.getClaimsForUser).toHaveBeenCalledWith(
         currentUser.userGUID,
         constants.RED_COMPANY_ID,
       );
@@ -97,7 +117,7 @@ describe('UsersController', () => {
 
       const getStaffUserQueryParamsDto: GetStaffUserQueryParamsDto = {
         permitIssuerPPCUser: false,
-        userAuthGroup: IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        userRole: IDIRUserRole.SYSTEM_ADMINISTRATOR,
       };
       const retUsers = await controller.findAll(
         request,

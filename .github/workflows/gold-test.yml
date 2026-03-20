@@ -1,0 +1,67 @@
+---
+name: Deploy Test (Gold)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "test"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "test"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  
+jobs:
+  deploy-test-gold:
+    name: Deploys Test (Gold)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: gold-test
+      release: test
+      tag: ${{ inputs.tag }}
+      params: |
+        --set-string global.domain='apps.gold.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-gold' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='test' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \
+        ${{ inputs.params }} \
+  
+  deploy-test-golddr:
+    name: Deploys Test (Golddr)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: golddr-test
+      release: test
+      tag: ${{ inputs.tag }}
+      params: |
+        --set-string global.domain='apps.golddr.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-golddr' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='test' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \
+        ${{ inputs.params }} \

@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 
 import {
+  MRT_Cell,
   MRT_ColumnDef,
+  MRT_Row,
+  MRT_RowSelectionState,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -18,6 +21,7 @@ import {
 import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
+  isZeroAmount,
 } from "../../../helpers/feeSummary";
 
 import {
@@ -25,32 +29,49 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
+import { RefundFormData } from "../types/RefundFormData";
+import { RefundAmountInput } from "./RefundAmountInput";
+import { RefundTransactionIdInput } from "./RefundTransactionIdInput";
+import { ChequeRefundCheckbox } from "./ChequeRefundCheckbox";
+import { StatusChip } from "../../../../settings/components/creditAccount/StatusChip";
+import { CreditAccountStatusType } from "../../../../settings/types/creditAccount";
 
 export const TransactionHistoryTable = ({
   permitHistory,
+  totalRefundDue,
+  rowSelection,
+  setRowSelection,
 }: {
   permitHistory: PermitHistory[];
+  totalRefundDue: number;
+  rowSelection: MRT_RowSelectionState;
+  setRowSelection: (rowSelection: MRT_RowSelectionState) => void;
 }) => {
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(
+  const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
+    return (
+      !isTransactionTypeRefund(row.original.transactionTypeId) &&
+      !isZeroAmount(row.original.transactionAmount) &&
+      totalRefundDue !== 0
+    );
+  };
+
+  const columns = useMemo<MRT_ColumnDef<RefundFormData>[]>(
     () => [
       {
         accessorKey: "permitNumber",
         header: "Permit #",
-        muiTableHeadCellProps: {
-          className:
-            "transaction-history-table__header transaction-history-table__header--permit",
-        },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__data transaction-history-table__data--permit",
-        },
-        size: 150,
+        size: 160,
         enableSorting: false,
         enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
+          <div className="cell__inner ">
+            <div className="cell__value">{cell.getValue<string>()}</div>
+          </div>
+        ),
       },
       {
         accessorFn: (originalRow) => {
@@ -61,37 +82,44 @@ export const TransactionHistoryTable = ({
         },
         id: "paymentMethod",
         header: "Payment Method",
-        muiTableHeadCellProps: {
-          className:
-            "transaction-history-table__header transaction-history-table__header--payment",
-        },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__data transaction-history-table__data--payment",
-        },
-        size: 200,
-        enableSorting: false,
-        enableColumnActions: false,
-      },
-      {
-        accessorFn: (originalRow) =>
-          getDefaultRequiredVal(
-            originalRow.transactionOrderNumber,
-            originalRow.pgTransactionId,
-          ),
-        id: "providerTransactionId",
-        header: "Transaction ID",
-        muiTableHeadCellProps: {
-          className:
-            "transaction-history-table__header transaction-history-table__header--transaction",
-        },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__data transaction-history-table__data--transaction",
-        },
         size: 100,
         enableSorting: false,
         enableColumnActions: false,
+        Cell: ({
+          row,
+          cell,
+        }: {
+          row: MRT_Row<RefundFormData>;
+          cell: MRT_Cell<RefundFormData>;
+        }) => (
+          <div className="cell__inner ">
+            <div className="cell__value">
+              {cell.getValue<string>()}
+              {row?.original?.creditAccountStatusType && (
+                <StatusChip
+                  status={
+                    row?.original
+                      ?.creditAccountStatusType as CreditAccountStatusType
+                  }
+                />
+              )}
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorFn: (originalRow) =>
+          getDefaultRequiredVal("", originalRow.pgTransactionId),
+        id: "providerTransactionId",
+        header: "Provider Tran ID",
+        size: 100,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
+          <div className="cell__inner ">
+            <div className="cell__value">{cell.getValue<string>()}</div>
+          </div>
+        ),
       },
       {
         accessorFn: (originalRow) => {
@@ -104,48 +132,121 @@ export const TransactionHistoryTable = ({
           );
         },
         header: "Amount (CAD)",
-        muiTableHeadCellProps: {
-          className:
-            "transaction-history-table__header transaction-history-table__header--amount",
-          align: "right",
-        },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__data transaction-history-table__data--amount",
-          align: "right",
-        },
         id: "transactionAmount",
-        size: 50,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
+          <div className="cell__inner ">
+            <div className="cell__value">{cell.getValue<string>()}</div>
+          </div>
+        ),
+      },
+      {
+        id: "refundAmount",
+        header: "Refund Amount (CAD)",
+        size: 100,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
+          return (
+            isRowSelectable(cell.row) && (
+              <div className="cell__inner">
+                <RefundAmountInput cell={cell} />
+              </div>
+            )
+          );
+        },
+      },
+      {
+        id: "refundTransactionId",
+        header: "Refund Tran ID",
+        size: 100,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
+          return (
+            isRowSelectable(cell.row) && (
+              <RefundTransactionIdInput cell={cell} />
+            )
+          );
+        },
+      },
+      {
+        id: "chequeRefund",
+        header: "",
+        size: 100,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
+          return (
+            isRowSelectable(cell.row) && (
+              <div className="cell__inner">
+                <ChequeRefundCheckbox cell={cell} />
+              </div>
+            )
+          );
+        },
       },
     ],
-    [],
+    [totalRefundDue],
   );
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
     data: validTransactionHistory,
-    enableRowActions: false,
-    enableGlobalFilter: false,
-    enableTopToolbar: false,
-    enableBottomToolbar: false,
-    enableRowSelection: false,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      ...defaultTableStateOptions,
+      rowSelection,
+      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
+    },
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
     },
-    state: {
-      ...defaultTableStateOptions,
+    getRowId: (row: RefundFormData) => row.permitNumber,
+    displayColumnDefOptions: {
+      "mrt-row-select": {
+        size: 10,
+        header: "",
+      },
     },
+    enableRowActions: false,
+    enableGlobalFilter: false,
+    enableTopToolbar: false,
+    enableBottomToolbar: false,
+    enableRowSelection: (row: MRT_Row<RefundFormData>) => isRowSelectable(row),
+    enableSelectAll: false,
+    muiSelectCheckboxProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
+      className: `transaction-history-table__checkbox ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
+    }),
     muiTablePaperProps: {
       className: "transaction-history-table",
     },
     muiTableContainerProps: {
-      className: "transaction-history-table__table",
+      className: "transaction-history-table__container",
+    },
+    muiTableHeadProps: {
+      className: "transaction-history-table__header",
+    },
+    muiTableHeadCellProps: {
+      className:
+        "transaction-history-table__cell transaction-history-table__cell--header",
+    },
+    muiTableBodyRowProps: ({ row }) => ({
+      className: `transaction-history-table__row ${row.getIsSelected() && "transaction-history-table__row--selected"}`,
+    }),
+    muiTableBodyCellProps: {
+      className:
+        "transaction-history-table__cell transaction-history-table__cell--body",
     },
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+    </>
+  );
 };

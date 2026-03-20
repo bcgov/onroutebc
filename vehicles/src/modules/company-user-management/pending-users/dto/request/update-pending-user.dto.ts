@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ClientUserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../../common/enum/user-role.enum';
 import { IsEnum } from 'class-validator';
 
 /**
@@ -10,10 +10,10 @@ import { IsEnum } from 'class-validator';
 export class UpdatePendingUserDto {
   @AutoMap()
   @ApiProperty({
-    enum: ClientUserAuthGroup,
-    description: 'The user auth group.',
-    example: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    enum: ClientUserRole,
+    description: 'The user role.',
+    example: ClientUserRole.COMPANY_ADMINISTRATOR,
   })
-  @IsEnum(ClientUserAuthGroup)
-  userAuthGroup: ClientUserAuthGroup;
+  @IsEnum(ClientUserRole)
+  userRole: ClientUserRole;
 }

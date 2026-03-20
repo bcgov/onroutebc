@@ -1,0 +1,13 @@
+.add-vehicle {
+  & &__label {
+    font-weight: bold;
+  }
+
+  & &__icon {
+    margin-left: 1rem;
+  }
+
+  & &__popper {
+    z-index: 5;
+  }
+}

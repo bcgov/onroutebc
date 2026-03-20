@@ -1,0 +1,18 @@
+@import "../../../../../themes/orbcStyles";
+
+.allowed-indicator {
+  display: flex;
+  align-items: center;
+  
+  & &__icon {
+    font-size: 1.5rem;
+    color: $bc-green;
+  }
+
+  & &__label {
+    margin-left: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: $bc-green;
+  }
+}

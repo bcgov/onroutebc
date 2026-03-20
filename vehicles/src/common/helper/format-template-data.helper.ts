@@ -9,6 +9,13 @@ import {
   PermitTemplateData,
 } from '../interface/permit.template.interface';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
+import { formatAmount } from './payment.helper';
+import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import {
+  THIRD_PARTY_LIABILITY_DANGEROUS_GOODS,
+  THIRD_PARTY_LIABILITY_GENERAL_GOODS,
+} from '../constants/api.constant';
+import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -21,7 +28,7 @@ export const formatTemplateData = (
   permit: Permit,
   fullNames: FullNamesForDgen,
   companyInfo: Company,
-  revisitionHisotry: Permit[],
+  revisionHistory?: Permit[],
 ) => {
   // Create a new template object that includes the formatted values used in the templated word documents
   const template: PermitTemplateData = {
@@ -36,6 +43,11 @@ export const formatTemplateData = (
     issuedBy: '',
     revisions: [],
     permitData: null,
+    loas: '',
+    permitIssueDateTime: '',
+    revisionIssueDateTime: '',
+    thirdPartyLiability: '',
+    conditionalLicensingFee: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -67,6 +79,12 @@ export const formatTemplateData = (
     'MMM. D, YYYY',
   );
 
+  // Format Commodity Name
+  if (template.permitData?.permittedCommodity?.commodityType) {
+    template.permitData.permittedCommodity.commodityType =
+      fullNames.commodityTypeName;
+  }
+
   // Format Vehicle Details
   template.permitData.vehicleDetails.vehicleType = fullNames.vehicleTypeName;
   template.permitData.vehicleDetails.vehicleSubType =
@@ -74,6 +92,10 @@ export const formatTemplateData = (
   template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
     fullNames.mailingProvinceName;
+  if (template.permitData?.vehicleConfiguration?.trailers?.length) {
+    template.permitData.vehicleConfiguration.trailers =
+      fullNames.vehicleConfigurationTrailers;
+  }
 
   // Format Mailing Address
   template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryName;
@@ -85,28 +107,89 @@ export const formatTemplateData = (
   template.clientNumber = companyInfo.clientNumber;
   template.companyAlternateName = companyInfo.alternateName;
 
-  // Format Fee Summary
-  template.permitData.feeSummary =
-    template.permitData.permitDuration.toString(); // TODO: get from frontend
+  const transcation = permit.permitTransactions?.at(0)?.transaction;
 
-  revisitionHisotry.forEach((revision) => {
+  // Format Fee Summary
+  template.permitData.feeSummary = formatAmount(
+    transcation.transactionTypeId,
+    permit.permitTransactions?.reduce(
+      (accumulator, item) => accumulator + item.transactionAmount,
+      0,
+    ),
+  ).toString();
+
+  if (permit.revision > 0) {
+    template.revisionIssueDateTime = convertUtcToPt(
+      permit.permitIssueDateTime,
+      'MMM. D, YYYY, hh:mm a Z',
+    );
+  }
+
+  revisionHistory?.forEach((revision) => {
     if (
       revision.permitStatus == ApplicationStatus.ISSUED ||
       revision.permitStatus == ApplicationStatus.VOIDED ||
       revision.permitStatus == ApplicationStatus.REVOKED ||
-      revision.permitId === permit.permitId
+      revision.permitStatus == ApplicationStatus.SUPERSEDED
     ) {
-      template.revisions.push({
-        timeStamp: convertUtcToPt(
-          revision.permitId === permit.permitId
-            ? permit.permitIssueDateTime
-            : revision.permitIssueDateTime,
+      if (permit.originalPermitId === revision.permitId) {
+        template.permitIssueDateTime = convertUtcToPt(
+          revision.permitIssueDateTime,
           'MMM. D, YYYY, hh:mm a Z',
-        ),
-        description: revision.comment,
-      });
+        );
+      } else {
+        template.revisions.push({
+          timeStamp: convertUtcToPt(
+            revision.permitIssueDateTime,
+            'MMM. D, YYYY, hh:mm a Z',
+          ),
+          description: revision.comment,
+        });
+      }
     }
   });
+
+  switch (template?.permitData?.thirdPartyLiability) {
+    case ThirdPartyLiability.DANGEROUS_GOODS:
+      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_DANGEROUS_GOODS;
+      break;
+    case ThirdPartyLiability.GENERAL_GOODS:
+      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_GENERAL_GOODS;
+      break;
+    default:
+      template.thirdPartyLiability = '';
+  }
+
+  switch (template?.permitData?.conditionalLicensingFee) {
+    case ConditionalLicensingFee.NONE:
+      template.conditionalLicensingFee =
+        constants.CONDITIONAL_LICENSING_NONE_TEXT;
+      break;
+    case ConditionalLicensingFee.CONDITIONAL_LICENSING_FEE_RATE:
+      template.conditionalLicensingFee =
+        constants.CONDITIONAL_LICENSING_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE:
+      template.conditionalLicensingFee =
+        constants.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.FARM_VEHICLE_FEE_RATE:
+      template.conditionalLicensingFee = constants.FARM_VEHICLE_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.FARM_TRACTOR_FEE_RATE:
+      template.conditionalLicensingFee = constants.FARM_TRACTOR_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE:
+      template.conditionalLicensingFee =
+        constants.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE_TEXT;
+      break;
+    default:
+      template.conditionalLicensingFee = '';
+  }
+
+  template.loas = template?.permitData?.loas
+    ?.map((item) => item?.loaNumber)
+    .join(', ');
 
   return template;
 };

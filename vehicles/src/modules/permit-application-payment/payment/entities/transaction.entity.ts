@@ -3,8 +3,9 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
   OneToMany,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../../common/entities/base.entity';
@@ -13,6 +14,8 @@ import { PaymentMethodType } from '../../../../common/enum/payment-method-type.e
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PermitTransaction } from './permit-transaction.entity';
 import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
+import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
+import { Nullable } from '../../../../common/types/common';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -86,13 +89,25 @@ export class Transaction extends Base {
       'Represents the date and time that the transaction was submitted (user clicks Pay Now).',
   })
   @Column({
-    insert: false,
+    insert: true,
     update: false,
     default: () => 'GETUTCDATETIME()',
     name: 'TRANSACTION_SUBMIT_DATE',
     nullable: false,
   })
   transactionSubmitDate: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-06T14:49:53.508Z',
+    description:
+      'Represents the date and time that the transaction was approved in ORBC.',
+  })
+  @Column({
+    name: 'TRANSACTION_APPROVED_DATE',
+    nullable: true,
+  })
+  transactionApprovedDate?: Date;
 
   // TODO: Max length is 10?
   @AutoMap()
@@ -106,6 +121,17 @@ export class Transaction extends Base {
     nullable: false,
   })
   transactionOrderNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'Provincial Permit Center',
+    description: 'Represents who paid for the transaction',
+  })
+  @Column({
+    length: '100',
+    name: 'PAYER_NAME',
+  })
+  payerName: string;
 
   @AutoMap()
   @ApiProperty({
@@ -211,8 +237,21 @@ export class Transaction extends Base {
   })
   pgMessageText: string;
 
-  @OneToOne(() => Receipt, (receipt) => receipt.transaction)
-  receipt: Receipt;
+  @AutoMap()
+  @ManyToOne(
+    () => CreditAccount,
+    (creditAccount) => creditAccount.transactions,
+    {
+      cascade: false,
+      eager: false,
+    },
+  )
+  @JoinColumn({ name: 'CREDIT_ACCOUNT_ID' })
+  public creditAccount?: Nullable<CreditAccount>;
+
+  @ManyToOne(() => Receipt, (receipt) => receipt.transactions)
+  @JoinColumn({ name: 'RECEIPT_ID' })
+  public receipt: Receipt;
 
   @OneToMany(
     () => PermitTransaction,

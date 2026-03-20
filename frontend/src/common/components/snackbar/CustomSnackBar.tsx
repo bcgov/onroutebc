@@ -1,4 +1,13 @@
 import { Alert, Snackbar } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExclamationCircle,
+  faCheckCircle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
+
+export type SnackbarAlertType = "info" | "error" | "success";
 
 /**
  * Type for displaying snackbar (aka toast message) after an operation.
@@ -7,7 +16,7 @@ export interface SnackBarOptions {
   showSnackbar: boolean;
   setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
   message: string;
-  alertType: "info" | "error" | "success";
+  alertType: SnackbarAlertType;
 }
 
 /**
@@ -24,7 +33,7 @@ export const CustomSnackbar = ({
   alertType,
 }: SnackBarOptions) => {
   const vertical = "top";
-  const horizontal = "right";
+  const horizontal = "center";
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -46,7 +55,31 @@ export const CustomSnackbar = ({
       <Alert
         onClose={handleClose}
         severity={alertType}
-        sx={{ width: "100%", borderRadius: "40px" }}
+        sx={{
+          boxShadow: "0 0 1rem #31313229",
+        }}
+        // hide close button
+        action={<></>}
+        iconMapping={{
+          success: (
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              color={BC_COLOURS.bc_messages_green_text}
+            />
+          ),
+          info: (
+            <FontAwesomeIcon
+              icon={faInfoCircle}
+              color={BC_COLOURS.bc_primary_blue}
+            />
+          ),
+          error: (
+            <FontAwesomeIcon
+              icon={faExclamationCircle}
+              color={BC_COLOURS.bc_messages_red_text}
+            />
+          ),
+        }}
       >
         {message}
       </Alert>

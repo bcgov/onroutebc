@@ -122,10 +122,10 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
+    queryBuilder.andWhere('trans.transactionApprovedDate >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
     });
-    queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
+    queryBuilder.andWhere('trans.transactionApprovedDate < :toDateTime', {
       toDateTime: reportDto.toDateTime,
     });
 
@@ -596,10 +596,10 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
+    queryBuilder.andWhere('trans.transactionApprovedDate >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
     });
-    queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
+    queryBuilder.andWhere('trans.transactionApprovedDate < :toDateTime', {
       toDateTime: reportDto.toDateTime,
     });
 

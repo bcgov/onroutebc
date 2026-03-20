@@ -42,7 +42,7 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('Vehicles API')
       .setDescription('The vehicles API description')
-      .setVersion('1.0')
+      .setVersion(process.env.RELEASE_NUM ?? '1.0')
       .addBearerAuth()
       .build();
 

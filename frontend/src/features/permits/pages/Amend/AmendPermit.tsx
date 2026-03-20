@@ -1,5 +1,10 @@
-import { useState, useEffect, useContext, useMemo } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, useMemo, useContext } from "react";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
@@ -8,14 +13,19 @@ import { Banner } from "../../../../common/components/dashboard/components/banne
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
 import { Loading } from "../../../../common/pages/Loading";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  ERROR_ROUTES,
+  IDIR_ROUTES,
+} from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { Application } from "../../types/application";
 import { Nullable } from "../../../../common/types/common";
 import {
@@ -25,9 +35,13 @@ import {
 } from "../../hooks/hooks";
 
 import {
+  PERMIT_ACTION_ORIGINS,
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
+import { PERMIT_TABS } from "../../types/PermitTabs";
+import { USER_ROLE } from "../../../../common/authentication/types";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -62,35 +76,39 @@ const isAmendable = (permit: Permit) => {
   );
 };
 
-const isAmendableByUser = (authGroup?: string) => {
-  return (
-    authGroup === USER_AUTH_GROUP.PPC_CLERK ||
-    authGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR
-  );
-};
-
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchString=`;
 
 export const AmendPermit = () => {
-  const { permitId } = useParams();
+  const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
   const { idirUserDetails } = useContext(OnRouteBCContext);
+  const { state: stateFromNavigation } = useLocation();
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
+  const permitId = getDefaultRequiredVal("", permitIdParam);
+
   const navigate = useNavigate();
 
   // Query for permit data whenever this page is rendered, for the permit id
-  const { data: permit } = usePermitDetailsQuery(permitId);
+  const { data: permit } = usePermitDetailsQuery(companyId, permitId);
 
   // Get original permit id for the permit
-  const originalPermitId = permit?.originalPermitId;
+  const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
 
   // Get permit history for original permit id
-  const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
+  const permitHistoryQuery = usePermitHistoryQuery(companyId, originalPermitId);
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
   // Get latest amendment application for the permit, if any
-  const { data: latestAmendmentApplication } =
-    useAmendmentApplicationQuery(originalPermitId);
+  const { data: latestAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
 
   const isLoadingState = () => {
     return (
@@ -120,8 +138,27 @@ export const AmendPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}${getBasePermitNumber()}`;
 
-  const goHome = () => navigate(-1);
-  const goHomeSuccess = () => navigate(fullSearchRoute);
+  const goHome = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(-1);
+
+  const goHomeSuccess = () =>
+    stateFromNavigation.permitActionOrigin ===
+    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(fullSearchRoute);
 
   const allLinks = [
     {
@@ -184,11 +221,22 @@ export const AmendPermit = () => {
     ],
   );
 
+  
   if (isLoadingState()) {
     return <Loading />;
   }
 
-  if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
+
+  // unable to use permission matrix in this component, using manual role check instead
+  const canAmendPermit = (role?: string) => {
+    return (
+      role === USER_ROLE.PPC_CLERK ||
+      role === USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      role === USER_ROLE.CTPO
+    );
+  };
+
+  if (!canAmendPermit(idirUserDetails?.userRole)) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

@@ -50,7 +50,6 @@ export const redCompanyEntityMock: Company = {
   mailingAddress: { ...redCompanyAddressEntityMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: constants.RED_COMPANY_PHONE_1_EXT,
-  fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...redCompanyContactEntityMock },
   accountRegion: constants.RED_COMPANY_ACCOUNT_REGION,
@@ -69,7 +68,6 @@ export const createRedCompanyDtoMock: CreateCompanyDto = {
   mailingAddress: { ...createRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: constants.RED_COMPANY_PHONE_1_EXT,
-  fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...createRedCompanyContactDtoMock },
   adminUser: { ...createRedCompanyAdminUserDtoMock },
@@ -81,7 +79,6 @@ export const updateRedCompanyDtoMock: UpdateCompanyDto = {
   mailingAddress: { ...updateRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: null,
-  fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...updateRedCompanyContactDtoMock },
 };
@@ -89,13 +86,13 @@ export const updateRedCompanyDtoMock: UpdateCompanyDto = {
 export const readRedCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.RED_COMPANY_ID,
   companyGUID: constants.RED_COMPANY_GUID,
+  directory: constants.RED_COMPANY_DIRECOTRY,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   mailingAddress: { ...readRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: constants.RED_COMPANY_PHONE_1_EXT,
-  fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...readRedCompanyContactDtoMock },
   isSuspended: constants.RED_COMPANY_SUSPEND,
@@ -120,11 +117,13 @@ export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
 
 export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.RED_COMPANY_ID,
+  companyGUID: constants.RED_COMPANY_GUID,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   email: constants.RED_COMPANY_EMAIL,
   isSuspended: constants.RED_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 /**
@@ -141,7 +140,6 @@ export const blueCompanyEntityMock: Company = {
   mailingAddress: { ...blueCompanyAddressEntityMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: constants.BLUE_COMPANY_PHONE_1_EXT,
-  fax: constants.BLUE_COMPANY_FAX,
   email: constants.BLUE_COMPANY_EMAIL,
   primaryContact: { ...blueCompanyContactEntityMock },
   accountRegion: constants.BLUE_COMPANY_ACCOUNT_REGION,
@@ -160,7 +158,6 @@ export const createBlueCompanyDtoMock: CreateCompanyDto = {
   mailingAddress: { ...createBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: constants.BLUE_COMPANY_PHONE_1_EXT,
-  fax: constants.BLUE_COMPANY_FAX,
   email: constants.BLUE_COMPANY_EMAIL,
   primaryContact: { ...createBlueCompanyContactDtoMock },
   adminUser: { ...createBlueCompanyAdminUserDtoMock },
@@ -172,7 +169,6 @@ export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
   mailingAddress: { ...updateBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: null,
-  fax: constants.BLUE_COMPANY_FAX,
   email: constants.BLUE_COMPANY_EMAIL,
   primaryContact: { ...updateBlueCompanyContactDtoMock },
 };
@@ -180,13 +176,13 @@ export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
 export const readBlueCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.BLUE_COMPANY_ID,
   companyGUID: constants.BLUE_COMPANY_GUID,
+  directory: constants.BLUE_COMPANY_DIRECOTRY,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   mailingAddress: { ...readBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: constants.BLUE_COMPANY_PHONE_1_EXT,
-  fax: constants.BLUE_COMPANY_FAX,
   email: constants.BLUE_COMPANY_EMAIL,
   primaryContact: { ...readBlueCompanyContactDtoMock },
   isSuspended: constants.BLUE_COMPANY_SUSPEND,
@@ -199,11 +195,13 @@ export const readBlueCompanyUserDtoMock: ReadCompanyUserDto = {
 
 export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.BLUE_COMPANY_ID,
+  companyGUID: constants.BLUE_COMPANY_GUID,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   email: constants.BLUE_COMPANY_EMAIL,
   isSuspended: constants.BLUE_COMPANY_SUSPEND,
+  directory: constants.RED_COMPANY_DIRECOTRY,
 };
 
 export const COMPANY_LIST: Company[] = [

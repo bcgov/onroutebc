@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
@@ -13,8 +13,6 @@ import {
 import { SnackBarContext } from "../../../App";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { Trash } from "../../../common/components/table/options/Trash";
-import { ONE_HOUR } from "../../../common/constants/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -33,6 +31,8 @@ import {
 } from "../types/manageProfile.d";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import "./UserManagement.scss";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
+import { DeleteButton } from "../../../common/components/buttons/DeleteButton";
 
 /**
  * User Management Component for CV Client.
@@ -41,7 +41,9 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    staleTime: ONE_HOUR,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
   const { data, isError, isLoading } = query;
   const { setSnackBar } = useContext(SnackBarContext);
@@ -128,6 +130,20 @@ export const UserManagement = () => {
     }
   }, [isError]);
 
+  const canRemoveUser = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "REMOVE_USER",
+    },
+  });
+
+  const canEditUser = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "EDIT_USER",
+    },
+  });
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: UserManagementColumnsDefinition,
@@ -148,6 +164,9 @@ export const UserManagement = () => {
     enableRowSelection: (
       row: MRT_Row<ReadUserInformationResponse>,
     ): boolean => {
+      if (!canRemoveUser) {
+        return false;
+      }
       if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
         return false;
       }
@@ -169,7 +188,10 @@ export const UserManagement = () => {
     },
     renderRowActions: useCallback(
       ({ row }: { row: MRT_Row<ReadUserInformationResponse> }) => {
-        if (row.original.statusCode === BCeID_USER_STATUS.ACTIVE) {
+        if (
+          row.original.statusCode === BCeID_USER_STATUS.ACTIVE &&
+          canEditUser
+        ) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <UserManagementTableRowActions userGUID={row.original.userGUID} />
@@ -181,10 +203,13 @@ export const UserManagement = () => {
       },
       [],
     ),
-    renderToolbarInternalActions: useCallback(
+    renderTopToolbar: useCallback(
       () => (
-        <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+        <Box className="table-container__delete-button">
+          <DeleteButton
+            onClick={onClickTrashIcon}
+            disabled={hasNoRowsSelected || !canRemoveUser}
+          />
         </Box>
       ),
       [hasNoRowsSelected],
@@ -201,10 +226,10 @@ export const UserManagement = () => {
     <div className="table-container">
       <MaterialReactTable table={table} />
       <DeleteConfirmationDialog
-        onClickDelete={onConfirmDelete}
-        isOpen={isDeleteDialogOpen}
-        onClickCancel={onCancelDelete}
-        caption="user"
+        onDelete={onConfirmDelete}
+        showDialog={isDeleteDialogOpen}
+        onCancel={onCancelDelete}
+        itemToDelete="user"
       />
     </div>
   );

@@ -3,12 +3,13 @@ import { factory, nullable, primaryKey } from "@mswjs/data";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
-import { TROS_COMMODITIES } from "../../../../../constants/tros";
-import { PERMIT_TYPES } from "../../../../../types/PermitType";
+import { TROS_CONDITIONS } from "../../../../../constants/tros";
+import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit, PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
 import { PermitStatus } from "../../../../../types/PermitStatus";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { minDurationForPermitType } from "../../../../../helpers/dateSelection";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -44,7 +45,6 @@ const activeApplicationSource = factory({
         phone2Extension: nullable(String),
         email: nullable(String),
         additionalEmail: nullable(String),
-        fax: nullable(String),
       },
       vehicleDetails: {
         vin: nullable(String),
@@ -109,7 +109,6 @@ export const updateApplication = (
       permitId,
       companyId: getDefaultRequiredVal(
         getDefaultUserDetails().companyId,
-        application.companyId,
       ),
       permitType: getDefaultRequiredVal(
         PERMIT_TYPES.TROS,
@@ -139,7 +138,14 @@ export const resetApplicationSource = () => {
 export const getDefaultApplication = () => {
   const currentDt = getStartOfDate(now());
   const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
-  const expiryDt = getExpiryDate(currentDt, 30);
+  const permitType = DEFAULT_PERMIT_TYPE;
+  const minDuration = minDurationForPermitType(permitType);
+  const expiryDt = getExpiryDate(
+    currentDt,
+    isQuarterlyPermit(permitType),
+    minDuration,
+  );
+  
   const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
   
@@ -152,7 +158,6 @@ export const getDefaultApplication = () => {
     phone2Extension: userDetails.phone2Extension,
     email: userDetails.email,
     additionalEmail: "",
-    fax: userDetails.fax,
   };
 
   const vehicle = getDefaultPowerUnits()[0];
@@ -170,10 +175,10 @@ export const getDefaultApplication = () => {
     vehicleId: "1",
   };
 
-  const commodities = [
-    TROS_COMMODITIES[0],
-    TROS_COMMODITIES[1],
-    { ...TROS_COMMODITIES[2], checked: true },
+  const conditions = [
+    TROS_CONDITIONS[0],
+    TROS_CONDITIONS[1],
+    { ...TROS_CONDITIONS[2], checked: true },
   ];
 
   const { mailingAddress } = getDefaultCompanyInfo();
@@ -181,15 +186,16 @@ export const getDefaultApplication = () => {
   return {
     companyId,
     userGuid: "AB1CD2EFAB34567CD89012E345FA678B",
-    permitType: PERMIT_TYPES.TROS,
+    permitType,
     permitData: {
       startDate,
-      permitDuration: 30,
+      permitDuration: minDuration,
       expiryDate,
       contactDetails,
       vehicleDetails,
-      commodities,
+      commodities: conditions,
       mailingAddress,
+      loas: [],
     },
   };
 };

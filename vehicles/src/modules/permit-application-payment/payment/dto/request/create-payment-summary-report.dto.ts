@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsDateString, IsEnum } from 'class-validator';
 import { PermitIssuedBy } from '../../../../../common/enum/permit-issued-by.enum';
-import { IsDateTimeAfter } from '../../../../../common/decorator/is-date-time-after';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()
@@ -28,21 +27,8 @@ export class CreatePaymentSummaryReportDto {
   @AutoMap()
   @ApiProperty({
     example: '2023-10-27T23:26:51.170Z',
-    description:
-      'Include records in the report till the given date and time.' +
-      'The difference between fromDateTime and toDateTime must not be' +
-      ' more than 31 days.',
+    description: 'Include records in the report till the given date and time.',
   })
   @IsDateString()
-  @IsDateTimeAfter<CreatePaymentSummaryReportDto>('fromDateTime', {
-    difference: {
-      maxDiff: 31,
-      unit: 'days',
-    },
-    rounding: {
-      maxDiff: 1,
-      unit: 'hour',
-    },
-  })
   toDateTime: string;
 }

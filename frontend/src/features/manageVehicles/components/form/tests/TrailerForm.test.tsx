@@ -31,6 +31,7 @@ import {
 import { VEHICLE_TYPES } from "../../../types/Vehicle";
 
 beforeAll(() => {
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
   listenToMockServer();
 });
 

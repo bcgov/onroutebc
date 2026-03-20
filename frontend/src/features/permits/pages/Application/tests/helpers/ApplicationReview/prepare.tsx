@@ -4,7 +4,10 @@ import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
-import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
+import {
+  APPLICATIONS_API_ROUTES,
+  CART_API_ROUTES,
+} from "../../../../../apiManager/endpoints/endpoints";
 import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
@@ -15,6 +18,7 @@ import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
+import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
 import {
   Application,
   CreateApplicationRequestData,
@@ -33,6 +37,7 @@ import {
   getDefaultPowerUnitSubTypes,
   getDefaultTrailerSubTypes,
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
+import { APPLICATION_STEP_CONTEXTS } from "../../../../../../../routes/constants";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
 export const newPermitId = "1";
@@ -48,13 +53,14 @@ export const defaultApplicationData = {
     startDate: getStartOfDate(toLocalDayjs(permitData.startDate)),
     expiryDate: getEndOfDate(toLocalDayjs(permitData.expiryDate)),
   },
+  permitStatus: PERMIT_STATUSES.IN_PROGRESS,
 } as Application;
 
 export const companyInfo = getDefaultCompanyInfo();
-export const companyInfoTitle = "Company Information";
+export const companyInfoTitle = "Client Information";
 export const companyInfoDescription =
-  "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
-export const companyMailAddrTitle = "Company Mailing Address";
+  "If the Client Mailing Address is incorrect, please contact your onRouteBC Administrator.";
+export const companyMailAddrTitle = "Client Mailing Address";
 export const contactInfoTitle = "Contact Information";
 export const vehicleSubtypes = [
   ...getDefaultPowerUnitSubTypes(),
@@ -68,56 +74,62 @@ const server = setupServer(
     });
   }),
 
-  http.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async ({ request }) => {
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.post(
+    `${APPLICATIONS_API_ROUTES.CREATE(companyInfo.companyId.toString())}`,
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as CreateApplicationRequestData),
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      applicationNumber: newApplicationNumber,
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as CreateApplicationRequestData),
+        permitId: newPermitId,
+        originalPermitId: newPermitId,
+        applicationNumber: newApplicationNumber,
+        createdDateTime: dayjsToUtcStr(now()),
+        updatedDateTime: dayjsToUtcStr(now()),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 201 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...applicationData,
+        },
+        { status: 201 },
+      );
+    },
+  ),
 
-  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request, params }) => {
-    const { id } = params;
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.put(
+    APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString(), ":id"),
+    async ({ request, params }) => {
+      const { id } = params;
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as UpdateApplicationRequestData),
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      applicationNumber: String(id),
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as UpdateApplicationRequestData),
+        permitId: newPermitId,
+        originalPermitId: newPermitId,
+        applicationNumber: String(id),
+        createdDateTime: dayjsToUtcStr(now()),
+        updatedDateTime: dayjsToUtcStr(now()),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 200 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...applicationData,
+        },
+        { status: 200 },
+      );
+    },
+  ),
 
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
     return HttpResponse.json([
@@ -130,6 +142,39 @@ const server = setupServer(
       ...getDefaultTrailerSubTypes(), // get trailer subtypes from mock vehicle store
     ]);
   }),
+
+  http.post(
+    `${CART_API_ROUTES.ADD(companyInfo.companyId.toString())}`,
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const addCartItemRequest = reqBody?.valueOf();
+      if (!addCartItemRequest) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      const applicationIds = (addCartItemRequest as any).appliactionIds;
+      return HttpResponse.json({
+        success: [...applicationIds],
+        failure: [],
+      });
+    },
+  ),
+
+  http.get(`${CART_API_ROUTES.COUNT(companyInfo.companyId.toString())}`, () => {
+    return HttpResponse.json(1);
+  }),
+
+  http.get(
+    `${SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.GET(companyInfo.companyId.toString())}`,
+    () => {
+      return HttpResponse.json({
+        companyId: companyInfo.companyId,
+        specialAuthId: 1,
+        isLcvAllowed: false,
+        noFeeType: null,
+      });
+    },
+  ),
 );
 
 export const listenToMockServer = () => {
@@ -163,7 +208,9 @@ const ComponentWithWrapper = ({
           [testApplicationData],
         )}
       >
-        <ApplicationReview />
+        <ApplicationReview
+          applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
+        />
       </ApplicationContext.Provider>
     </ThemeProvider>
   );

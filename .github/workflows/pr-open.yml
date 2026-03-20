@@ -1,4 +1,4 @@
-name: PR
+name: PR Opened
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 concurrency:
   # Cancel in progress for PR open and close, but not merge_group
-  group: ${{ github.workflow }}-${{ github.event.number || github.event.merge_group.base_sha }}
+  group: ${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     timeout-minutes: 1
     steps:
-      - uses: bcgov-nr/action-pr-description-add@v1.1.1
+      - uses: bcgov/action-pr-description-add@v1.1.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -33,7 +33,9 @@ jobs:
             - [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }})
             - [Vehicles](https://${{ env.PREFIX }}-vehicles.${{ env.DOMAIN }}/api)
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
-            - [TPS-Migration](https://${{ env.PREFIX }}-tps-migration.${{ env.DOMAIN }}/api)
+            - [Policy](https://${{ env.PREFIX }}-policy.${{ env.DOMAIN }}/api)
+            - [Scheduler](https://${{ env.PREFIX }}-scheduler.${{ env.DOMAIN }}/api)
+            - [Public](https://${{ env.PREFIX }}-public.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
             - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
@@ -50,9 +52,9 @@ jobs:
     steps:
       - name: PR Number
         id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@v0.0.1
 
-  # https://github.com/bcgov-nr/action-builder-ghcr
+  # https://github.com/bcgov/action-builder-ghcr
   builds:
     name: Builds
     needs: [vars]
@@ -61,10 +63,10 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, tps-migration]
+        package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 10
     steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+      - uses: bcgov/action-builder-ghcr@v2.2.0
         with:
           #keep_versions: 50
           package: ${{ matrix.package }}
@@ -72,23 +74,25 @@ jobs:
           tag_fallback: latest
           triggers: '${{ matrix.package }}/' #omit to build everything
 
-  # https://github.com/bcgov-nr/action-deployer-openshift
-  deploys:
-    name: Deploys
+  # https://github.com/bcgov/action-deployer-openshift
+  deploys-silver-dev:
+    name: Deploys (Silver Dev)
     needs: [builds, vars]
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/silver-dev.yml
     secrets: inherit
     with:
-      autoscaling: false
-      repository: ${{ github.event.repository.name }}
-      environment: dev
-      release: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
-      triggers: '' #omit=always;
-      vault_role: nonprod
-      vault_zone: dev
       params: |
-        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json tps-migration.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+  
+  deploys-gold-dev:
+    name: Deploys (Gold Dev)
+    needs: [builds, vars]
+    uses: ./.github/workflows/gold-dev.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \

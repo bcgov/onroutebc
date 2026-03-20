@@ -34,6 +34,7 @@ import {
 } from "./helpers/prepare";
 
 beforeAll(() => {
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
   listenToMockServer();
 });
 

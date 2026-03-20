@@ -1,8 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import { Inject, Injectable } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { ClsService } from 'nestjs-cls';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
@@ -10,8 +8,6 @@ import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execut
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
     private readonly httpService: HttpService,
     private readonly cls: ClsService,
   ) {}
@@ -43,12 +39,12 @@ export class AuthService {
    * @returns The Roles as a promise of type {@link Role[]}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(
+  async getClaimsForUser(
     accessToken: string,
     companyId?: number,
   ): Promise<AxiosResponse> {
     return lastValueFrom(
-      this.httpService.get(process.env.ACCESS_API_URL + '/users/roles', {
+      this.httpService.get(process.env.ACCESS_API_URL + '/users/claims', {
         params: { companyId: companyId ? companyId : undefined },
         headers: {
           Authorization: accessToken,
@@ -81,5 +77,8 @@ export class AuthService {
         },
       ),
     );
+  }
+  validateServiceAccountUser(clientId: string): boolean {
+    return clientId === process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
   }
 }

@@ -3,10 +3,12 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Inject,
   Param,
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -22,18 +24,25 @@ import {
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { UsersService } from './users.service';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
-import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+} from '../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -55,7 +64,11 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
 
   /**
    * A POST method defined with a route of
@@ -76,6 +89,7 @@ export class UsersController {
       'It supports different identity providers, including IDIR and general ORBC user flows.',
   })
   @AuthOnly()
+  @UseGuards(ThrottlerGuard)
   @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
@@ -86,40 +100,46 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
+    if (await isFeatureEnabled(this.cacheManager, 'AUDIT_LOGIN')) {
+      await this.userService.saveLoginInformation(currentUser, userExists);
+    }
     return userExists;
   }
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/roles that retrieves a list of users' roles associated with
+   * /user/claims that retrieves a list of users' claims associated with
    * the given company ID.
    *
-   * @param companyId The company Id for which roles are retrieved.
+   * @param companyId The company Id for which claims are retrieved.
    *
-   * @returns The list of roles associated with the given company ID.
+   * @returns The list of claims associated with the given company ID.
    */
   @ApiOkResponse({
-    description: "The list of User's Roles",
+    description: "The list of User's Claims",
     isArray: true,
   })
   @ApiOperation({
-    summary: "Retrieves a list of users' roles for a specified company ID.",
+    summary: "Retrieves a list of users' claims for a specified company ID.",
     description:
-      'This endpoint queries all roles associated with the provided company ID for the calling user. ' +
-      "It fetches roles by integrating with the User service, ensuring roles are accurately returned based on the company's context and the user's privileges.",
+      'This endpoint queries all claims associated with the provided company ID for the calling user. ' +
+      "It fetches claims by integrating with the User service, ensuring claims are accurately returned based on the company's context and the user's privileges.",
   })
-  @Roles(Role.READ_SELF)
-  @Get('/roles')
-  async getRolesForUsers(
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
+  @Get('/claims')
+  async getClaimsForUsers(
     @Req() request: Request,
-    @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
-  ): Promise<Role[]> {
+    @Query() getUserRolesQueryParamsDto: GetUserClaimsQueryParamsDto,
+  ): Promise<Claim[]> {
     const currentUser = request.user as IUserJWT;
-    const roles = await this.userService.getRolesForUser(
+    const claims = await this.userService.getClaimsForUser(
       currentUser.userGUID,
       getUserRolesQueryParamsDto.companyId,
     );
-    return roles;
+    return claims;
   }
 
   /**
@@ -136,21 +156,18 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @Roles(Role.READ_USER)
+  @Permissions({
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get()
   async findAll(
     @Req() request: Request,
     @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
-    ) {
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException(
-        `Forbidden for ${currentUser.orbcUserAuthGroup} role.`,
+        `Forbidden for ${currentUser.orbcUserRole} role.`,
       );
     }
 
@@ -162,7 +179,7 @@ export class UsersController {
       null,
       null,
       false,
-      getStaffUserQueryParamsDto.userAuthGroup,
+      getStaffUserQueryParamsDto.userRole,
     );
   }
 
@@ -198,7 +215,10 @@ export class UsersController {
       'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
       'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
-  @Roles(Role.READ_SELF)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,

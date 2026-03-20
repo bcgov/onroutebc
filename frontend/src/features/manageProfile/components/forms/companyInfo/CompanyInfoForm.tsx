@@ -8,23 +8,29 @@ import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
-import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
+import { getUserEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
+import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
   CompanyProfile,
   UpdateCompanyProfileRequest,
 } from "../../../types/manageProfile";
-import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+
 import {
+  invalidClientNameLength,
   invalidDBALength,
   isValidOptionalString,
+  requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+import { WarningBcGovBanner } from "../../../../../common/components/banners/WarningBcGovBanner";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -35,13 +41,13 @@ import {
 export const CompanyInfoForm = memo(
   ({
     companyInfo,
-    setIsEditting,
+    setIsEditing,
   }: {
     companyInfo?: CompanyProfile;
-    setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
-    const companyEmail = getCompanyEmailFromSession();
+    const userEmail = getUserEmailFromSession();
 
     const formMethods = useForm<UpdateCompanyProfileRequest>({
       defaultValues: {
@@ -70,10 +76,13 @@ export const CompanyInfoForm = memo(
             companyInfo?.mailingAddress?.postalCode,
           ),
         },
-        email: getDefaultRequiredVal("", companyEmail, companyInfo?.email),
-        phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
+        email: getDefaultRequiredVal("", companyInfo?.email, userEmail),
+        phone: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          companyInfo?.phone,
+          "",
+        ),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
-        fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
           firstName: getDefaultRequiredVal(
             "",
@@ -84,7 +93,7 @@ export const CompanyInfoForm = memo(
             companyInfo?.primaryContact?.lastName,
           ),
           phone1: applyWhenNotNullable(
-            formatPhoneNumber,
+            getFormattedPhoneNumber,
             companyInfo?.primaryContact?.phone1,
             "",
           ),
@@ -93,7 +102,7 @@ export const CompanyInfoForm = memo(
             companyInfo?.primaryContact?.phone1Extension,
           ),
           phone2: applyWhenNotNullable(
-            formatPhoneNumber,
+            getFormattedPhoneNumber,
             companyInfo?.primaryContact?.phone2,
             "",
           ),
@@ -124,7 +133,7 @@ export const CompanyInfoForm = memo(
           queryClient.invalidateQueries({
             queryKey: ["companyInfo"],
           });
-          setIsEditting(false);
+          setIsEditing(false);
         } // else { // Display Error in the form }
       },
     });
@@ -136,11 +145,35 @@ export const CompanyInfoForm = memo(
       });
     };
 
-    const FEATURE = "company-profile";
+    const FEATURE = ORBC_FORM_FEATURES.COMPANY_PROFILE;
 
     return (
       <div className="company-info-form">
         <FormProvider {...formMethods}>
+          <Typography variant="h2" gutterBottom>
+            Client Name
+          </Typography>
+          <WarningBcGovBanner
+            msg={BANNER_MESSAGES.CLIENT_NAME_MUST_BE_REGISTERED_OWNER}
+          />
+          <CustomFormComponent
+            type="input"
+            feature={FEATURE}
+            options={{
+              name: "legalName",
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                validate: {
+                  validateLegalName: (legalName: string) =>
+                    isValidOptionalString(legalName, {
+                      maxLength: 150,
+                    }) || invalidClientNameLength(1, 150),
+                },
+              },
+              label: "Client Name",
+            }}
+          />
+
           <Typography variant="h2" gutterBottom>
             Doing Business As (DBA)
           </Typography>
@@ -157,24 +190,24 @@ export const CompanyInfoForm = memo(
                     invalidDBALength(1, 150),
                 },
               },
-              label: "DBA",
+              label: "Doing Business As",
             }}
           />
 
           <Typography variant="h2" gutterBottom>
-            Company Mailing Address
+            Client Mailing Address
           </Typography>
 
           <CompanyInfoGeneralForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
-            Company Contact Details
+            Client Contact Details
           </Typography>
 
           <CompanyContactDetailsForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
-            Company Primary Contact
+            Client Primary Contact
           </Typography>
 
           <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />
@@ -187,7 +220,7 @@ export const CompanyInfoForm = memo(
             aria-label="Cancel Update"
             variant="contained"
             color="tertiary"
-            onClick={() => setIsEditting(false)}
+            onClick={() => setIsEditing(false)}
             className="submit-btn submit-btn--cancel"
           >
             Cancel

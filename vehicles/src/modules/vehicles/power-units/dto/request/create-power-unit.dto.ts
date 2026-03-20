@@ -7,6 +7,7 @@ import {
   IsPositive,
   IsString,
   Length,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -99,6 +100,8 @@ export class CreatePowerUnitDto {
   })
   @IsOptional()
   @IsNumber()
+  @IsPositive()
+  @Max(63500)
   licensedGvw?: number;
 
   @AutoMap()

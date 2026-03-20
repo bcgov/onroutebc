@@ -1,0 +1,60 @@
+@import "../../../themes/orbcStyles.scss";
+
+.unavailable-application-modal {
+  & &__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: $bc-background-light-grey;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: $bc-black;
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__text {
+    padding-bottom: 1.5rem;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+
+  }
+  & &__button {
+
+    &--confirm {
+      color: $white;
+      background-color: $bc-primary-blue;
+      font-weight: bold;
+      cursor: pointer;
+
+      &:hover, &:focus {
+        background-color: $button-hover
+      }
+
+      &:disabled {
+        background-color: $disabled-colour;
+        color: $white;
+      }
+    }
+  }
+}

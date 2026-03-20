@@ -1,0 +1,55 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-trip-details");
+@include orbcStyles.permit-left-box-style(".review-trip-details__header");
+@include orbcStyles.permit-right-box-style(".review-trip-details__body");
+
+.review-trip-details {
+  &__body {
+    width: 100%;
+    
+    .manual-route {
+      &__label-text {
+        font-weight: bold;
+      }
+
+      &__destination,
+      &__exit,
+      &__total-distance {
+        margin-top: 1.5rem;
+      }
+    }
+
+    .review-highway-sequences {
+      margin-top: 1.5rem;
+      border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
+      padding: 1.5rem 0 0 0;
+
+      &__sequences {
+        margin-top: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(8, [col] 1fr);
+        row-gap: 1rem;
+      }
+    }
+
+    .specific-route {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
+
+      &__label-text {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@media (width < 370px) {
+  .review-trip-details {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+    }
+  }
+}

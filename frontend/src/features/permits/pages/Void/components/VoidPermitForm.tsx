@@ -1,90 +1,108 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
-import { Button, FormControl, FormHelperText } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Button, FormControl } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import "./VoidPermitForm.scss";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
-import { Permit } from "../../../types/permit";
 import { RevokeDialog } from "./RevokeDialog";
-import { usePermitHistoryQuery } from "../../../hooks/hooks";
-import { calculateAmountForVoid } from "../../../helpers/feeSummary";
-import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
-import { VoidPermitFormData } from "../types/VoidPermit";
-import { useVoidPermit } from "../hooks/useVoidPermit";
-import { mapToRevokeRequestData } from "../helpers/mapper";
-import { isValidTransaction } from "../../../helpers/payment";
-import { Nullable } from "../../../../../common/types/common";
-import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import {
-  CustomFormComponent,
-  getErrorMessage,
-} from "../../../../../common/components/form/CustomFormComponents";
-
+  calculateAmountForVoid,
+  calculateNetAmount,
+} from "../../../helpers/feeSummary";
+import { VoidPermitFormData } from "../types/VoidPermit";
+import { useVoidOrRevokePermit } from "../hooks/useVoidOrRevokePermit";
+import { mapToRevokeRequestData } from "../helpers/mapper";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+import { hasPermitsActionFailed } from "../../../helpers/permitState";
+import {
+  useAmendmentApplicationQuery,
+  useDeleteApplicationsMutation,
+  usePermitHistoryQuery,
+} from "../../../hooks/hooks";
+import { isValidTransaction } from "../../../helpers/payment";
 import {
   invalidEmail,
-  invalidPhoneLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 
-const FEATURE = "void-permit";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
+import { AmendOrVoidFeeSummary } from "../../../components/amendOrVoidFeeSummary/AmendOrVoidFeeSummary";
+import { VoidPermitContext } from "../context/VoidPermitContext";
 
-export const VoidPermitForm = ({
-  permit,
-  onRevokeSuccess,
-  onCancel,
-  onFail,
-}: {
-  permit: Nullable<Permit>;
-  onRevokeSuccess: () => void;
-  onCancel: () => void;
-  onFail: () => void;
-}) => {
+const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
+
+export const VoidPermitForm = () => {
+  const { permit, handleFail, goHomeSuccess, goHome } =
+    useContext(VoidPermitContext);
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
-  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
+  const { mutation: revokePermitMutation, voidResults } =
+    useVoidOrRevokePermit();
+  const { companyId: companyIdParam } = useParams();
 
-  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
-
-  const validTransactionHistory = permitHistory.filter((history) =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    permit?.companyId,
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
   );
 
-  const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
+  const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
+
+  const { data: permitHistory } = usePermitHistoryQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const transactionHistory = getDefaultRequiredVal([], permitHistory).filter(
+    (history) =>
+      isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
+
+  const amountToRefund =
+    !permit || transactionHistory.length === 0
+      ? 0
+      : -1 * calculateAmountForVoid(permit, transactionHistory);
+
+  const currentPermitValue = calculateNetAmount(transactionHistory);
+
+  // amountToRefund is a negative number so we add here rather than subtract
+  const newPermitValue = currentPermitValue + amountToRefund;
 
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
-      onFail();
+      handleFail();
     } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Revoke action was successful and has results
       setOpenRevokeDialog(false);
-      onRevokeSuccess();
+      goHomeSuccess();
     }
   }, [voidResults]);
 
-  const amountToRefund =
-    permitHistoryQuery.isLoading || !permit
-      ? 0
-      : -1 * calculateAmountForVoid(permit, validTransactionHistory);
-
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = formMethods;
+  const { control, getValues, handleSubmit } = formMethods;
 
   const handleContinue = () => {
     const formValues = getValues();
     setVoidPermitData(formValues);
     next();
   };
+
+  const canRevokePermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "REVOKE_PERMIT",
+    },
+  });
 
   const handleOpenRevokeDialog = () => {
     setOpenRevokeDialog(true);
@@ -94,7 +112,23 @@ export const VoidPermitForm = ({
     setOpenRevokeDialog(false);
   };
 
-  const handleRevoke = (revokeData: VoidPermitFormData) => {
+  const { data: existingAmendmentApplication } = useAmendmentApplicationQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const existingAmendmentApplicationId = existingAmendmentApplication?.permitId;
+
+  const { mutateAsync: deleteApplications } = useDeleteApplicationsMutation();
+
+  const handleRevoke = async (revokeData: VoidPermitFormData) => {
+    // if there is an amendment in progress for this application, delete it. This will prevent existing application errors from the backend when attempting to complete the revoke transaction
+    if (existingAmendmentApplicationId) {
+      await deleteApplications({
+        companyId,
+        applicationIds: [existingAmendmentApplicationId],
+      });
+    }
     revokePermitMutation.mutate({
       permitId,
       voidData: mapToRevokeRequestData(revokeData),
@@ -114,6 +148,7 @@ export const VoidPermitForm = ({
       <div className="void-permit__form">
         <div className="form-section form-section--send">
           <div className="form-section__label">Send Permit and Receipt to</div>
+
           <div className="form-section__input-area">
             <CustomFormComponent
               type="input"
@@ -129,10 +164,11 @@ export const VoidPermitForm = ({
                       isEmail(email) || invalidEmail(),
                   },
                 },
-                label: "Company Email",
+                label: "Client Email",
               }}
               className="void-input void-input--email"
             />
+
             <CustomFormComponent
               type="input"
               feature={FEATURE}
@@ -141,41 +177,23 @@ export const VoidPermitForm = ({
                 rules: {
                   required: false,
                   validate: {
-                    validateEmail: (email: string) =>
-                      email.length === 0 || isEmail(email) || invalidEmail(),
+                    validateEmail: (email?: string) =>
+                      !email ||
+                      email.length === 0 ||
+                      isEmail(email) ||
+                      invalidEmail(),
                   },
                 },
                 label: "Additional Email",
               }}
               className="void-input void-input--additional-email"
             />
-            <CustomFormComponent
-              type="phone"
-              feature={FEATURE}
-              options={{
-                name: "fax",
-                rules: {
-                  required: false,
-                  validate: {
-                    validateFax: (fax?: string) =>
-                      fax == null ||
-                      fax === "" ||
-                      (fax != null &&
-                        fax !== "" &&
-                        fax.length >= 10 &&
-                        fax.length <= 20) ||
-                      invalidPhoneLength(10, 20),
-                  },
-                },
-                label: "Fax",
-              }}
-              className="void-input void-input--fax"
-            />
           </div>
         </div>
 
         <div className="form-section form-section--reason">
           <div className="form-section__label">Reason for Voiding</div>
+
           <div className="form-section__input-area">
             <div className="reason-container">
               <div className="reason-container__left">
@@ -183,51 +201,54 @@ export const VoidPermitForm = ({
                   name="reason"
                   control={control}
                   rules={voidReasonRules}
-                  render={({ field: { value }, fieldState: { invalid } }) => (
+                  render={({ fieldState: { invalid } }) => (
                     <FormControl error={invalid}>
-                      <textarea
-                        className={`void-input void-input--reason ${
-                          invalid ? "void-input--err" : ""
-                        }`}
-                        rows={6}
-                        defaultValue={value}
-                        {...register("reason", voidReasonRules)}
-                      ></textarea>
-                      {invalid ? (
-                        <FormHelperText className="void-input__err" error>
-                          {getErrorMessage(errors, "reason")}
-                        </FormHelperText>
-                      ) : null}
+                      <CustomFormComponent
+                        type="textarea"
+                        feature={FEATURE}
+                        options={{
+                          name: "reason",
+                          rules: voidReasonRules,
+                          width: "100%",
+                        }}
+                      />
                     </FormControl>
                   )}
                 />
-                <FeeSummary
-                  permitType={permit?.permitType}
-                  feeSummary={`${amountToRefund}`}
+
+                <AmendOrVoidFeeSummary
+                  currentPermitValue={`${currentPermitValue}`}
+                  newPermitValue={`${newPermitValue}`}
+                  amountToRefund={`${amountToRefund}`}
                 />
               </div>
-              <div className="reason-container__right">
-                <div className="revoke">
-                  <div className="revoke__header">Revoke this permit?</div>
-                  <div className="revoke__body">
-                    <div className="revoke__msg">
-                      Revoking a permit is a severe action that{" "}
-                      <span className="revoke__msg--bold">
-                        cannot be reversed.
-                      </span>{" "}
-                      There are{" "}
-                      <span className="revoke__msg--bold">no refunds</span> for
-                      revoked permits.
+
+              {canRevokePermit && (
+                <div className="reason-container__right">
+                  <div className="revoke">
+                    <div className="revoke__header">Revoke this permit?</div>
+
+                    <div className="revoke__body">
+                      <div className="revoke__msg">
+                        Revoking a permit is a severe action that{" "}
+                        <span className="revoke__msg--bold">
+                          cannot be reversed.
+                        </span>{" "}
+                        There are{" "}
+                        <span className="revoke__msg--bold">no refunds</span>{" "}
+                        for revoked permits.
+                      </div>
+
+                      <Button
+                        className="revoke__btn"
+                        onClick={handleOpenRevokeDialog}
+                      >
+                        Revoke Permit
+                      </Button>
                     </div>
-                    <Button
-                      className="revoke__btn"
-                      onClick={handleOpenRevokeDialog}
-                    >
-                      Revoke Permit
-                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -241,11 +262,12 @@ export const VoidPermitForm = ({
               variant="contained"
               color="tertiary"
               className="void-permit-button void-permit-button--cancel"
-              onClick={onCancel}
+              onClick={goHome}
               data-testid="cancel-void-permit-button"
             >
               Cancel
             </Button>
+
             <Button
               key="continue-void-button"
               aria-label="Continue"

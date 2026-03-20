@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Directory } from '../../../../../common/enum/directory.enum';
 
 /**
  * JSON representation of response object when retrieving a company metadata.
@@ -11,6 +12,13 @@ export class ReadCompanyMetadataDto {
     example: 1,
   })
   companyId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The company GUID.',
+    example: '6F9619FF8B86D011B42D00C04FC964FF',
+  })
+  companyGUID: string;
 
   @AutoMap()
   @ApiProperty({
@@ -47,4 +55,11 @@ export class ReadCompanyMetadataDto {
     example: false,
   })
   isSuspended: boolean;
+
+  @AutoMap()
+  @ApiProperty({
+    description: `A property that represents the company's directory`,
+    example: Directory.BBCEID,
+  })
+  directory: Directory;
 }

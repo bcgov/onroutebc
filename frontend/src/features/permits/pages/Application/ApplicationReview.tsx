@@ -1,86 +1,310 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { isAxiosError } from "axios";
 
 import "./ApplicationReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
 import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { SnackBarContext } from "../../../../App";
+import { useAddToCart } from "../../hooks/cart";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { CartContext } from "../../context/CartContext";
+import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
+import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
+import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
+import { useCalculatePermitFee } from "../../hooks/useCalculatePermitFee";
+import { serializePermitData } from "../../helpers/serialize/serializePermitData";
+import { CASE_ACTIVITY_TYPES } from "../../../queue/types/CaseActivityType";
+import { QueueBreadcrumb } from "../../../queue/components/QueueBreadcrumb";
+import { RejectApplicationModal } from "../../../queue/components/RejectApplicationModal";
+import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../types/PermitType";
+import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
+import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
+import { useCommodityOptions } from "../../hooks/useCommodityOptions";
+import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   APPLICATIONS_ROUTES,
+  APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
+  APPLICATION_STEP_CONTEXTS,
+  ApplicationStepContext,
   ERROR_ROUTES,
+  IDIR_ROUTES,
 } from "../../../../routes/constants";
 
 import {
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-} from "../../../manageVehicles/apiManager/hooks";
+  useApplicationInQueueMetadata,
+  useSubmitApplicationForReview,
+  useUpdateApplicationInQueueStatus,
+} from "../../../queue/hooks/hooks";
 
-export const ApplicationReview = () => {
-  const { applicationData, setApplicationData } =
+export const ApplicationReview = ({
+  applicationStepContext,
+}: {
+  applicationStepContext: ApplicationStepContext;
+}) => {
+  const { applicationData, setApplicationData: setApplicationContextData } =
     useContext(ApplicationContext);
+
+  const isQueueContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
+
+  const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
+
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
+
+  const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
+
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
+  const doingBusinessAs = companyInfo?.alternateName;
+
+  const permitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    applicationData?.permitType,
+  );
+
+  const policyEngine = usePolicyEngine(specialAuth);
+  const fee = useCalculatePermitFee(
+    {
+      permitType,
+      permitData: applicationData?.permitData
+        ? serializePermitData(applicationData.permitData)
+        : {},
+    },
+    policyEngine,
+  );
+
+  const { setSnackBar } = useContext(SnackBarContext);
+  const { refetchCartCount } = useContext(CartContext);
 
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
 
   const navigate = useNavigate();
 
-  const companyQuery = useCompanyInfoQuery();
+  const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
+  const [allConfirmed, setAllConfirmed] = useState(isQueueContext);
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
+
+  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
+  const addToCartMutation = useAddToCart();
+  const { mutateAsync: submitForReview } = useSubmitApplicationForReview();
   const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+    mutateAsync: updateApplication,
+    data: updateApplicationResponse,
+    isPending: updateApplicationMutationPending,
+  } = useUpdateApplicationInQueueStatus();
 
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
+    {
+      applicationId: getDefaultRequiredVal("", permitId),
+      companyId,
+    },
+  );
 
-  // For the confirmation checkboxes
-  const [isChecked, setIsChecked] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [assignedUser, setAssignedUser] = useState<string>("");
 
-  // Send data to the backend API
-  const saveApplicationMutation = useSaveApplicationMutation();
+  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
 
-  const back = () => {
+  const validateCurrentUser = async (onSuccess: () => void) => {
+    const { data: applicationMetaData } = await refetchApplicationMetadata();
+
+    if (idirUserDetails?.userName !== applicationMetaData?.assignedUser) {
+      setAssignedUser(
+        getDefaultRequiredVal("", applicationMetaData?.assignedUser),
+      );
+      setShowUnavailableApplicationModal(true);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const handleEdit = async () => {
+    if (isQueueContext) {
+      await validateCurrentUser(() =>
+        navigate(
+          APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationData?.permitId),
+          {
+            replace: true,
+          },
+        ),
+      );
+      return;
+    }
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
-  const next = () => {
-    navigate(APPLICATIONS_ROUTES.PAY(permitId));
-  };
+  const handleSaveApplication = async (
+    followUpAction: (
+      companyId: number,
+      permitId: string,
+      applicationNumber: string,
+    ) => Promise<void>,
+  ) => {
+    setHasAttemptedSubmission(true);
 
-  const onSubmit = async () => {
-    setIsSubmitted(true);
+    if (!allConfirmed) return;
 
-    if (!isChecked) return;
-
-    if (!applicationData) {
+    const companyId = applicationData?.companyId;
+    const permitId = applicationData?.permitId;
+    const applicationNumber = applicationData?.applicationNumber;
+    if (!companyId || !permitId || !applicationNumber) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const { application: savedApplication } =
-      await saveApplicationMutation.mutateAsync(applicationData);
-
-    if (savedApplication) {
-      setApplicationData(savedApplication);
-      next();
-    } else {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    }
-
-    next();
+    await saveApplication(
+      {
+        data: {
+          ...applicationData,
+          permitData: {
+            ...applicationData?.permitData,
+            doingBusinessAs,
+          },
+        },
+        companyId,
+      },
+      {
+        onSuccess: ({ data: savedApplication }) => {
+          setApplicationContextData(
+            deserializeApplicationResponse(savedApplication),
+          );
+          followUpAction(companyId, permitId, applicationNumber);
+        },
+        onError: (e) => {
+          console.error(e);
+          if (isAxiosError(e)) {
+            navigate(ERROR_ROUTES.UNEXPECTED, {
+              state: {
+                correlationId: e?.response?.headers["x-correlation-id"],
+              },
+            });
+          } else {
+            navigate(ERROR_ROUTES.UNEXPECTED);
+          }
+        },
+      },
+    );
   };
+
+  const proceedWithAddToCart = async (
+    companyId: number,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const setShowSnackbar = () => true;
+
+  const handleAddToCart = async () => {
+    await handleSaveApplication(
+      async (companyId, permitId, applicationNumber) => {
+        await proceedWithAddToCart(companyId, [permitId], () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar,
+            message: `Application ${applicationNumber} added to cart`,
+            alertType: "success",
+          });
+
+          refetchCartCount();
+          navigate(APPLICATIONS_ROUTES.BASE);
+        });
+      },
+    );
+  };
+  const continueBtnText =
+    permitType === PERMIT_TYPES.STOS && !isStaffUser
+      ? "Submit for Review"
+      : undefined;
+
+  const handleSubmitForReview = async () => {
+    if (permitType !== PERMIT_TYPES.STOS || isStaffUser) return;
+
+    await handleSaveApplication(
+      async (companyId, permitId, applicationNumber) => {
+        await submitForReview({ companyId, applicationId: permitId });
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: `Application ${applicationNumber} submitted for review`,
+          alertType: "success",
+        });
+        navigate(APPLICATIONS_ROUTES.BASE);
+      },
+    );
+  };
+
+  const handleApprove = async () => {
+    await validateCurrentUser(async () => {
+      setHasAttemptedSubmission(true);
+
+      await updateApplication({
+        applicationId: permitId,
+        companyId,
+        caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
+      });
+    });
+  };
+
+  const [showRejectApplicationModal, setShowRejectApplicationModal] =
+    useState<boolean>(false);
+
+  const handleRejectButton = async () => {
+    await validateCurrentUser(() => setShowRejectApplicationModal(true));
+  };
+
+  const handleReject = async (comment: string) => {
+    setHasAttemptedSubmission(true);
+    await updateApplication({
+      applicationId: permitId,
+      companyId,
+      caseActivityType: CASE_ACTIVITY_TYPES.REJECTED,
+      comment,
+    });
+  };
+
+  const updateApplicationResponseStatus = updateApplicationResponse?.status;
+
+  const handleCloseApplication = () => {
+    navigate(IDIR_ROUTES.STAFF_HOME);
+  };
+
+  const handleCloseUnavailableApplicationModal = () => {
+    setShowUnavailableApplicationModal(false);
+    if (showRejectApplicationModal) {
+      setShowRejectApplicationModal(false);
+    }
+  };
+
+  useEffect(() => {
+    if (updateApplicationResponseStatus === 201) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
+    }
+  }, [updateApplicationResponse, updateApplicationResponseStatus, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -88,14 +312,26 @@ export const ApplicationReview = () => {
 
   return (
     <div className="application-review">
-      <ApplicationBreadcrumb
-        permitId={permitId}
-        applicationStep={APPLICATION_STEPS.REVIEW}
-      />
+      {isQueueContext ? (
+        <QueueBreadcrumb
+          applicationNumber={applicationData?.applicationNumber}
+          applicationStep={APPLICATION_STEPS.REVIEW}
+        />
+      ) : (
+        <ApplicationBreadcrumb
+          permitId={permitId}
+          applicationStep={APPLICATION_STEPS.REVIEW}
+        />
+      )}
 
       <FormProvider {...methods}>
         <PermitReview
-          permitType={applicationData?.permitType}
+          reviewContext={
+            isQueueContext
+              ? PERMIT_REVIEW_CONTEXTS.QUEUE
+              : PERMIT_REVIEW_CONTEXTS.APPLY
+          }
+          permitType={permitType}
           permitNumber={applicationData?.permitNumber}
           applicationNumber={applicationData?.applicationNumber}
           isAmendAction={false}
@@ -103,25 +339,73 @@ export const ApplicationReview = () => {
           permitDuration={applicationData?.permitData?.permitDuration}
           permitExpiryDate={applicationData?.permitData?.expiryDate}
           permitConditions={applicationData?.permitData?.commodities}
+          permittedCommodity={applicationData?.permitData?.permittedCommodity}
+          commodityOptions={commodityOptions}
           createdDateTime={applicationData?.createdDateTime}
           updatedDateTime={applicationData?.updatedDateTime}
-          companyInfo={companyQuery.data}
+          companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
-          continueBtnText="Proceed To Pay"
-          onEdit={back}
-          onContinue={methods.handleSubmit(onSubmit)}
-          allChecked={isChecked}
-          setAllChecked={setIsChecked}
-          hasAttemptedCheckboxes={isSubmitted}
+          onEdit={handleEdit}
+          continueBtnText={continueBtnText}
+          onContinue={
+            applicationStepContext === APPLICATION_STEP_CONTEXTS.APPLY
+              ? handleSubmitForReview
+              : undefined
+          }
+          onAddToCart={
+            applicationStepContext === APPLICATION_STEP_CONTEXTS.APPLY
+              ? handleAddToCart
+              : undefined
+          }
+          handleApproveButton={isQueueContext ? handleApprove : undefined}
+          handleRejectButton={isQueueContext ? handleRejectButton : undefined}
+          updateApplicationMutationPending={
+            isQueueContext ? updateApplicationMutationPending : undefined
+          }
+          allConfirmed={allConfirmed}
+          setAllConfirmed={setAllConfirmed}
+          hasAttemptedCheckboxes={hasAttemptedSubmission}
           powerUnitSubTypes={powerUnitSubTypesQuery.data}
           trailerSubTypes={trailerSubTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
+          vehicleConfiguration={
+            applicationData?.permitData?.vehicleConfiguration
+          }
+          route={applicationData?.permitData?.permittedRoute}
+          applicationNotes={applicationData?.permitData?.applicationNotes}
           doingBusinessAs={doingBusinessAs}
+          calculatedFee={`${fee}`}
+          loas={applicationData?.permitData?.loas}
+          applicationRejectionHistory={applicationData?.rejectionHistory}
+          isStaffUser={isStaffUser}
+          thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}
+          conditionalLicensingFee={
+            applicationData?.permitData?.conditionalLicensingFee
+          }
+          companyId={companyId}
         />
       </FormProvider>
+
+      {isQueueContext && showRejectApplicationModal && (
+        <RejectApplicationModal
+          showModal={showRejectApplicationModal}
+          onCancel={() => setShowRejectApplicationModal(false)}
+          onConfirm={handleReject}
+          isPending={updateApplicationMutationPending}
+        />
+      )}
+
+      {isQueueContext && showUnavailableApplicationModal && (
+        <UnavailableApplicationModal
+          showModal={showUnavailableApplicationModal}
+          onCancel={handleCloseUnavailableApplicationModal}
+          onConfirm={handleCloseApplication}
+          assignedUser={assignedUser}
+        />
+      )}
     </div>
   );
 };

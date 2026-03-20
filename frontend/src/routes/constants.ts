@@ -5,6 +5,7 @@ import { PermitType } from "../features/permits/types/PermitType";
 export const ROUTE_PLACEHOLDERS = {
   PERMIT_ID: "permitId",
   PERMIT_TYPE: "permitType",
+  COMPANY_ID: "companyId",
 };
 
 /**
@@ -18,7 +19,7 @@ export const ROUTE_PLACEHOLDERS = {
 const DYNAMIC_ROUTE_URI = (
   prefixUri: string,
   placeholderName: string,
-  value?: Nullable<string>,
+  value?: Nullable<string | number>,
 ) => {
   if (!value) {
     return `${prefixUri}/:${placeholderName}`;
@@ -34,6 +35,10 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
   ISSUANCE: "/issuance-error",
+  CLAIM_PROFILE_ERROR: "/claim-profile-error",
+  VERSION_MISMATCH: "/version-mismatch",
+  SERVICE: "/service-unavailable",
+  DOCUMENT_UNAVAILABLE: "/document-unavailable",
 };
 
 // Manage Vehicles
@@ -68,20 +73,23 @@ export const PROFILE_ROUTES = {
 const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
-  SUCCESS: (permitId?: string) =>
+  SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
+  VOID: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
     `${DYNAMIC_ROUTE_URI(
-      PERMITS_ROUTE_BASE,
-      ROUTE_PLACEHOLDERS.PERMIT_ID,
-      permitId,
-    )}/success`,
-  VOID: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/void`,
-  AMEND: (permitId?: string) =>
+  AMEND: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
     `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
@@ -96,11 +104,18 @@ export const APPLICATION_STEPS = {
   HOME: 0,
   DETAILS: 1,
   REVIEW: 2,
-  PAY: 3,
 } as const;
 
 export type ApplicationStep =
   (typeof APPLICATION_STEPS)[keyof typeof APPLICATION_STEPS];
+
+export const APPLICATION_STEP_CONTEXTS = {
+  APPLY: 0,
+  QUEUE: 1,
+} as const;
+
+export type ApplicationStepContext =
+  (typeof APPLICATION_STEP_CONTEXTS)[keyof typeof APPLICATION_STEP_CONTEXTS];
 
 export const NEW_APPLICATION_SEGMENT = "new";
 export const APPLICATIONS_ROUTES = {
@@ -123,12 +138,43 @@ export const APPLICATIONS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/review`,
-  PAY: (permitId?: string, failed?: boolean) =>
+};
+
+// Queue
+const APPLICATION_QUEUE_ROUTE_BASE = "/queue";
+export const APPLICATION_QUEUE_ROUTES = {
+  BASE: APPLICATION_QUEUE_ROUTE_BASE,
+  REVIEW: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
-      APPLICATIONS_ROUTE_BASE,
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
+      APPLICATION_QUEUE_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
-    )}/pay${failed ? "?paymentFailed=true" : ""}`,
+    )}/review`,
+  EDIT: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
+      APPLICATION_QUEUE_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/edit`,
+};
+
+// Shopping Cart
+export const SHOPPING_CART_ROUTE_BASE = "/cart";
+export const SHOPPING_CART_ROUTES = {
+  BASE: SHOPPING_CART_ROUTE_BASE,
+  DETAILS: (failed?: boolean) =>
+    `${SHOPPING_CART_ROUTE_BASE}${failed ? "?paymentFailed=true" : ""}`,
 };
 
 // Create Profile Wizard
@@ -146,6 +192,8 @@ export const IDIR_ROUTES = {
   SEARCH_RESULTS: `${IDIR_ROUTE_BASE}/search-results`,
   REPORTS: `${IDIR_ROUTE_BASE}/reports`,
   CREATE_COMPANY: `${IDIR_ROUTE_BASE}/create-company`,
+  STAFF_HOME: `${IDIR_ROUTE_BASE}/home`,
+  BRIDGE_FORMULA_CALCULATION_TOOL: `${IDIR_ROUTE_BASE}/bridge-formula-calculation-tool`,
 };
 
 // Payment
@@ -161,6 +209,9 @@ export const SETTINGS_ROUTES = {
   MANAGE: SETTINGS_BASE,
 };
 
+//URL
+export const onRouteBCUrl = "www.onroutebc.gov.bc.ca";
+
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {
   HOME: "https://onroutebc.gov.bc.ca",
@@ -172,4 +223,10 @@ export const ONROUTE_WEBPAGE_LINKS = {
     "https://www2.gov.bc.ca/gov/content/home/accessible-government",
   COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
   CONTACT_US: "https://onroutebc.gov.bc.ca",
+  SERVICE_BC_OFFICE_LOCATIONS:
+    "https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations",
+  LIST_OF_BC_HIGHWAYS:
+    "https://www2.gov.bc.ca/gov/content/transportation/transportation-reports-and-reference/reference-information/numbered-routes",
+  COMMERCIAL_VEHICLE_ROUTING_TOOL: "https://twm.th.gov.bc.ca/?c=cvrt",
+  HEIGHT_CLEARANCE_TOOL: "https://www.drivebc.ca/cvrp/?c=hct",
 };

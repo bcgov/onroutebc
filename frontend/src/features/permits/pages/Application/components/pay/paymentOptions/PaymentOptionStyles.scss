@@ -1,35 +1,45 @@
 @import "../../../../../../../themes/orbcStyles";
 
-@mixin payment-option-style($payment-option) {
+@mixin payment-option-style($payment-option) { 
   #{$payment-option} {
     padding: 1.5rem;
     border: 1px solid $bc-text-box-border-grey;
     border-radius: 0.5rem;
-    color: $bc-black;
-
-    &--active {
-      border: 1px solid $bc-black;
-      background-color: $bc-messages-blue-background;
+    cursor: pointer;
+    color: $disabled-colour;
+    
+    &:not(.payment-option--active) {
+      &:hover {
+        border: 1px solid $bc-black;
+        background-color: $bc-background-light-grey;
+        box-shadow: $bc-shadow
+      }
     }
-
-    & &__label {
+    
+    .label {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 1rem;
       margin-right: 0;
       width: 100%;
+      
+      &__container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 0;
+        width: 100%;
+      }
+
+      &__text {
+        font-size: 1.25rem;
+        font-weight: bold;
+        letter-spacing: -0.4px;
+      }
     }
 
-    .label-container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      margin-bottom: 0;
-      width: 100%;
-    }
-
-    .label-icon-display {
+    .icon-display {
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -58,6 +68,64 @@
       &__icon {
         &--mc {
           margin: 0 1rem;
+        }
+      }
+    }
+
+    .payment-details {
+      display: flex;
+
+      &__info {
+        width: 100%;
+
+        &:not(:last-child) {
+          margin-right: 1.5rem;
+        }
+      }
+
+      &__input {
+        background-color: $white;
+        color: $disabled-colour;
+        font-size: 0.9rem;
+        
+        &--err {
+          fieldset {
+            border-width: 2px;
+          }
+        }
+          
+        &--disabled {
+          fieldset {
+            background-color: $bc-background-light-grey;
+            border: 2px solid $bc-text-box-border-grey;
+          }
+        }
+      }
+
+      &__label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: $disabled-colour;
+
+        &--disabled {
+          color: $disabled-colour ;
+        }
+      }
+    }
+
+    &--active {
+      border: 1px solid $bc-black;
+      background-color: $bc-messages-blue-background;
+      box-shadow: $bc-shadow;
+      color: $bc-black;
+
+      .payment-details {
+        &__label {
+          color: $bc-black;
+        }
+
+        &__input {
+          color: $bc-black
         }
       }
     }

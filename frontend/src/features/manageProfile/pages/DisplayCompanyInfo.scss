@@ -1,3 +1,5 @@
+@use "../../../themes/orbcStyles";
+
 .display-company-info {
   display: flex;
   flex-direction: row;
@@ -7,6 +9,13 @@
   &__edit {
     button {
       margin-top: 20px;
+      
+      &:disabled {
+        background-color: transparent;
+        border-width: 3px;
+        color: orbcStyles.$disabled-colour;
+        border-color: orbcStyles.$disabled-colour;
+      }
 
       i {
         margin-right: 7px;

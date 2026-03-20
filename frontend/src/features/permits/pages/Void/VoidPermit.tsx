@@ -1,26 +1,38 @@
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect, useContext, useMemo } from "react";
-
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { usePermitDetailsQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import "./VoidPermit.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  ERROR_ROUTES,
+  IDIR_ROUTES,
+} from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 import { hasPermitExpired } from "../../helpers/permitState";
 import {
+  PERMIT_ACTION_ORIGINS,
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
+import { PERMIT_TABS } from "../../types/PermitTabs";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
@@ -35,15 +47,22 @@ const isVoidable = (permit: Permit) => {
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
-  const { permitId } = useParams();
+  const { state: stateFromNavigation } = useLocation();
+  const { permitActionOrigin } = stateFromNavigation;
+
+  const { permitId: permitIdParam, companyId: companyIdParam } = useParams();
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
+  const permitId = getDefaultRequiredVal("", permitIdParam);
   const [currentLink, setCurrentLink] = useState(0);
   const getBannerText = () =>
     currentLink === 0 ? "Void Permit" : "Finish Voiding";
 
-  // Must be SYSADMIN to access this page
-  const { idirUserDetails } = useContext(OnRouteBCContext);
-
-  const permitQuery = usePermitDetailsQuery(permitId);
+  const permitQuery = usePermitDetailsQuery(companyId, permitId);
   const permit = permitQuery.data;
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
@@ -52,7 +71,6 @@ export const VoidPermit = () => {
     revoke: false,
     email: permit?.permitData?.contactDetails?.email,
     additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
-    fax: permit?.permitData?.contactDetails?.fax,
   });
 
   useEffect(() => {
@@ -60,12 +78,10 @@ export const VoidPermit = () => {
       ...voidPermitData,
       email: permit?.permitData?.contactDetails?.email,
       additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
-      fax: permit?.permitData?.contactDetails?.fax,
     });
   }, [
     permit?.permitData?.contactDetails?.email,
     permit?.permitData?.contactDetails?.additionalEmail,
-    permit?.permitData?.contactDetails?.fax,
   ]);
 
   const getBasePermitNumber = () => {
@@ -74,8 +90,25 @@ export const VoidPermit = () => {
   };
 
   const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
-  const goHome = () => navigate(-1);
-  const goHomeSuccess = () => navigate(fullSearchRoute);
+  const goHome = () =>
+    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(-1);
+
+  const goHomeSuccess = () =>
+    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+      ? navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
+          },
+        })
+      : // return to global permit search results
+        navigate(fullSearchRoute);
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>
@@ -105,16 +138,27 @@ export const VoidPermit = () => {
 
   const contextData = useMemo(
     () => ({
+      permit,
       voidPermitData,
       setVoidPermitData,
       back: () => setCurrentLink(0),
       next: () => setCurrentLink(1),
+      goHome,
+      goHomeSuccess,
+      handleFail,
     }),
     [voidPermitData],
   );
 
+  const canVoidPermit = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "VOID_PERMIT",
+    },
+  });
+
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
+  if (!canVoidPermit) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
@@ -133,19 +177,8 @@ export const VoidPermit = () => {
   if (!isVoidable(permit)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   const pages = [
-    <VoidPermitForm
-      key="void-permit"
-      permit={permit}
-      onRevokeSuccess={goHomeSuccess}
-      onCancel={goHome}
-      onFail={handleFail}
-    />,
-    <FinishVoid
-      key="finish-void"
-      permit={permit}
-      onSuccess={goHomeSuccess}
-      onFail={handleFail}
-    />,
+    <VoidPermitForm key="void-permit" />,
+    <FinishVoid key="finish-void" />,
   ];
 
   return (

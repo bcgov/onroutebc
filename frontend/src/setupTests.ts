@@ -9,5 +9,7 @@ import "vitest-canvas-mock";
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
+    VITE_POLICY_URL: "http://localhost:5002",
+    VITE_BC_GEOCODER_API_URL: "https://geocoder.api.gov.bc.ca/addresses.json",
   };
 })();

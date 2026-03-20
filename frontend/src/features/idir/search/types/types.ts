@@ -19,6 +19,7 @@ export const SEARCH_BY_FILTERS = {
   COMPANY_NAME: "companyName",
   ONROUTEBC_CLIENT_NUMBER: "onRouteBCClientNumber",
   APPLICATION_NUMBER: "applicationNumber",
+  VIN: "vin",
 } as const;
 
 export type SearchByFilter =
@@ -35,3 +36,14 @@ export type SearchFields = {
    */
   searchString: string;
 };
+
+/**
+ * The application location from where the permit action (amend / void / revoke) originated
+ */
+export const PERMIT_ACTION_ORIGINS = {
+  GLOBAL_SEARCH: "globalSearch",
+  ACTIVE_PERMITS: "activePermits",
+};
+
+export type PermitActionOrigin =
+  (typeof PERMIT_ACTION_ORIGINS)[keyof typeof PERMIT_ACTION_ORIGINS];

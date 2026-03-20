@@ -1,0 +1,79 @@
+---
+name: Deploy Dev (Gold)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "latest"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "latest"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+jobs:
+  deploy-gold-dev:
+    name: Deploys Dev (Gold)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: gold-dev
+      release: ${{inputs.tag}}
+      tag: ${{ inputs.tag }}
+      triggers: '' #omit=always;
+      params: |
+        --set-string global.domain='apps.gold.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-gold' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='dev' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='dev' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+        --set-json public.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        ${{ inputs.params }} \
+  
+  
+  deploy-golddr-dev:
+    name: Deploys Dev (Golddr)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: golddr-dev
+      release: ${{inputs.tag}}
+      tag: ${{ inputs.tag }}
+      triggers: '' #omit=always;
+      params: |
+        --set-string global.domain='apps.golddr.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-golddr' \
+        --set-string global.license='c3141c' \
+        --set-string global.zone='dev' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='dev' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+        --set-json public.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        ${{ inputs.params }} \

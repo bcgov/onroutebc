@@ -18,8 +18,9 @@ export const ScrollButton = () => {
       document.body.scrollTop || document.documentElement.scrollTop;
 
     if (winScroll > heightToHideFrom) {
-      !isVisible && // to limit setting state only the first time
-        setIsVisible(true);
+      if (!isVisible) {
+        setIsVisible(true); // to limit setting state only the first time
+      }
     } else {
       setIsVisible(false);
     }

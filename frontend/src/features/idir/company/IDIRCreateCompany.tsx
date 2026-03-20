@@ -1,24 +1,17 @@
 import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-
+import "./IDIRCreateCompany.scss";
 import { Nullable } from "../../../common/types/common";
-import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
-import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
-import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCProfileCreated";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import {
-  CreateCompanyRequest,
-  CompanyProfile,
-} from "../../manageProfile/types/manageProfile";
+import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
+import { useCreateProfileMutation } from "../../wizard/hooks/hooks";
 
 /**
  * The form for a staff user to create a company.
@@ -27,12 +20,7 @@ export const IDIRCreateCompany = React.memo(() => {
   const navigate = useNavigate();
 
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
-  const {
-    migratedClient,
-    setCompanyId,
-    setOnRouteBCClientNumber,
-    setCompanyLegalName,
-  } = useContext(OnRouteBCContext);
+  const { unclaimedClient: migratedClient } = useContext(OnRouteBCContext);
 
   const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {
@@ -69,7 +57,6 @@ export const IDIRCreateCompany = React.memo(() => {
       email: getDefaultRequiredVal("", migratedClient?.email),
       phone: getDefaultRequiredVal("", migratedClient?.phone),
       extension: getDefaultRequiredVal("", migratedClient?.extension),
-      fax: getDefaultRequiredVal("", migratedClient?.fax),
       // A migrated but unclaimed company will not have primaryContact.
       primaryContact: {
         firstName: "",
@@ -87,6 +74,7 @@ export const IDIRCreateCompany = React.memo(() => {
   });
 
   const { handleSubmit } = companyAndUserFormMethods;
+  const { mutate: createProfile } = useCreateProfileMutation(setClientNumber);
 
   /**
    * On Click function for the Finish button
@@ -94,32 +82,19 @@ export const IDIRCreateCompany = React.memo(() => {
    * @param data The form data.
    */
   const onClickFinish = function (data: CreateCompanyRequest) {
-    const profileToBeCreated = data;
-    createProfileQuery.mutate(profileToBeCreated);
+    createProfile({
+      ...data,
+      phone: data.primaryContact.phone1,
+      extension: data.primaryContact.phone1Extension,
+      primaryContact: {
+        ...data.primaryContact,
+        email: data.email,
+        countryCode: data.mailingAddress.countryCode,
+        provinceCode: data.mailingAddress.provinceCode,
+        city: data.mailingAddress.city,
+      },
+    });
   };
-
-  const createProfileQuery = useMutation({
-    mutationFn: createOnRouteBCProfile,
-    onSuccess: async (response) => {
-      if (response.status === 200 || response.status === 201) {
-        const { companyId, clientNumber, legalName } =
-          response.data as CompanyProfile;
-        // Handle context updates;
-        sessionStorage.setItem(
-          "onRouteBC.user.companyId",
-          companyId.toString(),
-        );
-        setCompanyId?.(() => companyId);
-        setCompanyLegalName?.(() => legalName);
-        setOnRouteBCClientNumber?.(() => clientNumber);
-        // By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended
-        setClientNumber(() => clientNumber);
-      }
-    },
-    onError: () => {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    },
-  });
 
   if (clientNumber) {
     return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
@@ -133,17 +108,16 @@ export const IDIRCreateCompany = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText="Create Company" />
+        <Banner bannerText="Create a new onRouteBC Profile" />
       </Box>
       <div
-        className="tabpanel-container create-profile-steps"
+        className="idir-create-company create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
       >
         <div className="create-profile-steps__create-profile">
           <FormProvider {...companyAndUserFormMethods}>
-            <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
-            <CompanyInformationWizardForm showCompanyName />
+            <CompanyInformationWizardForm />
             <div className="create-profile-section create-profile-section--nav">
               <Stack direction="row" spacing={3}>
                 <Button

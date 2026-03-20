@@ -14,6 +14,12 @@ import { PermitTransaction } from '../entities/permit-transaction.entity';
 import { ReadApplicationTransactionDto } from '../dto/response/read-application-transaction.dto';
 import { UpdatePaymentGatewayTransactionDto } from '../dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from '../dto/response/read-payment-gateway-transaction.dto';
+import { Directory } from 'src/common/enum/directory.enum';
+import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
+import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
+import { isWebTransactionPurchase } from '../../../../common/helper/payment.helper';
+import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -61,6 +67,72 @@ export class TransactionProfile extends AutomapperProfile {
         mapper,
         CreateTransactionDto,
         Transaction,
+        forMember(
+          (transaction) => transaction.payerName,
+
+          mapWithArguments(
+            (
+              source,
+              {
+                directory,
+                firstName,
+                lastName,
+                creditAccount,
+              }: {
+                directory: Directory;
+                firstName: string;
+                lastName: string;
+                creditAccount: CreditAccount;
+              },
+            ) => {
+              const payerName = (() => {
+                // Check if the directory is IDIR or SERVICE_ACCOUNT
+                if (
+                  directory === Directory.IDIR ||
+                  directory === Directory.SERVICE_ACCOUNT
+                ) {
+                  // Return PPC_FULL_TEXT if the condition is true
+                  return PPC_FULL_TEXT;
+                }
+
+                // Check if the creditAccount has a valid creditAccountId
+                if (creditAccount?.creditAccountId) {
+                  // Return the legalName of the company associated with the credit account
+                  return creditAccount.company?.legalName;
+                }
+
+                // Check if the transaction type is not PURCHASE or payment method is not WEB as it will be set on PUT
+                if (
+                  source?.transactionTypeId !== TransactionType.PURCHASE ||
+                  source.paymentMethodTypeCode !== PaymentMethodType.WEB
+                ) {
+                  // Return the concatenated first and last name
+                  return `${firstName} ${lastName}`;
+                }
+              })();
+              return payerName;
+            },
+          ),
+        ),
+        forMember(
+          (transaction) => transaction.transactionApprovedDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            if (
+              !isWebTransactionPurchase(
+                source.paymentMethodTypeCode,
+                source.transactionTypeId,
+              )
+            ) {
+              return timestamp;
+            }
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.transactionSubmitDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            return timestamp;
+          }),
+        ),
         forMember(
           (d) => d.createdUserGuid,
           mapWithArguments((source, { userGUID }) => {
@@ -124,6 +196,13 @@ export class TransactionProfile extends AutomapperProfile {
             return totalTransactionAmount;
           }),
         ),
+        forMember(
+          (transaction) => transaction?.creditAccount?.creditAccountId,
+          mapWithArguments(
+            (source, { creditAccount }: { creditAccount: CreditAccount }) =>
+              creditAccount?.creditAccountId,
+          ),
+        ),
       );
 
       createMap(
@@ -138,9 +217,28 @@ export class TransactionProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (transaction) => transaction.transactionApprovedDate,
+          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
+            if (source.pgApproved === 1) {
+              return timestamp;
+            }
+          }),
+        ),
+        forMember(
           (transaction) => transaction.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.payerName,
+          mapWithArguments((source, { directory, firstName, lastName }) => {
+            if (
+              directory === Directory.IDIR ||
+              directory === Directory.SERVICE_ACCOUNT
+            )
+              return PPC_FULL_TEXT;
+            else return String(firstName) + ' ' + String(lastName);
           }),
         ),
         forMember(

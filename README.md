@@ -1,4 +1,4 @@
-<!-- PROJECT SHIELDS -->
+<!-- PROJECT SHIELDS --> 
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_onroutebc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_onroutebc)
 [![Merge](https://github.com/bcgov/onroutebc/actions/workflows/merge.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/merge.yml)
@@ -166,7 +166,7 @@ OpenShift server address.
 
 OpenShift project/namespace.  Provided by your OpenShift platform team.
 
-* Variable: `{{ vars.OC_NAMESPACE }}`
+* Variable: `{{ secrets.OC_NAMESPACE }}`
 * Value: format `abc123-dev | test | prod`
 
 **OC_TOKEN**

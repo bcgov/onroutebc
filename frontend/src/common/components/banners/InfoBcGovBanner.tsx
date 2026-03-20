@@ -6,8 +6,8 @@ export const InfoBcGovBanner = ({
   additionalInfo,
   className,
 }: {
-  msg: string;
-  additionalInfo?: JSX.Element;
+  msg: string | JSX.Element;
+  additionalInfo?: string | JSX.Element;
   className?: string;
 }) => (
   <BcGovAlertBanner

@@ -2,21 +2,59 @@
 
 .review-actions {
   background-color: $bc-white;
-  padding-top: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 2.5rem;
 
   & &__btn {
+    box-shadow: none;
+    &:hover {
+      box-shadow: none;
+    }
+    .button-icon {
+      margin-right: 0.5rem;
+    }
+
     &--edit {
-      margin-right: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+    }
+
+    &--reject {
+      &:hover {
+        background-color: $bc-messages-red-text;
+      }
+      &:disabled {
+        background-color: $bc-red-disabled;
+        color: $white;
+      }
+    }
+
+    &--approve {
+      &:disabled {
+        background-color: $disabled-colour;
+        color: $white;
+      }
+    }
+
+    &--cart {
+      padding-left: 2rem;
+      padding-right: 2rem;
+     
+      font-weight: bold;
+      border-color: $bc-primary-blue;
+      color: $bc-primary-blue;
+      background-color: $white;
+
+      &:hover {
+        background-color: $bc-text-links-blue;
+        color: $white;
+      }
     }
 
     &--continue {
-      font-weight: 600;
+      font-weight: bold;
     }
   }
 }

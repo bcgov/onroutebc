@@ -4,10 +4,10 @@ import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
 import {
-  ClientUserAuthGroup,
-  GenericUserAuthGroup,
-  IDIRUserAuthGroup,
-} from '../../../../src/common/enum/user-auth-group.enum';
+  ClientUserRole,
+  GenericUserRole,
+  IDIRUserRole,
+} from '../../../../src/common/enum/user-role.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 export const SORT_ORDER_1 = '1';
@@ -28,7 +28,7 @@ export const PROVINCE_CODE_WA = 'WA';
 export const PROVINCE_NAME_WA = 'Washington';
 export const PROVINCE_ID_US_WA = 'US-WA';
 
-export const USER_AUTH_GROUP_PUBLIC = GenericUserAuthGroup.PUBLIC_VERIFIED;
+export const USER_ROLE_PUBLIC = GenericUserRole.PUBLIC_VERIFIED;
 
 //Red Company
 export const RED_COMPANY_ID = 1;
@@ -39,7 +39,6 @@ export const RED_COMPANY_CLIENT_NUMBER = 'B3-000005-722';
 export const RED_COMPANY_DIRECOTRY = Directory.BBCEID;
 export const RED_COMPANY_PHONE_1 = '(514) 963-1560';
 export const RED_COMPANY_PHONE_1_EXT = '12345';
-export const RED_COMPANY_FAX = '(514) 456-8749';
 export const RED_COMPANY_EMAIL = 'red.truck@test.gov.bc.ca';
 export const RED_COMPANY_ACCOUNT_REGION = AccountRegion.BritishColumbia;
 export const RED_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
@@ -61,7 +60,6 @@ export const BLUE_COMPANY_CLIENT_NUMBER = 'E3-000006-923';
 export const BLUE_COMPANY_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_PHONE_1 = '(813) 791-0314';
 export const BLUE_COMPANY_PHONE_1_EXT = '12345';
-export const BLUE_COMPANY_FAX = '(813) 791-4358';
 export const BLUE_COMPANY_EMAIL = 'blue.truck@test.gov.bc.ca';
 export const BLUE_COMPANY_ACCOUNT_REGION = AccountRegion.ExtraProvincial;
 export const BLUE_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
@@ -82,7 +80,6 @@ export const RED_COMPANY_PRIMARY_CONTACT_PHONE_1 = '(514) 833-7980';
 export const RED_COMPANY_PRIMARY_CONTACT_PHONE_1_EXT = '12345';
 export const RED_COMPANY_PRIMARY_CONTACT_PHONE_2 = '(201) 851-8278';
 export const RED_COMPANY_PRIMARY_CONTACT_PHONE_2_EXT = '12345';
-export const RED_COMPANY_PRIMARY_CONTACT_FAX = '(216) 890-7620';
 export const RED_COMPANY_PRIMARY_CONTACT_EMAIL = 'ralph.donley@test.gov.bc.ca';
 export const RED_COMPANY_PRIMARY_CONTACT_CITY = 'Vancouver';
 
@@ -97,7 +94,6 @@ export const RED_COMPANY_ADMIN_PHONE_1 = '(573) 583-1847';
 export const RED_COMPANY_ADMIN_PHONE_1_EXT = '12345';
 export const RED_COMPANY_ADMIN_PHONE_2 = '(201) 851-8278';
 export const RED_COMPANY_ADMIN_PHONE_2_EXT = '12345';
-export const RED_COMPANY_ADMIN_FAX = '(417) 204-4089';
 export const RED_COMPANY_ADMIN_EMAIL = 'chante.aldrich@test.gov.bc.ca';
 export const RED_COMPANY_ADMIN_CITY = 'Vancouver';
 export const RED_COMPANY_ADMIN_PROVINCE_CODE = PROVINCE_CODE_BC;
@@ -106,8 +102,8 @@ export const RED_COMPANY_ADMIN_USER_GUID = 'C23229C862234796BE9DA99F30A44F9A';
 export const RED_COMPANY_ADMIN_USER_NAME = 'CALDRICH';
 export const RED_COMPANY_ADMIN_PREFFERED_USER_NAME =
   RED_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const RED_COMPANY_ADMIN_USER_AUTH_GROUP =
-  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+export const RED_COMPANY_ADMIN_ROLE_GROUP =
+  ClientUserRole.COMPANY_ADMINISTRATOR;
 export const RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BBCEID;
 export const RED_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -120,7 +116,6 @@ export const RED_COMPANY_CVCLIENT_PHONE_1 = '(310) 772-9926';
 export const RED_COMPANY_CVCLIENT_PHONE_1_EXT = '12345';
 export const RED_COMPANY_CVCLIENT_PHONE_2 = '(310) 310-0951';
 export const RED_COMPANY_CVCLIENT_PHONE_2_EXT = '12345';
-export const RED_COMPANY_CVCLIENT_FAX = '(310) 710-6720';
 export const RED_COMPANY_CVCLIENT_EMAIL = 'david.kinser@test.gov.bc.ca';
 export const RED_COMPANY_CVCLIENT_CITY = 'Vancouver';
 export const RED_COMPANY_CVCLIENT_PROVINCE_CODE = PROVINCE_CODE_BC;
@@ -130,8 +125,7 @@ export const RED_COMPANY_CVCLIENT_USER_GUID =
 export const RED_COMPANY_CVCLIENT_USER_NAME = 'DKINSER';
 export const RED_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   RED_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP =
-  ClientUserAuthGroup.PERMIT_APPLICANT;
+export const RED_COMPANY_CVCLIENT_ROLE_GROUP = ClientUserRole.PERMIT_APPLICANT;
 export const RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const RED_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -156,7 +150,6 @@ export const BLUE_COMPANY_PRIMARY_CONTACT_PHONE_1 = '(651) 653-7876';
 export const BLUE_COMPANY_PRIMARY_CONTACT_PHONE_1_EXT = '12345';
 export const BLUE_COMPANY_PRIMARY_CONTACT_PHONE_2 = '(651) 852-5866';
 export const BLUE_COMPANY_PRIMARY_CONTACT_PHONE_2_EXT = '12345';
-export const BLUE_COMPANY_PRIMARY_CONTACT_FAX = '(651) 852-5866';
 export const BLUE_COMPANY_PRIMARY_CONTACT_EMAIL = 'mary.lanham@test.gov.bc.ca';
 export const BLUE_COMPANY_PRIMARY_CONTACT_CITY = 'Redmond';
 
@@ -169,7 +162,6 @@ export const BLUE_COMPANY_ADMIN_PHONE_1 = '(813) 731-0302';
 export const BLUE_COMPANY_ADMIN_PHONE_1_EXT = '12345';
 export const BLUE_COMPANY_ADMIN_PHONE_2 = '(813) 796-1071';
 export const BLUE_COMPANY_ADMIN_PHONE_2_EXT = '12345';
-export const BLUE_COMPANY_ADMIN_FAX = '(813) 866-8571';
 export const BLUE_COMPANY_ADMIN_EMAIL = 'benny.thompson@test.gov.bc.ca';
 export const BLUE_COMPANY_ADMIN_CITY = 'Redmond';
 export const BLUE_COMPANY_ADMIN_PROVINCE_CODE = PROVINCE_CODE_WA;
@@ -178,8 +170,8 @@ export const BLUE_COMPANY_ADMIN_USER_GUID = 'BE1882196A4444C8B1E216DC9977E8C3';
 export const BLUE_COMPANY_ADMIN_USER_NAME = 'BTHOMPSON';
 export const BLUE_COMPANY_ADMIN_PREFFERED_USER_NAME =
   BLUE_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const BLUE_COMPANY_ADMIN_USER_AUTH_GROUP =
-  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+export const BLUE_COMPANY_ADMIN_USER_ROLE =
+  ClientUserRole.COMPANY_ADMINISTRATOR;
 export const BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -192,7 +184,6 @@ export const BLUE_COMPANY_CVCLIENT_PHONE_1 = '(954) 943-1512';
 export const BLUE_COMPANY_CVCLIENT_PHONE_1_EXT = '12345';
 export const BLUE_COMPANY_CVCLIENT_PHONE_2 = '(561) 929-0329';
 export const BLUE_COMPANY_CVCLIENT_PHONE_2_EXT = '12345';
-export const BLUE_COMPANY_CVCLIENT_FAX = '(561) 749-7024';
 export const BLUE_COMPANY_CVCLIENT_EMAIL = 'martina.gross@test.gov.bc.ca';
 export const BLUE_COMPANY_CVCLIENT_CITY = 'Redmond';
 export const BLUE_COMPANY_CVCLIENT_PROVINCE_CODE = PROVINCE_CODE_WA;
@@ -202,8 +193,7 @@ export const BLUE_COMPANY_CVCLIENT_USER_GUID =
 export const BLUE_COMPANY_CVCLIENT_USER_NAME = 'MGROSS';
 export const BLUE_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   BLUE_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP =
-  ClientUserAuthGroup.PERMIT_APPLICANT;
+export const BLUE_COMPANY_CVCLIENT_USER_ROLE = ClientUserRole.PERMIT_APPLICANT;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -223,7 +213,6 @@ export const SYS_ADMIN_STAFF_PHONE_1 = '(250) 851-6115';
 export const SYS_ADMIN_STAFF_PHONE_1_EXT = '12345';
 export const SYS_ADMIN_STAFF_PHONE_2 = '(250) 254-9536';
 export const SYS_ADMIN_STAFF_PHONE_2_EXT = '12345';
-export const SYS_ADMIN_STAFF_FAX = '(250) 987-3358';
 export const SYS_ADMIN_STAFF_EMAIL = 'mitchell.marshall@test.gov.bc.ca';
 export const SYS_ADMIN_STAFF_CITY = 'Vancouver';
 export const SYS_ADMIN_STAFF_PROVINCE_CODE = PROVINCE_CODE_BC;
@@ -232,8 +221,7 @@ export const SYS_ADMIN_STAFF_USER_GUID = '2835D24C2D604B13BF1E979E8DC907A7';
 export const SYS_ADMIN_STAFF_USER_NAME = 'MMARSHALL';
 export const SYS_ADMIN_STAFF_PREFFERED_USER_NAME =
   SYS_ADMIN_STAFF_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const SYS_ADMIN_STAFF_USER_AUTH_GROUP =
-  IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR;
+export const SYS_ADMIN_STAFF_USER_ROLE = IDIRUserRole.SYSTEM_ADMINISTRATOR;
 export const SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY = Directory.IDIR;
 export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
 

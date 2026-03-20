@@ -6,24 +6,28 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../types/common";
-import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
+
+import "./CustomFormComponents.scss";
+import { ORBC_FormTypes, ORBCFormFeatureType } from "../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 import { CustomTextArea } from "./subFormComponents/CustomTextArea";
+import { PhoneExtInput } from "./subFormComponents/PhoneExtInput";
 
 /**
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "datePicker" | "textarea";
-  feature: string;
+  type: "input" | "select" | "phone" | "textarea" | "ext";
+  feature: ORBCFormFeatureType;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
   className?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -37,6 +41,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   width?: string;
   customHelperText?: string;
   inputType?: "number"; // currently only support number, add "date", "email" and other types later
+  showOptionalLabel?: boolean;
 }
 
 /**
@@ -73,7 +78,7 @@ export const getErrorMessage = (errors: any, fieldPath: string): string => {
  * @param customHelperText Non-bold text to appear in parenthesis beside the label
  * @param menuOptions Menu items array for MUI Select component
  *
- * @returns An onRouteBc customized react form component
+ * @returns An onRouteBC customized react form component
  */
 export const CustomFormComponent = <T extends ORBC_FormTypes>({
   type,
@@ -86,26 +91,19 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     width = "528px",
     customHelperText,
     inputType, // currently only used for "input" types, add for "select" types later
+    showOptionalLabel,
   },
   menuOptions,
   className,
   disabled,
   readOnly,
+  onFocus,
+  onWheel,
 }: CustomFormComponentProps<T>): JSX.Element => {
   const {
     control,
     formState: { errors },
   } = useFormContext();
-
-  /**
-   * Function to check the rules object for either required or required: { value: true}
-   * @returns true/false depending on field rule object
-   */
-  const isRequired = () => {
-    if (rules.required === true) return true;
-    if ((rules.required as any).value === true) return true;
-    return false;
-  };
 
   const renderSubFormComponent = (invalid: boolean) => {
     switch (type) {
@@ -141,15 +139,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             inputType={inputType}
             disabled={disabled}
             readOnly={readOnly}
-          />
-        );
-      case "datePicker":
-        return (
-          <CustomDatePicker
-            feature={feature}
-            name={name}
-            disabled={disabled}
-            readOnly={readOnly}
+            onFocus={onFocus}
+            onWheel={onWheel}
           />
         );
       case "textarea":
@@ -164,12 +155,29 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             readOnly={readOnly}
           />
         );
+      case "ext":
+        return (
+          <PhoneExtInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+            inputType={inputType}
+            disabled={disabled}
+            readOnly={readOnly}
+          />
+        );
       default:
         return null;
     }
   };
+
   return (
-    <Box sx={className ? null : { width }} className={className}>
+    <Box
+      sx={className ? null : { width }}
+      className={`custom-form-components ${className}`}
+    >
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}
@@ -180,25 +188,28 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             className="custom-form-control"
             margin="normal"
             error={invalid}
-            sx={{ width: "100%" }}
           >
             <FormLabel
-              className="custom-form-control__label"
               id={`${feature}-${name}-label`}
-              sx={{ fontWeight: "bold", marginBottom: "8px" }}
+              classes={{
+                root: "custom-form-control__label",
+                error: "custom-form-control__label--error",
+              }}
             >
               {label}
-              {!isRequired() && (
+              {showOptionalLabel ? (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
-              )}
-              {customHelperText && (
+              ) : null}
+              {customHelperText ? (
                 <span style={{ fontWeight: "normal" }}>
                   {` (${customHelperText})`}
                 </span>
-              )}
+              ) : null}
             </FormLabel>
+
             {renderSubFormComponent(invalid)}
-            {invalid && (
+
+            {invalid ? (
               <FormHelperText
                 className="custom-form-control__helper-text"
                 data-testid={`alert-${name}`}
@@ -206,7 +217,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               >
                 {getErrorMessage(errors, name)}
               </FormHelperText>
-            )}
+            ) : null}
           </FormControl>
         )}
       />

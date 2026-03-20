@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
@@ -21,7 +20,7 @@ import {
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
 import { BadRequestException } from '@nestjs/common';
-import { Role } from '../../../src/common/enum/roles.enum';
+import { Claim } from '../../../src/common/enum/claims.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
@@ -49,6 +48,7 @@ import { readPendingIdirUserMock } from 'test/util/mocks/data/pending-idir-user.
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '../../../src/modules/company-user-management/users/entities/login.entity';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -58,6 +58,7 @@ interface SelectQueryBuilderParameters {
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
+let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
@@ -69,6 +70,7 @@ describe('UsersService', () => {
     delete: jest.fn(),
     update: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
   };
 
@@ -80,6 +82,7 @@ describe('UsersService', () => {
     companyServiceMock = createMock<CompanyService>();
     repo = createMock<Repository<User>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
+    repoLogin = createMock<Repository<Login>>();
     repoCompanyUser = createMock<Repository<CompanyUser>>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -93,6 +96,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(Login),
+          useValue: repoLogin,
         },
         {
           provide: getRepositoryToken(CompanyUser),
@@ -184,7 +191,7 @@ describe('UsersService', () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(BadRequestException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -237,19 +244,19 @@ describe('UsersService', () => {
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_TYPE: Role.READ_SELF },
-        { ROLE_TYPE: Role.READ_USER },
-        { ROLE_TYPE: Role.WRITE_SELF },
-        { ROLE_TYPE: Role.WRITE_USER },
+        { ROLE_TYPE: Claim.READ_SELF },
+        { ROLE_TYPE: Claim.READ_USER },
+        { ROLE_TYPE: Claim.WRITE_SELF },
+        { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
-      const retUserRoles = await service.getRolesForUser(
+      const retUserRoles = await service.getClaimsForUser(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         constants.RED_COMPANY_ID,
       );
 
       expect(typeof retUserRoles).toBe('object');
-      expect(retUserRoles[0]).toBe(Role.READ_SELF);
+      expect(retUserRoles[0]).toBe(Claim.READ_SELF);
     });
   });
 
@@ -276,9 +283,14 @@ describe('UsersService', () => {
         readRedCompanyMetadataDtoMock,
       );
 
-      companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
+      companyServiceMock.findCompanyMetadata.mockResolvedValue(
+        readRedCompanyMetadataDtoMock,
+      );
+
+      companyServiceMock.findOneCompanyWithAssociatedUsers.mockResolvedValue(
         redCompanyEntityMock,
       );
+
       const retUserContext = await service.findORBCUser(
         redCompanyPendingUserJWTMock,
       );
@@ -328,6 +340,6 @@ function findUsersEntityMock(
 
   jest
     .spyOn(repo, 'createQueryBuilder')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     .mockImplementation(() => createQueryBuilderMock(filteredList));
 }

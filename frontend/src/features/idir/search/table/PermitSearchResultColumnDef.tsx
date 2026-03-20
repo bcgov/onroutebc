@@ -1,24 +1,26 @@
+import { Box, Tooltip } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { PermitListItem } from "../../../permits/types/permit";
-import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
+import {
+  PERMIT_EXPIRED,
+  PERMIT_STATUSES,
+  PermitStatus,
+} from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
 import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
+import { getPermitTypeName } from "../../../permits/types/PermitType";
 import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
 
-/*
- *
- * The Columns Options are from Material React Table.
- * For a list of options, see here:
- * https://www.material-react-table.com/docs/api/column-options
- *
- */
-export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
+export const PermitSearchResultColumnDef = (
+  onDocumentUnavailable: () => void,
+  onClickCompany: (companyId: number) => Promise<void>,
+): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
@@ -26,34 +28,63 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as PermitListItem;
-      const {
-        permitId,
-        permitStatus,
-        expiryDate,
-      } = permit;
+
+      const { permitId, permitStatus, expiryDate, companyId } = permit;
+
+      const getDisplayedPermitStatus = (
+        permitStatus: PermitStatus,
+        expiryDate: string,
+      ) => {
+        if (permitStatus === PERMIT_STATUSES.VOIDED) {
+          return PERMIT_STATUSES.VOIDED;
+        }
+
+        if (permitStatus === PERMIT_STATUSES.SUPERSEDED) {
+          return PERMIT_STATUSES.SUPERSEDED;
+        }
+
+        if (permitStatus === PERMIT_STATUSES.REVOKED) {
+          return PERMIT_STATUSES.REVOKED;
+        }
+
+        if (hasPermitExpired(expiryDate)) {
+          return PERMIT_EXPIRED;
+        }
+
+        return permitStatus;
+      };
 
       return (
         <>
           <CustomActionLink
-            onClick={() => viewPermitPdf(permitId.toString())}
+            onClick={() => {
+              viewPermitPdf(companyId, permitId, () => onDocumentUnavailable());
+            }}
           >
             {props.cell.getValue()}
           </CustomActionLink>
-          {hasPermitExpired(expiryDate) ? (
-            <PermitChip permitStatus={PERMIT_EXPIRED} />
-          ) : (
-            <PermitChip permitStatus={permitStatus} />
-          )}
+          <PermitChip
+            permitStatus={getDisplayedPermitStatus(permitStatus, expiryDate)}
+          />
         </>
       );
     },
-    size: 180,
+    size: 170,
   },
   {
     accessorKey: "permitType",
     header: "Permit Type",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { cell: any }) => {
+      const permitTypeName = getPermitTypeName(props.cell.getValue());
+      return (
+        <Tooltip title={permitTypeName}>
+          <Box>{props.cell.getValue()}</Box>
+        </Tooltip>
+      );
+    },
+    size: 20,
   },
   {
     header: "Commodity",
@@ -62,18 +93,39 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     // For TROS permits, commodities is not a concern.
     // Other permits will require implementation here.
     Cell: () => <>NA</>,
+    size: 20,
   },
   {
     accessorKey: "plate",
     header: "Plate",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    size: 20,
+  },
+  {
+    accessorKey: "vin",
+    header: "VIN (last 6 digits)",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+    size: 20,
   },
   {
     accessorKey: "legalName",
-    header: "Company Name",
+    header: "Client Name",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    size: 180,
+    Cell: (props: { cell: any; row: any }) => {
+      return (
+        <CustomActionLink
+          onClick={async () =>
+            await onClickCompany(props.row.original.companyId)
+          }
+        >
+          {props.row.original.legalName}
+        </CustomActionLink>
+      );
+    },
   },
   {
     accessorKey: "startDate",
@@ -81,7 +133,10 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(
+        props.cell.getValue(),
+        true,
+      );
       return formattedDate;
     },
   },
@@ -91,7 +146,10 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(
+        props.cell.getValue(),
+        true,
+      );
       return formattedDate;
     },
   },

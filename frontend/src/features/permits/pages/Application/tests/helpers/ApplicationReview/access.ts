@@ -91,10 +91,6 @@ export const contactInfoAdditionalEmail = async () => {
   return await screen.findByTestId("review-contact-details-additional-email");
 };
 
-export const contactInfoFax = async () => {
-  return await screen.findByTestId("review-contact-details-fax");
-};
-
 export const permitStartDate = async () => {
   return await screen.findByTestId("permit-start-date");
 };
@@ -196,6 +192,11 @@ export const checkAttestations = async (
 
 export const attestationErrorMsg = async () => {
   return await screen.findByTestId("permit-attestation-checkbox-error");
+};
+
+export const proceedToAddToCart = async (user: UserEvent) => {
+  const addToCartBtn = await screen.findByTestId("add-to-cart-btn");
+  await user.click(addToCartBtn);
 };
 
 export const proceedToPay = async (user: UserEvent) => {

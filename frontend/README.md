@@ -19,9 +19,13 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 ```conf
 VITE_DEPLOY_ENVIRONMENT=local
 VITE_API_VEHICLE_URL=http://localhost:5000
+VITE_POLICY_URL=http://localhost:5002
 VITE_KEYCLOAK_ISSUER_URL=
 VITE_KEYCLOAK_AUDIENCE=
 VITE_SITEMINDER_LOG_OFF_URL=
+VITE_BC_GEOCODER_CLIENT_ID=
+VITE_BC_GEOCODER_API_KEY=
+VITE_BC_GEOCODER_API_URL=https://geocoder.api.gov.bc.ca/addresses.json
 ```
 
 ### Prerequisites

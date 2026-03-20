@@ -1,27 +1,48 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
+import { useMemo } from "react";
 
 import "./PermitReview.scss";
-import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
-import { ReviewContactDetails } from "./ReviewContactDetails";
-import { ReviewPermitDetails } from "./ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
-import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
+import { ReviewContactDetails } from "./ReviewContactDetails";
+import { ReviewFeeSummary } from "./ReviewFeeSummary";
+import { ReviewPermitDetails } from "./ReviewPermitDetails";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
+import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { PermitType } from "../../../../types/PermitType";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitContactDetails } from "../../../../types/PermitContactDetails";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { Application } from "../../../../types/application";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
+import { PermitLOA } from "../../../../types/PermitLOA";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
+import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
+import { CommodityDetails } from "./CommodityDetails";
+import { PermittedCommodity } from "../../../../types/PermittedCommodity";
+import { PermitVehicleConfiguration } from "../../../../types/PermitVehicleConfiguration";
+import { PermittedRoute } from "../../../../types/PermittedRoute";
+import { LoadedDimensions } from "./LoadedDimensions";
+import { ApplicationNotes } from "./ApplicationNotes";
+import { TripDetails } from "./TripDetails";
+import { ThirdPartyLiability } from "../../../../types/ThirdPartyLiability";
+import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
+import { ReviewConditionalLicensingFeesSection } from "./ReviewConditionalLicensingFeesSection";
+import { ReviewVehicleWeightSection } from "./ReviewVehicleWeightSection";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
+import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
 
 interface PermitReviewProps {
+  reviewContext: PermitReviewContext;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -32,31 +53,85 @@ interface PermitReviewProps {
   permitStartDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   permitExpiryDate?: Nullable<Dayjs>;
-  permitConditions?: Nullable<PermitCommodity[]>;
-  continueBtnText: string;
+  permitConditions?: Nullable<PermitCondition[]>;
+  permittedCommodity?: Nullable<PermittedCommodity>;
+  commodityOptions: {
+    label: string;
+    value: string;
+  }[];
+  continueBtnText?: string;
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
-  allChecked: boolean;
-  setAllChecked: Dispatch<SetStateAction<boolean>>;
+  allConfirmed: boolean;
+  setAllConfirmed: (confirmed: boolean) => void;
   powerUnitSubTypes?: Nullable<VehicleSubType[]>;
   trailerSubTypes?: Nullable<VehicleSubType[]>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
+  vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
+  route?: Nullable<PermittedRoute>;
+  applicationNotes?: Nullable<string>;
   onEdit: () => void;
-  onContinue: () => Promise<void>;
+  onContinue?: () => Promise<void>;
+  onAddToCart?: () => Promise<void>;
+  handleApproveButton?: () => Promise<void>;
+  updateApplicationMutationPending?: boolean;
+  handleRejectButton?: () => void;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
-  calculatedFee?: Nullable<string>;
+  calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
+  loas?: Nullable<PermitLOA[]>;
+  applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
+  isStaffUser: boolean;
+  thirdPartyLiability?: Nullable<ThirdPartyLiability>;
+  conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
+  companyId: number;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
-  const feeSummary = props.calculatedFee
-    ? props.calculatedFee
-    : `${calculateFeeByDuration(
-        getDefaultRequiredVal(0, props.permitDuration),
-      )}`;
+  const { powerUnitSubTypes, trailerSubTypes } = props;
+  const powerUnitSubtypeNamesMap = useMemo(
+    () =>
+      new Map<string, string>(
+        getDefaultRequiredVal([], powerUnitSubTypes).map(
+          ({ typeCode, type }) => [typeCode, type],
+        ),
+      ),
+    [powerUnitSubTypes],
+  );
+
+  const trailerSubtypeNamesMap = useMemo(
+    () =>
+      new Map<string, string>(
+        getDefaultRequiredVal([], trailerSubTypes).map(({ typeCode, type }) => [
+          typeCode,
+          type,
+        ]),
+      ),
+    [trailerSubTypes],
+  );
+
+  const shouldShowRejectionHistory =
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE ||
+      props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY) &&
+    props.applicationRejectionHistory &&
+    props.applicationRejectionHistory.length > 0;
+
+  const invalidPermitDates =
+    props.permitStartDate && props.permitExpiryDate
+      ? isPermitStartOrExpiryDateInPast(
+          props.permitStartDate,
+          props.permitExpiryDate,
+        )
+      : false;
+
+  const hasToCartButton =
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
+      (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
+      Number(props.calculatedFee) > 0);
 
   return (
     <Box className="permit-review layout-box">
@@ -82,7 +157,10 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldFields={props.oldFields?.permitData?.contactDetails}
         />
 
+        <ReviewPermitLOAs loas={props.loas} />
+
         <ReviewPermitDetails
+          permitType={props.permitType}
           startDate={props.permitStartDate}
           permitDuration={props.permitDuration}
           expiryDate={props.permitExpiryDate}
@@ -90,31 +168,100 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldStartDate={props.oldFields?.permitData?.startDate}
           oldDuration={props.oldFields?.permitData?.permitDuration}
+          showDateErrorBanner={invalidPermitDates}
+        />
+
+        <CommodityDetails
+          commodity={props.permittedCommodity}
+          oldCommodity={props.oldFields?.permitData?.permittedCommodity}
+          showChangedFields={props.showChangedFields}
+          commodityOptions={props.commodityOptions}
         />
 
         <ReviewVehicleInfo
-          powerUnitSubTypes={props.powerUnitSubTypes}
-          trailerSubTypes={props.trailerSubTypes}
+          permitType={props.permitType}
+          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+          trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleDetails={props.vehicleDetails}
           vehicleWasSaved={props.vehicleWasSaved}
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
+          selectedVehicleConfigSubtypes={props.vehicleConfiguration?.trailers}
         />
 
+        <LoadedDimensions
+          vehicleConfiguration={props.vehicleConfiguration}
+          oldVehicleConfiguration={
+            props.oldFields?.permitData?.vehicleConfiguration
+          }
+          showChangedFields={props.showChangedFields}
+        />
+
+        <TripDetails
+          routeDetails={props.route}
+          oldRouteDetails={props.oldFields?.permitData?.permittedRoute}
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ThirdPartyLiabilitySection
+          thirdPartyLiability={props.thirdPartyLiability}
+          oldThirdPartyLiability={
+            props.oldFields?.permitData?.thirdPartyLiability
+          }
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ReviewConditionalLicensingFeesSection
+          selectedCLF={props.conditionalLicensingFee}
+          oldCLF={props.oldFields?.permitData?.conditionalLicensingFee}
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ReviewVehicleWeightSection
+          loadedGVW={props.vehicleConfiguration?.loadedGVW}
+          oldLoadedGVW={
+            props.oldFields?.permitData?.vehicleConfiguration?.loadedGVW
+          }
+          netWeight={props.vehicleConfiguration?.netWeight}
+          oldNetWeight={
+            props.oldFields?.permitData?.vehicleConfiguration?.netWeight
+          }
+          showChangedFields={props.showChangedFields}
+        />
+
+        <ApplicationNotes applicationNotes={props.applicationNotes} />
+
+        {shouldShowRejectionHistory && props.applicationRejectionHistory ? (
+          <ReviewApplicationRejectionHistory
+            applicationRejectionHistory={props.applicationRejectionHistory}
+          />
+        ) : null}
+
         <ReviewFeeSummary
-          isSubmitted={props.hasAttemptedCheckboxes}
-          isChecked={props.allChecked}
-          setIsChecked={props.setAllChecked}
+          hasAttemptedSubmission={props.hasAttemptedCheckboxes}
+          areAllConfirmed={props.allConfirmed}
+          setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
-          fee={feeSummary}
+          fee={props.calculatedFee}
+          reviewContext={props.reviewContext}
+          companyId={props.companyId}
         />
 
         {props.children}
 
         <ReviewActions
+          reviewContext={props.reviewContext}
           onEdit={props.onEdit}
-          onContinue={props.onContinue}
           continueBtnText={props.continueBtnText}
+          onContinue={props.onContinue}
+          hasToCartButton={hasToCartButton}
+          onAddToCart={props.onAddToCart}
+          handleApproveButton={props.handleApproveButton}
+          handleRejectButton={props.handleRejectButton}
+          disableApproveButton={
+            props.updateApplicationMutationPending || invalidPermitDates
+          }
+          disableRejectButton={props.updateApplicationMutationPending}
         />
       </Box>
     </Box>

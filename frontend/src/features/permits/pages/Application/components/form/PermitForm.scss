@@ -6,6 +6,18 @@
     padding-bottom: 10rem;
     background-color: $bc-white;
   }
+
+  &__rejection-banner, .rejection-banner {
+    margin-bottom: 1.5rem;
+    
+    &__message {
+      display: flex;
+    }
+
+    &__link {
+      color: $bc-text-links-blue
+    }
+  }
 }
 
 @media (width < 576px) {

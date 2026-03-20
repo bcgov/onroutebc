@@ -1,6 +1,7 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -8,38 +9,46 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { SearchFields } from "../types/types";
-import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
+import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
+import { ERROR_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
+import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
+import { PermitRowOptions } from "../../../permits/components/permit-list/PermitRowOptions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Function to decide whether to show row actions icon or not.
- * @param userAuthGroup The auth group the user belongs to.
+ * @param userRole The role of the user.
  * @returns boolean
  */
-const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
-  if (!userAuthGroup) return false;
+const shouldShowRowActions = (userRole: Optional<string>): boolean => {
+  if (!userRole) return false;
   // Check if the user has PPC role to confirm
-  const allowableAuthGroups = [
-    USER_AUTH_GROUP.PPC_CLERK,
-    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  const allowableRoles = [
+    USER_ROLE.PPC_CLERK,
+    USER_ROLE.ENFORCEMENT_OFFICER,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
+    USER_ROLE.FINANCE,
+    USER_ROLE.HQ_ADMINISTRATOR,
+    USER_ROLE.CTPO,
   ] as string[];
-  return allowableAuthGroups.includes(userAuthGroup);
+  return allowableRoles.includes(userRole);
 };
 
 /*
@@ -75,6 +84,7 @@ export const IDIRPermitSearchResults = memo(
         searchEntity,
         pagination.pageIndex,
         pagination.pageSize,
+        isActiveRecordsOnly,
       ],
       queryFn: () =>
         getPermitDataBySearch(
@@ -84,6 +94,7 @@ export const IDIRPermitSearchResults = memo(
             searchString: searchString,
           },
           { page: pagination.pageIndex, take: pagination.pageSize },
+          isActiveRecordsOnly ? false : undefined,
         ),
       retry: 1, // retry once.
       enabled: true,
@@ -93,32 +104,74 @@ export const IDIRPermitSearchResults = memo(
 
     const { data, isPending, isError } = searchResultsQuery;
 
+    const navigate = useNavigate();
+    const { handleSelectCompany } = useSetCompanyHandler();
+    const fetchCompanyData = async (companyId: number) => {
+      const searchURL = new URL(`${VEHICLES_URL}/companies/${companyId}`);
+      searchURL.searchParams.set("page", pagination.pageIndex.toString());
+      searchURL.searchParams.set("take", pagination.pageSize.toString());
+      try {
+        const response = await httpGETRequest(searchURL.toString());
+        return response.data;
+      } catch (err) {
+        console.error("Failed to fetch company data", err);
+        throw err;
+      }
+    };
+
+    const handleClickCompany = async (companyId: number) => {
+      const company = await fetchCompanyData(companyId);
+      handleSelectCompany(company);
+    };
+
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
-      () => PermitSearchResultColumnDef,
-      [],
+      () =>
+        PermitSearchResultColumnDef(
+          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+          handleClickCompany,
+        ),
+      [searchEntity, searchByFilter],
     );
 
-    /**
-     *
-     * @param initialData The initial data to filter by the active data toggle.
-     * @returns List of permit items containing the data to be displayed in table.
-     */
-    const getFilteredData = (initialData: PermitListItem[]): PermitListItem[] => {
-      if (!initialData.length) return [];
-      if (isActiveRecordsOnly) {
-        // Returns unexpired permits
-        return initialData.filter(
-          ({ permitStatus, expiryDate }) =>
-            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus),
-        );
-      }
-      return initialData;
-    };
+    const canResendPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "RESEND_PERMIT",
+      },
+    });
+
+    const canViewPermitReceipt = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PERMITS",
+        permissionMatrixFunctionKey: "VIEW_PERMIT_RECEIPT",
+      },
+    });
+
+    const canViewExpiredPermitReceipt = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "MANAGE_PERMITS",
+        permissionMatrixFunctionKey: "VIEW_EXPIRED_PERMIT_RECEIPT",
+      },
+    });
+
+    const canAmendPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "AMEND_PERMIT",
+      },
+    });
+
+    const canVoidPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "VOID_PERMIT",
+      },
+    });
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: getFilteredData(data?.items ?? []),
+      data: getDefaultRequiredVal([], data?.items),
       columns: columns,
       initialState: {
         ...defaultTableInitialStateOptions,
@@ -164,26 +217,37 @@ export const IDIRPermitSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<PermitListItem> }) => {
-        const isInactive =
-          hasPermitExpired(row.original.expiryDate) ||
-          isPermitInactive(row.original.permitStatus);
+      renderRowActions: useCallback(
+        ({ row }: { row: MRT_Row<PermitListItem> }) => {
+          const isInactive =
+            hasPermitExpired(row.original.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
 
-        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-          return (
-            <Box className="idir-search-results__row-actions">
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
-              />
-            </Box>
-          );
-        } else {
-          return <></>;
-        }
-      }, []),
+          if (shouldShowRowActions(idirUserDetails?.userRole)) {
+            return (
+              <Box className="idir-search-results__row-actions">
+                <PermitRowOptions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  companyId={row.original.companyId}
+                  permitActionOrigin={PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH}
+                  permissions={{
+                    canAmendPermit,
+                    canResendPermit,
+                    canViewPermitReceipt,
+                    canViewExpiredPermitReceipt,
+                    canVoidPermit,
+                  }}
+                />
+              </Box>
+            );
+          } else {
+            return <></>;
+          }
+        },
+        [],
+      ),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",

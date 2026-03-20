@@ -2,23 +2,25 @@ import { Box, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 
 import "./ReviewPermitDetails.scss";
-import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
-import { ReviewConditionsTable } from "./ReviewConditionsTable";
-import { DiffChip } from "./DiffChip";
+import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
-import {
-  applyWhenNotNullable,
-  areValuesDifferent,
-  getDefaultRequiredVal,
-} from "../../../../../../common/helpers/util";
-
+import { BASE_DAYS_IN_YEAR } from "../../../../constants/constants";
+import { PermitCondition } from "../../../../types/PermitCondition";
+import { DiffChip } from "./DiffChip";
+import { ReviewConditionsTable } from "./ReviewConditionsTable";
+import { pastStartOrExpiryDate } from "../../../../../../common/helpers/validationMessages";
+import { ErrorBcGovBanner } from "../../../../../../common/components/banners/ErrorBcGovBanner";
+import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
+import { areValuesDifferent } from "../../../../../../common/helpers/equality";
+import { isQuarterlyPermit, PermitType } from "../../../../types/PermitType";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
+  getQuarterForDate,
 } from "../../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
+  permitType,
   startDate,
   permitDuration,
   expiryDate,
@@ -26,14 +28,17 @@ export const ReviewPermitDetails = ({
   showChangedFields = false,
   oldStartDate,
   oldDuration,
+  showDateErrorBanner,
 }: {
+  permitType?: Nullable<PermitType>;
   startDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   expiryDate?: Nullable<Dayjs>;
-  conditions?: Nullable<PermitCommodity[]>;
+  conditions?: Nullable<PermitCondition[]>;
   showChangedFields?: boolean;
   oldStartDate?: Nullable<Dayjs>;
   oldDuration?: Nullable<number>;
+  showDateErrorBanner?: Nullable<boolean>;
 }) => {
   const changedFields = showChangedFields
     ? {
@@ -57,6 +62,28 @@ export const ReviewPermitDetails = ({
         duration: false,
       };
 
+  const displayDuration = (duration: number) => {
+    const measurementUnit = duration !== 1 ? "Days" : "Day";
+    return duration === BASE_DAYS_IN_YEAR
+      ? "1 Year"
+      : `${duration} ${measurementUnit}`;
+  };
+
+  const displayDurationQuarter = (start: Dayjs) => {
+    const quarter = getQuarterForDate(start);
+    switch (quarter) {
+      case 2:
+        return "Apr. - Jun.";
+      case 3:
+        return "Jul. - Sep.";
+      case 4:
+        return "Oct. - Dec.";
+      case 1:
+      default:
+        return "Jan. - Mar.";
+    }
+  };
+
   return (
     <Box className="review-permit-details">
       <Box className="review-permit-details__header">
@@ -64,34 +91,51 @@ export const ReviewPermitDetails = ({
           Permit Details
         </Typography>
       </Box>
+
       <Box className="review-permit-details__body">
         <Box className="permit-dates">
-          <Typography className="permit-dates__label">
-            <span className="permit-dates__label-text">Start Date</span>
-            {changedFields.startDate ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="permit-dates__data"
-            data-testid="permit-start-date"
-          >
-            {applyWhenNotNullable(
-              (dayJsObject) =>
-                dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
-              startDate,
-              "",
-            )}
-          </Typography>
-          <Typography className="permit-dates__label">
-            <span className="permit-dates__label-text">Permit Duration</span>
-            {changedFields.duration ? <DiffChip /> : null}
-          </Typography>
-          <Typography
-            className="permit-dates__data"
-            data-testid="permit-duration"
-          >
-            {getDefaultRequiredVal(30, permitDuration)} Days
-          </Typography>
+          <div className="permit-dates__start">
+            <Typography className="permit-dates__label">
+              <span className="permit-dates__label-text">Start Date</span>
+              {changedFields.startDate ? <DiffChip /> : null}
+            </Typography>
+
+            <Typography
+              className="permit-dates__data"
+              data-testid="permit-start-date"
+            >
+              {applyWhenNotNullable(
+                (dayJsObject) =>
+                  dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+                startDate,
+                "",
+              )}
+            </Typography>
+          </div>
+          
+          <div className="permit-dates__duration">
+            <Typography className="permit-dates__label">
+              <span className="permit-dates__label-text">Permit Duration</span>
+              {changedFields.duration ? <DiffChip /> : null}
+            </Typography>
+
+            <Typography
+              className="permit-dates__data"
+              data-testid="permit-duration"
+            >
+              {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
+                displayDuration,
+                permitDuration,
+                "",
+              ) : applyWhenNotNullable(
+                displayDurationQuarter,
+                startDate,
+                "",
+              )}
+            </Typography>
+          </div>
         </Box>
+
         <Box className="permit-expiry-banner">
           <PermitExpiryDateBanner
             expiryDate={applyWhenNotNullable(
@@ -101,10 +145,18 @@ export const ReviewPermitDetails = ({
             )}
           />
         </Box>
+
+        {showDateErrorBanner ? (
+          <Box className="permit-error-banner">
+            <ErrorBcGovBanner msg={pastStartOrExpiryDate()} />
+          </Box>
+        ) : null}
+
         <Box className="permit-conditions">
-          <Typography variant="h3">
-            Selected commodities and their respective CVSE forms.
+          <Typography variant="h4">
+            The following CVSE forms will be included in your permit.
           </Typography>
+
           <ReviewConditionsTable conditions={conditions} />
         </Box>
       </Box>

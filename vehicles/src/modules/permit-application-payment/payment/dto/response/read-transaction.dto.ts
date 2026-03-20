@@ -42,6 +42,13 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'Provincial Permit Center',
+    description: 'Represents who paid for the transaction.',
+  })
+  payerName: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: '30.00',
     description: 'Represents the total amount of the transaction.',
   })
@@ -54,6 +61,14 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
       'Represents the date and time that the transaction was submitted.',
   })
   transactionSubmitDate: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-01-01 10:00:00.000000',
+    description:
+      'Represents the date that the transaction was approved in ORBC.',
+  })
+  transactionApprovedDate: string;
 
   @AutoMap()
   @ApiProperty({

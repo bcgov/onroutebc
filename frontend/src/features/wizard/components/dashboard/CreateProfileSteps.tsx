@@ -1,29 +1,24 @@
-import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useContext } from "react";
-
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
-import { Nullable } from "vitest";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
+
+import "./CreateProfileSteps.scss";
+import { Nullable } from "../../../../common/types/common";
+import { LoadBCeIDUserClaimsByCompany } from "../../../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
-import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CreateCompanyRequest } from "../../../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
-import "./CreateProfileSteps.scss";
 import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 
 /**
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
-  const steps = ["Company Information", "My Information"];
-
-  const { migratedClient } = useContext(OnRouteBCContext);
+  const { unclaimedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
-
-  const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
 
@@ -32,35 +27,40 @@ export const CreateProfileSteps = React.memo(() => {
       legalName: getDefaultRequiredVal(
         "",
         user?.profile?.bceid_business_name as string,
+        user?.profile?.given_name, //For Basic BCeID - bceid_business_name will not be availble for Basic BCeID
+        unclaimedClient?.legalName as string,
       ),
-      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      alternateName: getDefaultRequiredVal("", unclaimedClient?.alternateName),
       mailingAddress: {
         addressLine1: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.addressLine1,
+          unclaimedClient?.mailingAddress?.addressLine1,
         ),
         addressLine2: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine2,
+          null,
+          unclaimedClient?.mailingAddress?.addressLine2,
         ),
         provinceCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.provinceCode,
+          unclaimedClient?.mailingAddress?.provinceCode,
         ),
         countryCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.countryCode,
+          unclaimedClient?.mailingAddress?.countryCode,
         ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        city: getDefaultRequiredVal("", unclaimedClient?.mailingAddress?.city),
         postalCode: getDefaultRequiredVal(
           "",
-          migratedClient?.mailingAddress?.postalCode,
+          unclaimedClient?.mailingAddress?.postalCode,
         ),
       },
-      email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
-      extension: getDefaultRequiredVal("", migratedClient?.extension),
-      fax: getDefaultRequiredVal("", migratedClient?.fax),
+      email: getDefaultRequiredVal(
+        "",
+        user?.profile?.email,
+        unclaimedClient?.email,
+      ),
+      phone: getDefaultRequiredVal("", unclaimedClient?.phone),
+      extension: getDefaultRequiredVal("", unclaimedClient?.extension),
       adminUser: {
         firstName: "",
         lastName: "",
@@ -69,16 +69,21 @@ export const CreateProfileSteps = React.memo(() => {
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
-        fax: "",
         countryCode: "",
         provinceCode: "",
         city: "",
       },
       primaryContact: {
-        firstName: "",
-        lastName: "",
+        firstName: getDefaultRequiredVal(
+          "",
+          unclaimedClient?.primaryContact?.firstName,
+        ),
+        lastName: getDefaultRequiredVal(
+          "",
+          unclaimedClient?.primaryContact?.lastName,
+        ),
         email: "",
-        phone1: "",
+        phone1: getDefaultRequiredVal("", unclaimedClient?.phone),
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
@@ -92,7 +97,7 @@ export const CreateProfileSteps = React.memo(() => {
   if (clientNumber) {
     return (
       <>
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
       </>
     );
@@ -106,60 +111,16 @@ export const CreateProfileSteps = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText="Create a new onRouteBC Profile"
-          bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
-        />
+        <Banner bannerText="Create a new onRouteBC Profile" />
       </Box>
       <div
-        className="tabpanel-container create-profile-steps"
+        className="create-profile-steps-page create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
       >
         <div className="create-profile-steps__create-profile">
-          <div className="create-profile-section create-profile-section--steps">
-            <Stepper
-              className="stepper"
-              activeStep={activeStep}
-              alternativeLabel
-              connector={
-                <StepConnector
-                  className="step__connector"
-                  classes={{ line: "step__connector-line" }}
-                />
-              }
-            >
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel
-                    className="step__label"
-                    classes={{
-                      labelContainer: "step__label-container",
-                      active: "step__label--active",
-                      disabled: "step__label--disabled",
-                      completed: "step__label--completed",
-                    }}
-                    StepIconProps={{
-                      className: "step__icon",
-                      classes: {
-                        text: "step__step-number",
-                        active: "step__icon--active",
-                        completed: "step__icon--completed",
-                      }
-                    }}
-                  >{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-
-          </div>
           <FormProvider {...companyAndUserFormMethods}>
-            <CompanyAndUserInfoSteps
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              setClientNumber={setClientNumber}
-              totalSteps={2}
-            />
+            <CompanyAndUserInfoSteps setClientNumber={setClientNumber} />
           </FormProvider>
         </div>
       </div>

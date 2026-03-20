@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString } from 'class-validator';
+import { IsNumberString } from 'class-validator';
 
 export class DeleteApplicationDto {
   @AutoMap()
@@ -12,13 +12,4 @@ export class DeleteApplicationDto {
   })
   @IsNumberString({}, { each: true })
   applications: string[];
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'Id of the company requesting the permit.',
-    example: 74,
-    required: false,
-  })
-  @IsNumber()
-  companyId: number;
 }

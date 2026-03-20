@@ -4,6 +4,8 @@
   border: 1.5px solid $bc-text-box-border-grey;
   border-radius: 4px;
   resize: none;
+  font-family: $default-font;
+  font-size: 1rem;
 
   &--err {
     border: 2px solid $bc-red;

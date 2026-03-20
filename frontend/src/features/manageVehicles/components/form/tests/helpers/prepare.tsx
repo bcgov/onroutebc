@@ -8,6 +8,7 @@ import { renderForTests } from "../../../../../../common/helpers/testHelper";
 import { PowerUnitForm } from "../../PowerUnitForm";
 import { PowerUnit, Trailer } from "../../../../types/Vehicle";
 import { TrailerForm } from "../../TrailerForm";
+import { getDefaultCompanyInfo } from "../../../../../permits/components/dashboard/tests/integration/fixtures/getCompanyInfo";
 
 export const defaultPowerUnitSubtypes = [
   {
@@ -26,6 +27,8 @@ export const defaultTrailerSubtypes = [
       "A Booster is similar to a jeep, but it is used behind a load.",
   },
 ];
+
+const companyId = getDefaultCompanyInfo().companyId;
 
 const server = setupServer(
   // Mock getting power unit types
@@ -123,7 +126,10 @@ export const closeMockServer = () => {
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
   const component = renderForTests(
-    <PowerUnitForm powerUnit={powerUnit} companyId="1" />,
+    <PowerUnitForm
+      companyId={companyId}
+      powerUnit={powerUnit}
+    />
   );
 
   return { user, component };
@@ -132,7 +138,10 @@ export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
   const component = renderForTests(
-    <TrailerForm trailer={trailer} companyId="1" />,
+    <TrailerForm
+      companyId={companyId}
+      trailer={trailer}
+    />
   );
 
   return { user, component };
@@ -150,7 +159,7 @@ const commonVehicleDetails = {
 
 export const powerUnitDetails = {
   ...commonVehicleDetails,
-  newGvw: 85000,
+  newGvw: 63500,
   newTireSize: "300",
   newSubtype: defaultPowerUnitSubtypes[0].type,
 };

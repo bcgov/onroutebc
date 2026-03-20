@@ -9,9 +9,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import {
-  ClientUserAuthGroup,
-  GenericUserAuthGroup,
-} from '../../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  GenericUserRole,
+} from '../../../common/enum/user-role.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -53,6 +53,7 @@ import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
 import { DopsService } from '../../common/dops.service';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
+import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
 
 @Injectable()
 export class CompanyService {
@@ -199,7 +200,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
+              userRole: GenericUserRole.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,
@@ -213,12 +214,11 @@ export class CompanyService {
         newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
-        newCompanyUser.userAuthGroup =
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+        newCompanyUser.userRole = ClientUserRole.COMPANY_ADMINISTRATOR;
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);
-        user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
+        user.companyUsers = [newCompanyUser]; //To populate Company User Role
         newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       }
       await queryRunner.commitTransaction();
@@ -258,7 +258,6 @@ export class CompanyService {
         companyPostalCode: readCompanyUserDto.mailingAddress.postalCode,
         companyEmail: readCompanyUserDto.email,
         companyPhoneNumber: readCompanyUserDto.phone,
-        companyFaxNumber: readCompanyUserDto.fax,
         primaryContactFirstname: readCompanyUserDto.primaryContact.firstName,
         primaryContactLastname: readCompanyUserDto.primaryContact.lastName,
         primaryContactEmail: readCompanyUserDto.primaryContact.email,
@@ -317,11 +316,10 @@ export class CompanyService {
       companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
     } else if (!existingClient && currentUser.identity_provider === IDP.BCEID) {
       accountSource = AccountSource.BCeID;
+      companyDirectory = getDirectory(currentUser);
       if (currentUser.bceid_business_guid) {
         companyGUID = currentUser.bceid_business_guid;
-        companyDirectory = Directory.BBCEID;
       } else {
-        companyDirectory = Directory.ORBC;
         companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
       }
     }
@@ -331,7 +329,7 @@ export class CompanyService {
   /**
    * The findOne() method returns a ReadCompanyDto object corresponding to the
    * company with that Id. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * findOneEntity(), maps it to a DTO object using the Mapper, and returns it.
    *
    * @param companyId The company Id.
    *
@@ -340,16 +338,72 @@ export class CompanyService {
   @LogAsyncMethodExecution()
   async findOne(companyId: number): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
-      await this.companyRepository.findOne({
-        where: { companyId: companyId },
-        relations: {
-          mailingAddress: true,
-          primaryContact: true,
-        },
-      }),
+      await this.findOneEntity(companyId),
       Company,
       ReadCompanyDto,
     );
+  }
+
+  /**
+   * The findOne() method returns the Company Entity object corresponding to the
+   * company with that Id.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
+  @LogAsyncMethodExecution()
+  async findOneEntity(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+      },
+    });
+  }
+
+  /**
+   * The findOneCompanyWithAllDetails() method returns the Company entity
+   * corresponding to the specified companyId. It retrieves the entity from the
+   * database using the Repository, including relations to mailingAddress and
+   * primaryContact, and returns it.
+   *
+   * @param companyId The ID of the company to fetch.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneCompanyWithAllDetails(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        mailingAddress: { province: { country: true } },
+        primaryContact: { province: { country: true } },
+      },
+    });
+  }
+
+  /**
+   * The findOneCompanyWithAssociatedUsers() method returns the Company entity
+   * corresponding to the specified companyId. It retrieves the entity from the
+   * database using the Repository, including relations to companyUsers,
+   * mailingAddress, and primaryContact, and returns it.
+   *
+   * @param companyId The ID of the company to fetch.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneCompanyWithAssociatedUsers(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        companyUsers: true,
+        mailingAddress: { province: { country: true } },
+        primaryContact: { province: { country: true } },
+      },
+    });
   }
 
   /**
@@ -760,8 +814,9 @@ export class CompanyService {
    * The verifyClient() method attempts to validate the existence and correct linkage of a specified client
    * and their associated permit within the system. The process involves searching for a company using a provided
    * client number (including handling legacy client number scenarios) and then verifying the existence of a
-   * permit that correlates with the identified company. The outcome is encapsulated in a ReadVerifyClientDto
-   * object indicating the presence of the client, the permit, and the successful verification if applicable.
+   * permit that correlates with the identified company. If the company has been claimed already, an unprocessable
+   * entity error is thrown. The outcome is encapsulated in a ReadVerifyClientDto object indicating the presence
+   * of the client, the permit, and the successful verification if applicable.
    *
    * @param currentUser The current logged in user's JWT token.
    * @param verifyClientDto The DTO containing the client and permit number to verify.
@@ -818,6 +873,31 @@ export class CompanyService {
       if (permit) {
         verifyClient.foundPermit = true;
         if (permit.company?.companyId === company?.companyId) {
+          //Throw an error if the company has already been claimed
+          if (company?.companyUsers?.length) {
+            throwUnprocessableEntityException(
+              `You do not have the necessary authorization to view this page. Please contact your administrator.`,
+              'COMPANY_CLAIMED',
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BCEID
+          ) {
+            throwUnprocessableEntityException(
+              `A basic bceid user cannot claim a business bceid (BBCEID) account.`,
+              'BASIC_CLAIM_BUSINESS',
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BBCEID &&
+            company?.companyGUID !== currentUser.bceid_business_guid
+          ) {
+            throwUnprocessableEntityException(
+              `Business Guid mismatch between the current user and Company`,
+              'BUSINESS_GUID_MISMATCH',
+            );
+          }
+
           verifyClient.verifiedClient =
             await this.mapCompanyEntityToCompanyDto(company);
         }

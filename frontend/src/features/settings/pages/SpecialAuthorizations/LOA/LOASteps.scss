@@ -1,0 +1,58 @@
+@use "../../../../../themes/orbcStyles";
+
+.loa-steps {
+  padding-bottom: 3rem;
+
+  & &__step-label {
+    padding: 1.5rem 0;
+    margin: 0;
+    color: orbcStyles.$bc-black;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-bottom: 1px solid orbcStyles.$bc-text-box-border-grey;
+  }
+  
+  & &__step-component {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .steps-navigation {
+    &__btn {
+      &--cancel {
+        margin-right: 2.5rem;
+        cursor: pointer;
+        background-color: orbcStyles.$bc-background-light-grey;
+        color: orbcStyles.$bc-black;
+        border: none;
+
+        &:hover {
+          border: 2px solid orbcStyles.$bc-text-box-border-grey;
+          background-color: orbcStyles.$bc-background-light-grey;
+          cursor: pointer;
+          box-shadow: none;
+        }
+      }
+
+      &--prev {
+        margin-right: 2.5rem;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
+        border-radius: 0.25rem;
+        color: orbcStyles.$bc-black;
+        background-color: orbcStyles.$white;
+
+        &:hover {
+          background-color: orbcStyles.$bc-background-light-grey;
+        }
+      }
+
+      &--next, &--finish {
+        font-weight: bold;
+      }
+    }
+
+    &__icon {
+      margin-right: 0.5rem;
+    }
+  }
+}

@@ -2,8 +2,9 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { PermitListItem } from "../../../permits/types/permit";
-import { SearchFields } from "../types/types";
+import { SEARCH_BY_FILTERS, SearchFields } from "../types/types";
 import {
+  isUndefined,
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
@@ -16,10 +17,20 @@ import {
 export const getPermitDataBySearch = (
   { searchEntity, searchByFilter, searchString }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
+  expired?: boolean,
 ): Promise<PaginatedResponse<PermitListItem>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
-  searchURL.searchParams.set("searchString", searchString);
+  if (searchByFilter === SEARCH_BY_FILTERS.PLATE_NUMBER) {
+    searchURL.searchParams.set("searchString", searchString);
+  } else if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
+    searchURL.searchParams.set("searchString", searchString);
+  } else {
+    searchURL.searchParams.set("searchString", searchString);
+  }
+  if (!isUndefined(expired)) {
+    searchURL.searchParams.set("expired", expired.toString());
+  }
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
@@ -37,7 +48,7 @@ export const getCompanyDataBySearch = (
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<CompanyProfile>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
-  if (searchByFilter === "companyName") {
+  if (searchByFilter === SEARCH_BY_FILTERS.COMPANY_NAME) {
     searchURL.searchParams.set("companyName", searchString);
   } else {
     searchURL.searchParams.set("clientNumber", searchString);

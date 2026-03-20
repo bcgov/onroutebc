@@ -1,0 +1,29 @@
+@import "../../../../themes/orbcStyles";
+
+.status-chip {
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  padding: 0.25rem 0.75rem;
+  text-transform: capitalize;
+
+  &--on-hold {
+    background-color: $bc-messages-gold-background;
+    color: $bc-messages-gold-text;
+  }
+
+  &--closed {
+    background-color: $bc-messages-red-background;
+    color: $bc-messages-red-text;
+  }
+
+  &--suspended {
+    background-color: $bc-messages-red-text;
+    color: $white;
+  }
+
+  &--unverified {
+    background-color: $bc-messages-red-text;
+    color: $white;
+  }
+}

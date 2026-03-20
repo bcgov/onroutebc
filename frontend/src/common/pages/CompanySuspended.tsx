@@ -6,19 +6,28 @@ export const CompanySuspended = () => {
   return (
     <div className="company-suspended">
       <ErrorPage
-        errorTitle="Company suspended"
+        errorTitle="Company Access Restricted"
         msgNode={
-          <>
-            For further assistance please contact the Provincial Permit
-              Centre at{" "}
-              <span>
-              <strong>Toll-free: {TOLL_FREE_NUMBER}</strong>
-              </span>{" "}
-              or{" "}
-              <span>
-                <strong>Email: {PPC_EMAIL}</strong>
-              </span>
-          </>
+          <div className="company-suspended__msg">
+            <span className="company-suspended__text">
+              For further assistance please contact the Provincial Permit
+              Centre at
+            </span>
+            
+            <span
+              className="company-suspended__contact company-suspended__contact--toll"
+            >
+              Toll-free: {TOLL_FREE_NUMBER}
+            </span>
+
+            <span className="company-suspended__text">or</span>
+
+            <span
+              className="company-suspended__contact company-suspended__contact--email"
+            >
+              Email: {PPC_EMAIL}
+            </span>
+          </div>
         }
       />
     </div>

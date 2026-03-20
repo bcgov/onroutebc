@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import { AxiosError } from "axios";
 import { Navigate, useParams } from "react-router-dom";
 import { useMemo } from "react";
 
@@ -7,20 +6,31 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ApplicationPay } from "../../pages/Application/ApplicationPay";
-import { ApplicationReview } from "../../pages/Application/ApplicationReview";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { Loading } from "../../../../common/pages/Loading";
-import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
-import { useApplicationDetailsQuery } from "../../hooks/hooks";
+import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { DEFAULT_PERMIT_TYPE, PermitType, isPermitTypeValid } from "../../types/PermitType";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { ApplicationReview } from "../../pages/Application/ApplicationReview";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
+
+import {
+  DEFAULT_PERMIT_TYPE,
+  PERMIT_TYPES,
+  PermitType,
+  isPermitTypeValid,
+} from "../../types/PermitType";
+
 import {
   APPLICATION_STEPS,
   ApplicationStep,
+  ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -28,8 +38,6 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
       return "Permit Application";
     case APPLICATION_STEPS.REVIEW:
       return "Review and Confirm Details";
-    case APPLICATION_STEPS.PAY:
-      return "Pay for Permit";
     case APPLICATION_STEPS.HOME:
     default:
       return "Permits";
@@ -38,22 +46,41 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
 
 export const ApplicationStepPage = ({
   applicationStep,
+  applicationStepContext,
 }: {
   applicationStep: ApplicationStep;
+  applicationStepContext: ApplicationStepContext;
 }) => {
-  const companyInfoQuery = useCompanyInfoQuery();
-
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
-  const { permitId, permitType } = useParams();
+  const { permitId, permitType, companyId: companyIdParam } = useParams();
 
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
+    applyWhenNotNullable((id) => Number(id), getCompanyIdFromSession()),
+  );
+
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+  const enableMFP = featureFlags?.["MFP"] === "ENABLED";
+  const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
+  const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
+  const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
+  
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
     setApplicationData,
     shouldEnableQuery,
     isInvalidRoute,
-  } = useApplicationDetailsQuery(applicationStep, permitId, permitType);
+  } = useApplicationForStepsQuery({
+    applicationStep,
+    permitId,
+    permitType,
+    companyId,
+  });
 
   const contextData = useMemo(
     () => ({
@@ -71,47 +98,72 @@ export const ApplicationStepPage = ({
 
   const applicationPermitType = getDefaultRequiredVal(
     DEFAULT_PERMIT_TYPE,
-    isPermitTypeValid(permitType) ? permitType?.toUpperCase() as PermitType : null,
+    isPermitTypeValid(permitType)
+      ? (permitType?.toUpperCase() as PermitType)
+      : null, // when permitType in the url param is empty or not a valid permit type
     applicationData?.permitType,
   );
 
-  // Permit must be an application in order to allow application-related steps
-  // (ie. empty status for new application, or in progress or incomplete payment status)
+  // Currently onRouteBC only handles TROS and TROW permits
+  // other permit types are only allowed if its feature flag is enabled
+  const isPermitTypeAllowed = () => {
+    const allowedPermitTypes: string[] = (
+      [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[]
+    )
+      .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
+      .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
+      .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
+      .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : [])
+      .concat(enableNRSCV ? [PERMIT_TYPES.NRSCV] : [])
+      .concat(enableNRQCV ? [PERMIT_TYPES.NRQCV] : []);
+
+    return allowedPermitTypes.includes(applicationPermitType);
+  };
+
+  // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
+  // (ie. empty status for new application, or in progress and in queue)
   const isValidApplicationStatus = () => {
     return (
       !isInvalidApplication &&
       (!applicationData?.permitStatus ||
         applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT)
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
     );
   };
 
+  const canEditIndividualApplicationInProgressDetails = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey:
+        "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+    },
+  });
+
   const renderApplicationStep = () => {
-    switch (applicationStep) {
-      case APPLICATION_STEPS.REVIEW:
-        return <ApplicationReview />;
-      case APPLICATION_STEPS.PAY:
-        return <ApplicationPay />;
-      default:
-        return <ApplicationForm permitType={applicationPermitType} />;
+    if (applicationStep === APPLICATION_STEPS.REVIEW) {
+      return (
+        <ApplicationReview applicationStepContext={applicationStepContext} />
+      );
     }
+    return (
+      <ApplicationForm
+        permitType={applicationPermitType}
+        companyId={companyId}
+        applicationStepContext={applicationStepContext}
+      />
+    );
   };
 
-  if (isInvalidApplication || !isValidApplicationStatus()) {
+  if (
+    // add permissions matrix check here
+    isInvalidApplication ||
+    !isValidApplicationStatus() ||
+    !companyId ||
+    !isPermitTypeAllowed() ||
+    !canEditIndividualApplicationInProgressDetails
+  ) {
+    console.error("The application cannot be displayed or edited");
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
-  }
-
-  if (companyInfoQuery.isPending) {
-    return <Loading />;
-  }
-
-  if (companyInfoQuery.isError) {
-    if (companyInfoQuery.error instanceof AxiosError) {
-      if (companyInfoQuery.error.response?.status === 401) {
-        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
-      }
-      return <ErrorFallback error={companyInfoQuery.error.message} />;
-    }
   }
 
   if (isLoading) {

@@ -74,7 +74,9 @@ export class CdogsService {
     }
     // The above implemenation is a fail proof version to always get the latest version --end
 
-    const templateFile = filteredTemplateFiles.at(0);
+    const templateFile = filteredTemplateFiles.at(
+      filteredTemplateFiles?.length - 1,
+    );
 
     const token = await getAccessToken(
       GovCommonServices.COMMON_DOCUMENT_GENERATION_SERVICE,
@@ -113,6 +115,7 @@ export class CdogsService {
             'Content-Type': 'application/json',
           },
           responseType: 'arraybuffer',
+          decompress: false,
         },
       ),
     )
@@ -123,7 +126,7 @@ export class CdogsService {
         if (error.response) {
           const errorData = error.response.data;
           this.logger.error(
-            `Error response from CHES: ${JSON.stringify(errorData, null, 2)}`,
+            `Error response from CDOGS - status: ${error.response?.status} data: ${JSON.stringify(errorData, null, 2)}`,
           );
         } else {
           this.logger.error(error?.message, error?.stack);

@@ -1,16 +1,24 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { getMandatoryCommodities } from "./commodities";
+import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculateFeeByDuration } from "./feeSummary";
-import { PermitType } from "../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
-import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
+import { minDurationForPermitType } from "./dateSelection";
+import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
+import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
+import { getDefaultPermittedCommodity } from "./permittedCommodity";
+import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
+import { DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE } from "../types/ConditionalLicensingFee";
+import {
+  getDefaultVehicleConfiguration
+} from "./vehicles/configuration/getDefaultVehicleConfiguration";
+
 import {
   getEndOfDate,
   getStartOfDate,
@@ -51,7 +59,6 @@ export const getDefaultContactDetails = (
       phone2Extension: getDefaultRequiredVal("", userDetails?.phone2Extension),
       email: getDefaultRequiredVal("", companyEmail),
       additionalEmail: getDefaultRequiredVal("", userDetails?.email),
-      fax: getDefaultRequiredVal("", userDetails?.fax),
     };
   }
 
@@ -64,7 +71,6 @@ export const getDefaultContactDetails = (
     phone2Extension: getDefaultRequiredVal("", contactDetails?.phone2Extension),
     email: getDefaultRequiredVal("", contactDetails?.email, companyEmail),
     additionalEmail: getDefaultRequiredVal("", contactDetails?.additionalEmail),
-    fax: getDefaultRequiredVal("", contactDetails?.fax),
   };
 };
 
@@ -96,27 +102,6 @@ export const getDefaultMailingAddress = (
         postalCode: getDefaultRequiredVal("", alternateAddress?.postalCode),
       };
 
-/**
- * Gets default values for vehicle details, or populate with values from existing vehicle details.
- * @param vehicleDetails existing vehicle details, if any
- * @returns default values for vehicle details
- */
-export const getDefaultVehicleDetails = (
-  vehicleDetails?: Nullable<PermitVehicleDetails>,
-) => ({
-  vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
-  unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
-  vin: getDefaultRequiredVal("", vehicleDetails?.vin),
-  plate: getDefaultRequiredVal("", vehicleDetails?.plate),
-  make: getDefaultRequiredVal("", vehicleDetails?.make),
-  year: applyWhenNotNullable((year) => year, vehicleDetails?.year, null),
-  countryCode: getDefaultRequiredVal("", vehicleDetails?.countryCode),
-  provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
-  vehicleType: getDefaultRequiredVal("", vehicleDetails?.vehicleType),
-  vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
-  saveVehicle: false,
-});
-
 export const getDurationOrDefault = (
   defaultDuration: number,
   duration?: Nullable<number | string>,
@@ -141,31 +126,30 @@ export const getStartDateOrDefault = (
 
 export const getExpiryDateOrDefault = (
   startDateOrDefault: Dayjs,
+  isQuarterly: boolean,
   durationOrDefault: number,
   expiryDate?: Nullable<Dayjs | string>,
 ): Dayjs => {
   return applyWhenNotNullable(
     (date) => getEndOfDate(dayjs(date)),
     expiryDate,
-    getExpiryDate(startDateOrDefault, durationOrDefault),
+    getExpiryDate(startDateOrDefault, isQuarterly, durationOrDefault),
   );
 };
 
 /**
- * Gets default values for the application data, or populate with values from existing application data and company id/user details.
- * @param permitType permit type for the application
- * @param applicationData existing application data, if any
- * @param companyId company id of the current user, if any
- * @param userDetails user details of current user, if any
- * @param companyInfo data from company profile information
- * @returns default values for the application data
+ * Gets default values for the application data, or populate with values from existing application and relevant data.
+ * @param permitType Permit type for the application
+ * @param companyInfo Company profile information (can be undefined, but must be passed as param)
+ * @param applicationData Existing application data, if already exists
+ * @param userDetails User details of current user, if any
+ * @returns Default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
+  companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
-  companyId?: Nullable<number>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
-  companyInfo?: Nullable<CompanyProfile>,
 ): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
@@ -173,33 +157,42 @@ export const getDefaultValues = (
   );
 
   const durationOrDefault = getDurationOrDefault(
-    30,
+    minDurationForPermitType(permitType),
     applicationData?.permitData?.permitDuration,
   );
 
   const expiryDateOrDefault = getExpiryDateOrDefault(
     startDateOrDefault,
+    isQuarterlyPermit(permitType),
     durationOrDefault,
     applicationData?.permitData?.expiryDate,
   );
 
+  const defaultPermitType = getDefaultRequiredVal(
+    permitType,
+    applicationData?.permitType,
+  );
+
+  const defaultApplicationNumber = getDefaultRequiredVal(
+    "",
+    applicationData?.applicationNumber,
+  );
+
+  const defaultPermittedRoute = getDefaultPermittedRoute(
+    permitType,
+    applicationData?.permitData?.permittedRoute,
+  );
+
   return {
-    companyId: +getDefaultRequiredVal(0, companyId),
     originalPermitId: getDefaultRequiredVal(
       "",
       applicationData?.originalPermitId,
     ),
     comment: getDefaultRequiredVal("", applicationData?.comment),
-    applicationNumber: getDefaultRequiredVal(
-      "",
-      applicationData?.applicationNumber,
-    ),
+    applicationNumber: defaultApplicationNumber,
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: getDefaultRequiredVal(
-      permitType,
-      applicationData?.permitType,
-    ),
+    permitType: defaultPermitType,
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
@@ -208,24 +201,29 @@ export const getDefaultValues = (
       companyName: getDefaultRequiredVal(
         "",
         applicationData?.permitData?.companyName,
+        companyInfo?.legalName,
+      ),
+      doingBusinessAs: getDefaultRequiredVal(
+        "",
+        companyInfo?.alternateName, // always use the latest DBA fetched from company info
       ),
       clientNumber: getDefaultRequiredVal(
         "",
         applicationData?.permitData?.clientNumber,
+        companyInfo?.clientNumber,
       ),
       startDate: startDateOrDefault,
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        getMandatoryCommodities(permitType),
+        getMandatoryConditions(permitType),
         applyWhenNotNullable(
-          (commodities) => commodities.map((commodity) => ({ ...commodity })),
+          (conditions) => conditions.map((condition) => ({ ...condition })),
           applicationData?.permitData?.commodities,
         ),
       ),
       contactDetails: getDefaultContactDetails(
-        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
-          "",
+        defaultApplicationNumber.trim() === "",
         applicationData?.permitData?.contactDetails,
         userDetails,
         companyInfo?.email,
@@ -238,7 +236,36 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
+      feeSummary: "", // not used, as actual fee is derived at the given locations when required
+      loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
+      permittedRoute: defaultPermittedRoute,
+      applicationNotes: permitType !== PERMIT_TYPES.STOS
+        ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
+      permittedCommodity: getDefaultPermittedCommodity(
+        permitType,
+        applicationData?.permitData?.permittedCommodity,
+      ),
+      vehicleConfiguration: getDefaultVehicleConfiguration(
+        permitType,
+        applicationData?.permitData?.vehicleConfiguration,
+      ),
+      thirdPartyLiability: ([
+        PERMIT_TYPES.STFR,
+        PERMIT_TYPES.QRFR,
+      ] as PermitType[]).includes(permitType)
+        ? getDefaultRequiredVal(
+          DEFAULT_THIRD_PARTY_LIABILITY,
+          applicationData?.permitData?.thirdPartyLiability
+        )
+        : null,
+      conditionalLicensingFee: ([
+        PERMIT_TYPES.NRSCV,
+        PERMIT_TYPES.NRQCV,
+      ] as PermitType[]).includes(permitType)
+        ? getDefaultRequiredVal(
+          DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
+          applicationData?.permitData?.conditionalLicensingFee,
+        ) : null,
     },
   };
 };

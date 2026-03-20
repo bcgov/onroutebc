@@ -1,11 +1,14 @@
 @import "../../themes/orbcStyles";
 
 .issuance-error-page {
-    &__msg {
-        &--top {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-    }
+	&__msg {
+		&--top {
+			margin-top: 0;
+			margin-bottom: 1.5rem;
+		}
+	}
+
+	&__link {
+		margin: 0 0.25rem;
+	}
 }

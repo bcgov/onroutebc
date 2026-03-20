@@ -9,6 +9,31 @@ export const VEHICLE_TYPES = {
 
 export type VehicleType = (typeof VEHICLE_TYPES)[keyof typeof VEHICLE_TYPES];
 
+export const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
+
+/**
+ * Gets display text for vehicle type.
+ * @param vehicleType Vehicle type (power unit or trailer)
+ * @returns Display text for the vehicle type
+ */
+export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
+  if (vehicleType === VEHICLE_TYPES.TRAILER) {
+    return "Trailer";
+  }
+  return "Power Unit";
+};
+
+export const VEHICLE_TYPE_OPTIONS = [
+  {
+    value: VEHICLE_TYPES.POWER_UNIT,
+    label: vehicleTypeDisplayText(VEHICLE_TYPES.POWER_UNIT),
+  },
+  {
+    value: VEHICLE_TYPES.TRAILER,
+    label: vehicleTypeDisplayText(VEHICLE_TYPES.TRAILER),
+  },
+];
+
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  */
@@ -27,7 +52,7 @@ export interface BaseVehicle {
 
 export interface PowerUnit extends BaseVehicle {
   powerUnitId?: string;
-  licensedGvw?: number;
+  licensedGvw?: Nullable<number>;
   steerAxleTireSize?: Nullable<number>;
   powerUnitTypeCode: string;
 }
@@ -48,16 +73,24 @@ export interface VehicleSubType {
 }
 
 /**
- * Object type for updating a power unit.
- * It is identical to CreatePowerUnit.
+ * Request data type for creating a power unit.
  */
-export type UpdatePowerUnit = PowerUnit;
+export type PowerUnitCreateData = PowerUnit;
 
 /**
- * Object type for updating a trailer.
- * It is identical to CreateTrailer.
+ * Request data type for creating a trailer.
  */
-export type UpdateTrailer = Trailer;
+export type TrailerCreateData = Trailer;
+
+/**
+ * Request data type for updating a power unit.
+ */
+export type PowerUnitUpdateData = PowerUnit;
+
+/**
+ * Request data type for updating a trailer.
+ */
+export type TrailerUpdateData = Trailer;
 
 /**
  * Enum indicating the options of axle front group.

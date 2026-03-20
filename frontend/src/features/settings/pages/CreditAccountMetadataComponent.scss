@@ -1,0 +1,12 @@
+@import "../../../themes/orbcStyles";
+
+.non-finance-container {
+  &__banner {
+    font-weight: normal;
+  }
+
+  &__info {
+    font-weight: bold;
+    margin-left: 0.25rem;
+  }
+}

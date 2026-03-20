@@ -4,4 +4,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  .shopping-cart-button {
+    padding: 0;
+    margin: 0 1.75rem;
+  }
 }

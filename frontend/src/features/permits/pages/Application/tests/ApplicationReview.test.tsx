@@ -2,20 +2,16 @@ import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { vehicleTypeDisplayText } from "../../../helpers/mappers";
+import { vehicleTypeDisplayText } from "../../../../manageVehicles/types/Vehicle";
 import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { calculateFeeByDuration } from "../../../helpers/feeSummary";
-import { permitTypeDisplayText } from "../../../types/PermitType";
+import { getPermitTypeName } from "../../../types/PermitType";
+import { getCountryFullName } from "../../../../../common/helpers/countries/getCountryFullName";
+import { getProvinceFullName } from "../../../../../common/helpers/countries/getProvinceFullName";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../../../common/helpers/formatDate";
-
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../common/helpers/formatCountryProvince";
 
 import {
   applicationCreatedDate,
@@ -38,14 +34,10 @@ import {
   companyNameLabel,
   contactInfoAdditionalEmail,
   contactInfoEmail,
-  contactInfoFax,
   contactInfoHeaderTitle,
   contactInfoName,
   contactInfoPhone1,
   contactInfoPhone2,
-  feeSummaryPermitType,
-  feeSummaryPrice,
-  feeSummaryTotal,
   permitConditionCodes,
   permitConditionDescriptions,
   permitConditionLinks,
@@ -53,7 +45,7 @@ import {
   permitDuration,
   permitExpiryDate,
   permitStartDate,
-  proceedToPay,
+  proceedToAddToCart,
   reviewConfirmWarning,
   vehicleCountry,
   vehicleMake,
@@ -87,6 +79,7 @@ beforeAll(() => {
   // @ts-ignore
   window.scrollTo = vi.fn();
   listenToMockServer();
+  sessionStorage.setItem("onRouteBC.user.companyId", "74");
 });
 
 beforeEach(() => {
@@ -119,7 +112,7 @@ describe("Review and Confirm Application Details", () => {
         permitType,
       } = defaultApplicationData;
       expect(await applicationHeaderTitle()).toHaveTextContent(
-        permitTypeDisplayText(permitType),
+        getPermitTypeName(permitType),
       );
       expect(await applicationNumber()).toHaveTextContent(
         applicationNo as string,
@@ -138,7 +131,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Assert
       const { legalName, clientNumber } = companyInfo;
-      expect(await companyNameLabel()).toHaveTextContent("COMPANY NAME");
+      expect(await companyNameLabel()).toHaveTextContent("CLIENT NAME");
       expect(await companyName()).toHaveTextContent(legalName);
       expect(await companyClientLabel()).toHaveTextContent(
         "onRouteBC CLIENT NUMBER",
@@ -166,8 +159,10 @@ describe("Review and Confirm Application Details", () => {
       // Assert
       const { addressLine1, city, countryCode, postalCode, provinceCode } =
         companyInfo.mailingAddress;
-      const country = formatCountry(countryCode);
-      const province = formatProvince(countryCode, provinceCode);
+
+      const country = getCountryFullName(countryCode);
+      const province = getProvinceFullName(countryCode, provinceCode);
+
       expect(await companyMailAddrHeaderTitle()).toHaveTextContent(
         companyMailAddrTitle,
       );
@@ -211,9 +206,6 @@ describe("Review and Confirm Application Details", () => {
       expect(await contactInfoAdditionalEmail()).toHaveTextContent(
         `${newAdditionalEmail}`,
       );
-      expect(await contactInfoFax()).toHaveTextContent(
-        `${fullContactInfo.fax}`,
-      );
     });
 
     it("should display proper partial contact info in the permit", async () => {
@@ -231,7 +223,6 @@ describe("Review and Confirm Application Details", () => {
         phone1Extension: undefined,
         phone2: undefined,
         phone2Extension: undefined,
-        fax: undefined,
       };
       const applicationData = {
         ...defaultApplicationData,
@@ -259,7 +250,6 @@ describe("Review and Confirm Application Details", () => {
         `${partialContactInfo.email}`,
       );
       expect(async () => await contactInfoAdditionalEmail()).rejects.toThrow();
-      expect(async () => await contactInfoFax()).rejects.toThrow();
     });
 
     it("should display proper permit details", async () => {
@@ -285,45 +275,45 @@ describe("Review and Confirm Application Details", () => {
       expect(await permitExpiryDate()).toHaveTextContent(expiryDateStr);
     });
 
-    it("should display selected commodities with links", async () => {
+    it("should display selected conditions with links", async () => {
       // Arrange and Act
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const commodities = defaultApplicationData.permitData.commodities;
-      const descriptions = commodities.map((c) => c.description);
-      const links = commodities.map((c) => c.conditionLink);
-      const conditions = commodities.map((c) => c.condition);
-      const commodityRows = await permitConditions();
-      const commodityDescriptions = await permitConditionDescriptions();
-      const commodityLinks = await permitConditionLinks();
-      const commodityConditions = await permitConditionCodes();
-      expect(commodityRows).toHaveLength(commodities.length);
-      expect(commodityDescriptions).toHaveLength(descriptions.length);
-      expect(commodityLinks).toHaveLength(links.length);
-      expect(commodityConditions).toHaveLength(conditions.length);
-      commodityDescriptions.forEach((desc) => {
+      const conditions = defaultApplicationData.permitData.commodities;
+      const descriptions = conditions.map((c) => c.description);
+      const links = conditions.map((c) => c.conditionLink);
+      const conditionCodes = conditions.map((c) => c.condition);
+      const conditionRows = await permitConditions();
+      const conditionDescriptions = await permitConditionDescriptions();
+      const conditionLinks = await permitConditionLinks();
+      const permitCondCodes = await permitConditionCodes();
+      expect(conditionRows).toHaveLength(conditions.length);
+      expect(conditionDescriptions).toHaveLength(descriptions.length);
+      expect(conditionLinks).toHaveLength(links.length);
+      expect(permitCondCodes).toHaveLength(conditionCodes.length);
+      conditionDescriptions.forEach((desc) => {
         expect(descriptions).toContain(desc.textContent);
       });
-      const descriptionText = commodityDescriptions.map((d) => d.textContent);
+      const descriptionText = conditionDescriptions.map((d) => d.textContent);
       descriptions.forEach((d) => {
         expect(descriptionText).toContain(d);
       });
 
-      commodityLinks.forEach((link) => {
+      conditionLinks.forEach((link) => {
         expect(links).toContain(link.getAttribute("href"));
       });
-      const linkHrefs = commodityLinks.map((l) => l.getAttribute("href"));
+      const linkHrefs = conditionLinks.map((l) => l.getAttribute("href"));
       links.forEach((l) => {
         expect(linkHrefs).toContain(l);
       });
 
-      commodityConditions.forEach((cond) => {
-        expect(conditions).toContain(cond.textContent);
+      permitCondCodes.forEach((cond) => {
+        expect(conditionCodes).toContain(cond.textContent);
       });
-      const conditionCodes = commodityConditions.map((c) => c.textContent);
-      conditions.forEach((c) => {
-        expect(conditionCodes).toContain(c);
+      const conditionCodesText = permitCondCodes.map((c) => c.textContent);
+      conditionCodes.forEach((c) => {
+        expect(conditionCodesText).toContain(c);
       });
     });
 
@@ -342,16 +332,19 @@ describe("Review and Confirm Application Details", () => {
         provinceCode,
         vehicleType,
         vehicleSubType,
-      } = defaultApplicationData.permitData.vehicleDetails as PermitVehicleDetails;
+      } = defaultApplicationData.permitData
+        .vehicleDetails as PermitVehicleDetails;
+
       const unit = getDefaultRequiredVal("", unitNumber);
-      const country = formatCountry(countryCode);
-      const province = formatProvince(countryCode, provinceCode);
+      const country = getCountryFullName(countryCode);
+      const province = getProvinceFullName(countryCode, provinceCode);
       const vehicleTypeStr = vehicleTypeDisplayText(vehicleType as VehicleType);
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",
         vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)
           ?.type,
       );
+
       expect(await vehicleUnitNumber()).toHaveTextContent(unit);
       expect(await vehicleVIN()).toHaveTextContent(vin);
       expect(await vehiclePlate()).toHaveTextContent(plate);
@@ -404,30 +397,6 @@ describe("Review and Confirm Application Details", () => {
       // Assert
       expect(async () => await vehicleSavedMsg()).rejects.toThrow();
     });
-
-    it("should display proper fee summary", async () => {
-      // Arrange and Act
-      const applicationData = {
-        ...defaultApplicationData,
-        permitData: {
-          ...defaultApplicationData.permitData,
-          feeSummary: `${calculateFeeByDuration(
-            defaultApplicationData.permitData.permitDuration,
-          )}`,
-        },
-      };
-      renderTestComponent(applicationData);
-
-      // Assert
-      const {
-        permitType,
-        permitData: { feeSummary },
-      } = applicationData;
-      const permitTypeStr = permitTypeDisplayText(permitType);
-      expect(await feeSummaryPermitType()).toHaveTextContent(permitTypeStr);
-      expect(await feeSummaryPrice()).toHaveTextContent(`$${feeSummary}.00`);
-      expect(await feeSummaryTotal()).toHaveTextContent(`$${feeSummary}.00`);
-    });
   });
 
   describe("Attestation", () => {
@@ -445,7 +414,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Act
       await checkAttestations(user, [0, 1]);
-      await proceedToPay(user);
+      await proceedToAddToCart(user);
 
       // Assert
       expect(await attestationErrorMsg()).toHaveTextContent(
@@ -458,7 +427,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Act
       await checkAttestations(user, [0, 1, 2]);
-      await proceedToPay(user);
+      await proceedToAddToCart(user);
 
       // Assert
       expect(async () => await attestationErrorMsg()).rejects.toThrow();

@@ -1,0 +1,88 @@
+import { createContext } from "react";
+import { Dayjs } from "dayjs";
+import { Policy } from "onroute-policy-engine";
+
+import { LOADetail } from "../../settings/types/LOADetail";
+import { ApplicationFormData } from "../types/application";
+import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
+import { DEFAULT_PERMIT_TYPE } from "../types/PermitType";
+import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
+import {
+  Nullable,
+  ORBC_FORM_FEATURES,
+  ORBCFormFeatureType,
+} from "../../../common/types/common";
+import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
+import {
+  PAST_START_DATE_STATUSES,
+  PastStartDateStatus,
+} from "../../../common/components/form/subFormComponents/CustomDatePicker";
+import { ApplicationRejectionHistory } from "../types/ApplicationRejectionHistory";
+
+interface ApplicationFormContextType {
+  initialFormData: ApplicationFormData;
+  formData: ApplicationFormData;
+  policyEngine: Nullable<Policy>;
+  durationOptions: {
+    value: number;
+    label: string;
+  }[];
+  allVehiclesFromInventory: (PowerUnit | Trailer)[];
+  powerUnitSubtypeNamesMap: Map<string, string>;
+  trailerSubtypeNamesMap: Map<string, string>;
+  isLcvDesignated: boolean;
+  feature: ORBCFormFeatureType;
+  companyInfo?: Nullable<CompanyProfile>;
+  isAmendAction: boolean;
+  isStaff: boolean;
+  oldPermitStartDate?: Nullable<Dayjs>;
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
+  pastStartDateStatus: PastStartDateStatus;
+  companyLOAs: LOADetail[];
+  revisionHistory: {
+    permitId: number;
+    name: string;
+    revisionDateTime: string;
+    comment: string;
+  }[];
+  rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
+  policyViolations: Record<string, string>;
+  clearViolation: (fieldReference: string) => void;
+  triggerPolicyValidation: () => Promise<Record<string, string>>;
+  onLeave?: () => void;
+  onSave?: () => Promise<void>;
+  onCancel?: () => void;
+  onContinue: () => Promise<void>;
+}
+
+export const ApplicationFormContext = createContext<ApplicationFormContextType>(
+  {
+    initialFormData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
+    formData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
+    policyEngine: undefined,
+    durationOptions: [],
+    allVehiclesFromInventory: [],
+    powerUnitSubtypeNamesMap: new Map<string, string>(),
+    trailerSubtypeNamesMap: new Map<string, string>(),
+    isLcvDesignated: false,
+    feature: ORBC_FORM_FEATURES.APPLICATION,
+    companyInfo: undefined,
+    isAmendAction: false,
+    isStaff: false,
+    oldPermitStartDate: undefined,
+    createdDateTime: undefined,
+    updatedDateTime: undefined,
+    pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
+    companyLOAs: [],
+    revisionHistory: [],
+    rejectionHistory: [],
+    policyViolations: {},
+    clearViolation: () => undefined,
+    triggerPolicyValidation: async () => ({}),
+    onLeave: undefined,
+    onSave: undefined,
+    onCancel: undefined,
+    onContinue: async () => undefined,
+  },
+);

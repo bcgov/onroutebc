@@ -1,21 +1,60 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+
+import { Nullable, RequiredOrNull } from "../types/common";
+import { GEOCODER_URL, VEHICLES_URL, POLICY_URL } from "./endpoints/endpoints";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../helpers/util";
-import { Nullable, RequiredOrNull } from "../types/common";
 
 // Request interceptor to add a correlationId to the header.
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
+    const releaseNumber =
+      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
+    headers.set("x-onroutebc-version", releaseNumber);
     return config;
   },
   function (error) {
     console.log("Unable to make a request:", error);
+  },
+  {
+    runWhen: (config) => {
+      // Add exception to not use interceptor when requesting Geocoder URL
+      return Boolean(!config.url?.startsWith(GEOCODER_URL));
+    },
+  },
+);
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const url = error.config?.url || "";
+    const isVehiclesOrPolicyAPI =
+      url.includes(VEHICLES_URL) || url.includes(POLICY_URL);
+
+    if (isVehiclesOrPolicyAPI) {
+      if (!error.response || error.response.status === 503) {
+        console.error("503 or CORS error from Vehicles or Policy API:", error);
+        if (window.location.pathname !== "/service-unavailable") {
+          //prevent infinite loop
+          window.location.href = "/service-unavailable";
+        }
+      } else if (error.response.status === 406) {
+        if (window.location.pathname !== "/version-mismatch") {
+          //prevent infinite loop
+          window.location.href = "/version-mismatch";
+        }
+      } else {
+        return Promise.reject(error);
+      }
+    } else {
+      return Promise.reject(error);
+    }
   },
 );
 
@@ -30,7 +69,7 @@ const getUserStorageKey = () =>
  *
  * @returns JSON parsed object, or undefined if item not found in sessionStorage.
  */
-const getUserStorage = () => {
+export const getUserStorage = () => {
   const storageKey = getDefaultRequiredVal("", getUserStorageKey());
   return applyWhenNotNullable(JSON.parse, sessionStorage.getItem(storageKey));
 };
@@ -85,7 +124,7 @@ export const getUserGuidFromSession = (): RequiredOrNull<string> => {
 };
 
 /**
- * Retrieves company name from session.
+ * Retrieves company/Client name from session.
  * @returns string | null | undefined
  */
 export const getCompanyNameFromSession = (): Nullable<string> => {
@@ -114,10 +153,20 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
- * Retrieves company email from session.
+ * Retrieves given name from session
+ * @returns given name or empty string
+ */
+export const getLoginUserGivenNameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal("", parsedSessionObject.profile?.given_name);
+};
+
+/**
+ * Retrieves user email from session.
  * @returns string | null | undefined
  */
-export const getCompanyEmailFromSession = (): Nullable<string> => {
+export const getUserEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),
@@ -149,6 +198,8 @@ export const httpGETRequestStream = (url: string) => {
     headers: {
       Authorization: getAccessToken(),
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };
@@ -166,6 +217,8 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
       Authorization: getAccessToken(),
       "Content-Type": "application/json",
       "x-correlation-id": uuidv4(),
+      "x-onroutebc-version":
+        import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM,
     },
   });
 };
@@ -187,6 +240,22 @@ export const httpPOSTRequest = (url: string, data: any) => {
 };
 
 /**
+ * An HTTP POST Request with file upload.
+ * @param url The URL of the resource.
+ * @param data The request payload containing file to upload.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpPOSTRequestWithFile = (url: string, data: FormData) => {
+  return axios.post(url, data, {
+    headers: {
+      "Content-Type": `multipart/form-data`,
+      Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
+    },
+  });
+};
+
+/**
  * A generic HTTP PUT Request
  * @param url The URL of the resource.
  * @param data The request payload.
@@ -196,6 +265,22 @@ export const httpPUTRequest = (url: string, data: any) => {
   return axios.put(url, JSON.stringify(data), {
     headers: {
       "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
+    },
+  });
+};
+
+/**
+ * An HTTP PUT Request with file upload.
+ * @param url The URL of the resource.
+ * @param data The request payload containing file to upload.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpPUTRequestWithFile = (url: string, data: FormData) => {
+  return axios.put(url, data, {
+    headers: {
+      "Content-Type": `multipart/form-data`,
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },

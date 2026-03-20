@@ -18,9 +18,10 @@ import {
   MockQueryRunnerManager,
   createQueryBuilderMock,
 } from '../../util/mocks/factory/dataSource.factory.mock';
-import { ClientUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyEntityMock } from '../../util/mocks/data/company.mock';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -35,6 +36,7 @@ describe('PendingUsersService', () => {
     delete: jest.fn(),
     update: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
   };
 
@@ -91,6 +93,8 @@ describe('PendingUsersService', () => {
         readRedCompanyPendingUserDtoMock,
       );
 
+      mockQueryRunnerManager.findOne.mockResolvedValue(redCompanyEntityMock);
+
       const retPendingUser = await service.create(
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
@@ -108,8 +112,7 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      PENDING_USER_LIST[0].userAuthGroup =
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+      PENDING_USER_LIST[0].userRole = ClientUserRole.COMPANY_ADMINISTRATOR;
       findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(

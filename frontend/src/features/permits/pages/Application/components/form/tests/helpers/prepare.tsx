@@ -4,17 +4,30 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
-import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../../helpers/commodities";
+import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit } from "../../../../../../types/PermitType";
+import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
-import { PermitCommodity } from "../../../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../../../types/PermitCondition";
+import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
+import { MAX_ALLOWED_FUTURE_DAYS_CV } from "../../../../../../constants/constants";
+import {
+  PAST_START_DATE_STATUSES,
+} from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   getStartOfDate,
   now,
 } from "../../../../../../../../common/helpers/formatDate";
 
-const feature = "testfeature";
+import {
+  durationOptionsForPermitType,
+  getMaxAllowedPermitFutureStartDate,
+  getMinAllowedPermitPastStartDate,
+  minDurationForPermitType,
+} from "../../../../../../helpers/dateSelection";
+
+const feature = ORBC_FORM_FEATURES.TEST_FEATURE;
 export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
@@ -28,30 +41,23 @@ export const maxFutureYear = maxFutureDate.year();
 export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
-export const commodities = getDefaultCommodities(DEFAULT_PERMIT_TYPE);
-export const defaultDuration = 30;
-export const emptyCommodities: PermitCommodity[] = [];
-export const allDurations = [
-  { text: "30 Days", days: 30 },
-  { text: "60 Days", days: 60 },
-  { text: "90 Days", days: 90 },
-  { text: "120 Days", days: 120 },
-  { text: "150 Days", days: 150 },
-  { text: "180 Days", days: 180 },
-  { text: "210 Days", days: 210 },
-  { text: "240 Days", days: 240 },
-  { text: "270 Days", days: 270 },
-  { text: "300 Days", days: 300 },
-  { text: "330 Days", days: 330 },
-  { text: "1 Year", days: 365 },
-];
+const permitType = DEFAULT_PERMIT_TYPE;
+export const conditions = getDefaultConditions(permitType);
+export const defaultDuration = minDurationForPermitType(permitType);
+export const emptyConditions: PermitCondition[] = [];
+export const allDurations = durationOptionsForPermitType(permitType, false).map(
+  (durationOption) => ({
+    text: durationOption.label,
+    days: durationOption.value,
+  }),
+);
 
-const mandatoryConditions = getMandatoryCommodities(DEFAULT_PERMIT_TYPE).map(commodity => commodity.condition);
-export const requiredCommodityIndices = commodities
-  .map((commodity, i) =>
-    mandatoryConditions.includes(commodity.condition)
-      ? i
-      : -1,
+const mandatoryConditions = getMandatoryConditions(permitType).map(
+  (condition) => condition.condition,
+);
+export const requiredConditionIndices = conditions
+  .map((condition, i) =>
+    mandatoryConditions.includes(condition.condition) ? i : -1,
   )
   .filter((i) => i >= 0);
 
@@ -60,9 +66,14 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
     defaultValues: {
       permitData: {
         startDate: currentDt,
-        permitDuration: 30,
-        expiryDate: getExpiryDate(currentDt, 30),
+        permitDuration: defaultDuration,
+        expiryDate: getExpiryDate(
+          currentDt,
+          isQuarterlyPermit(permitType),
+          defaultDuration,
+        ),
         commodities: [],
+        loas: [],
       },
     },
     reValidateMode: "onBlur",
@@ -74,23 +85,63 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
 export const renderTestComponent = (
   startDate: Dayjs,
   duration: number,
-  commodities: PermitCommodity[],
+  conditions: PermitCondition[],
   userEventOptions?: Options,
 ) => {
   const user = userEvent.setup(userEventOptions);
+  let selectedConditions = [...conditions];
+  const expiryDate = getExpiryDate(
+    startDate,
+    isQuarterlyPermit(permitType),
+    duration,
+  );
+
+  const allConditions = getDefaultConditions(permitType, false)
+    .map(condition => {
+      const existingCondition = selectedConditions
+        .find(c => c.condition === condition.condition);
+
+      return {
+        ...condition,
+        checked: existingCondition
+          ? existingCondition.checked
+          : condition.checked,
+      };
+    },
+  );
+
+  const minAllowedPastStartDate = getMinAllowedPermitPastStartDate(
+    permitType,
+    currentDt,
+    currentDt,
+    false,
+    false,
+  );
+
+  const maxAllowedFutureStartDate = getMaxAllowedPermitFutureStartDate(
+    currentDt,
+    false,
+  );
+
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
-        defaultStartDate={startDate}
-        defaultDuration={duration}
-        commoditiesInPermit={commodities}
+        permitType={permitType}
+        startDate={startDate}
+        minAllowedPastStartDate={minAllowedPastStartDate}
+        maxAllowedFutureStartDate={maxAllowedFutureStartDate}
+        maxNumDaysAllowedInFuture={MAX_ALLOWED_FUTURE_DAYS_CV}
+        expiryDate={expiryDate}
+        allConditions={allConditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
         }))}
-        disableStartDate={false}
-        permitType={DEFAULT_PERMIT_TYPE}
+        pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+        onSetConditions={(updatedConditions) => {
+          selectedConditions = [...updatedConditions];
+        }}
       />
     </TestFormWrapper>,
   );
@@ -102,7 +153,7 @@ export const renderDefaultTestComponent = (userEventOptions?: Options) => {
   return renderTestComponent(
     currentDt,
     defaultDuration,
-    emptyCommodities,
+    emptyConditions,
     userEventOptions,
   );
 };

@@ -3,14 +3,15 @@ import { Stack } from "@mui/material";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 /**
  * A react component containing the verify migrated client form.
  */
 export const VerifyMigratedClientForm = () => {
-  const FEATURE = "verify-migrated-client";
+  const FEATURE = ORBC_FORM_FEATURES.VERIFY_MIGRATED_CLIENT;
   return (
-    <Stack spacing={3}>
+    <Stack>
       <CustomFormComponent
         type="input"
         feature={FEATURE}
@@ -28,7 +29,7 @@ export const VerifyMigratedClientForm = () => {
 
       <InfoBcGovBanner
         className="create-profile-section create-profile-section--info"
-        msg={BANNER_MESSAGES.ISSUED_PERMIT_NUMBER_7_YEARS}
+        msg={BANNER_MESSAGES.ISSUED_PERMIT_NUMBER_2_YEARS}
       />
 
       <CustomFormComponent

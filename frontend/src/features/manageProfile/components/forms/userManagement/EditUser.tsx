@@ -3,28 +3,33 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import { AxiosError } from "axios";
 
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { SnackBarContext } from "../../../../../App";
-import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
-import {
-  BCEID_PROFILE_TABS,
-  ReadUserInformationResponse,
-  UserInfoRequest,
-} from "../../../types/manageProfile.d";
+import { BCeID_USER_ROLE } from "../../../../../common/authentication/types";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "../myInfo/MyInfoForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
+import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
+import {
+  PROFILE_TABS,
+  ReadUserInformationResponse,
+  UserInfoRequest,
+} from "../../../types/manageProfile.d";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+
+const FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION;
 
 /**
  * Edit User form for User Management.
@@ -40,44 +45,47 @@ export const EditUserForm = memo(
         firstName: getDefaultRequiredVal("", userInfo?.firstName),
         lastName: getDefaultRequiredVal("", userInfo?.lastName),
         email: getDefaultRequiredVal("", userInfo?.email),
-        phone1: applyWhenNotNullable(formatPhoneNumber, userInfo?.phone1, ""),
+        phone1: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone1,
+          "",
+        ),
         phone1Extension: getDefaultRequiredVal("", userInfo?.phone1Extension),
-        phone2: applyWhenNotNullable(formatPhoneNumber, userInfo?.phone2, ""),
+        phone2: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone2,
+          "",
+        ),
         phone2Extension: getDefaultRequiredVal("", userInfo?.phone2Extension),
-        fax: applyWhenNotNullable(formatPhoneNumber, userInfo?.fax, ""),
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-          userInfo?.userAuthGroup,
+        userRole: getDefaultRequiredVal(
+          BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
+          userInfo?.userRole,
         ),
       },
     });
+
     const { handleSubmit } = formMethods;
-    const FEATURE = "user-info-form";
 
     const [isUserGroupsModalOpen, setIsUserGroupsModalOpen] =
       useState<boolean>(false);
 
-    /**
-     * On click handler for the breadcrumbs. Navigates to the parent pages.
-     */
     const onClickBreadcrumb = () => {
       navigate(PROFILE_ROUTES.MANAGE, {
         state: {
-          selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+          selectedTab: PROFILE_TABS.USER_MANAGEMENT,
         },
       });
     };
 
-    /**
-     * Updates the user info.
-     */
     const updateUserInfoMutation = useMutation({
       mutationFn: updateUserInfo,
-      onError: () => {
-        navigate(ERROR_ROUTES.UNEXPECTED);
+      onError: (error: AxiosError) => {
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
       },
       onSuccess: (response) => {
         if (response.status === 200) {
@@ -90,17 +98,17 @@ export const EditUserForm = memo(
 
           navigate(PROFILE_ROUTES.MANAGE, {
             state: {
-              selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+              selectedTab: PROFILE_TABS.USER_MANAGEMENT,
             },
+          });
+        } else {
+          navigate(ERROR_ROUTES.UNEXPECTED, {
+            state: { correlationId: response.headers["x-correlation-id"] },
           });
         }
       },
     });
 
-    /**
-     * On click handler for Save button.
-     * @param data The edit user form data.
-     */
     const onUpdateUserInfo = (data: UserInfoRequest) => {
       updateUserInfoMutation.mutate({
         userInfo: data,
@@ -130,8 +138,10 @@ export const EditUserForm = memo(
               >
                 User Details
               </Typography>
+
               <ReusableUserInfoForm feature={FEATURE} />
             </Stack>
+
             <Stack direction="row">
               <Stack>
                 <Typography
@@ -145,6 +155,7 @@ export const EditUserForm = memo(
                 >
                   Assign User Group
                 </Typography>
+
                 <Typography
                   variant={"h2"}
                   sx={{
@@ -161,9 +172,10 @@ export const EditUserForm = memo(
                   </CustomActionLink>
                 </Typography>
               </Stack>
+
               <Stack spacing={2}>
                 <Controller
-                  name="userAuthGroup"
+                  name="userRole"
                   rules={{
                     required: { value: true, message: requiredMessage() },
                   }}
@@ -171,6 +183,7 @@ export const EditUserForm = memo(
                     <UserAuthRadioGroup field={field} fieldState={fieldState} />
                   )}
                 ></Controller>
+
                 <Stack direction="row" spacing={2}>
                   <Button
                     key="update-my-info-cancel-button"
@@ -181,6 +194,7 @@ export const EditUserForm = memo(
                   >
                     Cancel
                   </Button>
+
                   <Button
                     key="update-my-info-button"
                     aria-label="Update My Info"
@@ -194,7 +208,9 @@ export const EditUserForm = memo(
               </Stack>
             </Stack>
           </Stack>
+
           <br />
+
           <UserGroupsAndPermissionsModal
             isOpen={isUserGroupsModalOpen}
             onClickClose={() => setIsUserGroupsModalOpen(() => false)}

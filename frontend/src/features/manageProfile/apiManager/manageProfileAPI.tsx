@@ -32,15 +32,10 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 export const getCompanyInfoById = async (
   companyId: number,
 ): Promise<RequiredOrNull<CompanyProfile>> => {
-  try {
-    const response = await httpGETRequest(
-      `${MANAGE_PROFILE_API.COMPANIES}/${companyId}`,
-    );
-    return response.data;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
+  const response = await httpGETRequest(
+    `${MANAGE_PROFILE_API.COMPANIES}/${companyId}`,
+  );
+  return response.data;
 };
 
 export const getMyInfo = async (): Promise<ReadUserInformationResponse> => {
@@ -127,11 +122,11 @@ export const getUserContext = (): Promise<BCeIDUserContextType> => {
 };
 
 /**
- * Retrieves the roles of the user w.r.t a company.
+ * Retrieves the claims of the user w.r.t a company.
  */
-export const getUserRolesByCompanyId = (): Promise<string[]> => {
+export const getUserClaimsByCompanyId = (): Promise<string[]> => {
   const companyId = getCompanyIdFromSession();
-  let url = `${VEHICLES_URL}/users/roles`;
+  let url = `${VEHICLES_URL}/users/claims`;
   if (companyId) {
     url += `?companyId=${companyId}`;
   }
@@ -139,10 +134,12 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
 };
 
 /**
- * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
+ * Retrieves the claims of an IDIR user (i.e., OnRouteBC staff).
  */
-export const getIDIRUserRoles = async (): Promise<RequiredOrNull<string[]>> => {
-  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+export const getIDIRUserClaims = async (): Promise<
+  RequiredOrNull<string[]>
+> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/claims`).then(
     (response) => response.data,
   );
 };

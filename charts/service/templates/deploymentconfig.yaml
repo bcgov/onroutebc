@@ -56,6 +56,8 @@ spec:
                   name: {{ include "service.fullname" $ }}
                   key: {{$k}}
           {{- end }}
+            - name: TIMESTAMP
+              value: "{{ now | toString }}"
           ports:
             {{- toYaml .Values.container.ports | nindent 12 }}
           resources:

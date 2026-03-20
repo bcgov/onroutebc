@@ -1,17 +1,10 @@
-import {
-  ForbiddenException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
-import { Role } from '../enum/roles.enum';
+import { Claim } from '../enum/claims.enum';
 import { IUserJWT } from '../interface/user-jwt.interface';
-import {
-  UserAuthGroup,
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-} from '../enum/user-auth-group.enum';
-import { IRole } from '../interface/role.interface';
+import { UserRole, ClientUserRole, IDIRUserRole } from '../enum/user-role.enum';
+import { IPermissions } from '../interface/permissions.interface';
 
 /**
  * Determines the directory type based on the identity provider of the user.
@@ -34,59 +27,42 @@ export const getDirectory = (user: IUserJWT) => {
 };
 
 /**
- * Type guard to check if an input is an array of type Role.
- *
- * @param {Role[] | IRole[]} obj - The object to be checked.
- * @returns {obj is Role[]} True if obj is an array of Role, false otherwise.
- */
-function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
-  return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
-}
-
-/**
- * Evaluates if a user has at least one of the specified roles or meets complex role criteria.
+ * Evaluates if a user has at least one of the specified claims, belongs to the specified user role, or meets complex role criteria.
  *
  * This method supports two kinds of inputs for role requirements:
- * 1. Simple list of roles (Role[]): In this case, it checks if any of the roles assigned to the user matches at least one of
- *    the roles specified in the 'roles' parameter. It returns true if there's a match, indicating the user has one of the necessary roles.
- * 2. Complex role requirements (IRole[]): When 'roles' is an array of objects implementing the IRole interface (meaning it can specify
- *    complex role combinations with 'allOf' and 'oneOf' properties), it evaluates these conditions for each role object. It returns true
- *    if for any role object, either all of the 'allOf' roles or at least one of the 'oneOf' roles are present in the 'userRoles' array.
+ * 1. Simple list of claims (Claim[]): It checks if the user holds any claim from the specified list. True indicates possession of a required role.
+ * If any role object's criteria are met (considering 'userRole' if defined), it returns true.
  *
- * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
- * @param {Role[]} userRoles - An array of roles assigned to the user.
- * @returns {boolean} Returns true if the user has at least one of the required roles or meets the complex role requirements, false otherwise.
+ * @param {IPermissions} permissions - An array of claims or role requirement objects to be matched against the user's roles.
+ * @param {Claim[]} userClaims - An array of roles assigned to the user.
+ * @param {UserRole} userRole - The user authorization group to which the user belongs.
+ * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
-export const matchRoles = (roles: Role[] | IRole[], userRoles: Role[]) => {
-  if (isRoleArray(roles)) {
-    // Scenario: roles is a simple list of Role objects.
-    // This block checks if any of the roles assigned to the user (userRoles)
-    // matches at least one of the roles specified in the input list (roles).
-    // It returns true if there is a match, indicating the user has at least one of the required roles.
-    return roles?.some((role) => userRoles.includes(role));
-  } else {
-    // Scenario: roles is not a simple list, but an object or objects implementing IRole,
-    // meaning complex role requirements can be specified.
-    // This block checks two conditions for each role object:
-    // 1. allOf - every role listed must be included in userRoles.
-    // 2. oneOf - at least one of the roles listed must be included in userRoles.
-    // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
-    return roles.some((roleObject) => {
-      if (roleObject.allOf?.length && roleObject.oneOf?.length) {
-        throw new InternalServerErrorException(
-          'Cannot define both allOf and oneOf at the same time!',
-        );
-      }
-      const allOfMatch = roleObject.allOf?.every((role) =>
-        userRoles.includes(role),
-      );
-      const oneOfMatch = roleObject.oneOf?.some((role) =>
-        userRoles.includes(role),
-      );
-      return oneOfMatch || allOfMatch;
-    });
+export const matchRoles = (
+  permissions: IPermissions,
+  userClaims: Claim[],
+  userRole: UserRole,
+) => {
+  const { allowedIdirRoles, allowedBCeIDRoles, claim } = permissions;
+  // If only claims is specified, return the value of that.
+  if (claim && !allowedBCeIDRoles && !allowedIdirRoles) {
+    return userClaims.includes(claim);
   }
+  let isAllowed: boolean;
+  const isIdir = Object.values<string>(IDIRUserRole).includes(userRole);
+  if (isIdir) {
+    isAllowed = allowedIdirRoles?.includes(userRole as IDIRUserRole);
+  } else {
+    isAllowed = allowedBCeIDRoles?.includes(userRole as ClientUserRole);
+  }
+  // If claims is specified alongside the allowed roles, include
+  // its value in the output.
+  if (claim) {
+    isAllowed = isAllowed && userClaims.includes(claim);
+  }
+  return isAllowed;
 };
+
 /**
  * Checks if any company from a list of associated companies matches any of the current user's associated companies.
  *
@@ -149,19 +125,23 @@ export const checkUserCompaniesContext = (
  * 1. The user must have at least one of the specified roles.
  * 2. If the user has at least one of the specified roles, they must also be associated with one of the specified companies.
  *
- * @param {Role[]} roles - An array of roles that the user is supposed to have.
+ * @param {Claim} claims - The claim a user is supposed to have.
  * @param {string} userGUID - The unique identifier for the user.
  * @param {number[]} userCompanies - An array of company IDs that the user is supposed to be associated with.
  * @param {IUserJWT} currentUser - The current user's information, including roles and identity provider.
  * @throws {ForbiddenException} Throws ForbiddenException if the user does not meet the role or company association criteria.
  */
 export const validateUserCompanyAndRoleContext = (
-  roles: Role[],
+  claim: Claim,
   userGUID: string,
   userCompanies: number[],
   currentUser: IUserJWT,
 ) => {
-  const rolesExists = matchRoles(roles, currentUser.roles);
+  const rolesExists = matchRoles(
+    { claim },
+    currentUser.claims,
+    currentUser.orbcUserRole,
+  );
   if (!rolesExists && userGUID) {
     throw new ForbiddenException();
   }
@@ -175,18 +155,28 @@ export const validateUserCompanyAndRoleContext = (
 };
 
 /**
- * Determines if a specified UserAuthGroup value is present within a given enumeration object.
+ * Determines if a specified UserRole value is present within a given enumeration object.
  *
- * @param {UserAuthGroup} value - The UserAuthGroup value to be checked.
- * @param {ReadonlyArray<ClientUserAuthGroup> | ReadonlyArray<IDIRUserAuthGroup>} enumObject - An array of UserAuthGroup values.
+ * @param {UserRole} value - The UserRole value to be checked.
+ * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserRole values.
  * @returns {boolean} Returns true if the value is present in the enumObject, otherwise false.
  */
-export const doesUserHaveAuthGroup = (
-  value: UserAuthGroup,
-  enumObject:
-    | ReadonlyArray<ClientUserAuthGroup>
-    | ReadonlyArray<IDIRUserAuthGroup>,
+export const doesUserHaveRole = (
+  value: UserRole,
+  enumObject: readonly ClientUserRole[] | readonly IDIRUserRole[],
 ): boolean => {
   // This function checks if the given value is present in the enumObject array
   return Object.values(enumObject).includes(value);
+};
+
+/**
+ * Checks if the provided directory is either an IDIR or a Service Account.
+ *
+ * @param {Directory} directory - The directory type to check against.
+ * @returns {boolean} Returns true if the directory is IDIR or Service Account, otherwise false.
+ */
+export const isIdirOrSAUser = (directory: Directory) => {
+  return (
+    directory === Directory.IDIR || directory === Directory.SERVICE_ACCOUNT
+  );
 };

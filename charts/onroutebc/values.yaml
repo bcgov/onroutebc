@@ -1,5 +1,6 @@
 ---
 global:
+  env: {}
   autoscaling: true
   license: "c28f0c"
   podAnnotations: |
@@ -15,9 +16,10 @@ global:
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   #enable pulling from image streams
   imagestreams:
-    enabled: true
+    enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
+    authPath: "auth/k8s-silver"
     role: "nonprod"
     zone: "dev"
 frontend:
@@ -31,22 +33,55 @@ frontend:
   configmap:
     enabled: true
     data:
-      config.js: |-
-        const envConfig = (() => {
-          return {
-            "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
-            "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
-            "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
-            "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      PUBLIC_API_URL: "https://{{.Release.Name}}-public.{{.Values.global.domain}}"
+      POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
+      DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
+      PR_NUM: "{{.Values.global.env.pr_num}}"
+      RELEASE_NUM: "{{.Values.global.env.release_num}}"
+      config.js.template: |-
+        const envConfig = (() => { return {
+            "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
+            "VITE_API_VEHICLE_URL":"$ACCESS_API_URL",
+            "VITE_PUBLIC_API_URL":"$PUBLIC_API_URL",
+            "VITE_POLICY_URL":"$POLICY_URL",
+            "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
+            "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
+            "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
+            "VITE_PR_NUM":"$PR_NUM",
+            "VITE_RELEASE_NUM":"$RELEASE_NUM",
+            "VITE_BC_GEOCODER_CLIENT_ID":"$BC_GEOCODER_CLIENT_ID",
+            "VITE_BC_GEOCODER_API_KEY":"$BC_GEOCODER_API_KEY",
+            "VITE_BC_GEOCODER_API_URL":"$BC_GEOCODER_API_URL",
           };
         })();
   containers:
     - name: frontend
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/geocoder-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromLocalConfigmap: 
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
+          - name: PUBLIC_API_URL
+            key: PUBLIC_API_URL
+          - name: POLICY_URL
+            key: POLICY_URL            
+          - name: DEPLOY_ENVIRONMENT
+            key: DEPLOY_ENVIRONMENT
+        fromValues: 
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: http
           containerPort: 3000
@@ -60,8 +95,10 @@ frontend:
           memory: 50Mi
       volumeMounts:
         - name: config
-          mountPath: "/usr/share/nginx/html/config.js"
-          subPath: config.js
+          mountPath: "/usr/share/nginx/html/config/config.js.template"
+          subPath: config.js.template
+        - name: writespace
+          mountPath: "/usr/share/nginx/html/config"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -100,7 +137,7 @@ frontend:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-frontend.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -116,10 +153,29 @@ frontend:
         targetPort: 3000
   serviceAccount:
     name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "geocoder-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
   volumes:
     - name: config
       configMap:
         name: "{{ .Release.Name}}-frontend"
+    - name: writespace
+      emptyDir:
+        sizeLimit: 50Mi
 
 vehicles:
   enabled: true
@@ -132,16 +188,17 @@ vehicles:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"      
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
+      DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
+      POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"      
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}/payment"
   containers:
     - name: vehicles
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && source /vault/secrets/egarms-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -150,12 +207,21 @@ vehicles:
         fromLocalConfigmap: 
           - name: DOPS_URL 
             key: DOPS_URL
+          - name: POLICY_URL 
+            key: POLICY_URL            
           - name: FRONTEND_URL
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -219,10 +285,11 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -240,6 +307,7 @@ vehicles:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -254,6 +322,142 @@ vehicles:
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
+      - "egarms-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
+
+public:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+  containers:
+    - name: public
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/public-{{.Values.global.vault.zone}} && npm run start:prod"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: public
+      tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
+      ports:
+        - name: public-api
+          containerPort: 5003
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5003
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5003
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 1
+    #-- the maximum number of replicas.
+    maxReplicas: 2
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
+  ingress:
+    className: openshift-default
+    annotations: 
+      haproxy.router.openshift.io/timeout: 2m
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-public.{{.Values.global.domain}}"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5003-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5003
+  serviceAccount:
+    name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "public-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
@@ -267,15 +471,17 @@ dops:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
   containers:
     - name: dops
       command:
+        - "/usr/local/bin/dumb-init"
+        - "--"
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
@@ -288,6 +494,13 @@ dops:
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -351,10 +564,11 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-dops.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -372,6 +586,7 @@ dops:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -388,9 +603,10 @@ dops:
       - "cdogs-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
-tps-migration:
+scheduler:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
     enabled: true
@@ -400,18 +616,31 @@ tps-migration:
     enabled: false
   configmap:
     enabled: true
+    data:
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
   containers:
-    - name: tps-migration
+    - name: scheduler
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: tps-migration
+      image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromLocalConfigmap:
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
-        - name: tps-api
+        - name: scheduler
           containerPort: 5050
           protocol: TCP
       readinessProbe:
@@ -434,6 +663,116 @@ tps-migration:
         timeoutSeconds: 5
       securityContext:
         allowPrivilegeEscalation: true
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: false 
+  ingress:
+    className: openshift-default
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-scheduler.{{.Values.global.domain}}"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5050-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5050
+  serviceAccount:
+    name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "scheduler-{{tpl $.Values.vault.zone $}}"
+      - "s3-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
+      - "tps-{{tpl $.Values.vault.zone $}}"
+      - "garms-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
+
+policy:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+  containers:
+    - name: policy
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/policy-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: policy
+      tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap:
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: "{{ .Values.global.env.pr_num | toString }}"
+          - name: RELEASE_NUM
+            value: "{{ .Values.global.env.release_num | toString }}"
+      ports:
+        - name: policy-api
+          containerPort: 5002
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5002
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5002
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
       resources: # this is optional
         limits:
           cpu: 75m
@@ -474,11 +813,11 @@ tps-migration:
         selectPolicy: Max
   ingress:
     className: openshift-default
-    annotations: 
+    annotations:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-tps-migration.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-policy.{{.Values.global.domain}}"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -488,14 +827,15 @@ tps-migration:
     enabled: true
     type: ClusterIP
     ports:
-      - name: 5050-tcp
+      - name: 5002-tcp
         protocol: TCP
         port: 80
-        targetPort: 5050
+        targetPort: 5002
   serviceAccount:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -508,6 +848,6 @@ tps-migration:
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
-      - "tps-{{tpl $.Values.vault.zone $}}"
-      - "s3-{{tpl $.Values.vault.zone $}}"
+      - "policy-{{tpl $.Values.vault.zone $}}"
+      - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"

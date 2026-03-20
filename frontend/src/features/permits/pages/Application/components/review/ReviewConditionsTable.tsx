@@ -12,37 +12,47 @@ import "./ReviewConditionsTable.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 
 export const ReviewConditionsTable = ({
   conditions,
 }: {
-  conditions?: Nullable<PermitCommodity[]>;
+  conditions?: Nullable<PermitCondition[]>;
 }) => {
-  const commodities = getDefaultRequiredVal([], conditions);
+  const reviewConditions = getDefaultRequiredVal([], conditions);
 
   return (
     <TableContainer>
       <Table className="review-conditions-table" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell className="review-conditions-table__header">
+            <TableCell
+              className="review-conditions-table__header review-conditions-table__header--description"
+            >
               Description
             </TableCell>
-            <TableCell className="review-conditions-table__header">
+
+            <TableCell
+              className="review-conditions-table__header review-conditions-table__header--link"
+            >
               Conditions
             </TableCell>
           </TableRow>
         </TableHead>
+        
         <TableBody>
-          {commodities.map((row: PermitCommodity) => {
+          {reviewConditions.map((row: PermitCondition) => {
             return (
               <TableRow
                 className="review-conditions-table__row"
                 key={row.condition}
                 data-testid="review-permit-condition"
               >
-                <TableCell component="td" scope="row">
+                <TableCell
+                  component="td"
+                  scope="row"
+                  className="review-conditions-table__cell review-conditions-table__cell--description"
+                >
                   <Checkbox
                     className="checkbox checkbox--readonly"
                     key={row.condition}
@@ -54,7 +64,11 @@ export const ReviewConditionsTable = ({
                   </span>
                 </TableCell>
 
-                <TableCell component="td" scope="row">
+                <TableCell
+                  component="td"
+                  scope="row"
+                  className="review-conditions-table__cell review-conditions-table__cell--link"
+                >
                   <CustomExternalLink
                     href={row.conditionLink}
                     className="condition-link"

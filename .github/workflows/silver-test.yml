@@ -1,0 +1,49 @@
+---
+name: Deploy Test (Silver)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "test"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: "Image tag to deploy"
+        required: false
+        type: string
+        default: "test"
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  
+jobs:
+  deploy-test:
+    name: Deploys Test (Silver)
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: test
+      release: test
+      tag: ${{ inputs.tag }}
+      params: |
+        --set-string global.domain='apps.silver.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-silver' \
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='test' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \
+        ${{ inputs.params }} \
+  

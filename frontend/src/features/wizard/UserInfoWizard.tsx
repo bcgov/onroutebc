@@ -4,10 +4,13 @@ import React, { useContext, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 
+import "./UserInfoWizard.scss";
 import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
-import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
-import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
+import { LoadBCeIDUserClaimsByCompany } from "../../common/authentication/LoadBCeIDUserClaimsByCompany";
+import OnRouteBCContext, {
+  BCeIDUserDetailContext,
+} from "../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../common/components/dashboard/components/banner/Banner";
 import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
@@ -20,6 +23,7 @@ import {
   Contact,
   ReadUserInformationResponse,
 } from "../manageProfile/types/manageProfile";
+import { ORBC_FORM_FEATURES } from "../../common/types/common";
 
 /**
  * User Info wizard displays a user information form
@@ -37,7 +41,7 @@ export const UserInfoWizard = React.memo(() => {
     onSuccess: async (response) => {
       if (response.status === 201) {
         const responseBody = response.data as ReadUserInformationResponse;
-        const userDetails = {
+        const userDetails: BCeIDUserDetailContext = {
           firstName: responseBody.firstName,
           lastName: responseBody.lastName,
           userName: responseBody.userName,
@@ -46,8 +50,7 @@ export const UserInfoWizard = React.memo(() => {
           phone2: responseBody.phone2,
           phone2Extension: responseBody.phone2Extension,
           email: responseBody.email,
-          fax: responseBody.fax,
-          userAuthGroup: responseBody.userAuthGroup,
+          userRole: responseBody.userRole,
         };
         setIsProfileCreated(() => true);
         setUserDetails?.(() => userDetails);
@@ -82,7 +85,7 @@ export const UserInfoWizard = React.memo(() => {
     return (
       <>
         <LoadBCeIDUserContext />
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated />
       </>
     );
@@ -94,7 +97,7 @@ export const UserInfoWizard = React.memo(() => {
           <Banner bannerText="Create a new onRouteBC Profile" />
         </Box>
         <div
-          className="tabpanel-container create-profile-steps"
+          className="user-info-wizard create-profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >
@@ -104,7 +107,9 @@ export const UserInfoWizard = React.memo(() => {
               msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
             />
 
-            <ReusableUserInfoForm feature="my-info-wizard" />
+            <ReusableUserInfoForm
+              feature={ORBC_FORM_FEATURES.MY_INFORMATION_WIZARD}
+            />
 
             <div className="create-profile-section create-profile-section--nav">
               <Button

@@ -10,4 +10,8 @@ export class PermitType {
   @AutoMap()
   @Column({ name: 'NAME', nullable: true })
   name: string;
+
+  @AutoMap()
+  @Column({ name: 'GL_CODE', nullable: true })
+  glCode: string;
 }

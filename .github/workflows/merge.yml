@@ -5,16 +5,14 @@ on:
     branches: [main]
     paths-ignore:
       - '*.md'
-      - '.github/**'
       - 'common/graphics/**'
-      - '!.github/workflows/deploy.yml'
-      - '!.github/workflows/merge.yml'
   workflow_dispatch:
     inputs:
-      pr_no:
-        description: "PR-numbered container set to deploy"
-        type: number
-        required: true
+      pr:
+        description: "PR num of image to deploy"
+        required: false
+        type: string
+
 
 concurrency:
   group: ${{ github.workflow }}
@@ -29,33 +27,45 @@ jobs:
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
+      - name: Get PR Number From Event
+        if: github.event_name == 'push'
+        id: pr_no
+        uses: bcgov/action-get-pr@v0.1.0
       - name: PR Number
         id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
+        run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
 
-  deploys-test:
-    name: Deploys (test)
+  deploys-test-silver:
+    name: Deploys Test - Silver
     needs: [vars]
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/silver-test.yml
     secrets: inherit
     with:
-      autoscaling: false
-      environment: test
-      release: test
       tag: ${{ needs.vars.outputs.pr }}
-      vault_role: nonprod
-      vault_zone: test
-
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
+  
+  deploys-test-gold:
+    name: Deploys Test - Gold
+    needs: [vars]
+    uses: ./.github/workflows/gold-test.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
+        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
 
   promote-images-test:
     name: Promote Images - Test
-    needs: [deploys-test, vars]
+    needs: [deploys-test-silver,deploys-test-gold, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, tps-migration]
+        package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v4
@@ -64,48 +74,3 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
           tags: test  #Promote images AFTER successful deploy
-
-  deploys-prod:
-    name: Deploys (prod)
-    needs: [promote-images-test, vars]
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit
-    with:
-      autoscaling: true
-      environment: prod
-      tag: ${{ needs.vars.outputs.pr }}
-      release: prod
-      vault_role: prod
-      vault_zone: prod
-
-  promote-images-prod:
-    name: Promote Images - Prod
-    needs: [deploys-prod, vars]
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [dops, vehicles, frontend, tps-migration]
-    timeout-minutes: 2
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.pr }}
-          tags: prod  #Promote images AFTER successful deploy
-
-  create-release:
-    name: Create release
-    runs-on: ubuntu-22.04
-    needs: [deploys-prod, vars]
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Create Release
-        run: |
-          gh release create "${{ needs.vars.outputs.pr }}" \
-          --repo=${{ github.repository }} \
-          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
-          --generate-notes
