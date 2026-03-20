@@ -1,6 +1,10 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
+import {
+  isQuarterlyPermit,
+  PERMIT_TYPES,
+  PermitType,
+} from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { getMostRecentExpiryFromLOAs } from "./permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
@@ -55,6 +59,11 @@ import {
   NRSCV_DURATION_INTERVAL_DAYS,
   NRSCV_DURATION_OPTIONS,
 } from "../constants/nrscv";
+import {
+  MIN_STOW_DURATION,
+  STOW_CV_DURATION_OPTIONS,
+  STOW_STAFF_DURATION_OPTIONS,
+} from "../constants/stow";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -75,6 +84,8 @@ export const durationOptionsForPermitType = (
       return MFP_DURATION_OPTIONS;
     case PERMIT_TYPES.STOS:
       return isStaff ? STOS_STAFF_DURATION_OPTIONS : STOS_CV_DURATION_OPTIONS;
+    case PERMIT_TYPES.STOW:
+      return isStaff ? STOW_STAFF_DURATION_OPTIONS : STOW_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:
@@ -101,6 +112,8 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_MFP_DURATION;
     case PERMIT_TYPES.STOS:
       return MIN_STOS_DURATION;
+    case PERMIT_TYPES.STOW:
+      return MIN_STOW_DURATION;
     case PERMIT_TYPES.TROW:
       return MIN_TROW_DURATION;
     case PERMIT_TYPES.TROS:
@@ -175,11 +188,7 @@ export const getMinPermitExpiryDate = (
   startDate: Dayjs,
 ) => {
   const minDuration = minDurationForPermitType(permitType);
-  return getExpiryDate(
-    startDate,
-    isQuarterlyPermit(permitType),
-    minDuration,
-  );
+  return getExpiryDate(startDate, isQuarterlyPermit(permitType), minDuration);
 };
 
 /**
@@ -193,7 +202,8 @@ export const getMaxAllowedPermitFutureStartDate = (
   isStaff: boolean,
 ) => {
   // If user isn't staff, the max future date can only be 14 days from current date
-  if (!isStaff) return dayjs(currentDate).add(MAX_ALLOWED_FUTURE_DAYS_CV, "day");
+  if (!isStaff)
+    return dayjs(currentDate).add(MAX_ALLOWED_FUTURE_DAYS_CV, "day");
 
   // Otherwise (user is staff), then regardless of application or amendment context
   // The max future date can be up to 60 days from current date
