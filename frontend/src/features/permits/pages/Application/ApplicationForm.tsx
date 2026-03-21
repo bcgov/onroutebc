@@ -62,6 +62,8 @@ import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+import { PERMIT_TABS } from "../../types/PermitTabs";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -73,10 +75,14 @@ export const ApplicationForm = ({
   permitType,
   companyId,
   applicationStepContext,
+  isCopiedApplication,
+  copyPermitOrigin,
 }: {
   permitType: PermitType;
   companyId: number;
   applicationStepContext: ApplicationStepContext;
+  isCopiedApplication: boolean;
+  copyPermitOrigin?: Nullable<string>;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -105,6 +111,12 @@ export const ApplicationForm = ({
 
   const policyEngine = usePolicyEngine(specialAuthorizations);
 
+  const isQueueContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
+
+  const isInitCopyContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY;
+
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -121,8 +133,7 @@ export const ApplicationForm = ({
       userDetails,
       policyEngine,
       isStaff: isStaffUser,
-      shouldInitAsCopy:
-        applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY,
+      shouldInitAsCopy: isInitCopyContext,
     });
 
   // Applicable LOAs must be:
@@ -210,9 +221,6 @@ export const ApplicationForm = ({
     return updatedViolations;
   };
 
-  const isQueueContext =
-    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
-
   const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
     {
       applicationId: getDefaultRequiredVal("", currentFormData.permitId),
@@ -261,7 +269,13 @@ export const ApplicationForm = ({
         return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
       }
 
-      return navigate(APPLICATIONS_ROUTES.REVIEW(permitId));
+      return navigate(
+        APPLICATIONS_ROUTES.REVIEW(
+          permitId,
+          isInitCopyContext || isCopiedApplication,
+          copyPermitOrigin,
+        ),
+      );
     }, savedVehicleDetails);
   };
 
@@ -346,7 +360,13 @@ export const ApplicationForm = ({
         return navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId));
       }
 
-      navigate(APPLICATIONS_ROUTES.DETAILS(permitId));
+      navigate(
+        APPLICATIONS_ROUTES.DETAILS(
+          permitId,
+          isInitCopyContext || isCopiedApplication,
+          copyPermitOrigin,
+        ),
+      );
     });
   };
 
@@ -356,6 +376,18 @@ export const ApplicationForm = ({
       setShowLeaveApplicationDialog(true);
     } else if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
+    } else if (isInitCopyContext || isCopiedApplication) {
+      const homeTab = copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+        ? PERMIT_TABS.ACTIVE_PERMITS
+        : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+        ? PERMIT_TABS.EXPIRED_PERMITS
+        : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+      
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: {
+          selectedTab: homeTab,
+        },
+      });
     } else {
       navigate(APPLICATIONS_ROUTES.BASE);
     }
@@ -364,6 +396,18 @@ export const ApplicationForm = ({
   const handleLeaveUnsaved = () => {
     if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
+    } else if (isInitCopyContext || isCopiedApplication) {
+      const homeTab = copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+        ? PERMIT_TABS.ACTIVE_PERMITS
+        : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+        ? PERMIT_TABS.EXPIRED_PERMITS
+        : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+      
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: {
+          selectedTab: homeTab,
+        },
+      });
     } else {
       navigate(APPLICATIONS_ROUTES.BASE);
     }
@@ -441,7 +485,15 @@ export const ApplicationForm = ({
 
   return (
     <div className="application-form">
-      <ApplicationBreadcrumb applicationStep={APPLICATION_STEPS.DETAILS} />
+      <ApplicationBreadcrumb
+        companyId={companyId}
+        permitId={applicationContext.applicationData?.permitId}
+        applicationStep={APPLICATION_STEPS.DETAILS}
+        applicationStepContext={applicationStepContext}
+        isCopiedApplication={isCopiedApplication}
+        applicationNumber={applicationContext.applicationData?.applicationNumber}
+        copyPermitOrigin={copyPermitOrigin}
+      />
 
       <FormProvider {...formMethods}>
         <ApplicationFormContext.Provider value={applicationFormContextData}>

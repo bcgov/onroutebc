@@ -1,5 +1,6 @@
 import { Nullable } from "../common/types/common";
 import { IDPS } from "../common/types/idp";
+import { PermitActionOrigin } from "../features/permits/types/PermitActionOrigin";
 import { PermitType } from "../features/permits/types/PermitType";
 
 export const ROUTE_PLACEHOLDERS = {
@@ -71,6 +72,7 @@ export const PROFILE_ROUTES = {
 
 // Permits
 const PERMITS_ROUTE_BASE = "/permits";
+export const ACTION_ORIGIN_PARAM = "actionOrigin";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
   SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
@@ -97,6 +99,7 @@ export const PERMITS_ROUTES = {
   COPY: (
     companyId?: Nullable<number | string>,
     permitId?: Nullable<string>,
+    actionOrigin?: Nullable<PermitActionOrigin>,
   ) =>
     `${DYNAMIC_ROUTE_URI(
       "/companies",
@@ -106,7 +109,7 @@ export const PERMITS_ROUTES = {
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
-    )}/copy`,
+    )}/copy${actionOrigin ? `?${ACTION_ORIGIN_PARAM}=${actionOrigin}` : ""}`,
 };
 
 // Applications
@@ -132,26 +135,47 @@ export type ApplicationStepContext =
   (typeof APPLICATION_STEP_CONTEXTS)[keyof typeof APPLICATION_STEP_CONTEXTS];
 
 export const NEW_APPLICATION_SEGMENT = "new";
+export const IS_COPIED_APPLICATION_PARAM = "isCopied";
+export const COPY_PARAMS = (
+  isCopied?: boolean,
+  actionOrigin?: Nullable<PermitActionOrigin>,
+) => {
+  if (!isCopied && !actionOrigin) return "";
+  if (isCopied && actionOrigin)
+    return `?${IS_COPIED_APPLICATION_PARAM}=true&${ACTION_ORIGIN_PARAM}=${actionOrigin}`;
+
+  if (isCopied) return `?${IS_COPIED_APPLICATION_PARAM}=true`;
+  return `?${ACTION_ORIGIN_PARAM}=${actionOrigin}`;
+};
+
 export const APPLICATIONS_ROUTES = {
   BASE: APPLICATIONS_ROUTE_BASE,
-  DETAILS: (permitId?: string) =>
+  DETAILS: (
+    permitId?: string,
+    isCopied?: boolean,
+    actionOrigin?: Nullable<PermitActionOrigin>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       APPLICATIONS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
-    )}`,
+    )}${COPY_PARAMS(isCopied, actionOrigin)}`,
   START_APPLICATION: (permitType?: PermitType) =>
     `${DYNAMIC_ROUTE_URI(
       `${CREATE_APPLICATION_ROUTE_BASE}`,
       ROUTE_PLACEHOLDERS.PERMIT_TYPE,
       permitType,
     )}`,
-  REVIEW: (permitId?: string) =>
+  REVIEW: (
+    permitId?: string,
+    isCopied?: boolean,
+    actionOrigin?: Nullable<PermitActionOrigin>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       APPLICATIONS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
-    )}/review`,
+    )}/review${COPY_PARAMS(isCopied, actionOrigin)}`,
 };
 
 // Queue

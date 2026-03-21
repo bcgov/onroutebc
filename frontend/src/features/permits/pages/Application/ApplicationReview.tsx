@@ -30,6 +30,7 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useCommodityOptions } from "../../hooks/useCommodityOptions";
 import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { Nullable } from "../../../../common/types/common";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_QUEUE_ROUTES,
@@ -45,11 +46,17 @@ import {
   useSubmitApplicationForReview,
   useUpdateApplicationInQueueStatus,
 } from "../../../queue/hooks/hooks";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+import { PERMIT_TABS } from "../../types/PermitTabs";
 
 export const ApplicationReview = ({
   applicationStepContext,
+  isCopiedApplication,
+  copyPermitOrigin,
 }: {
   applicationStepContext: ApplicationStepContext;
+  isCopiedApplication: boolean;
+  copyPermitOrigin?: Nullable<string>;
 }) => {
   const { applicationData, setApplicationData: setApplicationContextData } =
     useContext(ApplicationContext);
@@ -146,7 +153,14 @@ export const ApplicationReview = ({
       return;
     }
 
-    navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+    navigate(
+      APPLICATIONS_ROUTES.DETAILS(
+        permitId,
+        isCopiedApplication,
+        copyPermitOrigin,
+      ),
+      { replace: true },
+    );
   };
 
   const handleSaveApplication = async (
@@ -232,7 +246,19 @@ export const ApplicationReview = ({
           });
 
           refetchCartCount();
-          navigate(APPLICATIONS_ROUTES.BASE);
+
+          if (!isCopiedApplication)
+            return navigate(APPLICATIONS_ROUTES.BASE);
+
+          return navigate(APPLICATIONS_ROUTES.BASE, {
+            state: {
+              selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+                ? PERMIT_TABS.ACTIVE_PERMITS
+                : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+                ? PERMIT_TABS.EXPIRED_PERMITS
+                : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+            },
+          });
         });
       },
     );
@@ -255,7 +281,19 @@ export const ApplicationReview = ({
           message: `Application ${applicationNumber} submitted for review`,
           alertType: "success",
         });
-        navigate(APPLICATIONS_ROUTES.BASE);
+        
+        if (!isCopiedApplication)
+          return navigate(APPLICATIONS_ROUTES.BASE);
+
+        return navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+              ? PERMIT_TABS.ACTIVE_PERMITS
+              : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+              ? PERMIT_TABS.EXPIRED_PERMITS
+              : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+          },
+        });
       },
     );
   };
@@ -321,8 +359,13 @@ export const ApplicationReview = ({
         />
       ) : (
         <ApplicationBreadcrumb
+          companyId={companyId}
           permitId={permitId}
+          applicationNumber={applicationData?.applicationNumber}
           applicationStep={APPLICATION_STEPS.REVIEW}
+          applicationStepContext={applicationStepContext}
+          isCopiedApplication={isCopiedApplication}
+          copyPermitOrigin={copyPermitOrigin}
         />
       )}
 

@@ -8,7 +8,7 @@ import {
 import { ERROR_ROUTES, PERMITS_ROUTES } from "../../../routes/constants";
 import { hasPermitsActionFailed } from "../helpers/permitState";
 import { isNull } from "../../../common/types/common";
-import { PermitActionOrigin } from "../../idir/search/types/types";
+import { PermitActionOrigin } from "../types/PermitActionOrigin";
 
 export const useAttemptAmend = (permitActionOrigin: PermitActionOrigin) => {
   const navigate = useNavigate();

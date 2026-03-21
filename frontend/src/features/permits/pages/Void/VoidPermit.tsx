@@ -26,13 +26,10 @@ import {
 } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 import { hasPermitExpired } from "../../helpers/permitState";
-import {
-  PERMIT_ACTION_ORIGINS,
-  SEARCH_BY_FILTERS,
-  SEARCH_ENTITIES,
-} from "../../../idir/search/types/types";
+import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +

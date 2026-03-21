@@ -11,7 +11,7 @@ import { EmailNotificationType } from "../../types/EmailNotificationType";
 import { useAttemptAmend } from "../../hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../../idir/search/types/types";
+import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../types/PermitActionOrigin";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
 import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
 import { useSetCompanyHandler } from "../../../idir/search/helpers/useSetCompanyHandler";
@@ -59,6 +59,8 @@ export const PermitRowOptions = ({
         routes.PERMITS_ROUTES.COPY(
           companyId,
           permitId,
+          // After acting as company, leaving the copy permit should go back to AIP tab
+          PERMIT_ACTION_ORIGINS.AIP,
         )
       );
     }
@@ -110,6 +112,7 @@ export const PermitRowOptions = ({
         const copyPermitRoute = routes.PERMITS_ROUTES.COPY(
           companyId,
           permitId,
+          permitActionOrigin,
         );
         
         navigate(copyPermitRoute);

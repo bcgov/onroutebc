@@ -18,7 +18,7 @@ import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
+import { SearchFields } from "../types/types";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -33,6 +33,7 @@ import { PermitRowOptions } from "../../../permits/components/permit-list/Permit
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { canUserCopyPermit } from "../../../permits/helpers/canUserCopyPermit";
+import { PERMIT_ACTION_ORIGINS } from "../../../permits/types/PermitActionOrigin";
 
 /**
  * Function to decide whether to show row actions icon or not.

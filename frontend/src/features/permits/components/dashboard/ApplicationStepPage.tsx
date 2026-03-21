@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
@@ -12,6 +12,7 @@ import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import { ApplicationReview } from "../../pages/Application/ApplicationReview";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -25,14 +26,14 @@ import {
 } from "../../types/PermitType";
 
 import {
+  ACTION_ORIGIN_PARAM,
   APPLICATION_STEP_CONTEXTS,
   APPLICATION_STEPS,
   ApplicationStep,
   ApplicationStepContext,
   ERROR_ROUTES,
+  IS_COPIED_APPLICATION_PARAM,
 } from "../../../../routes/constants";
-
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -56,6 +57,13 @@ export const ApplicationStepPage = ({
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
   const { permitId, permitType, companyId: companyIdParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const copyPermitOrigin = searchParams.get(ACTION_ORIGIN_PARAM);
+  const isCopiedApplication = applyWhenNotNullable(
+    (isCopiedParam) => isCopiedParam === "true",
+    searchParams.get(IS_COPIED_APPLICATION_PARAM),
+    false,
+  );
 
   const companyId: number = getDefaultRequiredVal(
     0,
@@ -163,6 +171,8 @@ export const ApplicationStepPage = ({
       return (
         <ApplicationReview
           applicationStepContext={applicationStepContext}
+          isCopiedApplication={isCopiedApplication}
+          copyPermitOrigin={copyPermitOrigin}
         />
       );
     }
@@ -171,6 +181,8 @@ export const ApplicationStepPage = ({
         permitType={applicationPermitType}
         companyId={companyId}
         applicationStepContext={applicationStepContext}
+        isCopiedApplication={isCopiedApplication}
+        copyPermitOrigin={copyPermitOrigin}
       />
     );
   };

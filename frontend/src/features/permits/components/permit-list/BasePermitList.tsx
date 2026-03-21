@@ -19,7 +19,7 @@ import { PermitsColumnDefinition } from "./Columns";
 import { hasPermitExpired } from "../../helpers/permitState";
 import { isPermitInactive } from "../../types/PermitStatus";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { PERMIT_ACTION_ORIGINS } from "../../../idir/search/types/types";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PermitRowOptions } from "./PermitRowOptions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { ERROR_ROUTES } from "../../../../routes/constants";
@@ -246,7 +246,11 @@ export const BasePermitList = ({
               permitNumber={row.original.permitNumber}
               permitId={row.original.permitId}
               companyId={row.original.companyId}
-              permitActionOrigin={PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS}
+              permitActionOrigin={
+                isExpired
+                  ? PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+                  : PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+              }
               permissions={{
                 canAmendPermit,
                 canResendPermit,
