@@ -273,6 +273,15 @@ export const ShoppingCartPage = () => {
   const errorCodeFromStartTransacationMutation =
     startTransactionMutationError?.response?.data?.error[0].errorCode;
 
+  const paymentErrorMessage =
+    errorCodeFromStartTransacationMutation ===
+    PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
+      ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
+      : errorCodeFromStartTransacationMutation ===
+          PAYMENT_ERRORS.CREDIT_ACCOUNT_INSUFFICIENT_BALANCE
+        ? "Credit account unavailable."
+        : "";
+
   // TODO check LOA validation errors are being handled correctly
   useEffect(() => {
     if (startTransactionMutationFailed) {
@@ -578,18 +587,8 @@ export const ShoppingCartPage = () => {
             />
           ) : null}
 
-          {(showPaymentFailedBanner) ? (
-            <PaymentFailedBanner
-              errorMessage={
-                errorCodeFromStartTransacationMutation ===
-                PAYMENT_ERRORS.CREDIT_ACCOUNT_MISMATCH
-                  ? "Credit Account mismatch. One or more of the selected items uses a different credit account from the currently active one."
-                  : errorCodeFromStartTransacationMutation ===
-                      PAYMENT_ERRORS.CREDIT_ACCOUNT_INSUFFICIENT_BALANCE
-                    ? "Credit account unavailable."
-                    : ""
-              }
-            />
+          {showPaymentFailedBanner ? (
+            <PaymentFailedBanner errorMessage={paymentErrorMessage} />
           ) : null}
 
           <PermitPayFeeSummary
