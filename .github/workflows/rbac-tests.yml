@@ -78,6 +78,7 @@ jobs:
           - 'manage_vehicle_inventory.cy.js'
           - 'reports.cy.js'
           - 'sticky_side_bar.cy.js'
+          - 'copy-permit.cy.js'
         role: 
           - CA
           - PA
