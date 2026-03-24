@@ -210,6 +210,7 @@ const ComponentWithWrapper = ({
       >
         <ApplicationReview
           applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
+          isCopiedApplication={false}
         />
       </ApplicationContext.Provider>
     </ThemeProvider>

@@ -156,6 +156,10 @@ const MANAGE_PERMITS = {
     allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: ALL_IDIR_ROLES,
   },
+  COPY_PERMIT: {
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
+  },
 } as const;
 
 const MANAGE_PROFILE = {
@@ -413,6 +417,7 @@ const GLOBAL_SEARCH = {
   VOID_PERMIT: { allowedIDIRRoles: [SA] },
   REVOKE_PERMIT: { allowedIDIRRoles: [SA] },
   RESEND_PERMIT: { allowedIDIRRoles: ALL_IDIR_ROLES },
+  COPY_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO] },
 
   /** Search for Inactive Permit */
   SEARCH_FOR_INACTIVE_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO, EO] },

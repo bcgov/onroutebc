@@ -5,9 +5,15 @@ import * as routes from "../../../../routes/constants";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { VerifiedClient } from "../../../../common/authentication/types";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export type CompanyOrClient = CompanyProfile | VerifiedClient;
 
+/**
+ * Hook that sets the company info in the context and sessionStorage, and redirects to a company's
+ * specified location.
+ * @returns Callback method for selecting a company
+ */
 export const useSetCompanyHandler = () => {
   const navigate = useNavigate();
 
@@ -29,7 +35,10 @@ export const useSetCompanyHandler = () => {
   });
 
   const handleSelectCompany = useCallback(
-    (selectedCompany: CompanyOrClient) => {
+    (
+      selectedCompany: CompanyOrClient,
+      redirectToRouteForCompany?: string,
+    ) => {
       const {
         companyId,
         legalName,
@@ -49,7 +58,13 @@ export const useSetCompanyHandler = () => {
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
-        navigate(routes.APPLICATIONS_ROUTES.BASE);
+
+        const redirectToRoute = getDefaultRequiredVal(
+          routes.APPLICATIONS_ROUTES.BASE,
+          redirectToRouteForCompany,
+        );
+
+        navigate(redirectToRoute);
       } else {
         const {
           migratedClientHash,
