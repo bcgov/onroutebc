@@ -1,7 +1,9 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
+import { useNavigate } from "react-router-dom";
 import {
   MRT_ColumnDef,
+  MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -36,12 +38,25 @@ import {
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
+import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
+import { PERMITS_ROUTES } from "../../../../routes/constants";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+
+const availableRowOptions = [
+  {
+    label: "Copy",
+    value: PERMIT_ACTION_TYPES.COPY,
+  },
+];
 
 export const ApplicationsInProgressList = ({
   companyId,
 }: {
   companyId: number;
 }) => {
+  const navigate = useNavigate();
+
   const {
     applicationsInProgressQuery,
     pagination,
@@ -97,6 +112,13 @@ export const ApplicationsInProgressList = ({
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
       permissionMatrixFunctionKey:
         "EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS",
+    },
+  });
+
+  const canCopyApplication = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "COPY_PERMIT",
     },
   });
 
@@ -192,7 +214,7 @@ export const ApplicationsInProgressList = ({
         size: 10,
       },
     },
-    enableRowActions: false,
+    enableRowActions: canCopyApplication,
     enableRowSelection: (row) =>
       canRowBeSelected(row?.original?.permitApplicationOrigin),
     onRowSelectionChange: useCallback(setRowSelection, [userRole]),
@@ -207,6 +229,31 @@ export const ApplicationsInProgressList = ({
         </div>
       ),
       [hasNoRowsSelected],
+    ),
+    renderRowActions: useCallback(
+      ({ row }: { row: MRT_Row<ApplicationListItem> }) => (
+        <OnRouteBCTableRowActions
+          onSelectOption={
+            (selectedOption) => {
+              if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
+                navigate(
+                  PERMITS_ROUTES.COPY(
+                    companyId,
+                    row.original.permitId,
+                    PERMIT_ACTION_ORIGINS.AIP,
+                  ),
+                );
+              }
+            }
+          }
+          options={
+            canCopyApplication && canRowBeSelected(
+              row.original.permitApplicationOrigin
+            ) ? availableRowOptions : []
+          }
+        />
+      ),
+      [canCopyApplication, companyId, navigate, canRowBeSelected],
     ),
     enableGlobalFilter: false,
     autoResetPageIndex: false,
