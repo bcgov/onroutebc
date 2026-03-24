@@ -9,6 +9,7 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_ROLE } from "../../../../common/authentication/types";
@@ -17,7 +18,7 @@ import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
-import { PERMIT_ACTION_ORIGINS, SearchFields } from "../types/types";
+import { SearchFields } from "../types/types";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -31,6 +32,8 @@ import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 import { PermitRowOptions } from "../../../permits/components/permit-list/PermitRowOptions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { canUserCopyPermit } from "../../../permits/helpers/canUserCopyPermit";
+import { PERMIT_ACTION_ORIGINS } from "../../../permits/types/PermitActionOrigin";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -51,14 +54,6 @@ const shouldShowRowActions = (userRole: Optional<string>): boolean => {
   return allowableRoles.includes(userRole);
 };
 
-/*
- *
- * The search results component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
- */
 export const IDIRPermitSearchResults = memo(
   ({
     searchParams,
@@ -169,6 +164,13 @@ export const IDIRPermitSearchResults = memo(
       },
     });
 
+    const canCopyPermit = usePermissionMatrix({
+      permissionMatrixKeys: {
+        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+        permissionMatrixFunctionKey: "COPY_PERMIT",
+      },
+    });
+
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: getDefaultRequiredVal([], data?.items),
@@ -223,6 +225,13 @@ export const IDIRPermitSearchResults = memo(
             hasPermitExpired(row.original.expiryDate) ||
             isPermitInactive(row.original.permitStatus);
 
+          const canPermitBeCopied = canUserCopyPermit(
+            row.original.permitApplicationOrigin,
+            idirUserDetails?.userRole,
+            row.original.permitStatus,
+            row.original.permitApprovalSource,
+          );
+
           if (shouldShowRowActions(idirUserDetails?.userRole)) {
             return (
               <Box className="idir-search-results__row-actions">
@@ -238,6 +247,7 @@ export const IDIRPermitSearchResults = memo(
                     canViewPermitReceipt,
                     canViewExpiredPermitReceipt,
                     canVoidPermit,
+                    canCopyPermit: canCopyPermit && canPermitBeCopied,
                   }}
                 />
               </Box>
