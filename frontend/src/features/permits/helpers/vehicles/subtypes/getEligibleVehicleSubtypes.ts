@@ -1,7 +1,7 @@
 import { Policy } from "onroute-policy-engine";
 
 import { Nullable } from "../../../../../common/types/common";
-import { PermitType } from "../../../types/PermitType";
+import { isTermPermitType, PermitType } from "../../../types/PermitType";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
 
@@ -38,7 +38,10 @@ export const getEligibleVehicleSubtypes = (
       ).keys(),
       ...getDefaultRequiredVal(
         new Map<string, string>(),
-        subtypesMap.get("trailers"),
+        // Only term permits allow trailer subtypes to be used
+        isTermPermitType(permitType)
+          ? subtypesMap.get("trailers")
+          : undefined,
       ).keys(),
     ],
   );

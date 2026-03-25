@@ -35,9 +35,10 @@ import { SnackBarContext } from "../../../../../App";
 import { ApplicationFormData } from "../../../types/application";
 import { deserializeApplicationResponse } from "../../../helpers/serialize/deserializeApplication";
 import { isAxiosError } from "axios";
-import { PERMIT_ACTION_ORIGINS } from "../../../../idir/search/types/types";
+import { PERMIT_ACTION_ORIGINS } from "../../../types/PermitActionOrigin";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
+import { isZeroAmount } from "../../../helpers/feeSummary";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -133,7 +134,8 @@ export const AmendPermitReview = () => {
     if (savedApplication) {
       setAmendmentApplication(savedApplication);
 
-      if (canProcessAmendmentRefund) {
+      // Allow user to proceed to refund if user has permissions, or if refund amount is zero
+      if (canProcessAmendmentRefund || isZeroAmount(amountToRefund)) {
         next();
       } else {
         setShowAuthorizationRequiredModal(true);

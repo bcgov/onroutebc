@@ -167,7 +167,7 @@ export const Header = () => {
           <Brand />
         </div>
         <div className="options-section">
-          {isAuthenticated ? (
+          {isAuthenticated && !menuOpen ? (
             <div className="auth-section">
               {isIdir ? <SearchButton onClick={toggleFilter} /> : null}
               <UserSection username={username} />

@@ -42,7 +42,6 @@ export const TripOriginDestination = ({
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
   const showTotalDistance = permitType === PERMIT_TYPES.MFP;
-
   const origin = getDefaultRequiredVal("", tripOrigin);
 
   const handleUpdateTotalDistance = (numericStr: string) => {

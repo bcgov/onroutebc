@@ -128,4 +128,8 @@ export const CONDITIONAL_LICENSING_FEE_LINKS = {
     LINK_TEXT: "Commercial Transport Fees Regulation Item 2(b)",
     URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
   },
+  COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE: {
+    LINK_TEXT: "Commercial Transport Fees Regulation 2 (a.2)",
+    URL: "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/328_91",
+  },
 };

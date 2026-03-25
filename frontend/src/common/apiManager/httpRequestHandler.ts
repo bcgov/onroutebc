@@ -33,8 +33,9 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    const url = error.config?.url || '';
-    const isVehiclesOrPolicyAPI = url.includes(VEHICLES_URL) || url.includes(POLICY_URL);
+    const url = error.config?.url || "";
+    const isVehiclesOrPolicyAPI =
+      url.includes(VEHICLES_URL) || url.includes(POLICY_URL);
 
     if (isVehiclesOrPolicyAPI) {
       if (!error.response || error.response.status === 503) {
@@ -54,9 +55,8 @@ axios.interceptors.response.use(
     } else {
       return Promise.reject(error);
     }
-  }
+  },
 );
-
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
@@ -124,7 +124,7 @@ export const getUserGuidFromSession = (): RequiredOrNull<string> => {
 };
 
 /**
- * Retrieves company name from session.
+ * Retrieves company/Client name from session.
  * @returns string | null | undefined
  */
 export const getCompanyNameFromSession = (): Nullable<string> => {

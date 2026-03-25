@@ -54,6 +54,7 @@ import {
   invalidVINLength,
   invalidYearMin,
   licensedGVWExceeded,
+  mustBeGreaterThan,
   provinceVehicleDoesNotRequirePermit,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
@@ -91,6 +92,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.QRFR,
       PERMIT_TYPES.NRSCV,
       PERMIT_TYPES.NRQCV,
+      PERMIT_TYPES.STOS,
     ] as PermitType[]
   ).includes(permitType);
 
@@ -387,6 +389,7 @@ export const VehicleDetails = ({
                 min: { value: 0, message: invalidInput() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  greaterThanZero: (v) => Number(v) > 0 || mustBeGreaterThan(0),
                   exceededGvw: (v) => {
                     const maxAllowedGvw = gvwLimit(permitType);
                     return (

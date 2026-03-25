@@ -108,7 +108,7 @@ export const getDefaultPowerUnitSubTypes = () => [
   },
   {
     typeCode: "BUSCRUM",
-    type: "Buses/Crummies",
+    type: "Buses",
     description: "A motor vehicle used to transport persons, when such transportation is not undertaken for compensation or gain.",
   },
 ];

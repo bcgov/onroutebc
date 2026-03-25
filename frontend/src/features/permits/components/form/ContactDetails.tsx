@@ -140,7 +140,7 @@ export const ContactDetails = ({
                   isEmail(email) || invalidEmail(),
               },
             },
-            label: "Company Email",
+            label: "Client Email",
           }}
           disabled={true}
           readOnly={true}

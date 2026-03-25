@@ -26,6 +26,7 @@ import {
   invalidVINLength,
   invalidYearMin,
   licensedGVWExceeded,
+  mustBeGreaterThan,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
 import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
@@ -260,6 +261,7 @@ export const PowerUnitForm = ({
                 required: { value: true, message: requiredMessage() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  greaterThanZero: (v) => Number(v) > 0 || mustBeGreaterThan(0),
                   lessThanMax: (v) =>
                     Number(v) <= GVW_LIMIT ||
                     licensedGVWExceeded(GVW_LIMIT, true),

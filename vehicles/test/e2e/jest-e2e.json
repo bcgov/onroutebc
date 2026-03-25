@@ -9,7 +9,10 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }, 
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(uuid)/)"
+  ], 
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1",
     "^test/(.*)$": "<rootDir>/test/$1"

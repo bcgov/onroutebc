@@ -39,7 +39,7 @@ const SEARCH_BY_PERMIT_OPTIONS = [
 ];
 
 const SEARCH_BY_COMPANY_OPTIONS = [
-  { label: "Company Name", value: "companyName" },
+  { label: "Client Name", value: "companyName" },
   { label: "Client Number", value: "clientNumber" },
 ];
 
@@ -189,7 +189,7 @@ export const SearchFilter = ({
                     control={<Radio key="find-by-permit" />}
                   />
                   <FormControlLabel
-                    label="Company"
+                    label="Client"
                     value="companies"
                     control={<Radio key="find-by-company" />}
                   />

@@ -7,7 +7,10 @@ import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 
-const nameDisplay = (firstName?: Nullable<string>, lastName?: Nullable<string>) => {
+const nameDisplay = (
+  firstName?: Nullable<string>,
+  lastName?: Nullable<string>,
+) => {
   if (!firstName) return getDefaultRequiredVal("", lastName);
   if (!lastName) return getDefaultRequiredVal("", firstName);
   return `${firstName} ${lastName}`;
@@ -119,7 +122,7 @@ export const ReviewContactDetails = ({
           ) : null}
 
           <Typography className="contact-details__detail">
-            <span className="contact-details__label">Company Email:</span>
+            <span className="contact-details__label">Client Email:</span>
 
             <span
               className="contact-details__data"

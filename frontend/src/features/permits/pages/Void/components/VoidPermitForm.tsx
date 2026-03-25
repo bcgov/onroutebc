@@ -164,7 +164,7 @@ export const VoidPermitForm = () => {
                       isEmail(email) || invalidEmail(),
                   },
                 },
-                label: "Company Email",
+                label: "Client Email",
               }}
               className="void-input void-input--email"
             />

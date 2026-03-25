@@ -11,7 +11,7 @@ import { Optional } from "../../../common/types/common";
 const Header = () => {
   return (
     <Typography className="company-info-page__header" variant="h4">
-      Edit Company Information
+      Edit Client Information
     </Typography>
   );
 };

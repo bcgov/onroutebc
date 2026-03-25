@@ -15,7 +15,7 @@ export const CompanyBanner = ({
     <div className="company-banner">
       <div className="company-banner__company-name">
         <Typography variant="h5" data-testid="company-banner-name-label">
-          COMPANY NAME
+          CLIENT NAME
         </Typography>
         <Typography variant="h4" data-testid="company-banner-name">
           {getDefaultRequiredVal("", companyName)}

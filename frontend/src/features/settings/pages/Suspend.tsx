@@ -123,7 +123,7 @@ export const Suspend = ({
     <div className="suspend-page">
       <div className="suspend-page__suspend-company">
         <div className="suspend-page__title suspend-page__title--company">
-          Suspend Company
+          Suspend Client
         </div>
 
         <Switch

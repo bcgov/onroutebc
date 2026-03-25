@@ -11,7 +11,6 @@ export const STFR_CONDITIONS: PermitCondition[] = [
 ];
 
 export const MANDATORY_STFR_CONDITIONS: PermitCondition[] = [...STFR_CONDITIONS];
-
 export const MIN_STFR_DURATION = 1;
 export const MAX_STFR_DURATION = 30;
 export const STFR_DURATION_OPTIONS = [

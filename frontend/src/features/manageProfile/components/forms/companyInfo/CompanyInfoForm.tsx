@@ -195,19 +195,19 @@ export const CompanyInfoForm = memo(
           />
 
           <Typography variant="h2" gutterBottom>
-            Company Mailing Address
+            Client Mailing Address
           </Typography>
 
           <CompanyInfoGeneralForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
-            Company Contact Details
+            Client Contact Details
           </Typography>
 
           <CompanyContactDetailsForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
-            Company Primary Contact
+            Client Primary Contact
           </Typography>
 
           <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />

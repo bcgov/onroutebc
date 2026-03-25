@@ -45,9 +45,21 @@ export const STOS_CONDITIONS: PermitCondition[] = [
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1254",
     checked: false
   },
+  {
+    description: "Structure Permit Conditions",
+    condition: "CVSE-1000S",
+    conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1255",
+    checked: false
+  },
+  {
+    description: "Log Permit Conditions",
+    condition: "CVSE-1000L",
+    conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1250",
+    checked: false
+  },
 ];
 
-export const MANDATORY_STOS_CONDITIONS: PermitCondition[] = 
+export const MANDATORY_STOS_CONDITIONS: PermitCondition[] =
   STOS_CONDITIONS.filter(
     ({ condition }: PermitCondition) =>
       condition === "CVSE-1000" || condition === "CVSE-1070"

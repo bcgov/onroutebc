@@ -204,7 +204,7 @@ export const WelcomePage = React.memo(() => {
         {!companyNameFromContext && !unclaimedClient && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
             <div style={{ alignSelf: "center" }}>
-              Has this company purchased a commercial vehicle
+              Has this client purchased a commercial vehicle
             </div>
             <div style={{ alignSelf: "center", marginTop: "0px" }}>
               permit in the last 2 years?

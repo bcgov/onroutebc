@@ -26,14 +26,6 @@ import { StatusChip } from "../../../settings/components/creditAccount/StatusChi
 import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
-/*
- *
- * The search results component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
- */
 export const IDIRCompanySearchResults = memo(
   ({ searchParams }: { searchParams: SearchFields }) => {
     const {
@@ -79,7 +71,7 @@ export const IDIRCompanySearchResults = memo(
       () => [
         {
           accessorKey: "legalName",
-          header: "Company Name",
+          header: "Client Name",
           enableSorting: true,
           sortingFn: "alphanumeric",
           minSize: 220,
@@ -140,6 +132,7 @@ export const IDIRCompanySearchResults = memo(
         className: "idir-company-search-results__cell",
       },
     });
+    
     const canCreateCompany = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "GLOBAL_SEARCH",
