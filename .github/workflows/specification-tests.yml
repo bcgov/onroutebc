@@ -1,4 +1,4 @@
-name: onRouteBC Specification Tests
+name: Specification Tests
 
 on:
   workflow_call:
@@ -53,6 +53,7 @@ jobs:
           echo "environment=$environment" >> $GITHUB_OUTPUT
 
 
+  copy-permit-tests:
     name: ${{matrix.test}}-${{matrix.role}}-${{matrix.browser}}
     needs: [vars]
     environment: ${{needs.vars.outputs.environment}}
