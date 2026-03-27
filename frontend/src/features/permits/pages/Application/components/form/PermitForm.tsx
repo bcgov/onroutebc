@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Box } from "@mui/material";
 
 import "./PermitForm.scss";
@@ -21,7 +22,6 @@ import { isVehicleSubtypeEmpty } from "../../../../../manageVehicles/helpers/veh
 import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRejectionHistory";
 import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
-import { useRef } from "react";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 
 export const PermitForm = () => {

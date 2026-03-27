@@ -35,13 +35,13 @@ import {
 } from "../../hooks/hooks";
 
 import {
-  PERMIT_ACTION_ORIGINS,
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { USER_ROLE } from "../../../../common/authentication/types";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",

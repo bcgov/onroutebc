@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
@@ -12,6 +12,7 @@ import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import { ApplicationReview } from "../../pages/Application/ApplicationReview";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -25,12 +26,14 @@ import {
 } from "../../types/PermitType";
 
 import {
+  ACTION_ORIGIN_PARAM,
+  APPLICATION_STEP_CONTEXTS,
   APPLICATION_STEPS,
   ApplicationStep,
   ApplicationStepContext,
   ERROR_ROUTES,
+  IS_COPIED_APPLICATION_PARAM,
 } from "../../../../routes/constants";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -54,6 +57,13 @@ export const ApplicationStepPage = ({
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
   const { permitId, permitType, companyId: companyIdParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const copyPermitOrigin = searchParams.get(ACTION_ORIGIN_PARAM);
+  const isCopiedApplication = applyWhenNotNullable(
+    (isCopiedParam) => isCopiedParam === "true",
+    searchParams.get(IS_COPIED_APPLICATION_PARAM),
+    false,
+  );
 
   const companyId: number = getDefaultRequiredVal(
     0,
@@ -122,14 +132,31 @@ export const ApplicationStepPage = ({
     return allowedPermitTypes.includes(applicationPermitType);
   };
 
-  // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
-  // (ie. empty status for new application, or in progress and in queue)
+  // Permit status must be one of the following in order to be considered valid to be processed here:
+  // a) Has no status, indicating that the application is brand new and hasn't been saved yet
+  // b) In application in progress status, meaning that the application is saved but not processed nor issued
+  // c) Application is in queue
+  // d) Permit status can be ignored only if the application is being copied from another permit
   const isValidApplicationStatus = () => {
     return (
-      !isInvalidApplication &&
-      (!applicationData?.permitStatus ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
+      !isInvalidApplication && (
+        (
+          applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            typeof applicationData === "undefined" ||
+            applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+          )
+        ) ||
+        (
+          applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            !applicationData?.permitStatus ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
+          )
+        )
+      )
     );
   };
 
@@ -144,7 +171,11 @@ export const ApplicationStepPage = ({
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
       return (
-        <ApplicationReview applicationStepContext={applicationStepContext} />
+        <ApplicationReview
+          applicationStepContext={applicationStepContext}
+          isCopiedApplication={isCopiedApplication}
+          copyPermitOrigin={copyPermitOrigin}
+        />
       );
     }
     return (
@@ -152,6 +183,8 @@ export const ApplicationStepPage = ({
         permitType={applicationPermitType}
         companyId={companyId}
         applicationStepContext={applicationStepContext}
+        isCopiedApplication={isCopiedApplication}
+        copyPermitOrigin={copyPermitOrigin}
       />
     );
   };

@@ -13,6 +13,8 @@ export const getPermitActionLabel = (actionType: PermitActionType) => {
       return "Amend";
     case PERMIT_ACTION_TYPES.VOID_REVOKE:
       return "Void/Revoke";
+    case PERMIT_ACTION_TYPES.COPY:
+      return "Copy";
     default:
       return "";
   }
