@@ -27,6 +27,29 @@ VALUES (
 )
 GO
 
+INSERT INTO
+  [dbo].[ORBC_FEATURE_FLAG] (
+    [FEATURE_ID],
+    [FEATURE_KEY],
+    [FEATURE_VALUE],
+    [CONCURRENCY_CONTROL_NUMBER],
+    [DB_CREATE_USERID],
+    [DB_CREATE_TIMESTAMP],
+    [DB_LAST_UPDATE_USERID],
+    [DB_LAST_UPDATE_TIMESTAMP]
+  )
+VALUES
+  (
+    '22',
+    'STOW',
+    'ENABLED',
+    NULL,
+    N'dbo',
+    GETUTCDATE(),
+    N'dbo',
+    GETUTCDATE()
+  );
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Updates to policy config to support STOW'
 

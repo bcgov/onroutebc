@@ -37,7 +37,7 @@ export const VehicleInformationSection = ({
   nextAllowedSubtypes,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
-  selectedConfigSubtypes,
+  selectedTrailers,
   selectedCommodityType,
   onSetSaveVehicle,
   onSetVehicle,
@@ -57,7 +57,7 @@ export const VehicleInformationSection = ({
   }[];
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
-  selectedConfigSubtypes: string[];
+  selectedTrailers: VehicleInConfiguration[];
   selectedCommodityType?: Nullable<string>;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
@@ -203,7 +203,7 @@ export const VehicleInformationSection = ({
 
         {isPowerUnitSelectedForSingleTrip ? (
           <AddTrailer
-            selectedTrailerSubtypes={selectedConfigSubtypes}
+            selectedTrailers={selectedTrailers}
             trailerSubtypeOptions={nextAllowedSubtypes}
             trailerSubtypeNamesMap={trailerSubtypeNamesMap}
             onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}

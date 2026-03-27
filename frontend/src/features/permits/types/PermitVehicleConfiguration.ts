@@ -1,7 +1,9 @@
 import { Nullable } from "../../../common/types/common";
+import { AxleUnit } from "../../bridgeFormulaCalculationTool/types/AxleUnit";
 
 export interface VehicleInConfiguration {
   vehicleSubType: string;
+  axleUnits?: Nullable<AxleUnit[]>;
 }
 
 export interface PermitVehicleConfiguration {
@@ -13,4 +15,5 @@ export interface PermitVehicleConfiguration {
   trailers?: Nullable<VehicleInConfiguration[]>;
   loadedGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
-};
+  axleUnits?: Nullable<AxleUnit[]>;
+}

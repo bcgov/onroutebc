@@ -22,6 +22,7 @@ import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRe
 import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { useRef } from "react";
+import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 
 export const PermitForm = () => {
   const {
@@ -54,7 +55,7 @@ export const PermitForm = () => {
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    selectedVehicleConfigSubtypes,
+    selectedTrailers,
     commodityType,
     vehicleConfiguration,
     thirdPartyLiability,
@@ -170,13 +171,21 @@ export const PermitForm = () => {
           nextAllowedSubtypes={nextAllowedSubtypes}
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
-          selectedConfigSubtypes={selectedVehicleConfigSubtypes}
+          selectedTrailers={selectedTrailers}
           selectedCommodityType={commodityType}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
           onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
         />
+
+        {vehicleFormData.vin && (
+          <AxleSpacingAndWeightsSection
+            powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+            vehicleFormData={vehicleFormData}
+            trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+          />
+        )}
 
         <LoadedDimensionsSection
           permitType={permitType}

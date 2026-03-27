@@ -6,23 +6,14 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import "./BridgeFormulaCalculationTool.scss";
 import { NumberInput } from "../../../common/components/form/subFormComponents/NumberInput";
-import { RequiredOrNull } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertToNumberIfValid";
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
+import { AxleUnit } from "../types/AxleUnit";
 
-interface AxleUnit {
-  numberOfAxles?: RequiredOrNull<number>;
-  axleSpread?: RequiredOrNull<number>;
-  interaxleSpacing?: RequiredOrNull<number>;
-  axleUnitWeight?: RequiredOrNull<number>;
-  numberOfTires?: RequiredOrNull<number>;
-  tireSize?: RequiredOrNull<number>;
-}
-
-// the type expected by the caculateBridge function in the policy engine
+// the type expected by the calculateBridge function in the policy engine
 interface AxleConfiguration {
   numberOfAxles: number;
   axleSpread?: number;

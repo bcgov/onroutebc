@@ -5,6 +5,7 @@ export interface AxleUnit {
   axleSpread?: RequiredOrNull<number>;
   interaxleSpacing?: RequiredOrNull<number>;
   axleUnitWeight?: RequiredOrNull<number>;
+  // TODO change this to numberOfWheels in policy engine and frontend
   numberOfTires?: RequiredOrNull<number>;
   tireSize?: RequiredOrNull<number>;
 }

@@ -7,19 +7,61 @@ export const getDefaultVehicleConfiguration = (
   permitType: PermitType,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>,
 ) => {
-  if (!([
-    PERMIT_TYPES.STOS,
-    PERMIT_TYPES.NRQCV,
-    PERMIT_TYPES.NRSCV,
-  ] as PermitType[]).includes(permitType)) return null;
+  if (
+    !(
+      [
+        PERMIT_TYPES.STOS,
+        PERMIT_TYPES.STOW,
+        PERMIT_TYPES.NRQCV,
+        PERMIT_TYPES.NRSCV,
+      ] as PermitType[]
+    ).includes(permitType)
+  )
+    return null;
 
-  if (permitType === PERMIT_TYPES.STOS) {
+  if (permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW) {
     return {
-      frontProjection: getDefaultRequiredVal(null, vehicleConfiguration?.frontProjection),
-      rearProjection: getDefaultRequiredVal(null, vehicleConfiguration?.rearProjection),
-      overallWidth: getDefaultRequiredVal(null, vehicleConfiguration?.overallWidth),
-      overallHeight: getDefaultRequiredVal(null, vehicleConfiguration?.overallHeight),
-      overallLength: getDefaultRequiredVal(null, vehicleConfiguration?.overallLength),
+      frontProjection: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.frontProjection,
+      ),
+      rearProjection: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.rearProjection,
+      ),
+      overallWidth: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallWidth,
+      ),
+      overallHeight: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallHeight,
+      ),
+      overallLength: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallLength,
+      ),
+      // by default, all power units have 2 axle units (1 axle unit with 1 axle, followed by an interaxle-spacing unit, followed by another axle unit with 1 axle)
+      axleUnits: getDefaultRequiredVal(
+        [],
+        [
+          {
+            numberOfAxles: 1,
+            numberOfTires: null,
+            tireSize: 279.4,
+            axleSpread: null,
+            axleUnitWeight: null,
+          },
+          { interaxleSpacing: null },
+          {
+            numberOfAxles: 1,
+            numberOfTires: null,
+            tireSize: 279.4,
+            axleSpread: null,
+            axleUnitWeight: null,
+          },
+        ],
+      ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     };
   }

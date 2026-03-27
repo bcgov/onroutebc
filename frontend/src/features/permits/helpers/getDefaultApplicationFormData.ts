@@ -4,7 +4,11 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
+import {
+  isQuarterlyPermit,
+  PERMIT_TYPES,
+  PermitType,
+} from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -15,9 +19,7 @@ import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
 import { DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE } from "../types/ConditionalLicensingFee";
-import {
-  getDefaultVehicleConfiguration
-} from "./vehicles/configuration/getDefaultVehicleConfiguration";
+import { getDefaultVehicleConfiguration } from "./vehicles/configuration/getDefaultVehicleConfiguration";
 
 import {
   getEndOfDate,
@@ -239,8 +241,13 @@ export const getDefaultValues = (
       feeSummary: "", // not used, as actual fee is derived at the given locations when required
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
-      applicationNotes: permitType !== PERMIT_TYPES.STOS
-        ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
+      applicationNotes:
+        permitType !== PERMIT_TYPES.STOS
+          ? null
+          : getDefaultRequiredVal(
+              "",
+              applicationData?.permitData?.applicationNotes,
+            ),
       permittedCommodity: getDefaultPermittedCommodity(
         permitType,
         applicationData?.permitData?.permittedCommodity,
@@ -249,23 +256,22 @@ export const getDefaultValues = (
         permitType,
         applicationData?.permitData?.vehicleConfiguration,
       ),
-      thirdPartyLiability: ([
-        PERMIT_TYPES.STFR,
-        PERMIT_TYPES.QRFR,
-      ] as PermitType[]).includes(permitType)
+      thirdPartyLiability: (
+        [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+      ).includes(permitType)
         ? getDefaultRequiredVal(
-          DEFAULT_THIRD_PARTY_LIABILITY,
-          applicationData?.permitData?.thirdPartyLiability
-        )
+            DEFAULT_THIRD_PARTY_LIABILITY,
+            applicationData?.permitData?.thirdPartyLiability,
+          )
         : null,
-      conditionalLicensingFee: ([
-        PERMIT_TYPES.NRSCV,
-        PERMIT_TYPES.NRQCV,
-      ] as PermitType[]).includes(permitType)
+      conditionalLicensingFee: (
+        [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
+      ).includes(permitType)
         ? getDefaultRequiredVal(
-          DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
-          applicationData?.permitData?.conditionalLicensingFee,
-        ) : null,
+            DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
+            applicationData?.permitData?.conditionalLicensingFee,
+          )
+        : null,
     },
   };
 };
