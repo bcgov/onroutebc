@@ -7,10 +7,13 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
 
-export const LOCAL_TIMEZONE_ID = "Canada/Pacific";
+export const LOCAL_TIMEZONE_ID = 'Canada/Pacific';
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
-  const formattedDate = dayjs.utc(dateTime).tz(LOCAL_TIMEZONE_ID).format(format);
+  const formattedDate = dayjs
+    .utc(dateTime)
+    .tz(LOCAL_TIMEZONE_ID)
+    .format(format);
   if (format.includes('Z')) {
     const tzOffset = formattedDate.slice(-6);
     const label = tzOffset === '-08:00' ? 'PST' : 'PDT';
@@ -24,12 +27,13 @@ export const getToDateForGarms = () => {
   const nowDtLocal = dayjs().tz(LOCAL_TIMEZONE_ID);
 
   // Scheduled time for processing, which is at 9:00pm local time on the same day
-  const scheduledDtLocal = dayjs(`${nowDtLocal.format("YYYY-MM-DD")} 21:00:00`)
-    .tz(LOCAL_TIMEZONE_ID);
-  
+  const scheduledDtLocal = dayjs(
+    `${nowDtLocal.format('YYYY-MM-DD')} 21:00:00`,
+  ).tz(LOCAL_TIMEZONE_ID);
+
   // Scheduled time for processing at 9:00pm local time on the previous day
   const scheduledDtOneDayBeforeLocal = dayjs(
-    `${dayjs(scheduledDtLocal).subtract(1, "day").format("YYYY-MM-DD")} 21:00:00`,
+    `${dayjs(scheduledDtLocal).subtract(1, 'day').format('YYYY-MM-DD')} 21:00:00`,
   ).tz(LOCAL_TIMEZONE_ID);
 
   // If current datetime is before the scheduled time for today, use the previous day's scheduled time
@@ -37,7 +41,7 @@ export const getToDateForGarms = () => {
   const lastRunDate = nowDtLocal.isBefore(scheduledDtLocal)
     ? scheduledDtOneDayBeforeLocal
     : scheduledDtLocal;
-  
+
   return lastRunDate.utc().toDate(); // Convert to UTC before returning
 };
 

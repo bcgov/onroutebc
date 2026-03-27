@@ -787,7 +787,7 @@ export class PermitService {
       notificationDocument = {
         templateName: NotificationTemplate.ISSUE_PERMIT,
         to: validateEmailList(createNotificationDto.to),
-        subject: `onRouteBC Permits - ${companyInfo.legalName}`,
+        subject: `onRouteBC Permits - ${companyInfo.legalName}, ${permit.permitNumber}`,
         documentIds: [permitDocumentId],
       };
 
