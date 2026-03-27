@@ -21,7 +21,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="FRONTEND_URL" elementType="Argument">
             <stringProp name="Argument.name">FRONTEND_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="RESULTS_DIR" elementType="Argument">
@@ -41,7 +41,7 @@
           </elementProp>
           <elementProp name="AMEND_URL" elementType="Argument">
             <stringProp name="Argument.name">AMEND_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/companies/1/permits/421/amend</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/companies/1/permits/421/amend</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

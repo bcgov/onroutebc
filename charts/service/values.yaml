@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-domain: apps.silver.devops.gov.bc.ca
+domain: apps.gold.devops.gov.bc.ca
 serviceAccountName:
 
 configmap:

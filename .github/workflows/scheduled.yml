@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Penetration Tests
     env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
+      DOMAIN: apps.gold.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-test
     strategy:
       matrix:
