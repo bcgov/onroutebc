@@ -2,8 +2,8 @@ const wait_time = Cypress.env('wait_time');
 
 Cypress.Commands.add('userLoginBceid', (username, password) => {
     const wait_time = Cypress.env('wait_time');
-    // const username = Cypress.env('username');
-    // const password = Cypress.env('password');
+    username = Cypress.env('username');
+    password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 
@@ -12,8 +12,10 @@ Cypress.Commands.add('userLoginBceid', (username, password) => {
     cy.wait(wait_time);
 
     // Step 3: Enter credentials
-    cy.get('#user').type(username); 
-    cy.get('#password').type(password);
+    // cy.get('#user').type(username); 
+    // cy.get('#password').type(password);
+    cy.get('#user').type(username, { parseSpecialCharSequences: false });
+    cy.get('#password').type(password, { parseSpecialCharSequences: false });
     cy.wait(wait_time);
 
     // Step 4: Submit the login form
@@ -47,8 +49,8 @@ Cypress.Commands.add('userLoginBceid', (username, password) => {
 
   Cypress.Commands.add('userLoginIdir', (username, password) => {
     const wait_time = Cypress.env('wait_time');
-    // const username = Cypress.env('username');
-    // const password = Cypress.env('password');
+    username = Cypress.env('username');
+    password = Cypress.env('password');
     // Step 1: Visit the base URL
     cy.visit('/');
 
@@ -56,9 +58,15 @@ Cypress.Commands.add('userLoginBceid', (username, password) => {
     cy.get('#login-idir').click();
     cy.wait(wait_time);
 
-    // Step 3: Enter credentials
-    cy.get('#user').type(username); 
-    cy.get('#password').type(password);
+    // // Step 3: Enter credentials
+    // cy.get('#user').type(username); 
+    // cy.get('#password').type(password);
+
+    cy.get('#user').type(username, { parseSpecialCharSequences: false });
+    cy.get('#password').type(password, { parseSpecialCharSequences: false });
+
+
+
     cy.wait(wait_time);
 
     // Step 4: Submit the login form
