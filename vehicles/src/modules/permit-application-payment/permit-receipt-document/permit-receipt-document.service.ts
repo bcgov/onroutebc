@@ -362,7 +362,7 @@ export class PermitReceiptDocumentService {
               creditAccountHolderEmail,
             ];
 
-            const subject = `onRouteBC Permits - ${company?.legalName}`;
+            const subject = `onRouteBC Permits - ${company?.legalName}, ${fetchedPermit.permitNumber}`;
             this.emailDocument(
               NotificationTemplate.ISSUE_PERMIT,
               emailList,
