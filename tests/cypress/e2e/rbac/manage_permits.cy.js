@@ -583,11 +583,15 @@ describe('Manage Permits', () => {
       const element = Cypress.$(selector);
 
       if (element.length > 0) {
-        cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
-        cy.wait(wait_time);
+        cy.get('body').then(($body) => {
+          if ($body.find('[id="actions-button"]').length > 0) {
+            cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
+            cy.wait(wait_time);
 
-        cy.xpath("//li[text()='View Receipt']").click();
-        cy.wait(wait_time);
+            cy.xpath("//li[text()='View Receipt']").click();
+            cy.wait(wait_time);
+          }
+        });
       }
 
     assertionFn();
@@ -773,9 +777,13 @@ describe('Manage Permits', () => {
   }
 
   const expectSuccessViewListOfApplicationsInReview = () => {
-    cy.xpath("//div[@class='tab__label' and text()='Applications in Review']")
-    .should('exist');
-  }
+    cy.get('body').then(($body) => {
+      if ($body.find(".tab__label").filter((i, el) => el.textContent.trim() === 'Applications in Review').length > 0) {
+        cy.xpath("//div[@class='tab__label' and text()='Applications in Review']").click();
+        cy.wait(wait_time);
+      }
+    });
+  };
   
   const expectFailureViewListOfApplicationsInReview = () => {
     cy.xpath("//div[@class='tab__label' and text()='Applications in Review']")

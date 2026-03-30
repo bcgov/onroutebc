@@ -26,21 +26,21 @@ describe('Manage Profile', () => {
       .invoke('text')
       .should('not.be.empty');
 
-      cy.contains('Company Mailing Address')
+      cy.contains('Client Mailing Address')
         .next()
         .should('exist')
         .and('not.be.empty')
         .invoke('text') 
         .should('not.match', /^\s*$/); 
 
-      cy.contains('Company Contact Details')
+      cy.contains('Client Contact Details')
         .next()
         .should('exist')
         .and('not.be.empty')
         .invoke('text') 
         .should('not.match', /^\s*$/); 
 
-      cy.contains('Company Primary Contact')
+      cy.contains('Client Primary Contact')
         .next()
         .should('exist')
         .and('not.be.empty')
@@ -307,13 +307,13 @@ describe('Manage Profile', () => {
 
   const expectSuccessViewCompanyInformation = () => {
     cy.get('div.tab__label')
-    .contains('Company Information')
+    .contains('Client Information')
     .should('exist');
   }
   
   const expectFailureViewCompanyInformation = () => {
     cy.get('div.tab__label')
-    .contains('Company Information')
+    .contains('Client Information')
     .should('not.exist');
   }
 
@@ -337,7 +337,7 @@ describe('Manage Profile', () => {
 
   const expectSuccessEditCompanyInformation = () => {
     cy.get('div.tab__label')
-    .contains('Company Information')
+    .contains('Client Information')
     .should('exist');
 
     cy.contains('button', 'Edit').should('exist').click();
