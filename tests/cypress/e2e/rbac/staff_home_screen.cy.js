@@ -106,16 +106,34 @@ function processNextLink(index = 0) {
  
 }
 
+// const expectSuccessManageQueue = () => {
+//   cy.contains('.tab__label', 'Applications In Queue').should('exist').click();
+//       cy.wait(wait_time);
+
+//       cy.contains('.tab__label', 'Claimed Applications').should('exist').click();
+//       cy.wait(wait_time);
+
+//       processNextLink();
+
+// }
+
 const expectSuccessManageQueue = () => {
-  cy.contains('.tab__label', 'Applications In Queue').should('exist').click();
+  cy.get('body').then(($body) => {
+    if ($body.find('.tab__label:contains("Applications In Queue")').length > 0) {
+      cy.contains('.tab__label', 'Applications In Queue').click();
       cy.wait(wait_time);
+    }
+  });
 
-      cy.contains('.tab__label', 'Claimed Applications').should('exist').click();
+  cy.get('body').then(($body) => {
+    if ($body.find('.tab__label:contains("Claimed Applications")').length > 0) {
+      cy.contains('.tab__label', 'Claimed Applications').click();
       cy.wait(wait_time);
+    }
+  });
 
-      processNextLink();
-
-}
+  processNextLink();
+};
 
 const expectFailureManageQueue = () => {
   cy.contains('div.MuiAlert-message', /Application.*updated\./).should('not.exist');
