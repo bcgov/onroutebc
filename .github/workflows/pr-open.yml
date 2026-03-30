@@ -14,7 +14,7 @@ jobs:
     name: PR Description Add
     if: github.event_name == 'pull_request'
     env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
+      DOMAIN: apps.gold.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
     runs-on: ubuntu-22.04
     permissions:
