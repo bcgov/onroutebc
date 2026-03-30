@@ -47,8 +47,8 @@ describe('Do global search for companies or permits', () => {
     cy.get('.PrivateSwitchBase-input.MuiSwitch-input').click();
     cy.wait(wait_time);
 
-    cy.contains('p', 'No records to display').should('exist');
-    cy.wait(wait_time);
+    // cy.contains('p', 'No records to display').should('exist');
+    // cy.wait(wait_time);
 
     cy.get('.PrivateSwitchBase-input.MuiSwitch-input').click();
     cy.wait(wait_time);

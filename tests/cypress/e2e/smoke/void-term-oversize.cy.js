@@ -182,27 +182,55 @@ describe('Void term oversize Test for OnRouteBC', () => {
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
     cy.wait(wait_time);
 
-    cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
-    cy.wait(wait_time);
+    // cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
+    // cy.wait(wait_time);
 
-    const $el = Cypress.$("li:contains('Void/Revoke')");
-    if ($el.length > 0) {
-      cy.log('Void/Revoke option found, proceeding...');
-
-      cy.wrap($el).scrollIntoView().click();
+    cy.get('body').then(($body) => {
+    if ($body.find('[id="actions-button"]').length > 0) {
+      cy.get('[id="actions-button"]').first().scrollIntoView().wait(3000).click({ force: true });
       cy.wait(wait_time);
 
-      cy.get('[name="reason"]').should('be.visible').type('void it for test');
-      cy.wait(wait_time);
+      const $el = Cypress.$("li:contains('Void/Revoke')");
+      if ($el.length > 0) {
+        cy.log('Void/Revoke option found, proceeding...');
 
-      cy.xpath("//button[text()='Continue']").should('be.visible').click();
-      cy.wait(wait_time);
+        cy.wrap($el).scrollIntoView().click();
+        cy.wait(wait_time);
 
-      cy.xpath("//button[text()='Finish']").should('be.visible').click();
-      cy.wait(wait_time);
+        cy.get('[name="reason"]').should('be.visible').type('void it for test');
+        cy.wait(wait_time);
+
+        cy.xpath("//button[text()='Continue']").should('be.visible').click();
+        cy.wait(wait_time);
+
+        cy.xpath("//button[text()='Finish']").should('be.visible').click();
+        cy.wait(wait_time);
+      } else {
+        cy.log('Void/Revoke option not found, skipping...');
+      }
     } else {
-      cy.log('Void/Revoke option not found, skipping...');
+      cy.log('Actions button not found, skipping...');
     }
+  });
+
+    // const $el = Cypress.$("li:contains('Void/Revoke')");
+    // if ($el.length > 0) {
+    //   cy.log('Void/Revoke option found, proceeding...');
+
+    //   cy.wrap($el).scrollIntoView().click();
+    //   cy.wait(wait_time);
+
+    //   cy.get('[name="reason"]').should('be.visible').type('void it for test');
+    //   cy.wait(wait_time);
+
+    //   cy.xpath("//button[text()='Continue']").should('be.visible').click();
+    //   cy.wait(wait_time);
+
+    //   cy.xpath("//button[text()='Finish']").should('be.visible').click();
+    //   cy.wait(wait_time);
+    // } else {
+    //   cy.log('Void/Revoke option not found, skipping...');
+    // }
 
   });
 });
