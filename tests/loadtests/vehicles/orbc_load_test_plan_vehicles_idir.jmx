@@ -83,12 +83,12 @@
           </elementProp>
           <elementProp name="VEHICLES_API_URL" elementType="Argument">
             <stringProp name="Argument.name">VEHICLES_API_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-uat-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-uat-vehicles.apps.gold.devops.gov.bc.ca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FRONTEND_API_URL" elementType="Argument">
             <stringProp name="Argument.name">FRONTEND_API_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-uat-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-uat-frontend.apps.gold.devops.gov.bc.ca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="RESULTS_DIR" elementType="Argument">
