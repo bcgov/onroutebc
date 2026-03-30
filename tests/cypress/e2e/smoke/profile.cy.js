@@ -35,21 +35,21 @@ describe('Crud for trailer', () => {
       .invoke('text') // Get the text content
       .should('not.match', /^\s*$/); // Ensure it is not just whitespace
 
-    cy.contains('Company Mailing Address')
+    cy.contains('Client Mailing Address')
       .next()
       .should('exist')
       .and('not.be.empty')
       .invoke('text') 
       .should('not.match', /^\s*$/); 
 
-    cy.contains('Company Contact Details')
+    cy.contains('Client Contact Details')
       .next()
       .should('exist')
       .and('not.be.empty')
       .invoke('text') 
       .should('not.match', /^\s*$/); 
 
-    cy.contains('Company Primary Contact')
+    cy.contains('Client Primary Contact')
       .next()
       .should('exist')
       .and('not.be.empty')
