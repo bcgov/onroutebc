@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
@@ -9,6 +9,10 @@ import { ApplicationFormContext } from "../../../../../../context/ApplicationFor
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
+import { AxleUnit } from "../../../../../../../bridgeFormulaCalculationTool/types/AxleUnit";
+import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
+import { VehicleInConfiguration } from "onroute-policy-engine/types";
+import { Nullable } from "../../../../../../../../common/types/common";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
@@ -29,7 +33,7 @@ export const AxleSpacingAndWeightsTable = ({
 
   const { fields: powerUnitAxleUnitFields } = useFieldArray({
     control,
-    name: "permitData.vehicleConfiguration.axleUnits",
+    name: "permitData.vehicleConfiguration.axleConfiguration",
   });
 
   const trailers = formData.permitData.vehicleConfiguration?.trailers;
@@ -44,7 +48,7 @@ export const AxleSpacingAndWeightsTable = ({
 
     if (trailers) {
       for (let i = 0; i < trailerIndex; i++) {
-        offset += getCompleteAxleUnitCount(trailers[i]?.axleUnits);
+        offset += getCompleteAxleUnitCount(trailers[i]?.axleConfiguration);
       }
     }
     return offset;
@@ -100,7 +104,7 @@ export const AxleSpacingAndWeightsTable = ({
           <tbody>
             <AxleUnitRow
               control={control}
-              path="permitData.vehicleConfiguration.axleUnits"
+              path="permitData.vehicleConfiguration.axleConfiguration"
               label={powerUnitSubtypeNamesMap.get(
                 vehicleFormData.vehicleSubType,
               )}
@@ -112,7 +116,7 @@ export const AxleSpacingAndWeightsTable = ({
               <AxleUnitRow
                 key={trailer.id}
                 control={control}
-                path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleUnits`}
+                path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`}
                 label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                 axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                 isTrailer={true}

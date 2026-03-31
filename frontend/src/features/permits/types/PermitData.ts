@@ -11,7 +11,6 @@ import { PermittedRoute } from "./PermittedRoute";
 import { PermitLOA } from "./PermitLOA";
 import { ThirdPartyLiability } from "./ThirdPartyLiability";
 import { ConditionalLicensingFeeType } from "./ConditionalLicensingFee";
-import { AxleUnit } from "../../bridgeFormulaCalculationTool/types/AxleUnit";
 
 export interface PermitData {
   startDate: Dayjs;

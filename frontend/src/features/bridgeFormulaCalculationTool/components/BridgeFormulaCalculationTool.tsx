@@ -32,7 +32,7 @@ interface BridgeCalculationResult {
 }
 
 export const BridgeFormulaCalculationTool = () => {
-  const policy = usePolicyEngine();
+  const policyEngine = usePolicyEngine();
 
   const { control, handleSubmit, watch, setValue, reset, formState } = useForm<{
     axleUnits: AxleUnit[];
@@ -167,7 +167,7 @@ export const BridgeFormulaCalculationTool = () => {
       getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = policy?.calculateBridge(
+    const bridgeCalculationResults = policyEngine?.calculateBridge(
       serializedAxleUnitData,
     );
 

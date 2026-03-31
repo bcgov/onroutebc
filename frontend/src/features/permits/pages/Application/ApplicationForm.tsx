@@ -331,8 +331,6 @@ export const ApplicationForm = ({
           },
         };
 
-    console.log(applicationToBeSaved.permitData.vehicleConfiguration);
-
     await saveApplication(
       {
         data: applicationToBeSaved,
@@ -341,6 +339,7 @@ export const ApplicationForm = ({
       {
         onSuccess: ({ data, status }) => {
           const savedApplication = deserializeApplicationResponse(data);
+          console.log({ savedApplication });
           const savedPermitId = onSaveSuccess(savedApplication, status);
           additionalSuccessAction?.(savedPermitId);
         },
@@ -383,12 +382,13 @@ export const ApplicationForm = ({
     } else if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     } else if (isInitCopyContext || isCopiedApplication) {
-      const homeTab = copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-        ? PERMIT_TABS.ACTIVE_PERMITS
-        : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-        ? PERMIT_TABS.EXPIRED_PERMITS
-        : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
-      
+      const homeTab =
+        copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ? PERMIT_TABS.ACTIVE_PERMITS
+          : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+            ? PERMIT_TABS.EXPIRED_PERMITS
+            : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+
       navigate(APPLICATIONS_ROUTES.BASE, {
         state: {
           selectedTab: homeTab,
@@ -403,12 +403,13 @@ export const ApplicationForm = ({
     if (isQueueContext) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     } else if (isInitCopyContext || isCopiedApplication) {
-      const homeTab = copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-        ? PERMIT_TABS.ACTIVE_PERMITS
-        : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-        ? PERMIT_TABS.EXPIRED_PERMITS
-        : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
-      
+      const homeTab =
+        copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ? PERMIT_TABS.ACTIVE_PERMITS
+          : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+            ? PERMIT_TABS.EXPIRED_PERMITS
+            : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+
       navigate(APPLICATIONS_ROUTES.BASE, {
         state: {
           selectedTab: homeTab,
@@ -497,7 +498,9 @@ export const ApplicationForm = ({
         applicationStep={APPLICATION_STEPS.DETAILS}
         applicationStepContext={applicationStepContext}
         isCopiedApplication={isCopiedApplication}
-        applicationNumber={applicationContext.applicationData?.applicationNumber}
+        applicationNumber={
+          applicationContext.applicationData?.applicationNumber
+        }
         copyPermitOrigin={copyPermitOrigin}
       />
 

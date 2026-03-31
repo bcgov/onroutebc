@@ -5,6 +5,9 @@ import "./AxleSpacingAndWeightsSection.scss";
 import { Box } from "@mui/material";
 import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTable";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
+import { VehicleInConfiguration } from "onroute-policy-engine/types";
+import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import { Nullable } from "../../../../../../../common/types/common";
 
 export const AxleSpacingAndWeightsSection = ({
   powerUnitSubtypeNamesMap,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Control,
@@ -11,46 +12,11 @@ import { NumberInput } from "../../../../../../../../common/components/form/subF
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { ApplicationFormData } from "../../../../../../types/application";
+import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 
 type AxleUnitsArrayPath =
-  | "permitData.vehicleConfiguration.axleUnits"
-  | `permitData.vehicleConfiguration.trailers.${number}.axleUnits`;
-
-type TireSizeOption = {
-  value: number;
-  label: string;
-};
-
-const TIRE_SIZE_OPTIONS: TireSizeOption[] = [
-  { value: 254, label: '254 (10")' },
-  { value: 279.4, label: '279.4 (11")' },
-  { value: 304.8, label: '304.8 (12")' },
-  { value: 315, label: '315 (12.4")' },
-  { value: 325, label: '325 (12.8")' },
-  { value: 330, label: '330 (13")' },
-  { value: 355, label: '355 (14")' },
-  { value: 365, label: '365 (14.4")' },
-  { value: 368, label: '368 (14.5")' },
-  { value: 381, label: '381 (15")' },
-  { value: 385, label: '385 (15.2")' },
-  { value: 393, label: '393 (15.5")' },
-  { value: 406, label: '406 (16")' },
-  { value: 425, label: '425 (16.7")' },
-  { value: 431, label: '431 (17")' },
-  { value: 445, label: '445 (17.5")' },
-  { value: 457, label: '457 (18")' },
-  { value: 502, label: '502 (19.8")' },
-  { value: 508, label: '508 (20")' },
-  { value: 520, label: '520 (20.5")' },
-  { value: 525, label: '525 (20.7")' },
-  { value: 550, label: '550 (21.7")' },
-  { value: 609, label: '609 (24")' },
-  { value: 622, label: '622 (24.5")' },
-  { value: 636, label: '636 (25")' },
-  { value: 711.2, label: '711.2 (28")' },
-];
-
-const DEFAULT_TIRE_SIZE_OPTION = TIRE_SIZE_OPTIONS[1];
+  | "permitData.vehicleConfiguration.axleConfiguration"
+  | `permitData.vehicleConfiguration.trailers.${number}.axleConfiguration`;
 
 export const AxleUnitRow = ({
   control,
@@ -75,6 +41,12 @@ export const AxleUnitRow = ({
     control,
     name: path,
   });
+
+  const policyEngine = usePolicyEngine();
+
+  const tireSizeOptions = policyEngine?.getStandardTireSizes() ?? [];
+
+  const defaultTireSizeOption = tireSizeOptions[1];
 
   return (
     <>
@@ -104,7 +76,6 @@ export const AxleUnitRow = ({
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                // TODO all fields are being reset when clicking "Save Application" button
                 <Controller
                   name={`${path}.${index}.numberOfAxles` as const}
                   control={control}
@@ -179,17 +150,17 @@ export const AxleUnitRow = ({
                       autocompleteProps={{
                         className: "table__input table__input--select",
                         clearIcon: null,
-                        options: TIRE_SIZE_OPTIONS,
+                        options: tireSizeOptions,
                         value:
-                          TIRE_SIZE_OPTIONS.find(
-                            (option) => option.value === field.value,
-                          ) ?? DEFAULT_TIRE_SIZE_OPTION,
-                        getOptionLabel: (option) => option.label,
+                          tireSizeOptions.find(
+                            (option) => option.size === field.value,
+                          ) ?? defaultTireSizeOption,
+                        getOptionLabel: (option) => option.name,
                         isOptionEqualToValue: (option, value) =>
-                          option.value === value.value,
+                          option.size === value.size,
                         onChange: (_, selectedOption) => {
                           field.onChange(
-                            selectedOption ? selectedOption.value : null,
+                            selectedOption ? selectedOption.size : null,
                           );
                         },
                         onBlur: field.onBlur,

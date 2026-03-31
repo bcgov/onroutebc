@@ -7,6 +7,24 @@ export const getDefaultVehicleConfiguration = (
   permitType: PermitType,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>,
 ) => {
+  const defaultPowerUnitAxleConfiguration = [
+    {
+      numberOfAxles: 1,
+      numberOfTires: null,
+      tireSize: 279.4,
+      axleSpread: null,
+      axleUnitWeight: null,
+    },
+    { interaxleSpacing: null },
+    {
+      numberOfAxles: 1,
+      numberOfTires: null,
+      tireSize: 279.4,
+      axleSpread: null,
+      axleUnitWeight: null,
+    },
+  ];
+
   if (
     !(
       [
@@ -19,7 +37,7 @@ export const getDefaultVehicleConfiguration = (
   )
     return null;
 
-  if (permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW) {
+  if (permitType === PERMIT_TYPES.STOS) {
     return {
       frontProjection: getDefaultRequiredVal(
         null,
@@ -41,31 +59,26 @@ export const getDefaultVehicleConfiguration = (
         null,
         vehicleConfiguration?.overallLength,
       ),
-      // by default, all power units have 2 axle units (1 axle unit with 1 axle, followed by an interaxle-spacing unit, followed by another axle unit with 1 axle)
-      axleUnits: getDefaultRequiredVal(
+      axleConfiguration: getDefaultRequiredVal(
         [],
-        [
-          {
-            numberOfAxles: 1,
-            numberOfTires: null,
-            tireSize: 279.4,
-            axleSpread: null,
-            axleUnitWeight: null,
-          },
-          { interaxleSpacing: null },
-          {
-            numberOfAxles: 1,
-            numberOfTires: null,
-            tireSize: 279.4,
-            axleSpread: null,
-            axleUnitWeight: null,
-          },
-        ],
+        vehicleConfiguration?.axleConfiguration ??
+          defaultPowerUnitAxleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     };
   }
 
+  if (permitType === PERMIT_TYPES.STOW) {
+    return {
+      // by default, all power units have 2 axle units (1 axle unit with 1 axle, followed by an interaxle-spacing unit, followed by another axle unit with 1 axle)
+      axleConfiguration: getDefaultRequiredVal(
+        [],
+        vehicleConfiguration?.axleConfiguration ??
+          defaultPowerUnitAxleConfiguration,
+      ),
+      trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    };
+  }
   return {
     loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
     netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),
