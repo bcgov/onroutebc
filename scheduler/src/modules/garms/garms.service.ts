@@ -242,7 +242,7 @@ export class GarmsService {
       {
         toTimestamp: toTimestamp,
         updatedDateTime: new Date(),
-        updatedUser: 'dbo',
+        updatedUser: 'test', //ORV2-5464 Revert to real user after testing
       },
     );
     return await this.findOne(oldFile.fileId);
@@ -264,6 +264,7 @@ export class GarmsService {
       newFile.toTimestamp = toTimestamp;
       newFile.fileSubmitTimestamp = null;
       newFile.garmsExtractType = garmsExtractType;
+      newFile.createdUser = 'test';  //ORV2-5464 Revert to real user after testing
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
       return savedFile;
     }
