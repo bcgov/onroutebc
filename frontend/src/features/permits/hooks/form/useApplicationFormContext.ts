@@ -343,6 +343,7 @@ export const useApplicationFormContext = () => {
     commodityType: permittedCommodity?.commodityType,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,

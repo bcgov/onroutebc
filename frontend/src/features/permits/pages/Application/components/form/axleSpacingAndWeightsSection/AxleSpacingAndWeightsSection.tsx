@@ -1,24 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import "./AxleSpacingAndWeightsSection.scss";
 import { Box } from "@mui/material";
 import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTable";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
-import { VehicleInConfiguration } from "onroute-policy-engine/types";
-import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
-import { Nullable } from "../../../../../../../common/types/common";
+import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 
 export const AxleSpacingAndWeightsSection = ({
+  permitType,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
   vehicleFormData,
 }: {
+  permitType: PermitType;
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
 }) => {
-  return (
+  return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
     <Box className="axle-spacing-and-weights-section">
       <InfoBcGovBanner
         className="axle-spacing-and-weights-section__info"
@@ -43,5 +42,5 @@ export const AxleSpacingAndWeightsSection = ({
         />
       </Box>
     </Box>
-  );
+  ) : null;
 };

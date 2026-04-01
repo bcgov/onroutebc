@@ -82,6 +82,7 @@ export const PermitForm = () => {
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
@@ -177,15 +178,15 @@ export const PermitForm = () => {
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
           onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
+          onClearVehicleConfig={onClearVehicleConfig}
         />
 
-        {vehicleFormData.vin && (
-          <AxleSpacingAndWeightsSection
-            powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
-            vehicleFormData={vehicleFormData}
-            trailerSubtypeNamesMap={trailerSubtypeNamesMap}
-          />
-        )}
+        <AxleSpacingAndWeightsSection
+          permitType={permitType}
+          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+          vehicleFormData={vehicleFormData}
+          trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+        />
 
         <LoadedDimensionsSection
           permitType={permitType}

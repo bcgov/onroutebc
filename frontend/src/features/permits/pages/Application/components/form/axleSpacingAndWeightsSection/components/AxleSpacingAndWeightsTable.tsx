@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
@@ -9,10 +9,6 @@ import { ApplicationFormContext } from "../../../../../../context/ApplicationFor
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
-import { AxleUnit } from "../../../../../../../bridgeFormulaCalculationTool/types/AxleUnit";
-import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
-import { VehicleInConfiguration } from "onroute-policy-engine/types";
-import { Nullable } from "../../../../../../../../common/types/common";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
