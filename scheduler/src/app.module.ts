@@ -52,7 +52,6 @@ export class AppModule implements OnApplicationBootstrap {
   private readonly logger = new Logger(AppModule.name);
   constructor(private readonly appService: AppService) {}
   async onApplicationBootstrap() {
-    console.log('Application bootstrap - initializing cache',process.env.DEPLOY_CLUSTER);
     await this.appService.initializeCache().catch((err) => {
       this.logger.error('Cache initialization failed:', err);
     });
