@@ -1,6 +1,7 @@
 ---
 global:
-  env: {}
+  env:
+    cluster: "" # GOLD, GOLDDR, SILVER; set in workflow via --set-string global.env.cluster
   autoscaling: true
   license: "c28f0c"
   podAnnotations: |
@@ -37,6 +38,7 @@ frontend:
       PUBLIC_API_URL: "https://{{.Release.Name}}-public.{{.Values.global.domain}}"
       POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
       RELEASE_NUM: "{{.Values.global.env.release_num}}"
       config.js.template: |-
@@ -48,6 +50,7 @@ frontend:
             "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
             "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
             "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
+            "VITE_DEPLOY_CLUSTER":"$DEPLOY_CLUSTER",
             "VITE_PR_NUM":"$PR_NUM",
             "VITE_RELEASE_NUM":"$RELEASE_NUM",
             "VITE_BC_GEOCODER_CLIENT_ID":"$BC_GEOCODER_CLIENT_ID",
@@ -72,9 +75,11 @@ frontend:
           - name: PUBLIC_API_URL
             key: PUBLIC_API_URL
           - name: POLICY_URL
-            key: POLICY_URL            
+            key: POLICY_URL
           - name: DEPLOY_ENVIRONMENT
             key: DEPLOY_ENVIRONMENT
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER
         fromValues: 
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -82,6 +87,8 @@ frontend:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: http
           containerPort: 3000
@@ -190,9 +197,10 @@ vehicles:
     data:
       DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
       POLICY_URL: "https://{{.Release.Name}}-policy.{{.Values.global.domain}}"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"      
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}/payment"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: vehicles
       command:
@@ -215,6 +223,8 @@ vehicles:
             key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -222,6 +232,8 @@ vehicles:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -339,6 +351,7 @@ public:
     enabled: true
     data:
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: public
       command:
@@ -353,6 +366,8 @@ public:
         fromLocalConfigmap: 
           - name: FRONTEND_URL
             key: FRONTEND_URL
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -360,6 +375,8 @@ public:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"            
       ports:
         - name: public-api
           containerPort: 5003
@@ -474,6 +491,7 @@ dops:
       DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: dops
       command:
@@ -494,6 +512,8 @@ dops:
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER            
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -501,6 +521,8 @@ dops:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -618,6 +640,7 @@ scheduler:
     enabled: true
     data:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: scheduler
       command:
@@ -632,6 +655,8 @@ scheduler:
         fromLocalConfigmap:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER            
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -639,6 +664,8 @@ scheduler:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"            
       ports:
         - name: scheduler
           containerPort: 5050
@@ -730,6 +757,7 @@ policy:
     enabled: true
     data:
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.{{.Values.global.domain}}"
+      DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: policy
       command:
@@ -744,6 +772,8 @@ policy:
         fromLocalConfigmap:
           - name: FRONTEND_URL
             key: FRONTEND_URL
+          - name: DEPLOY_CLUSTER
+            key: DEPLOY_CLUSTER            
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
@@ -751,6 +781,8 @@ policy:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
+          - name: CLUSTER
+            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: policy-api
           containerPort: 5002

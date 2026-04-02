@@ -43,4 +43,5 @@ jobs:
         --set-string global.zone='prod' \
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
+        --set-string global.env.cluster='SILVER' \
         ${{ inputs.params }} \
