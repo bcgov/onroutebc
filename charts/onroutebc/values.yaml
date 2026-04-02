@@ -87,8 +87,6 @@ frontend:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
-          - name: CLUSTER
-            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: http
           containerPort: 3000
@@ -232,8 +230,6 @@ vehicles:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
-          - name: CLUSTER
-            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -374,9 +370,7 @@ public:
           - name: PR_NUM
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: "{{ .Values.global.env.release_num | toString }}"
-          - name: CLUSTER
-            value: "{{ .Values.global.env.cluster | toString }}"            
+            value: "{{ .Values.global.env.release_num | toString }}"           
       ports:
         - name: public-api
           containerPort: 5003
@@ -521,8 +515,6 @@ dops:
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
             value: "{{ .Values.global.env.release_num | toString }}"
-          - name: CLUSTER
-            value: "{{ .Values.global.env.cluster | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -663,9 +655,7 @@ scheduler:
           - name: PR_NUM
             value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: "{{ .Values.global.env.release_num | toString }}"
-          - name: CLUSTER
-            value: "{{ .Values.global.env.cluster | toString }}"            
+            value: "{{ .Values.global.env.release_num | toString }}"           
       ports:
         - name: scheduler
           containerPort: 5050
