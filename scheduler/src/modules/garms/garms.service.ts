@@ -32,6 +32,7 @@ import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
 import { CacheKey } from '../../common/enum/cache-key.enum';
 import { execSync } from 'child_process';
 import { uploadToGarms } from '../../common/helper/sftp.helper';
+import { shouldRunOnCluster } from '../../common/helper/cron.helper';
 
 @Injectable()
 export class GarmsService {
@@ -50,6 +51,11 @@ export class GarmsService {
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'GARMS cash file processing')) {
+      return false;
+    }
+
     const garmsCashFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
@@ -96,6 +102,11 @@ export class GarmsService {
 
   @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCreditTransactions() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'GARMS credit file processing')) {
+      return false;
+    }
+
     const garmsCashFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,

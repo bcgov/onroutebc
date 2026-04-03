@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
+import { shouldRunOnCluster } from 'src/common/helper/cron.helper';
 import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -170,6 +171,11 @@ export class PermitService {
   })
   @LogAsyncMethodExecution()
   async runJobs() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'permit document generation')) {
+      return;
+    }
+
     if (this.runningIssuePermit) {
       this.logger.log('IssuePermit job is running already.');
     } else {

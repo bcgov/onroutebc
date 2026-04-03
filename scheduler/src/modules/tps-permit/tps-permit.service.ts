@@ -14,6 +14,7 @@ import { Permit } from 'src/modules/common/entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { shouldRunOnCluster } from '../../common/helper/cron.helper';
 
 @Injectable()
 export class TpsPermitService {
@@ -36,6 +37,11 @@ export class TpsPermitService {
   @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async uploadTpsPermit() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'TPS permit upload')) {
+      return;
+    }
+
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
       select: { migrationId: true },
@@ -65,6 +71,11 @@ export class TpsPermitService {
   @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || '0 0 */3 * * *'}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'TPS permit reprocessing')) {
+      return;
+    }
+
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
       select: { migrationId: true },
@@ -281,6 +292,11 @@ export class TpsPermitService {
   @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
   @LogAsyncMethodExecution()
   async processTpsStuckRecords() {
+    // Check if this scheduler should run on the current cluster
+    if (!shouldRunOnCluster(this.logger, 'TPS stuck records processing')) {
+      return;
+    }
+
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
