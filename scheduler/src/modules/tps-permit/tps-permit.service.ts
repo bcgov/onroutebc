@@ -39,7 +39,7 @@ export class TpsPermitService {
   async uploadTpsPermit() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'TPS permit upload')) {
-      return;
+      return false;
     }
 
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -73,7 +73,7 @@ export class TpsPermitService {
   async reprocessTpsPermit() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'TPS permit reprocessing')) {
-      return;
+      return false;
     }
 
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -294,7 +294,7 @@ export class TpsPermitService {
   async processTpsStuckRecords() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'TPS stuck records processing')) {
-      return;
+      return false;
     }
 
     const today = new Date();

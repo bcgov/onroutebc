@@ -173,7 +173,7 @@ export class PermitService {
   async runJobs() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'permit document generation')) {
-      return;
+      return false;
     }
 
     if (this.runningIssuePermit) {
