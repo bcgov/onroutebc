@@ -11,17 +11,7 @@ import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertT
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
-import { AxleUnit } from "../types/AxleUnit";
-
-// the type expected by the calculateBridge function in the policy engine
-interface AxleConfiguration {
-  numberOfAxles: number;
-  axleSpread?: number;
-  interaxleSpacing?: number;
-  axleUnitWeight: number;
-  numberOfTires?: number;
-  tireSize?: number;
-}
+import { AxleConfiguration, AxleUnit } from "../../../common/types/AxleUnit";
 
 interface BridgeCalculationResult {
   startAxleUnit: number;

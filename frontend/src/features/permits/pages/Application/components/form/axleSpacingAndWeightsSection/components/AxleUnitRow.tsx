@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Control,
@@ -14,7 +13,7 @@ import { convertToNumberIfValid } from "../../../../../../../../common/helpers/n
 import { ApplicationFormData } from "../../../../../../types/application";
 import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 
-type AxleUnitsArrayPath =
+type AxleConfigurationPath =
   | "permitData.vehicleConfiguration.axleConfiguration"
   | `permitData.vehicleConfiguration.trailers.${number}.axleConfiguration`;
 
@@ -23,13 +22,13 @@ export const AxleUnitRow = ({
   path,
   label,
   axleUnitNumber,
-  isTrailer = false,
+  isTrailer,
 }: {
   control: Control<ApplicationFormData>;
-  path: AxleUnitsArrayPath;
+  path: AxleConfigurationPath;
   label: Nullable<string>;
   axleUnitNumber: number;
-  isTrailer?: boolean;
+  isTrailer: boolean;
 }) => {
   const { setValue } = useFormContext<ApplicationFormData>();
 
@@ -37,6 +36,8 @@ export const AxleUnitRow = ({
     control,
     name: path,
   });
+
+  // Since this component makes use of useFieldArray, rows are index-based and can shift as items are added/removed. Watching this exact array path with useWatch keeps per-row derived values aligned to current indices and avoids re-rendering from unrelated vehicleConfiguration context changes, as opposed to the usual prop based approach used throughout the PermitForm.
   const axleUnits = useWatch({
     control,
     name: path,
@@ -84,10 +85,7 @@ export const AxleUnitRow = ({
                       classes={{ root: "table__input-container" }}
                       inputProps={{
                         className: "table__input",
-                        value: getDefaultRequiredVal(
-                          null,
-                          field.value as Nullable<number>,
-                        ),
+                        value: getDefaultRequiredVal(null, field.value),
                         onBlur: ({ target: { value } }) => {
                           const updatedNumberOfAxles = convertToNumberIfValid(
                             value,
@@ -123,10 +121,7 @@ export const AxleUnitRow = ({
                       classes={{ root: "table__input-container" }}
                       inputProps={{
                         className: "table__input",
-                        value: getDefaultRequiredVal(
-                          null,
-                          field.value as Nullable<number>,
-                        ),
+                        value: getDefaultRequiredVal(null, field.value),
                         onBlur: ({ target: { value } }) => {
                           field.onChange(convertToNumberIfValid(value, null));
                           field.onBlur();
@@ -180,10 +175,7 @@ export const AxleUnitRow = ({
                       classes={{ root: "table__input-container" }}
                       inputProps={{
                         className: "table__input",
-                        value: getDefaultRequiredVal(
-                          null,
-                          field.value as Nullable<number>,
-                        ),
+                        value: getDefaultRequiredVal(null, field.value),
                         onBlur: ({ target: { value } }) => {
                           field.onChange(convertToNumberIfValid(value, null));
                           field.onBlur();
@@ -205,10 +197,7 @@ export const AxleUnitRow = ({
                       classes={{ root: "table__input-container" }}
                       inputProps={{
                         className: "table__input",
-                        value: getDefaultRequiredVal(
-                          null,
-                          field.value as Nullable<number>,
-                        ),
+                        value: getDefaultRequiredVal(null, field.value),
                         onBlur: ({ target: { value } }) => {
                           field.onChange(convertToNumberIfValid(value, null));
                           field.onBlur();
@@ -232,10 +221,7 @@ export const AxleUnitRow = ({
                       classes={{ root: "table__input-container" }}
                       inputProps={{
                         className: "table__input",
-                        value: getDefaultRequiredVal(
-                          null,
-                          field.value as Nullable<number>,
-                        ),
+                        value: getDefaultRequiredVal(null, field.value),
                         onBlur: ({ target: { value } }) => {
                           field.onChange(convertToNumberIfValid(value, null));
                           field.onBlur();

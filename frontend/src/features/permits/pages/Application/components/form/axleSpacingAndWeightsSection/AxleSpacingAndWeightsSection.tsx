@@ -5,17 +5,21 @@ import { Box } from "@mui/material";
 import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTable";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
+import { Nullable } from "../../../../../../../common/types/common";
+import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
   vehicleFormData,
+  vehicleConfiguration,
 }: {
   permitType: PermitType;
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
+  vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
 }) => {
   return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
     <Box className="axle-spacing-and-weights-section">
@@ -39,6 +43,7 @@ export const AxleSpacingAndWeightsSection = ({
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+          vehicleConfiguration={vehicleConfiguration}
         />
       </Box>
     </Box>

@@ -1,52 +1,50 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
-import { useContext, useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../../../../../types/application";
-import { ApplicationFormContext } from "../../../../../../context/ApplicationFormContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
+import { Nullable } from "../../../../../../../../common/types/common";
+import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
+import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
   vehicleFormData,
   trailerSubtypeNamesMap,
+  vehicleConfiguration,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
+  vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
 }) => {
   const { control } = useFormContext<ApplicationFormData>();
-  const { formData } = useContext(ApplicationFormContext);
+  const trailers = vehicleConfiguration?.trailers ?? [];
 
-  const { fields: trailerFields } = useFieldArray({
-    control,
-    name: "permitData.vehicleConfiguration.trailers",
-  });
+  const powerUnitAxleConfiguration =
+    vehicleConfiguration?.axleConfiguration ?? [];
 
-  const { fields: powerUnitAxleUnitFields } = useFieldArray({
-    control,
-    name: "permitData.vehicleConfiguration.axleConfiguration",
-  });
+  const trailerAxleConfigurations: AxleUnit[][] = trailers.map(
+    (trailer) => trailer.axleConfiguration ?? [],
+  );
 
-  const trailers = formData.permitData.vehicleConfiguration?.trailers;
-
-  const getCompleteAxleUnitCount = (units: any[] | undefined | null) => {
-    if (!units) return 0;
-    return Math.ceil(units.length / 2);
+  // Convert axle rows into the number of full axle units.
+  const getCompleteAxleUnitCount = (axleUnits: AxleUnit[]) => {
+    return Math.ceil(axleUnits.length / 2);
   };
 
+  // Compute the starting axle unit number offset for a trailer row group.
   const getAxleUnitNumber = (trailerIndex: number) => {
-    let offset = getCompleteAxleUnitCount(powerUnitAxleUnitFields);
+    let offset = getCompleteAxleUnitCount(powerUnitAxleConfiguration);
 
-    if (trailers) {
-      for (let i = 0; i < trailerIndex; i++) {
-        offset += getCompleteAxleUnitCount(trailers[i]?.axleConfiguration);
-      }
+    for (let i = 0; i < trailerIndex; i++) {
+      offset += getCompleteAxleUnitCount(trailerAxleConfigurations[i]);
     }
+
     return offset;
   };
 
@@ -108,9 +106,9 @@ export const AxleSpacingAndWeightsTable = ({
               isTrailer={false}
             />
 
-            {trailerFields.map((trailer, trailerIndex) => (
+            {trailers.map((trailer, trailerIndex) => (
               <AxleUnitRow
-                key={trailer.id}
+                key={`${trailer.vehicleSubType}-${trailerIndex}`}
                 control={control}
                 path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`}
                 label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}

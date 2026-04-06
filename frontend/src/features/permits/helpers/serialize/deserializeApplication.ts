@@ -13,7 +13,7 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../../common/helpers/formatDate";
-import { AxleUnit } from "../../../bridgeFormulaCalculationTool/types/AxleUnit";
+import { AxleUnit } from "../../../../common/types/AxleUnit";
 
 /**
  * Deserializes an ApplicationResponseData object (received from backend) to an Application object

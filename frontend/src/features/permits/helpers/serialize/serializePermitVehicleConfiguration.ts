@@ -1,6 +1,6 @@
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
+import { AxleUnit } from "../../../../common/types/AxleUnit";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
-import { AxleUnit } from "../../../bridgeFormulaCalculationTool/types/AxleUnit";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
 
 /** Removes individual interaxle spacing rows and merges their value into the next axleConfiguration object */

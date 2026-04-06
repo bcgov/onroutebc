@@ -186,6 +186,7 @@ export const PermitForm = () => {
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+          vehicleConfiguration={vehicleConfiguration}
         />
 
         <LoadedDimensionsSection

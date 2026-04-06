@@ -1,5 +1,5 @@
+import { AxleUnit } from "../../../common/types/AxleUnit";
 import { Nullable } from "../../../common/types/common";
-import { AxleUnit } from "../../bridgeFormulaCalculationTool/types/AxleUnit";
 
 export interface VehicleInConfiguration {
   vehicleSubType: string;
