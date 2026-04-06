@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
@@ -11,13 +11,12 @@ import { EmailNotificationType } from "../../types/EmailNotificationType";
 import { useAttemptAmend } from "../../hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { PermitActionOrigin } from "../../../idir/search/types/types";
+import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../types/PermitActionOrigin";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
 import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
+import { useSetCompanyHandler } from "../../../idir/search/helpers/useSetCompanyHandler";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
 
-/**
- * Component for row actions on IDIR Search Permit.
- */
 export const PermitRowOptions = ({
   permitId,
   isPermitInactive,
@@ -26,41 +25,46 @@ export const PermitRowOptions = ({
   permitActionOrigin,
   permissions,
 }: {
-  /**
-   * The permit id.
-   */
   permitId: string;
-  /**
-   * Is the permit inactive (voided/superseded/revoked) or expired?
-   */
+  // Is the permit inactive (voided/superseded/revoked) or expired?
   isPermitInactive: boolean;
-  /**
-   * The permit number
-   */
   permitNumber: string;
-  /**
-   * The company id
-   */
   companyId: number;
-  /**
-   * The application location from where the permit action (amend / void / revoke) originated
-   */
+  // The application location from where the permit action (amend/void/revoke/copy) originated
   permitActionOrigin: PermitActionOrigin;
-  /**
-   * An object containing the relevant permission matrix checks for each action
-   */
+  // Object containing the relevant permission matrix checks for each action
   permissions: {
     canResendPermit: boolean;
     canViewPermitReceipt: boolean;
     canViewExpiredPermitReceipt: boolean;
     canAmendPermit: boolean;
     canVoidPermit: boolean;
+    canCopyPermit: boolean;
   };
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const resendPermitMutation = useResendPermit();
   const { setSnackBar } = useContext(SnackBarContext);
+  const { handleSelectCompany } = useSetCompanyHandler();
+
+  // This is used to trigger a query fetch of the company info when
+  // copying a permit in staff global search
+  const [companyIdForCopy, setCompanyIdForCopy] = useState<number>(0);
+  const { data: selectedCompanyInfo } = useCompanyInfoDetailsQuery(companyIdForCopy);
+  useEffect(() => {
+    if (selectedCompanyInfo && companyId && permitId) {
+      handleSelectCompany(
+        selectedCompanyInfo,
+        routes.PERMITS_ROUTES.COPY(
+          companyId,
+          permitId,
+          // After acting as company, leaving the copy permit should go back to AIP tab
+          PERMIT_ACTION_ORIGINS.AIP,
+        )
+      );
+    }
+  }, [selectedCompanyInfo, companyId, permitId]);
 
   const {
     choosePermitToAmend,
@@ -96,6 +100,23 @@ export const PermitRowOptions = ({
       // which will in turn look for any existing associated amendment applications,
       // which is used to show info in the modal (or not show the modal at all)
       choosePermitToAmend(companyId, permitId);
+    } else if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
+      // If copying permit from staff global search, we need to act as company first.
+      // ie. set companyId which will trigger the company info query fetch, and in turn
+      // set the company info in the context
+      if (permitActionOrigin === PERMIT_ACTION_ORIGINS.GLOBAL_SEARCH) {
+        setCompanyIdForCopy(companyId);
+      } else {
+        // The copying action is initiated after already acting as company
+        // Simply redirect to the copy permit form page
+        const copyPermitRoute = routes.PERMITS_ROUTES.COPY(
+          companyId,
+          permitId,
+          permitActionOrigin,
+        );
+        
+        navigate(copyPermitRoute);
+      }
     }
   };
 
@@ -131,9 +152,14 @@ export const PermitRowOptions = ({
     canViewExpiredPermitReceipt,
     canAmendPermit,
     canVoidPermit,
+    canCopyPermit,
   } = permissions;
 
   const permitActions = [
+    {
+      action: PERMIT_ACTION_TYPES.COPY,
+      isAuthorized: () => canCopyPermit,
+    },
     {
       action: PERMIT_ACTION_TYPES.RESEND,
       isAuthorized: () => canResendPermit,

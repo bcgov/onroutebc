@@ -6,7 +6,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
-    baseUrl: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca',
+    baseUrl: 'https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca',
     env: {
       username: '', 
       password: '',

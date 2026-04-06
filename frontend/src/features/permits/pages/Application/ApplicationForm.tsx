@@ -17,7 +17,12 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
-import { isNull, isUndefined, Nullable, ORBC_FORM_FEATURES } from "../../../../common/types/common";
+import {
+  isNull,
+  isUndefined,
+  Nullable,
+  ORBC_FORM_FEATURES,
+} from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
@@ -25,7 +30,10 @@ import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/sub
 import { useFetchLOAs } from "../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
-import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../helpers/permitLOA";
+import {
+  filterLOAsForPermitType,
+  filterNonExpiredLOAs,
+} from "../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
@@ -36,7 +44,10 @@ import {
   serializeForUpdateApplication,
 } from "../../helpers/serialize/serializeApplication";
 
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 
 import {
   APPLICATIONS_ROUTES,
@@ -51,6 +62,8 @@ import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
+import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+import { PERMIT_TABS } from "../../types/PermitTabs";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -62,10 +75,14 @@ export const ApplicationForm = ({
   permitType,
   companyId,
   applicationStepContext,
+  isCopiedApplication,
+  copyPermitOrigin,
 }: {
   permitType: PermitType;
   companyId: number;
   applicationStepContext: ApplicationStepContext;
+  isCopiedApplication: boolean;
+  copyPermitOrigin?: Nullable<string>;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -76,32 +93,48 @@ export const ApplicationForm = ({
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
-  const companyLOAs = useMemo(() => getDefaultRequiredVal([], activeLOAs), [activeLOAs]);
+  const companyLOAs = useMemo(
+    () => getDefaultRequiredVal([], activeLOAs),
+    [activeLOAs],
+  );
 
-  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const { data: specialAuthorizations } =
+    useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
 
-  const { handleSaveVehicle, allVehiclesFromInventory, powerUnitSubtypeNamesMap, trailerSubtypeNamesMap } =
-    usePermitVehicleManagement(companyId);
+  const {
+    handleSaveVehicle,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+  } = usePermitVehicleManagement(companyId);
 
   const policyEngine = usePolicyEngine(specialAuthorizations);
+
+  const isQueueContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
+
+  const isInitCopyContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY;
 
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
   // 4. Updates form values (override existing ones) whenever the application context data changes
-  const { initialFormData, currentFormData, formMethods } = useInitApplicationFormData({
-    permitType,
-    isLcvDesignated,
-    companyLOAs,
-    inventoryVehicles: allVehiclesFromInventory,
-    companyInfo,
-    applicationData: applicationContext?.applicationData,
-    userDetails,
-    policyEngine,
-    isStaff: isStaffUser,
-  });
+  const { initialFormData, currentFormData, formMethods } =
+    useInitApplicationFormData({
+      permitType,
+      isLcvDesignated,
+      companyLOAs,
+      inventoryVehicles: allVehiclesFromInventory,
+      companyInfo,
+      applicationData: applicationContext?.applicationData,
+      userDetails,
+      policyEngine,
+      isStaff: isStaffUser,
+      shouldInitAsCopy: isInitCopyContext,
+    });
 
   // Applicable LOAs must be:
   // 1. Applicable for the current permit type
@@ -125,17 +158,22 @@ export const ApplicationForm = ({
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
-  const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false);
+  const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
+    useState<boolean>(false);
 
   const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
 
-  const [policyViolations, setPolicyViolations] = useState<Record<string, string>>({});
+  const [policyViolations, setPolicyViolations] = useState<
+    Record<string, string>
+  >({});
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
-      const otherViolations = Object.entries(policyViolations).filter(([fieldRef]) => fieldRef !== fieldReference);
+      const otherViolations = Object.entries(policyViolations).filter(
+        ([fieldRef]) => fieldRef !== fieldReference,
+      );
 
       setPolicyViolations(Object.fromEntries(otherViolations));
     }
@@ -159,7 +197,10 @@ export const ApplicationForm = ({
     );
 
     const policyViolations = Object.fromEntries(
-      violations.map(({ fieldReference, message }) => [fieldReference, message]),
+      violations.map(({ fieldReference, message }) => [
+        fieldReference,
+        message,
+      ]),
     );
 
     // Check if vehicle subtype violations can be overriden by LOA
@@ -170,7 +211,8 @@ export const ApplicationForm = ({
     )
       ? Object.fromEntries(
           Object.entries(policyViolations).filter(
-            ([fieldReference]) => fieldReference !== "permitData.vehicleDetails.vehicleSubType",
+            ([fieldReference]) =>
+              fieldReference !== "permitData.vehicleDetails.vehicleSubType",
           ),
         )
       : policyViolations;
@@ -179,16 +221,17 @@ export const ApplicationForm = ({
     return updatedViolations;
   };
 
-  const isQueueContext = applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
-
-  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata({
-    applicationId: getDefaultRequiredVal("", currentFormData.permitId),
-    companyId,
-  });
+  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
+    {
+      applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+      companyId,
+    },
+  );
 
   const [assignedUser, setAssignedUser] = useState<string>("");
 
-  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] = useState<boolean>(false);
+  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
 
   const handleCloseApplication = () => {
     navigate(IDIR_ROUTES.STAFF_HOME);
@@ -209,19 +252,35 @@ export const ApplicationForm = ({
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
-    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+    if (
+      !shouldOverridePolicyViolations(
+        updatedViolations,
+        isStaffUser,
+        data.permitType,
+      )
+    ) {
       console.error(updatedViolations);
       return;
     }
 
-    const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
+    const vehicleData = serializePermitVehicleDetails(
+      data.permitData.vehicleDetails,
+    );
 
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
     await onSaveApplication((permitId) => {
+      if (isQueueContext) {
+        return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
+      }
+
       return navigate(
-        isQueueContext ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId) : APPLICATIONS_ROUTES.REVIEW(permitId),
+        APPLICATIONS_ROUTES.REVIEW(
+          permitId,
+          isInitCopyContext || isCopiedApplication,
+          copyPermitOrigin,
+        ),
       );
     }, savedVehicleDetails);
   };
@@ -251,7 +310,9 @@ export const ApplicationForm = ({
       const { data: applicationMetaData } = await refetchApplicationMetadata();
 
       if (idirUserDetails?.userName !== applicationMetaData?.assignedUser) {
-        setAssignedUser(getDefaultRequiredVal("", applicationMetaData?.assignedUser));
+        setAssignedUser(
+          getDefaultRequiredVal("", applicationMetaData?.assignedUser),
+        );
         setShowUnavailableApplicationModal(true);
         return;
       }
@@ -298,24 +359,64 @@ export const ApplicationForm = ({
   };
 
   const onSave = async () => {
-    await onSaveApplication((permitId) =>
+    await onSaveApplication((permitId) => {
+      if (isQueueContext) {
+        return navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId));
+      }
+
       navigate(
-        isQueueContext ? APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId) : APPLICATIONS_ROUTES.DETAILS(permitId),
-      ),
-    );
+        APPLICATIONS_ROUTES.DETAILS(
+          permitId,
+          isInitCopyContext || isCopiedApplication,
+          copyPermitOrigin,
+        ),
+      );
+    });
   };
 
   // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
+    } else if (isQueueContext) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
+    } else if (isInitCopyContext || isCopiedApplication) {
+      const homeTab =
+        copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ? PERMIT_TABS.ACTIVE_PERMITS
+          : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+            ? PERMIT_TABS.EXPIRED_PERMITS
+            : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: {
+          selectedTab: homeTab,
+        },
+      });
     } else {
-      navigate(isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE);
+      navigate(APPLICATIONS_ROUTES.BASE);
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate(isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE);
+    if (isQueueContext) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
+    } else if (isInitCopyContext || isCopiedApplication) {
+      const homeTab =
+        copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+          ? PERMIT_TABS.ACTIVE_PERMITS
+          : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+            ? PERMIT_TABS.EXPIRED_PERMITS
+            : PERMIT_TABS.APPLICATIONS_IN_PROGRESS;
+
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: {
+          selectedTab: homeTab,
+        },
+      });
+    } else {
+      navigate(APPLICATIONS_ROUTES.BASE);
+    }
   };
 
   const handleStayOnApplication = () => {
@@ -323,9 +424,14 @@ export const ApplicationForm = ({
   };
 
   const durationOptions = durationOptionsForPermitType(permitType, isStaffUser);
-  const pastStartDateStatus = isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL;
+  const pastStartDateStatus = isStaffUser
+    ? PAST_START_DATE_STATUSES.WARNING
+    : PAST_START_DATE_STATUSES.FAIL;
 
-  const rejectionHistory = getDefaultRequiredVal([], applicationContext.applicationData?.rejectionHistory);
+  const rejectionHistory = getDefaultRequiredVal(
+    [],
+    applicationContext.applicationData?.rejectionHistory,
+  );
 
   const applicationFormContextData = useMemo(
     () => ({
@@ -385,7 +491,17 @@ export const ApplicationForm = ({
 
   return (
     <div className="application-form">
-      <ApplicationBreadcrumb applicationStep={APPLICATION_STEPS.DETAILS} />
+      <ApplicationBreadcrumb
+        companyId={companyId}
+        permitId={applicationContext.applicationData?.permitId}
+        applicationStep={APPLICATION_STEPS.DETAILS}
+        applicationStepContext={applicationStepContext}
+        isCopiedApplication={isCopiedApplication}
+        applicationNumber={
+          applicationContext.applicationData?.applicationNumber
+        }
+        copyPermitOrigin={copyPermitOrigin}
+      />
 
       <FormProvider {...formMethods}>
         <ApplicationFormContext.Provider value={applicationFormContextData}>

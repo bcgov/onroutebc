@@ -25,6 +25,8 @@ import { getEligibleVehicleSubtypes } from "../../helpers/vehicles/subtypes/getE
  * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
  * @param userDetails User details for filling out the form
  * @param policyEngine Instance of the policy engine, if it's available
+ * @param isStaff Whether or not the user of the form is staff
+ * @param shouldInitAsCopy Whether the initialization is part of a permit copy operation
  * @returns Current application form data, methods to manage the form, and selectable input options
  */
 export const useInitApplicationFormData = (data: {
@@ -37,6 +39,7 @@ export const useInitApplicationFormData = (data: {
   userDetails?: BCeIDUserDetailContext;
   policyEngine?: Nullable<Policy>;
   isStaff: boolean;
+  shouldInitAsCopy: boolean;
 }) => {
   const {
     permitType,
@@ -48,6 +51,7 @@ export const useInitApplicationFormData = (data: {
     userDetails,
     policyEngine,
     isStaff,
+    shouldInitAsCopy,
   } = data;
 
   // Used to populate/initialize the form with
@@ -61,7 +65,13 @@ export const useInitApplicationFormData = (data: {
 
     return applyUpToDateLOAsToApplication(
       applyLCVToApplicationData(
-        getDefaultValues(permitType, companyInfo, applicationData, userDetails),
+        getDefaultValues(
+          permitType,
+          companyInfo,
+          applicationData,
+          userDetails,
+          shouldInitAsCopy,
+        ),
         isLcvDesignated,
       ),
       companyLOAs,
@@ -79,6 +89,7 @@ export const useInitApplicationFormData = (data: {
     inventoryVehicles,
     policyEngine,
     isStaff,
+    shouldInitAsCopy,
   ]);
 
   // Register default values with react-hook-form

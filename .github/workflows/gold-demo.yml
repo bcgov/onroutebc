@@ -43,6 +43,7 @@ jobs:
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='demo' \
+        --set-string global.env.cluster='GOLD' \
         --set-string global.pr_num='${{ inputs.tag }}' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \
 
@@ -62,5 +63,6 @@ jobs:
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='demo' \
+        --set-string global.env.cluster='GOLDDR' \
         --set-string global.pr_num='${{ inputs.tag }}' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "100m", "memory": "500Mi"}}' \

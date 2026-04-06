@@ -43,6 +43,7 @@ jobs:
         --set-string global.zone='prod' \
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
+        --set-string global.env.cluster='GOLD' \
         ${{ inputs.params }} \
   
   deploys-prod-golddr:
@@ -61,4 +62,5 @@ jobs:
         --set-string global.zone='prod' \
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
+        --set-string global.env.cluster='GOLDDR' \
         ${{ inputs.params }} \

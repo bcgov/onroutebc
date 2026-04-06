@@ -206,6 +206,7 @@ export const AppRoutes = () => {
       >
         <Route path={routes.PERMITS_ROUTES.AMEND()} element={<AmendPermit />} />
       </Route>
+
       <Route
         element={
           <IDIRAuthWall
@@ -402,6 +403,29 @@ export const AppRoutes = () => {
             />
           </Route>
         </Route>
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "COPY_PERMIT",
+            }}
+          />
+        }
+      >
+        <Route
+          path={routes.PERMITS_ROUTES.COPY()}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+              applicationStepContext={
+                routes.APPLICATION_STEP_CONTEXTS.COPY
+              }
+            />
+          }
+        />
       </Route>
 
       <Route
