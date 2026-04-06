@@ -38,10 +38,13 @@ jobs:
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
+        --set-string global.domain='apps.silver.devops.gov.bc.ca' \
+        --set-string global.vault.authPath='auth/k8s-silver' \
         --set-string global.license='c28f0c' \
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
+        --set-string global.env.cluster='SILVER' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \

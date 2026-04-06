@@ -26,7 +26,7 @@
           </elementProp>
           <elementProp name="FRONTEND_URL" elementType="Argument">
             <stringProp name="Argument.name">FRONTEND_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="RESULTS_DIR" elementType="Argument">
@@ -46,27 +46,27 @@
           </elementProp>
           <elementProp name="NEW_POWER_UNIT_URL" elementType="Argument">
             <stringProp name="Argument.name">NEW_POWER_UNIT_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-powerunit</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/manage-vehicles/add-powerunit</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="UPDATE_POWER_UNIT_URL" elementType="Argument">
             <stringProp name="Argument.name">UPDATE_POWER_UNIT_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/power-units/106</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/manage-vehicles/power-units/106</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="MANAGE_VEHICLES_URL" elementType="Argument">
             <stringProp name="Argument.name">MANAGE_VEHICLES_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/manage-vehicles</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="NEW_TRAILER_URL" elementType="Argument">
             <stringProp name="Argument.name">NEW_TRAILER_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-trailer</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/manage-vehicles/add-trailer</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="UPDATE_TRAILER_URL" elementType="Argument">
             <stringProp name="Argument.name">UPDATE_TRAILER_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/trailers/106</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.gold.devops.gov.bc.ca/manage-vehicles/trailers/106</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
