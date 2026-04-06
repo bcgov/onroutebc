@@ -47,7 +47,7 @@ export const useApplicationFormContext = () => {
     onContinue,
   } = applicationFormContextData;
 
-  // This assignment is type-safe since the parent component ensured that
+  // This assignment is type-safe since the parenxt component ensured that
   // the loading page or error page is rendered when policy engine is null/undefined
   const policyEngine = applicationFormContextData.policyEngine as Policy;
 
@@ -234,6 +234,11 @@ export const useApplicationFormContext = () => {
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
+  const selectedTrailers = useMemoizedSequence(
+    getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    (trailer1, trailer2) => trailer1 === trailer2,
+  );
+
   const { nextAllowedSubtypes } = useVehicleConfiguration(
     policyEngine,
     permitType,
@@ -312,7 +317,7 @@ export const useApplicationFormContext = () => {
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    selectedVehicleConfigSubtypes,
+    selectedTrailers,
     vehicleConfiguration,
     thirdPartyLiability,
     conditionalLicensingFee,
@@ -338,6 +343,7 @@ export const useApplicationFormContext = () => {
     commodityType: permittedCommodity?.commodityType,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,

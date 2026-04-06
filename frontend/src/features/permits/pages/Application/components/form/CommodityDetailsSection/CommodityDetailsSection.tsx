@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, MenuItem, Tooltip } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
+import { useApplicationFormContext } from "../../../../../hooks/form/useApplicationFormContext";
 
 import "./CommodityDetailsSection.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
@@ -46,7 +48,7 @@ export const CommodityDetailsSection = ({
     );
   }, [selectedCommodityType, commodityOptions]);
 
-  const { trigger } = useFormContext<ApplicationFormData>();
+  const { trigger, getValues } = useFormContext<ApplicationFormData>();
 
   const handleCloseDialog = () => {
     setNewCommodityType(undefined);
@@ -58,21 +60,42 @@ export const CommodityDetailsSection = ({
     trigger("permitData.permittedCommodity.commodityType");
   };
 
+  // grab vehicle form state so we can know whether the VIN or dimensions are populated
+  const { vehicleFormData } = useApplicationFormContext();
+
   const handleCommodityTypeChange = useCallback(
-    (updatedCommodityType: string) => {
+    async (updatedCommodityType: string) => {
       if (selectedCommodityType === updatedCommodityType) return;
 
-      if (selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE) {
+      const configValues = getValues("permitData.vehicleConfiguration") || {};
+
+      const hasVin = Boolean(vehicleFormData.vin);
+      const hasDimensions = Boolean(
+        configValues.overallWidth ||
+          configValues.overallHeight ||
+          configValues.overallLength ||
+          configValues.frontProjection ||
+          configValues.rearProjection,
+      );
+
+      const isPreviousEmpty =
+        selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
+        selectedCommodityType == null;
+
+      // show the dialog if we're switching away from a non‑empty commodity and
+      // there is either a VIN or any loaded‑dimension field has been filled in
+      if (!isPreviousEmpty && (hasVin || hasDimensions)) {
         setNewCommodityType(updatedCommodityType);
         return;
       }
 
       handleConfirmChangeCommodityType(updatedCommodityType);
     },
-    [selectedCommodityType],
+    [selectedCommodityType, vehicleFormData, trigger, getValues],
   );
 
-  return permitType === PERMIT_TYPES.STOS ? (
+  return permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STOW ? (
     <Box className="commodity-details-section">
       <Box className="commodity-details-section__header">
         <h3>Commodity Details</h3>

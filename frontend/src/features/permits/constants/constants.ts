@@ -42,6 +42,10 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
         value: PERMIT_TYPES.STOS,
         label: getPermitTypeShortName(PERMIT_TYPES.STOS),
       },
+      {
+        value: PERMIT_TYPES.STOW,
+        label: getPermitTypeShortName(PERMIT_TYPES.STOW),
+      },
     ],
     // items: SINGLE_TRIP_PERMIT_LIST.map((permitType: PermitType) => ({
     //   value: permitType,
@@ -102,12 +106,12 @@ export const LCV_VEHICLE_SUBTYPES = [
   {
     typeCode: "LCVRMDB",
     type: "Long Combination Vehicles (LCV) - Rocky Mountain Doubles",
-    description: "LCV vehicles for approved carriers and routes only."
+    description: "LCV vehicles for approved carriers and routes only.",
   },
   {
     typeCode: "LCVTPDB",
     type: "Long Combination Vehicles (LCV) - Turnpike Doubles",
-    description: "LCV vehicles for approved carriers and routes only."
+    description: "LCV vehicles for approved carriers and routes only.",
   },
 ];
 

@@ -22,32 +22,40 @@ import {
 } from "../../../../../../../common/constants/constants";
 
 export const AddTrailer = ({
-  selectedTrailerSubtypes,
+  selectedTrailers,
   trailerSubtypeOptions,
   trailerSubtypeNamesMap,
   onUpdateVehicleConfigTrailers,
 }: {
-  selectedTrailerSubtypes: string[];
+  selectedTrailers: VehicleInConfiguration[];
   trailerSubtypeOptions: {
     value: string;
     label: string;
   }[];
   trailerSubtypeNamesMap: Map<string, string>;
-  onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
+  onUpdateVehicleConfigTrailers: (
+    updatedTrailerSubtypes: VehicleInConfiguration[],
+  ) => void;
 }) => {
-  const [trailerSelection, setTrailerSelection] = useState<string>(DEFAULT_EMPTY_SELECT_VALUE);
+  const [trailerSelection, setTrailerSelection] = useState<string>(
+    DEFAULT_EMPTY_SELECT_VALUE,
+  );
 
   const trailersFieldRef = "permitData.vehicleConfiguration.trailers";
-  const { policyViolations, clearViolation } = useContext(ApplicationFormContext);
+  const { policyViolations, clearViolation } = useContext(
+    ApplicationFormContext,
+  );
 
   const subtypeOptions = useMemoizedArray(
     DEFAULT_SELECT_OPTIONS.concat(trailerSubtypeOptions),
     (option) => option.value,
-    (option1, option2) => option1.value === option2.value && option1.label === option2.label,
+    (option1, option2) =>
+      option1.value === option2.value && option1.label === option2.label,
   );
 
   const selectedSubtypesDisplay = useMemoizedSequence(
-    selectedTrailerSubtypes.map(subtype => {
+    selectedTrailers.map(({ vehicleSubType }) => {
+      const subtype = vehicleSubType;
       if (isTrailerSubtypeNone(subtype)) return "None";
       return getDefaultRequiredVal(
         subtype,
@@ -59,9 +67,23 @@ export const AddTrailer = ({
 
   const handleAddTrailerSubtype = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
-      onUpdateVehicleConfigTrailers(selectedTrailerSubtypes.map(addedSubtype => ({
-        vehicleSubType: addedSubtype,
-      })).concat([{ vehicleSubType: subtype }]));
+      onUpdateVehicleConfigTrailers(
+        selectedTrailers.concat([
+          {
+            vehicleSubType: subtype,
+            axleConfiguration: [
+              { interaxleSpacing: null },
+              {
+                numberOfAxles: 1,
+                numberOfTires: null,
+                tireSize: 279.4,
+                axleSpread: null,
+                axleUnitWeight: null,
+              },
+            ],
+          },
+        ]),
+      );
 
       setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
       clearViolation(trailersFieldRef);
@@ -73,7 +95,8 @@ export const AddTrailer = ({
     clearViolation(trailersFieldRef);
   };
 
-  return (selectedSubtypesDisplay.length > 0 || trailerSubtypeOptions.length > 0) ? (
+  return selectedSubtypesDisplay.length > 0 ||
+    trailerSubtypeOptions.length > 0 ? (
     <div className="add-trailer">
       <h4 className="add-trailer__title">Add Trailer(s)</h4>
 

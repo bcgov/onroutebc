@@ -22,6 +22,7 @@ import { isVehicleSubtypeEmpty } from "../../../../../manageVehicles/helpers/veh
 import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRejectionHistory";
 import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
+import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 
 export const PermitForm = () => {
   const {
@@ -54,7 +55,7 @@ export const PermitForm = () => {
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    selectedVehicleConfigSubtypes,
+    selectedTrailers,
     commodityType,
     vehicleConfiguration,
     thirdPartyLiability,
@@ -81,6 +82,7 @@ export const PermitForm = () => {
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
@@ -170,12 +172,21 @@ export const PermitForm = () => {
           nextAllowedSubtypes={nextAllowedSubtypes}
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
-          selectedConfigSubtypes={selectedVehicleConfigSubtypes}
+          selectedTrailers={selectedTrailers}
           selectedCommodityType={commodityType}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
           onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
+          onClearVehicleConfig={onClearVehicleConfig}
+        />
+
+        <AxleSpacingAndWeightsSection
+          permitType={permitType}
+          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+          vehicleFormData={vehicleFormData}
+          trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+          vehicleConfiguration={vehicleConfiguration}
         />
 
         <LoadedDimensionsSection

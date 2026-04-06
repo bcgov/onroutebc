@@ -13,6 +13,7 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../../common/helpers/formatDate";
+import { AxleUnit } from "../../../../common/types/AxleUnit";
 
 /**
  * Deserializes an ApplicationResponseData object (received from backend) to an Application object
@@ -44,6 +45,25 @@ export const deserializeApplicationResponse = (
     ),
   );
 
+  const unmergeInteraxleSpacingRows = (
+    axleConfiguration: AxleUnit[],
+    startIndex: number,
+  ) => {
+    const unmerged = axleConfiguration.map((axle) => ({ ...axle }));
+
+    for (let i = startIndex; i < unmerged.length; i++) {
+      const spacing = unmerged[i].interaxleSpacing ?? null;
+      unmerged.splice(i, 0, { interaxleSpacing: spacing });
+
+      // remove spacing value from the axle row since it now lives in the inserted spacing row
+      unmerged[i + 1].interaxleSpacing = null;
+
+      i++; // skip over the axle row we just processed
+    }
+
+    return unmerged;
+  };
+
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
@@ -58,6 +78,29 @@ export const deserializeApplicationResponse = (
       ...response.permitData,
       startDate: startDateOrDefault,
       expiryDate: expiryDateOrDefault,
+      vehicleConfiguration: {
+        ...response.permitData.vehicleConfiguration,
+        axleConfiguration: response?.permitData?.vehicleConfiguration
+          ?.axleConfiguration
+          ? unmergeInteraxleSpacingRows(
+              [...response.permitData.vehicleConfiguration.axleConfiguration],
+              1,
+            )
+          : null,
+        trailers: response?.permitData?.vehicleConfiguration?.trailers
+          ? response.permitData.vehicleConfiguration.trailers.map(
+              (trailer) => ({
+                ...trailer,
+                axleConfiguration: trailer?.axleConfiguration
+                  ? unmergeInteraxleSpacingRows(
+                      [...trailer.axleConfiguration],
+                      0,
+                    )
+                  : null,
+              }),
+            )
+          : null,
+      },
     },
   };
 };
