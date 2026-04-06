@@ -5,6 +5,8 @@ import {
   useFormContext,
   useWatch,
 } from "react-hook-form";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { Autocomplete } from "../../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
@@ -12,6 +14,11 @@ import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/ut
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { ApplicationFormData } from "../../../../../../types/application";
 import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
+import { IconButton, Tooltip } from "@mui/material";
+import {
+  defaultAxleUnit,
+  defaultTireSizeOption,
+} from "../../../../../../../../common/constants/defaultAxleUnit";
 
 type AxleConfigurationPath =
   | "permitData.vehicleConfiguration.axleConfiguration"
@@ -32,7 +39,7 @@ export const AxleUnitRow = ({
 }) => {
   const { setValue } = useFormContext<ApplicationFormData>();
 
-  const { fields } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: path,
   });
@@ -47,7 +54,15 @@ export const AxleUnitRow = ({
 
   const tireSizeOptions = policyEngine?.getStandardTireSizes() ?? [];
 
-  const defaultTireSizeOption = tireSizeOptions[1];
+  const defaultAxleUnitCount = isTrailer ? 1 : 2;
+
+  const handleAddAxleUnit = () => {
+    append([{ interaxleSpacing: null }, defaultAxleUnit]);
+  };
+
+  const handleRemoveAxleUnit = () => {
+    remove([fields.length - 2, fields.length - 1]);
+  };
 
   return (
     <>
@@ -66,6 +81,10 @@ export const AxleUnitRow = ({
         const axleUnitNumberDisplay = !isInteraxleSpacingRow
           ? axleUnitNumber + Math.floor(index / 2) + 1
           : 0;
+        const axleUnitCount = Math.ceil(fields.length / 2);
+        const isLastAxleUnitRow =
+          !isInteraxleSpacingRow && index === fields.length - 1;
+        const canRemoveLastAxleUnit = axleUnitCount > defaultAxleUnitCount;
 
         const numberOfAxles = axleUnits?.[index]?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
@@ -73,7 +92,42 @@ export const AxleUnitRow = ({
         return (
           <tr key={field.id} className="table__row">
             <td className="row__label">
-              {!isInteraxleSpacingRow && axleUnitNumberDisplay}
+              {!isInteraxleSpacingRow && (
+                <div className="row__label-content">
+                  <span>{axleUnitNumberDisplay}</span>
+
+                  {isLastAxleUnitRow ? (
+                    <div className="row__actions">
+                      <Tooltip title="Add Axle Unit">
+                        <IconButton
+                          onClick={handleAddAxleUnit}
+                          className="row__button row__button--add"
+                          aria-label="Add axle unit"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            className="button__icon"
+                          />
+                        </IconButton>
+                      </Tooltip>
+                      {canRemoveLastAxleUnit ? (
+                        <Tooltip title="Remove Axle Unit">
+                          <IconButton
+                            onClick={handleRemoveAxleUnit}
+                            className="row__button row__button--remove"
+                            aria-label={`Remove axle unit ${axleUnitNumber}`}
+                          >
+                            <FontAwesomeIcon
+                              icon={faMinus}
+                              className="button__icon"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (

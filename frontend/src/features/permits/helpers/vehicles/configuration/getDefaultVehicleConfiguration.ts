@@ -1,3 +1,4 @@
+import { defaultAxleUnit } from "../../../../../common/constants/defaultAxleUnit";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { Nullable } from "../../../../../common/types/common";
 import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
@@ -8,21 +9,9 @@ export const getDefaultVehicleConfiguration = (
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>,
 ) => {
   const defaultPowerUnitAxleConfiguration = [
-    {
-      numberOfAxles: 1,
-      numberOfTires: null,
-      tireSize: 279.4,
-      axleSpread: null,
-      axleUnitWeight: null,
-    },
+    defaultAxleUnit,
     { interaxleSpacing: null },
-    {
-      numberOfAxles: 1,
-      numberOfTires: null,
-      tireSize: 279.4,
-      axleSpread: null,
-      axleUnitWeight: null,
-    },
+    defaultAxleUnit,
   ];
 
   if (
