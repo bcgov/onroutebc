@@ -44,6 +44,7 @@ jobs:
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
+        --set-string global.env.cluster='GOLD' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
@@ -70,6 +71,7 @@ jobs:
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
+        --set-string global.env.cluster='GOLDDR' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
