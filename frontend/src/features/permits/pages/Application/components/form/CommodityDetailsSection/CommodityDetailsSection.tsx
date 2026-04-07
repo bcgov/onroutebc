@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, MenuItem, Tooltip } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { useApplicationFormContext } from "../../../../../hooks/form/useApplicationFormContext";
@@ -80,7 +79,7 @@ export const CommodityDetailsSection = ({
 
       const isPreviousEmpty =
         selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
-        selectedCommodityType == null;
+        !selectedCommodityType;
 
       // show the dialog if we're switching away from a non‑empty commodity and
       // there is either a VIN or any loaded‑dimension field has been filled in

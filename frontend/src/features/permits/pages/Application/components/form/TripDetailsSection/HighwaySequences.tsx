@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Button, FormControl, FormLabel } from "@mui/material";
@@ -45,8 +44,7 @@ export const highwaySequenceRules = (permitType: PermitType) => ({
       }
 
       return (
-        (value.length > 0 &&
-          value.some((highwayNumber) => Boolean(highwayNumber.trim()))) ||
+        value.some((highwayNumber) => Boolean(highwayNumber.trim())) ||
         requiredHighway()
       );
     },
