@@ -20,7 +20,7 @@ export interface CustomCheckboxProps<T extends FieldValues> {
   label: string;
   inputProps?: InputHTMLAttributes<HTMLInputElement>;
   checked?: boolean;
-  rules?: RegisterOptions;
+  rules?: RegisterOptions<T, FieldPath<T>>;
   handleChange?: (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean,
