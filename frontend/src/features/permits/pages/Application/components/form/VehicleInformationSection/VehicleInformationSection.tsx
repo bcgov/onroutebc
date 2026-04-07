@@ -17,10 +17,16 @@ import { VehicleDetails } from "./VehicleDetails";
 import { PowerUnitInfo } from "./PowerUnitInfo";
 import { PowerUnitDialog } from "./PowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
-import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import {
+  PermitVehicleConfiguration,
+  VehicleInConfiguration,
+} from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
-import { Nullable, ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
 
 export const VehicleInformationSection = ({
@@ -40,6 +46,7 @@ export const VehicleInformationSection = ({
   onSetVehicle,
   onClearVehicle,
   onUpdateVehicleConfigTrailers,
+  onUpdateVehicleConfig,
 }: {
   permitType: PermitType;
   feature: ORBCFormFeatureType;
@@ -62,6 +69,7 @@ export const VehicleInformationSection = ({
   onUpdateVehicleConfigTrailers: (
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
+  onUpdateVehicleConfig: (vehicleConfig: PermitVehicleConfiguration) => void;
 }) => {
   const isSingleTrip = permitType === PERMIT_TYPES.STOS;
   const infoSectionClassName =
@@ -73,7 +81,8 @@ export const VehicleInformationSection = ({
     `${isSingleTrip ? " vehicle-information-section__info-banner--single-trip" : ""}`;
 
   const isCommodityTypeSelected =
-    Boolean(selectedCommodityType) && (selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE);
+    Boolean(selectedCommodityType) &&
+    selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE;
 
   const isPowerUnitSelectedForSingleTrip =
     isSingleTrip && Boolean(vehicleFormData.vin);
@@ -97,6 +106,7 @@ export const VehicleInformationSection = ({
   const handleRemovePowerUnit = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
+    onUpdateVehicleConfig({});
   };
 
   const handleClosePowerUnitDialog = () => {
@@ -152,7 +162,10 @@ export const VehicleInformationSection = ({
                     aria-label="Add Power Unit"
                     variant="contained"
                     color="tertiary"
-                    disabled={isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected}
+                    disabled={
+                      isPowerUnitSelectedForSingleTrip ||
+                      !isCommodityTypeSelected
+                    }
                     onClick={handleClickAddPowerUnit}
                   >
                     <FontAwesomeIcon
