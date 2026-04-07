@@ -176,6 +176,7 @@ export const PermitForm = () => {
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
           onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
+          onUpdateVehicleConfig={onUpdateVehicleConfig}
         />
 
         <LoadedDimensionsSection
