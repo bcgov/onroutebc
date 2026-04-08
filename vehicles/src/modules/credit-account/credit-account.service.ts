@@ -552,7 +552,7 @@ export class CreditAccountService {
           statusToUpdateTo,
         );
 
-        await this.logCreditAccountActivity({
+        await this.logCreditAccountAndUserActivity({
           queryRunner,
           creditAccount,
           currentUser,
@@ -642,7 +642,7 @@ export class CreditAccountService {
       );
 
       if (affected === 1) {
-        await this.logCreditAccountActivity({
+        await this.logCreditAccountAndUserActivity({
           queryRunner,
           creditAccount,
           currentUser,
@@ -814,6 +814,19 @@ export class CreditAccountService {
     return { existingAccountUsers, accountUserMappedToAccount };
   }
 
+  /**
+   * Activates an existing credit account user.
+   *
+   * This helper updates the existing credit account user record to set it active,
+   * updates audit fields with the current user, logs the activation activity,
+   * and then returns the refreshed mapped DTO.
+   *
+   * @param currentUser - The user performing the activation.
+   * @param creditAccount - The credit account that the user belongs to.
+   * @param accountUserMappedToAccount - The existing credit account user record.
+   * @param currentDateTime - The timestamp used for auditing.
+   * @returns The activated credit account user DTO.
+   */
   private async activateExistingCreditAccountUser(
     currentUser: IUserJWT,
     creditAccount: CreditAccount,
@@ -845,7 +858,7 @@ export class CreditAccountService {
       }
 
       if (affected === 1) {
-        await this.logCreditAccountActivity({
+        await this.logCreditAccountAndUserActivity({
           queryRunner,
           creditAccount,
           currentUser,
@@ -878,6 +891,20 @@ export class CreditAccountService {
     );
   }
 
+  /**
+   * Creates a new credit account user and logs the associated activity.
+   *
+   * This helper maps the incoming DTO to a new CreditAccountUser entity, persists it
+   * within a transaction, records an ACCOUNT_USER_ADDED activity, and returns the
+   * mapped ReadCreditAccountUserDto.
+   *
+   * @param currentUser - The user performing the creation.
+   * @param creditAccount - The credit account to which the new user belongs.
+   * @param createUserDto - The incoming DTO containing new user details.
+   * @param creditAccountId - The credit account id the user is being added to.
+   * @param currentDateTime - The timestamp used for auditing.
+   * @returns The newly created credit account user DTO.
+   */
   private async createNewCreditAccountUser(
     currentUser: IUserJWT,
     creditAccount: CreditAccount,
@@ -911,7 +938,7 @@ export class CreditAccountService {
       newAccountUser =
         await queryRunner.manager.save<CreditAccountUser>(newAccountUser);
 
-      await this.logCreditAccountActivity({
+      await this.logCreditAccountAndUserActivity({
         queryRunner,
         creditAccount,
         currentUser,
@@ -943,7 +970,20 @@ export class CreditAccountService {
     );
   }
 
-  private async logCreditAccountActivity({
+  /**
+   * Persists a credit account and user activity record within the provided query runner.
+   *
+   * This helper creates a CreditAccountActivity entity, populates it with the
+   * supplied activity type and comment, applies base audit fields, and saves it.
+   *
+   * @param queryRunner - The active query runner for the transaction.
+   * @param creditAccount - The credit account related to the activity.
+   * @param currentUser - The user that triggered the activity.
+   * @param currentDateTime - The timestamp used for audit fields.
+   * @param creditAccountActivityType - The type of credit account activity.
+   * @param comment - The activity comment text.
+   */
+  private async logCreditAccountAndUserActivity({
     queryRunner,
     creditAccount,
     currentUser,
@@ -1104,7 +1144,7 @@ export class CreditAccountService {
           }
 
           if (affected === 1) {
-            await this.logCreditAccountActivity({
+            await this.logCreditAccountAndUserActivity({
               queryRunner,
               creditAccount,
               currentUser,
