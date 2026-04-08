@@ -32,7 +32,7 @@ const toHighwayRows = (highwaySequence: string[]) => {
 
 export const highwaySequenceRules = (permitType: PermitType) => ({
   validate: {
-    requiredHighwaySequence: (value: string[]) => {
+    requiredHighwaySequence: (value: string[] | undefined) => {
       // the control is only shown for STOS/STOW; neither type should trigger an
       // error if the array is empty. the validator existed previously to enforce
       // at least one value, but we avoid logging an error for either case.
@@ -42,11 +42,13 @@ export const highwaySequenceRules = (permitType: PermitType) => ({
       ) {
         return true;
       }
-
-      return (
-        value.some((highwayNumber) => Boolean(highwayNumber.trim())) ||
-        requiredHighway()
+      if (!value || value.length === 0) {
+        return requiredHighway();
+      }
+      const hasValidValue = value.some((highwayNumber) =>
+        Boolean(highwayNumber?.trim()),
       );
+      return hasValidValue || requiredHighway();
     },
   },
 });

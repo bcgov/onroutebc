@@ -17,7 +17,10 @@ import { VehicleDetails } from "./VehicleDetails";
 import { PowerUnitInfo } from "./PowerUnitInfo";
 import { PowerUnitDialog } from "./PowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
-import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import {
+  PermitVehicleConfiguration,
+  VehicleInConfiguration,
+} from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
 import {
@@ -43,6 +46,7 @@ export const VehicleInformationSection = ({
   onSetVehicle,
   onClearVehicle,
   onUpdateVehicleConfigTrailers,
+  onUpdateVehicleConfig,
 }: {
   permitType: PermitType;
   feature: ORBCFormFeatureType;
@@ -65,6 +69,7 @@ export const VehicleInformationSection = ({
   onUpdateVehicleConfigTrailers: (
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
+  onUpdateVehicleConfig: (vehicleConfig: PermitVehicleConfiguration) => void;
 }) => {
   const isSingleTrip =
     permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
@@ -102,6 +107,7 @@ export const VehicleInformationSection = ({
   const handleRemovePowerUnit = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
+    onUpdateVehicleConfig({});
   };
 
   const handleClosePowerUnitDialog = () => {
