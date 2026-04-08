@@ -342,3 +342,9 @@
 
 ### Version 87:
 - Updates to policy config to support vehicle font display code
+
+### Version 90:
+- Update ORBC_CREDIT_ACCOUNT_ACTIVITY_TYPE reference data to add new activity types for credit account user management
+  - USERADDED
+  - USERRMVD
+-  Modify [tps].[CopyMigratedCreditAccounts] stored procedure to log user additions and removals as part of TPS migration'

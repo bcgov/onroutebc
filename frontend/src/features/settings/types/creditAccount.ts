@@ -202,6 +202,8 @@ export const CREDIT_ACCOUNT_ACTIVITY_TYPE = {
   ONHOLD: "ONHOLD",
   MIGRATED: "MIGRATED",
   VERIFIED: "VERIFIED",
+  USERADDED: "USERADDED",
+  USERRMVD: "USERRMVD",
 } as const;
 
 export type CreditAccountActivityType =
@@ -217,6 +219,8 @@ export const CreditAccountActivityDisplayValues: {
   HOLDRMVD: "Hold Removed",
   MIGRATED: "Migrated",
   VERIFIED: "Account Verified",
+  USERADDED: "Account User Added",
+  USERRMVD: "Account User Removed",
 };
 
 export interface CreditAccountActivity {
@@ -250,7 +254,7 @@ export const EGARMS_ERROR_CODE = {
   E0003: "E0003",
   E0004: "E0004",
   E1739: "E1739",
-  E9999: "E9999",  
+  E9999: "E9999",
 } as const;
 
 export type EGARMS_ERROR_CODE_TYPE =
@@ -264,7 +268,7 @@ export const EGARMS_CODE_ERROR_MESSAGES = {
   E0002: "Credit Account is inactive.",
   E0003: "Credit Account on hold.",
   E0004: "Credit Account has exceeded negative allowed amount.",
-  E1739: "Credit Account has exceeded negative allowed amount.",  
+  E1739: "Credit Account has exceeded negative allowed amount.",
   E9999: "Serious error.",
   DEFAULT: "Credit Account is unavailable.",
 } as const;

@@ -804,25 +804,59 @@ export class CreditAccountService {
         accountUser.creditAccount.creditAccountId === creditAccountId,
     );
 
+    const currentDateTime: Date = new Date();
     if (accountUserMappedToAccount && !accountUserMappedToAccount.isActive) {
       // If the user is not active, update the user to be active and save changes
-      const { affected } = await this.creditAccountUserRepository.update(
-        {
-          creditAccountUserId: accountUserMappedToAccount.creditAccountUserId,
-        },
-        {
-          isActive: true,
-          updatedUserGuid: currentUser.userGUID,
-          updatedDateTime: new Date(),
-          updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbcUserDirectory,
-        },
-      );
-      if (affected === 0) {
-        // If no rows are affected, throw an exception
-        throw new InternalServerErrorException(
-          'Credit Account user update failed!!',
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const { affected } = await queryRunner.manager.update(
+          CreditAccountUser,
+          {
+            creditAccountUserId: accountUserMappedToAccount.creditAccountUserId,
+          },
+          {
+            isActive: true,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: currentDateTime,
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
         );
+
+        if (affected === 0) {
+          // If no rows are affected, throw an exception
+          throw new InternalServerErrorException(
+            'Credit Account user update failed!!',
+          );
+        }
+
+        if (affected === 1) {
+          const creditAccountActivity: CreditAccountActivity =
+            new CreditAccountActivity();
+
+          creditAccountActivity.creditAccount = creditAccount;
+          creditAccountActivity.idirUser = new User();
+          creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+          creditAccountActivity.creditAccountActivityType =
+            CreditAccountActivityType.ACCOUNT_USER_ADDED;
+          creditAccountActivity.comment = `onRouteBC Client No.: ${accountUserMappedToAccount?.company?.clientNumber}`;
+          creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
+          setBaseEntityProperties<CreditAccountActivity>({
+            entity: creditAccountActivity,
+            currentUser,
+            date: currentDateTime,
+          });
+          await queryRunner.manager.save(creditAccountActivity);
+        }
+        await queryRunner.commitTransaction();
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(error);
+        throw error;
+      } finally {
+        await queryRunner.release();
       }
 
       const updatedAccountUserInfo = await this.findManyCreditAccountUsers(
@@ -854,8 +888,44 @@ export class CreditAccountService {
         },
       );
 
-      newAccountUser =
-        await this.creditAccountUserRepository.save(newAccountUser);
+      const companyInfo =
+        await this.companyService.findOneCompanyWithAllDetails(
+          newAccountUser?.company?.companyId,
+        );
+
+      // If the user is not active, update the user to be active and save changes
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        newAccountUser =
+          await queryRunner.manager.save<CreditAccountUser>(newAccountUser);
+
+        const creditAccountActivity: CreditAccountActivity =
+          new CreditAccountActivity();
+
+        creditAccountActivity.creditAccount = creditAccount;
+        creditAccountActivity.idirUser = new User();
+        creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+        creditAccountActivity.creditAccountActivityType =
+          CreditAccountActivityType.ACCOUNT_USER_ADDED;
+        creditAccountActivity.comment = `onRouteBC Client No.: ${companyInfo?.clientNumber}`;
+        creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
+        setBaseEntityProperties<CreditAccountActivity>({
+          entity: creditAccountActivity,
+          currentUser,
+          date: currentDateTime,
+        });
+        await queryRunner.manager.save(creditAccountActivity);
+
+        await queryRunner.commitTransaction();
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(error);
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
 
       const newAccountUserInfo = await this.findManyCreditAccountUsers(
         null,
@@ -964,32 +1034,71 @@ export class CreditAccountService {
     deleteDto.failure.push(...remainingCompanyIds.map(String));
 
     // Extract IDs of credit account users to be deactivated
-    const userIdsToDeactivate = activeCreditAccountUsers.map(
-      (creditAccountUser) => creditAccountUser.creditAccountUserId,
-    );
+    // const creditAccountUsersToDeactivate = activeCreditAccountUsers.map(
+    //   (creditAccountUser) => ({
+    //     creditAccountUserId: creditAccountUser.creditAccountUserId,
+    //     companyId: creditAccountUser?.company?.companyId,
+    //     clientNumber: creditAccountUser?.clientNumber,
+    //   }),
+    // );
 
-    if (userIdsToDeactivate?.length) {
+    if (activeCreditAccountUsers?.length) {
+      const currentDateTime: Date = new Date();
       // Deactivate credit account users and update audit fields
-      const { affected } = await this.creditAccountUserRepository
-        .createQueryBuilder('creditAccountUser')
-        .update()
-        .set({
-          isActive: false,
-          updatedUser: currentUser.userName,
-          updatedDateTime: new Date(),
-          updatedUserDirectory: currentUser.orbcUserDirectory,
-          updatedUserGuid: currentUser.userGUID,
-        })
-        .where('creditAccountUserId IN (:...userIdsToDeactivate)', {
-          userIdsToDeactivate: userIdsToDeactivate,
-        })
-        .execute();
-      if (affected === 0) {
-        // If no records are updated, throw InternalServerErrorException
-        throw new InternalServerErrorException(
-          'Credit Account user deactivation failed!!',
-        );
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      try {
+        for (const creditAccountUser of activeCreditAccountUsers) {
+          await queryRunner.startTransaction();
+          const { affected } = await queryRunner.manager.update(
+            CreditAccountUser,
+            {
+              creditAccountUserId: creditAccountUser?.creditAccountUserId,
+            },
+            {
+              isActive: false,
+              updatedUserGuid: currentUser.userGUID,
+              updatedDateTime: currentDateTime,
+              updatedUser: currentUser.userName,
+              updatedUserDirectory: currentUser.orbcUserDirectory,
+            },
+          );
+
+          if (affected === 0) {
+            deleteDto?.failure?.includes(
+              creditAccountUser?.company?.companyId?.toString(),
+            );
+          }
+
+          if (affected === 1) {
+            const creditAccountActivity: CreditAccountActivity =
+              new CreditAccountActivity();
+
+            creditAccountActivity.creditAccount = creditAccount;
+            creditAccountActivity.idirUser = new User();
+            creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+            creditAccountActivity.creditAccountActivityType =
+              CreditAccountActivityType.ACCOUNT_USER_REMOVED;
+            creditAccountActivity.comment = `onRouteBC Client No.: ${creditAccountUser?.company?.clientNumber}`;
+            creditAccountActivity.creditAccountActivityDateTime =
+              currentDateTime;
+            setBaseEntityProperties<CreditAccountActivity>({
+              entity: creditAccountActivity,
+              currentUser,
+              date: currentDateTime,
+            });
+            await queryRunner.manager.save(creditAccountActivity);
+          }
+          await queryRunner.commitTransaction();
+        }
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(error);
+        throw error;
+      } finally {
+        await queryRunner.release();
       }
+
       // Add deactivated user IDs to the success array
       deleteDto.success.push(
         ...companyIds
