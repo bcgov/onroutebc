@@ -193,7 +193,7 @@ BEGIN
         caut.CREDIT_ACCOUNT_ID,
         GETUTCDATE(),
         'USERADDED',
-        (SELECT 'onRouteBC Client No.: '||CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
+        (SELECT 'onRouteBC Client No.: '+CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
     FROM @CreditAccountUsersTemp caut;
 
     --Clear the temporary table before reusing for new inserts
@@ -224,7 +224,7 @@ BEGIN
         caut.CREDIT_ACCOUNT_ID,
         GETUTCDATE(),
         'USERADDED',
-        (SELECT 'onRouteBC Client No.: '||CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
+        (SELECT 'onRouteBC Client No.: '+CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
     FROM @CreditAccountUsersTemp caut;
 
     --Clear the temporary table before reusing for new inserts
@@ -254,7 +254,7 @@ BEGIN
         caut.CREDIT_ACCOUNT_ID,
         GETUTCDATE(),
         'USERRMVD',
-        (SELECT 'onRouteBC Client No.: '||CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
+        (SELECT 'onRouteBC Client No.: '+CLIENT_NUMBER from dbo.ORBC_COMPANY where COMPANY_ID=caut.COMPANY_ID)
     FROM @CreditAccountUsersTemp caut;
 
 END;
