@@ -28,18 +28,16 @@ const toHighwayRows = (highwaySequence: string[]) => {
   });
 };
 
-const highwaySequenceRules =  {
+const highwaySequenceRules = {
   validate: {
-    requiredHighwaySequence: (
-      value: string[],
-    ) => {
-      return (
-        (
-          value.length > 0 &&
-          value.some(highwayNumber => Boolean(highwayNumber.trim()))
-        ) ||
-        requiredHighway()
-      )
+    requiredHighwaySequence: (value: string[] | undefined) => {
+      if (!value || value.length === 0) {
+        return requiredHighway();
+      }
+      const hasValidValue = value.some((highwayNumber) =>
+        Boolean(highwayNumber?.trim()),
+      );
+      return hasValidValue || requiredHighway();
     },
   },
 };
