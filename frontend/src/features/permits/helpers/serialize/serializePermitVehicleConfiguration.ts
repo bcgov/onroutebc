@@ -57,6 +57,7 @@ export const serializePermitVehicleConfiguration = (
         ),
         loadedGVW: convertToNumberIfValid(vehicleConfiguration.loadedGVW, null),
         netWeight: convertToNumberIfValid(vehicleConfiguration.netWeight, null),
+        // TODO ensure that values recorded in metres are converted to centimetres and then converted back to metres
         axleConfiguration: vehicleConfiguration.axleConfiguration
           ? mergeInteraxleSpacingRows(
               [...vehicleConfiguration.axleConfiguration],
