@@ -17,7 +17,10 @@ import { VehicleDetails } from "./VehicleDetails";
 import { PowerUnitInfo } from "./PowerUnitInfo";
 import { PowerUnitDialog } from "./PowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
-import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import {
+  PermitVehicleConfiguration,
+  VehicleInConfiguration,
+} from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
 import {
@@ -44,6 +47,7 @@ export const VehicleInformationSection = ({
   onSetVehicle,
   onClearVehicle,
   onUpdateVehicleConfigTrailers,
+  onUpdateVehicleConfig,
   onClearVehicleConfig,
 }: {
   permitType: PermitType;
@@ -67,6 +71,7 @@ export const VehicleInformationSection = ({
   onUpdateVehicleConfigTrailers: (
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
+  onUpdateVehicleConfig: (vehicleConfig: PermitVehicleConfiguration) => void;
   onClearVehicleConfig: (permitType: PermitType) => void;
 }) => {
   const isSingleTrip =
@@ -118,6 +123,7 @@ export const VehicleInformationSection = ({
   const handleRemovePowerUnit = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
+    onUpdateVehicleConfig({});
     if (permitType === PERMIT_TYPES.STOW) {
       // For STOW, we also need to clear the axle configuration when the power unit is removed
       onClearVehicleConfig(permitType);

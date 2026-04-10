@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, QueryRunner, Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
@@ -551,28 +551,15 @@ export class CreditAccountService {
           creditAccount,
           statusToUpdateTo,
         );
-        const creditAccountActivity: CreditAccountActivity =
-          new CreditAccountActivity();
 
-        creditAccountActivity.creditAccount = creditAccount;
-        creditAccountActivity.idirUser = new User();
-        creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
-        creditAccountActivity.creditAccountActivityType =
-          creditAccountActivityType;
-        creditAccountActivity.comment = comment;
-        creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
-        creditAccountActivity.createdUser = currentUser.userName;
-        creditAccountActivity.createdUserGuid = currentUser.userGUID;
-        creditAccountActivity.createdUserDirectory =
-          currentUser.orbcUserDirectory;
-        creditAccountActivity.createdDateTime = currentDateTime;
-        creditAccountActivity.updatedUser = currentUser.userName;
-        creditAccountActivity.updatedUserGuid = currentUser.userGUID;
-        creditAccountActivity.updatedUserDirectory =
-          currentUser.orbcUserDirectory;
-        creditAccountActivity.updatedDateTime = currentDateTime;
-
-        await queryRunner.manager.save(creditAccountActivity);
+        await this.logCreditAccountAndUserActivity({
+          queryRunner,
+          creditAccount,
+          currentUser,
+          currentDateTime,
+          creditAccountActivityType,
+          comment,
+        });
       }
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -655,22 +642,14 @@ export class CreditAccountService {
       );
 
       if (affected === 1) {
-        const creditAccountActivity: CreditAccountActivity =
-          new CreditAccountActivity();
-
-        creditAccountActivity.creditAccount = creditAccount;
-        creditAccountActivity.idirUser = new User();
-        creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
-        creditAccountActivity.creditAccountActivityType =
-          CreditAccountActivityType.ACCOUNT_VERIFIED;
-        creditAccountActivity.comment = comment;
-        creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
-        setBaseEntityProperties<CreditAccountActivity>({
-          entity: creditAccountActivity,
+        await this.logCreditAccountAndUserActivity({
+          queryRunner,
+          creditAccount,
           currentUser,
-          date: currentDateTime,
+          currentDateTime,
+          creditAccountActivityType: CreditAccountActivityType.ACCOUNT_VERIFIED,
+          comment,
         });
-        await queryRunner.manager.save(creditAccountActivity);
       }
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -745,14 +724,41 @@ export class CreditAccountService {
     creditAccountId: number,
     createUserDto: CreateCreditAccountUserDto,
   ): Promise<ReadCreditAccountUserDto> {
-    // Find the credit account by creditAccountId and accountHolderId
     const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
       creditAccountId,
       accountHolderId,
     );
 
+    this.validateCreditAccountForUserAddition(creditAccount);
+
+    const { accountUserMappedToAccount } =
+      await this.findOrCheckExistingAccount(
+        createUserDto.companyId,
+        creditAccountId,
+      );
+
+    const currentDateTime = new Date();
+
+    return accountUserMappedToAccount && !accountUserMappedToAccount.isActive
+      ? await this.activateExistingCreditAccountUser(
+          currentUser,
+          creditAccount,
+          accountUserMappedToAccount,
+          currentDateTime,
+        )
+      : await this.createNewCreditAccountUser(
+          currentUser,
+          creditAccount,
+          createUserDto,
+          creditAccountId,
+          currentDateTime,
+        );
+  }
+
+  private validateCreditAccountForUserAddition(
+    creditAccount: CreditAccount,
+  ): void {
     if (!creditAccount) {
-      // If no credit account is found, throw an exception
       throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
@@ -763,27 +769,29 @@ export class CreditAccountService {
         'Credit Account closed - Cannot add user',
       );
     }
+  }
 
-    // Find if there is an existing credit account by companyId as holder
-    const existingAccountAsHolder = await this.findOneByIdAndAccountHolder(
-      createUserDto.companyId,
-    );
+  private async findOrCheckExistingAccount(
+    companyId: number,
+    creditAccountId: number,
+  ): Promise<{
+    existingAccountUsers: CreditAccountUser[];
+    accountUserMappedToAccount: CreditAccountUser;
+  }> {
+    const existingAccountAsHolder =
+      await this.findOneByIdAndAccountHolder(companyId);
 
     let existingActiveAccount =
       isActiveCreditAccount(existingAccountAsHolder) && existingAccountAsHolder;
     let existingAccountUsers: CreditAccountUser[] = null;
 
-    // If the credit account is not active, find many credit account users by companyId
     if (!existingActiveAccount) {
-      existingAccountUsers = await this.findManyCreditAccountUsers(
-        createUserDto.companyId,
-      );
+      existingAccountUsers = await this.findManyCreditAccountUsers(companyId);
       existingActiveAccount = existingAccountUsers?.find(
         (accountUser) => accountUser.isActive,
       )?.creditAccount;
     }
 
-    // Check if there is an active credit account or if there are any active credit account users
     if (existingActiveAccount) {
       const existingAccountUserDetails = await this.classMapper.mapAsync(
         existingActiveAccount,
@@ -797,79 +805,214 @@ export class CreditAccountService {
       );
     }
 
-    // Find if there is a credit account user mapped to the credit account with the same companyId
     const accountUserMappedToAccount = existingAccountUsers?.find(
       (accountUser) =>
-        accountUser.company.companyId === createUserDto.companyId &&
+        accountUser.company.companyId === companyId &&
         accountUser.creditAccount.creditAccountId === creditAccountId,
     );
 
-    if (accountUserMappedToAccount && !accountUserMappedToAccount.isActive) {
-      // If the user is not active, update the user to be active and save changes
-      const { affected } = await this.creditAccountUserRepository.update(
+    return { existingAccountUsers, accountUserMappedToAccount };
+  }
+
+  /**
+   * Activates an existing credit account user.
+   *
+   * This helper updates the existing credit account user record to set it active,
+   * updates audit fields with the current user, logs the activation activity,
+   * and then returns the refreshed mapped DTO.
+   *
+   * @param currentUser - The user performing the activation.
+   * @param creditAccount - The credit account that the user belongs to.
+   * @param accountUserMappedToAccount - The existing credit account user record.
+   * @param currentDateTime - The timestamp used for auditing.
+   * @returns The activated credit account user DTO.
+   */
+  private async activateExistingCreditAccountUser(
+    currentUser: IUserJWT,
+    creditAccount: CreditAccount,
+    accountUserMappedToAccount: CreditAccountUser,
+    currentDateTime: Date,
+  ): Promise<ReadCreditAccountUserDto> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const { affected } = await queryRunner.manager.update(
+        CreditAccountUser,
         {
           creditAccountUserId: accountUserMappedToAccount.creditAccountUserId,
         },
         {
           isActive: true,
           updatedUserGuid: currentUser.userGUID,
-          updatedDateTime: new Date(),
+          updatedDateTime: currentDateTime,
           updatedUser: currentUser.userName,
           updatedUserDirectory: currentUser.orbcUserDirectory,
         },
       );
+
       if (affected === 0) {
-        // If no rows are affected, throw an exception
         throw new InternalServerErrorException(
           'Credit Account user update failed!!',
         );
       }
 
-      const updatedAccountUserInfo = await this.findManyCreditAccountUsers(
-        null,
-        null,
-        null,
-        accountUserMappedToAccount.creditAccountUserId,
-        true,
-      );
-      return await this.classMapper.mapAsync(
-        updatedAccountUserInfo?.at(0),
-        CreditAccountUser,
-        ReadCreditAccountUserDto,
-      );
-    } else {
-      // If no user is found, create a new credit account user
-      let newAccountUser = await this.classMapper.mapAsync(
-        createUserDto,
-        CreateCreditAccountUserDto,
-        CreditAccountUser,
-        {
-          extraArgs: () => ({
-            creditAccountId: creditAccountId,
-            userName: currentUser.userName,
-            directory: currentUser.orbcUserDirectory,
-            userGUID: currentUser.userGUID,
-            timestamp: new Date(),
-          }),
-        },
-      );
-
-      newAccountUser =
-        await this.creditAccountUserRepository.save(newAccountUser);
-
-      const newAccountUserInfo = await this.findManyCreditAccountUsers(
-        null,
-        null,
-        null,
-        newAccountUser.creditAccountUserId,
-        true,
-      );
-      return this.classMapper.mapAsync(
-        newAccountUserInfo?.at(0),
-        CreditAccountUser,
-        ReadCreditAccountUserDto,
-      );
+      if (affected === 1) {
+        await this.logCreditAccountAndUserActivity({
+          queryRunner,
+          creditAccount,
+          currentUser,
+          currentDateTime,
+          creditAccountActivityType:
+            CreditAccountActivityType.ACCOUNT_USER_ADDED,
+          comment: `onRouteBC Client No.: ${accountUserMappedToAccount?.company?.clientNumber}`,
+        });
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
+
+    const updatedAccountUserInfo = await this.findManyCreditAccountUsers(
+      null,
+      null,
+      null,
+      accountUserMappedToAccount.creditAccountUserId,
+      true,
+    );
+    return await this.classMapper.mapAsync(
+      updatedAccountUserInfo?.at(0),
+      CreditAccountUser,
+      ReadCreditAccountUserDto,
+    );
+  }
+
+  /**
+   * Creates a new credit account user and logs the associated activity.
+   *
+   * This helper maps the incoming DTO to a new CreditAccountUser entity, persists it
+   * within a transaction, records an ACCOUNT_USER_ADDED activity, and returns the
+   * mapped ReadCreditAccountUserDto.
+   *
+   * @param currentUser - The user performing the creation.
+   * @param creditAccount - The credit account to which the new user belongs.
+   * @param createUserDto - The incoming DTO containing new user details.
+   * @param creditAccountId - The credit account id the user is being added to.
+   * @param currentDateTime - The timestamp used for auditing.
+   * @returns The newly created credit account user DTO.
+   */
+  private async createNewCreditAccountUser(
+    currentUser: IUserJWT,
+    creditAccount: CreditAccount,
+    createUserDto: CreateCreditAccountUserDto,
+    creditAccountId: number,
+    currentDateTime: Date,
+  ): Promise<ReadCreditAccountUserDto> {
+    let newAccountUser = await this.classMapper.mapAsync(
+      createUserDto,
+      CreateCreditAccountUserDto,
+      CreditAccountUser,
+      {
+        extraArgs: () => ({
+          creditAccountId: creditAccountId,
+          userName: currentUser.userName,
+          directory: currentUser.orbcUserDirectory,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+        }),
+      },
+    );
+
+    const companyInfo = await this.companyService.findOneCompanyWithAllDetails(
+      newAccountUser?.company?.companyId,
+    );
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      newAccountUser =
+        await queryRunner.manager.save<CreditAccountUser>(newAccountUser);
+
+      await this.logCreditAccountAndUserActivity({
+        queryRunner,
+        creditAccount,
+        currentUser,
+        currentDateTime,
+        creditAccountActivityType: CreditAccountActivityType.ACCOUNT_USER_ADDED,
+        comment: `onRouteBC Client No.: ${companyInfo?.clientNumber}`,
+      });
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+
+    const newAccountUserInfo = await this.findManyCreditAccountUsers(
+      null,
+      null,
+      null,
+      newAccountUser.creditAccountUserId,
+      true,
+    );
+    return this.classMapper.mapAsync(
+      newAccountUserInfo?.at(0),
+      CreditAccountUser,
+      ReadCreditAccountUserDto,
+    );
+  }
+
+  /**
+   * Persists a credit account and user activity record within the provided query runner.
+   *
+   * This helper creates a CreditAccountActivity entity, populates it with the
+   * supplied activity type and comment, applies base audit fields, and saves it.
+   *
+   * @param queryRunner - The active query runner for the transaction.
+   * @param creditAccount - The credit account related to the activity.
+   * @param currentUser - The user that triggered the activity.
+   * @param currentDateTime - The timestamp used for audit fields.
+   * @param creditAccountActivityType - The type of credit account activity.
+   * @param comment - The activity comment text.
+   */
+  private async logCreditAccountAndUserActivity({
+    queryRunner,
+    creditAccount,
+    currentUser,
+    currentDateTime,
+    creditAccountActivityType,
+    comment,
+  }: {
+    queryRunner: QueryRunner;
+    creditAccount: CreditAccount;
+    currentUser: IUserJWT;
+    currentDateTime: Date;
+    creditAccountActivityType: CreditAccountActivityType;
+    comment: string;
+  }): Promise<void> {
+    const creditAccountActivity: CreditAccountActivity =
+      new CreditAccountActivity();
+
+    creditAccountActivity.creditAccount = creditAccount;
+    creditAccountActivity.idirUser = new User();
+    creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+    creditAccountActivity.creditAccountActivityType = creditAccountActivityType;
+    creditAccountActivity.comment = comment;
+    creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
+    setBaseEntityProperties<CreditAccountActivity>({
+      entity: creditAccountActivity,
+      currentUser,
+      date: currentDateTime,
+    });
+    await queryRunner.manager.save(creditAccountActivity);
   }
 
   /**
@@ -964,32 +1107,63 @@ export class CreditAccountService {
     deleteDto.failure.push(...remainingCompanyIds.map(String));
 
     // Extract IDs of credit account users to be deactivated
-    const userIdsToDeactivate = activeCreditAccountUsers.map(
-      (creditAccountUser) => creditAccountUser.creditAccountUserId,
-    );
+    // const creditAccountUsersToDeactivate = activeCreditAccountUsers.map(
+    //   (creditAccountUser) => ({
+    //     creditAccountUserId: creditAccountUser.creditAccountUserId,
+    //     companyId: creditAccountUser?.company?.companyId,
+    //     clientNumber: creditAccountUser?.clientNumber,
+    //   }),
+    // );
 
-    if (userIdsToDeactivate?.length) {
+    if (activeCreditAccountUsers?.length) {
+      const currentDateTime: Date = new Date();
       // Deactivate credit account users and update audit fields
-      const { affected } = await this.creditAccountUserRepository
-        .createQueryBuilder('creditAccountUser')
-        .update()
-        .set({
-          isActive: false,
-          updatedUser: currentUser.userName,
-          updatedDateTime: new Date(),
-          updatedUserDirectory: currentUser.orbcUserDirectory,
-          updatedUserGuid: currentUser.userGUID,
-        })
-        .where('creditAccountUserId IN (:...userIdsToDeactivate)', {
-          userIdsToDeactivate: userIdsToDeactivate,
-        })
-        .execute();
-      if (affected === 0) {
-        // If no records are updated, throw InternalServerErrorException
-        throw new InternalServerErrorException(
-          'Credit Account user deactivation failed!!',
-        );
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      try {
+        for (const creditAccountUser of activeCreditAccountUsers) {
+          await queryRunner.startTransaction();
+          const { affected } = await queryRunner.manager.update(
+            CreditAccountUser,
+            {
+              creditAccountUserId: creditAccountUser?.creditAccountUserId,
+            },
+            {
+              isActive: false,
+              updatedUserGuid: currentUser.userGUID,
+              updatedDateTime: currentDateTime,
+              updatedUser: currentUser.userName,
+              updatedUserDirectory: currentUser.orbcUserDirectory,
+            },
+          );
+
+          if (affected === 0) {
+            deleteDto?.failure?.includes(
+              creditAccountUser?.company?.companyId?.toString(),
+            );
+          }
+
+          if (affected === 1) {
+            await this.logCreditAccountAndUserActivity({
+              queryRunner,
+              creditAccount,
+              currentUser,
+              currentDateTime,
+              creditAccountActivityType:
+                CreditAccountActivityType.ACCOUNT_USER_REMOVED,
+              comment: `onRouteBC Client No.: ${creditAccountUser?.company?.clientNumber}`,
+            });
+          }
+          await queryRunner.commitTransaction();
+        }
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(error);
+        throw error;
+      } finally {
+        await queryRunner.release();
       }
+
       // Add deactivated user IDs to the success array
       deleteDto.success.push(
         ...companyIds

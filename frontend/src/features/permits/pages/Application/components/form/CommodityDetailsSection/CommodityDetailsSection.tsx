@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, MenuItem, Tooltip } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { useApplicationFormContext } from "../../../../../hooks/form/useApplicationFormContext";
-
 import "./CommodityDetailsSection.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
@@ -20,6 +17,8 @@ import {
   DEFAULT_EMPTY_SELECT_OPTION,
   DEFAULT_EMPTY_SELECT_VALUE,
 } from "../../../../../../../common/constants/constants";
+import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
+import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 
 export const CommodityDetailsSection = ({
   feature,
@@ -27,6 +26,8 @@ export const CommodityDetailsSection = ({
   commodityOptions,
   selectedCommodityType,
   onChangeCommodityType,
+  vehicleFormData,
+  vehicleConfiguration,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
@@ -36,6 +37,8 @@ export const CommodityDetailsSection = ({
   }[];
   selectedCommodityType?: Nullable<string>;
   onChangeCommodityType: (commodityType: string) => void;
+  vehicleFormData: PermitVehicleDetails;
+  vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
 }) => {
   const [newCommodityType, setNewCommodityType] = useState<
     string | undefined
@@ -60,27 +63,22 @@ export const CommodityDetailsSection = ({
     trigger("permitData.permittedCommodity.commodityType");
   };
 
-  // grab vehicle form state so we can know whether the VIN or dimensions are populated
-  const { vehicleFormData } = useApplicationFormContext();
-
   const handleCommodityTypeChange = useCallback(
     async (updatedCommodityType: string) => {
       if (selectedCommodityType === updatedCommodityType) return;
 
-      const configValues = getValues("permitData.vehicleConfiguration") || {};
-
       const hasVin = Boolean(vehicleFormData.vin);
       const hasDimensions = Boolean(
-        configValues.overallWidth ||
-          configValues.overallHeight ||
-          configValues.overallLength ||
-          configValues.frontProjection ||
-          configValues.rearProjection,
+        vehicleConfiguration?.overallWidth ||
+          vehicleConfiguration?.overallHeight ||
+          vehicleConfiguration?.overallLength ||
+          vehicleConfiguration?.frontProjection ||
+          vehicleConfiguration?.rearProjection,
       );
 
       const isPreviousEmpty =
         selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
-        selectedCommodityType == null;
+        !selectedCommodityType;
 
       // show the dialog if we're switching away from a non‑empty commodity and
       // there is either a VIN or any loaded‑dimension field has been filled in
