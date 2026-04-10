@@ -1,4 +1,7 @@
-import { mergeInteraxleSpacing } from "../../../../common/helpers/axleUnitHelper";
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../../../../common/helpers/axleUnitHelper";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
@@ -17,7 +20,12 @@ export const serializePermitVehicleConfiguration = (
           ? vehicleConfiguration.trailers.map((trailer) => ({
               ...trailer,
               axleConfiguration: trailer.axleConfiguration
-                ? mergeInteraxleSpacing([...trailer.axleConfiguration], 0)
+                ? mergeInteraxleSpacing(
+                    trailer.axleConfiguration.map(
+                      convertMetreValuesToCentimetres,
+                    ),
+                    0,
+                  )
                 : null,
             }))
           : null,
@@ -45,7 +53,9 @@ export const serializePermitVehicleConfiguration = (
         netWeight: convertToNumberIfValid(vehicleConfiguration.netWeight, null),
         axleConfiguration: vehicleConfiguration.axleConfiguration
           ? mergeInteraxleSpacing(
-              [...vehicleConfiguration.axleConfiguration],
+              vehicleConfiguration.axleConfiguration.map(
+                convertMetreValuesToCentimetres,
+              ),
               1,
             )
           : null,

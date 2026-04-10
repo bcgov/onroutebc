@@ -12,6 +12,18 @@ export const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
   };
 };
 
+export const convertCentimetreValuesToMetres = (axleUnit: AxleUnit) => {
+  return {
+    ...axleUnit,
+    axleSpread: axleUnit.axleSpread
+      ? axleUnit.axleSpread / 100
+      : axleUnit.axleSpread,
+    interaxleSpacing: axleUnit.interaxleSpacing
+      ? axleUnit.interaxleSpacing / 100
+      : axleUnit.interaxleSpacing,
+  };
+};
+
 /** Removes individual interaxle spacing objects and merges their value into the next axleConfiguration object */
 export const mergeInteraxleSpacing = (
   axleConfiguration: AxleUnit[],
@@ -24,4 +36,23 @@ export const mergeInteraxleSpacing = (
   }
 
   return merged;
+};
+
+export const unmergeInteraxleSpacingRows = (
+  axleConfiguration: AxleUnit[],
+  startIndex: number,
+) => {
+  const unmerged = axleConfiguration.map((axle) => ({ ...axle }));
+
+  for (let i = startIndex; i < unmerged.length; i++) {
+    const spacing = unmerged[i].interaxleSpacing ?? null;
+    unmerged.splice(i, 0, { interaxleSpacing: spacing });
+
+    // remove spacing value from the axle row since it now lives in the inserted spacing row
+    unmerged[i + 1].interaxleSpacing = null;
+
+    i++; // skip over the axle row we just processed
+  }
+
+  return unmerged;
 };
