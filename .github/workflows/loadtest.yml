@@ -7,17 +7,17 @@ on:
       ### Required
       dops_api_url:
         description: 'The url endpoint for the dops'
-        default: onroutebc-test-dops.apps.silver.devops.gov.bc.ca
+        default: onroutebc-test-dops.apps.gold.devops.gov.bc.ca
         required: true
         type: string
       frontend_api_url:
         description: 'The url endpoint for the frontend'
-        default: onroutebc-test-frontend.apps.silver.devops.gov.bc.ca
+        default: onroutebc-test-frontend.apps.gold.devops.gov.bc.ca
         required: true
         type: string
       vehicles_api_url:
         description: 'The url endpoint for vehicles'
-        default: onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca
+        default: onroutebc-test-vehicles.apps.gold.devops.gov.bc.ca
         required: true
         type: string
       bearer_token:

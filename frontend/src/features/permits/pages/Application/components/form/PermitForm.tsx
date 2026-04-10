@@ -159,6 +159,8 @@ export const PermitForm = () => {
           commodityOptions={commodityOptions}
           selectedCommodityType={commodityType}
           onChangeCommodityType={onChangeCommodityType}
+          vehicleFormData={vehicleFormData}
+          vehicleConfiguration={vehicleConfiguration}
         />
 
         <VehicleInformationSection
@@ -178,6 +180,7 @@ export const PermitForm = () => {
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
           onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
+          onUpdateVehicleConfig={onUpdateVehicleConfig}
           onClearVehicleConfig={onClearVehicleConfig}
         />
 

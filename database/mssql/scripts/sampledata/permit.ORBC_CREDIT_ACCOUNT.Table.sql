@@ -13,7 +13,7 @@ INSERT INTO permit.ORBC_CREDIT_ACCOUNT (
   '74',
   'ACTIVE',
   'UNKNOWN',
-  'WS1689',
+  'WS0001',
   'N'
 );
 

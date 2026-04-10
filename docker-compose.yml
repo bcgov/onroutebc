@@ -326,6 +326,8 @@ services:
       GARMS_ENV: ${GARMS_ENV}
       GARMS_CASH_FILE_INTERVAL: ${GARMS_CASH_FILE_INTERVAL}
       GARMS_CREDIT_FILE_INTERVAL: ${GARMS_CREDIT_FILE_INTERVAL}
+      SCHEDULER_CLUSTER: ${SCHEDULER_CLUSTER}
+      DEPLOY_CLUSTER: ${DEPLOY_CLUSTER}
     healthcheck:
       test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s

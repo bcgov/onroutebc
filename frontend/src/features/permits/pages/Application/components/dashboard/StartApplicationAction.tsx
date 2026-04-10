@@ -38,6 +38,7 @@ export const StartApplicationAction = () => {
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
 
+  const showSingleTrip = enableSTOS || enableSTOW;
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
 
@@ -61,7 +62,7 @@ export const StartApplicationAction = () => {
   // Build menu items once: filter disabled top-level items then conditionally
   // filter nested items based on the top-level category and feature flags.
   const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS.filter((option) =>
-    enableSTOS ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP,
+    showSingleTrip ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP,
   )
     .filter((option) => (enableMFP ? true : option.value !== PERMIT_TYPES.MFP))
     .filter((option) =>

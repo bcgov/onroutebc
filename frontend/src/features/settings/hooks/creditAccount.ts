@@ -226,6 +226,7 @@ export const useAddCreditAccountUserMutation = () => {
  */
 export const useRemoveCreditAccountUsersMutation = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
@@ -234,12 +235,25 @@ export const useRemoveCreditAccountUsersMutation = () => {
       creditAccountId: number;
       companyIds: number[];
     }) => removeCreditAccountUsers(data),
-    onSuccess: () => {
+    onSuccess: (
+      _response,
+      variables: {
+        companyId: number;
+        creditAccountId: number;
+        companyIds: number[];
+      },
+    ) => {
+      const { companyId } = variables;
+
       setSnackBar({
         showSnackbar: true,
         setShowSnackbar: () => true,
         message: "Account User(s) Removed",
         alertType: "info",
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["credit-account", { companyId }],
       });
     },
     onError: (error: AxiosError) => {
