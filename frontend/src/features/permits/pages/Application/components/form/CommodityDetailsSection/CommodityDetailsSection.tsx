@@ -51,7 +51,7 @@ export const CommodityDetailsSection = ({
     );
   }, [selectedCommodityType, commodityOptions]);
 
-  const { trigger, getValues } = useFormContext<ApplicationFormData>();
+  const { trigger } = useFormContext<ApplicationFormData>();
 
   const handleCloseDialog = () => {
     setNewCommodityType(undefined);
@@ -63,18 +63,18 @@ export const CommodityDetailsSection = ({
     trigger("permitData.permittedCommodity.commodityType");
   };
 
+  const hasVin = Boolean(vehicleFormData.vin);
+  const hasDimensions = Boolean(
+    vehicleConfiguration?.overallWidth ||
+      vehicleConfiguration?.overallHeight ||
+      vehicleConfiguration?.overallLength ||
+      vehicleConfiguration?.frontProjection ||
+      vehicleConfiguration?.rearProjection,
+  );
+
   const handleCommodityTypeChange = useCallback(
     async (updatedCommodityType: string) => {
       if (selectedCommodityType === updatedCommodityType) return;
-
-      const hasVin = Boolean(vehicleFormData.vin);
-      const hasDimensions = Boolean(
-        vehicleConfiguration?.overallWidth ||
-          vehicleConfiguration?.overallHeight ||
-          vehicleConfiguration?.overallLength ||
-          vehicleConfiguration?.frontProjection ||
-          vehicleConfiguration?.rearProjection,
-      );
 
       const isPreviousEmpty =
         selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
@@ -89,7 +89,7 @@ export const CommodityDetailsSection = ({
 
       handleConfirmChangeCommodityType(updatedCommodityType);
     },
-    [selectedCommodityType, vehicleFormData, trigger, getValues],
+    [selectedCommodityType, hasVin, hasDimensions],
   );
 
   return permitType === PERMIT_TYPES.STOS ||
