@@ -90,36 +90,22 @@ export const useApplicationFormContext = () => {
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(createdDateTime, (dateObj1, dateObj2) =>
-    Boolean(
-      (!dateObj1 && !dateObj2) ||
-        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
-    ),
+    Boolean((!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2))),
   );
 
   const updatedAt = useMemoizedObject(updatedDateTime, (dateObj1, dateObj2) =>
-    Boolean(
-      (!dateObj1 && !dateObj2) ||
-        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
-    ),
+    Boolean((!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2))),
   );
 
-  const oldStartDate = useMemoizedObject(
-    oldPermitStartDate,
-    (dateObj1, dateObj2) =>
-      Boolean(
-        (!dateObj1 && !dateObj2) ||
-          (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
-      ),
+  const oldStartDate = useMemoizedObject(oldPermitStartDate, (dateObj1, dateObj2) =>
+    Boolean((!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2))),
   );
 
-  const startDate = useMemoizedObject(
-    getStartOfDate(permitStartDate),
-    (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
-  );
-
-  const expiryDate = useMemoizedObject(permitExpiryDate, (dateObj1, dateObj2) =>
+  const startDate = useMemoizedObject(getStartOfDate(permitStartDate), (dateObj1, dateObj2) =>
     dateObj1.isSame(dateObj2),
   );
+
+  const expiryDate = useMemoizedObject(permitExpiryDate, (dateObj1, dateObj2) => dateObj1.isSame(dateObj2));
 
   const currentSelectedLOAs = useMemoizedArray(
     getDefaultRequiredVal([], loas),
@@ -127,30 +113,22 @@ export const useApplicationFormContext = () => {
     arePermitLOADetailsEqual,
   );
 
-  const permitConditions = useMemoizedArray(
-    commodities,
-    ({ condition }) => condition,
-    arePermitConditionEqual,
-  );
+  const permitConditions = useMemoizedArray(commodities, ({ condition }) => condition, arePermitConditionEqual);
 
   // Update duration options and expiry when needed
-  const {
-    availableDurationOptions,
-    minAllowedPastStartDate,
-    maxAllowedFutureStartDate,
-    maxNumDaysAllowedInFuture,
-  } = usePermitDateSelection({
-    permitType,
-    startDate,
-    isAmend: isAmendAction,
-    isStaff,
-    oldPermitStartDate: oldStartDate,
-    durationOptions,
-    selectedLOAs: currentSelectedLOAs,
-    selectedDuration: permitDuration,
-    onSetDuration,
-    onSetExpiryDate,
-  });
+  const { availableDurationOptions, minAllowedPastStartDate, maxAllowedFutureStartDate, maxNumDaysAllowedInFuture } =
+    usePermitDateSelection({
+      permitType,
+      startDate,
+      isAmend: isAmendAction,
+      isStaff,
+      oldPermitStartDate: oldStartDate,
+      durationOptions,
+      selectedLOAs: currentSelectedLOAs,
+      selectedDuration: permitDuration,
+      onSetDuration,
+      onSetExpiryDate,
+    });
 
   // Update permit conditions when LCV designation or vehicle subtype changes
   const { allConditions } = usePermitConditions(
@@ -180,14 +158,9 @@ export const useApplicationFormContext = () => {
     (vehicleDetails: PermitVehicleDetails) => {
       onSetVehicle({
         ...vehicleDetails,
-        vehicleType:
-          currentSelectedLOAs.length > 0
-            ? currentSelectedLOAs[0].vehicleType
-            : vehicleDetails.vehicleType,
+        vehicleType: currentSelectedLOAs.length > 0 ? currentSelectedLOAs[0].vehicleType : vehicleDetails.vehicleType,
         vehicleSubType:
-          currentSelectedLOAs.length > 0
-            ? currentSelectedLOAs[0].vehicleSubType
-            : vehicleDetails.vehicleSubType,
+          currentSelectedLOAs.length > 0 ? currentSelectedLOAs[0].vehicleSubType : vehicleDetails.vehicleSubType,
       });
     },
     [currentSelectedLOAs],
@@ -204,17 +177,16 @@ export const useApplicationFormContext = () => {
 
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
-  const { filteredVehicleOptions, subtypeOptions, isSelectedLOAVehicle } =
-    usePermitVehicles({
-      policyEngine,
-      permitType,
-      vehicleFormData,
-      allVehiclesFromInventory,
-      selectedLOAs: currentSelectedLOAs,
-      powerUnitSubtypeNamesMap,
-      trailerSubtypeNamesMap,
-      selectedCommodity: permittedCommodity?.commodityType,
-    });
+  const { filteredVehicleOptions, subtypeOptions, isSelectedLOAVehicle } = usePermitVehicles({
+    policyEngine,
+    permitType,
+    vehicleFormData,
+    allVehiclesFromInventory,
+    selectedLOAs: currentSelectedLOAs,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    selectedCommodity: permittedCommodity?.commodityType,
+  });
 
   // Update conditional licensing fee selection if necessary
   const { availableCLFs } = useConditionalLicensingFees(
@@ -227,9 +199,7 @@ export const useApplicationFormContext = () => {
   const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
-      vehicleConfiguration?.trailers?.map(
-        ({ vehicleSubType }) => vehicleSubType,
-      ),
+      vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType),
     ),
     (subtype1, subtype2) => subtype1 === subtype2,
   );
@@ -242,10 +212,7 @@ export const useApplicationFormContext = () => {
   const { nextAllowedSubtypes } = useVehicleConfiguration(
     policyEngine,
     permitType,
-    getDefaultRequiredVal(
-      DEFAULT_EMPTY_SELECT_VALUE,
-      permittedCommodity?.commodityType,
-    ),
+    getDefaultRequiredVal(DEFAULT_EMPTY_SELECT_VALUE, permittedCommodity?.commodityType),
     selectedVehicleConfigSubtypes,
     vehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
@@ -263,11 +230,7 @@ export const useApplicationFormContext = () => {
     vehicleConfiguration?.netWeight,
   );
 
-  const memoizedCompanyLOAs = useMemoizedArray(
-    companyLOAs,
-    ({ loaNumber }) => loaNumber,
-    arePermitLOADetailsEqual,
-  );
+  const memoizedCompanyLOAs = useMemoizedArray(companyLOAs, ({ loaNumber }) => loaNumber, arePermitLOADetailsEqual);
 
   const memoizedRevisionHistory = useMemoizedArray(
     revisionHistory,
@@ -281,9 +244,7 @@ export const useApplicationFormContext = () => {
 
   const highwaySequence = useMemoizedObject(
     getDefaultRequiredVal([], permittedRoute?.manualRoute?.highwaySequence),
-    (seq1, seq2) =>
-      seq1.length === seq2.length &&
-      seq1.every((num, index) => num === seq2[index]),
+    (seq1, seq2) => seq1.length === seq2.length && seq1.every((num, index) => num === seq2[index]),
   );
 
   return {

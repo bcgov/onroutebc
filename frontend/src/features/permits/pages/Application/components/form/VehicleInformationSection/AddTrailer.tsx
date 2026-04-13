@@ -54,8 +54,7 @@ export const AddTrailer = ({
   );
 
   const selectedSubtypesDisplay = useMemoizedSequence(
-    selectedTrailers.map(({ vehicleSubType }) => {
-      const subtype = vehicleSubType;
+    selectedTrailerSubtypes.map((subtype) => {
       if (isTrailerSubtypeNone(subtype)) return "None";
       return getDefaultRequiredVal(
         subtype,
@@ -68,21 +67,11 @@ export const AddTrailer = ({
   const handleAddTrailerSubtype = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(
-        selectedTrailers.concat([
-          {
-            vehicleSubType: subtype,
-            axleConfiguration: [
-              { interaxleSpacing: null },
-              {
-                numberOfAxles: 1,
-                numberOfTires: null,
-                tireSize: 279.4,
-                axleSpread: null,
-                axleUnitWeight: null,
-              },
-            ],
-          },
-        ]),
+        selectedTrailerSubtypes
+          .map((addedSubtype) => ({
+            vehicleSubType: addedSubtype,
+          }))
+          .concat([{ vehicleSubType: subtype }]),
       );
 
       setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
