@@ -3,6 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Button, FormControl, FormLabel } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 
 import "./HighwaySequences.scss";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
@@ -19,18 +20,28 @@ const toHighwayRows = (highwaySequence: string[]) => {
     highwaySequence.slice(8, 16),
     highwaySequence.slice(16, 24),
     highwaySequence.slice(24, 32),
-  ].filter((row, index) => index === 0 || row.length > 0)
-  .map(row => {
-    if (row.length === 8) return row;
-    
-    // The row has less than 8 highway numbers, pad the rest with empty strings
-    return [...row, ...(new Array<string>(8 - row.length).fill(""))];
-  });
+  ]
+    .filter((row, index) => index === 0 || row.length > 0)
+    .map((row) => {
+      if (row.length === 8) return row;
+
+      // The row has less than 8 highway numbers, pad the rest with empty strings
+      return [...row, ...new Array<string>(8 - row.length).fill("")];
+    });
 };
 
-const highwaySequenceRules = {
+export const highwaySequenceRules = (permitType: PermitType) => ({
   validate: {
     requiredHighwaySequence: (value: string[] | undefined) => {
+      // the control is only shown for STOS/STOW; neither type should trigger an
+      // error if the array is empty. the validator existed previously to enforce
+      // at least one value, but we avoid logging an error for either case.
+      if (
+        permitType === PERMIT_TYPES.STOW ||
+        permitType === PERMIT_TYPES.STOS
+      ) {
+        return true;
+      }
       if (!value || value.length === 0) {
         return requiredHighway();
       }
@@ -40,18 +51,21 @@ const highwaySequenceRules = {
       return hasValidValue || requiredHighway();
     },
   },
-};
+});
 
 export const HighwaySequences = ({
+  permitType,
   highwaySequence,
   onUpdateHighwaySequence,
 }: {
+  permitType: PermitType;
   highwaySequence: string[];
   onUpdateHighwaySequence: (highwaySequence: string[]) => void;
 }) => {
-  const highwayRows = useMemo(() => toHighwayRows(highwaySequence), [
-    highwaySequence,
-  ]);
+  const highwayRows = useMemo(
+    () => toHighwayRows(highwaySequence),
+    [highwaySequence],
+  );
 
   const maxHighwayRowsReached = highwayRows.length === 4;
 
@@ -60,7 +74,7 @@ export const HighwaySequences = ({
 
     onUpdateHighwaySequence([
       ...highwayRows.flat(),
-      ...(new Array<string>(8).fill("")),
+      ...new Array<string>(8).fill(""),
     ]);
   };
 
@@ -77,8 +91,11 @@ export const HighwaySequences = ({
   ) => {
     const indexToUpdate = rowIndex * 8 + colIndex;
     onUpdateHighwaySequence(
-      highwayRows.flat().map((highwayNumber, index) =>
-        indexToUpdate === index ? updatedHighwayNumber : highwayNumber)
+      highwayRows
+        .flat()
+        .map((highwayNumber, index) =>
+          indexToUpdate === index ? updatedHighwayNumber : highwayNumber,
+        ),
     );
     trigger("permitData.permittedRoute.manualRoute.highwaySequence");
   };
@@ -131,10 +148,8 @@ export const HighwaySequences = ({
         <Controller
           name="permitData.permittedRoute.manualRoute.highwaySequence"
           control={control}
-          rules={highwaySequenceRules}
-          render={({
-            fieldState: { invalid },
-          }) => (
+          rules={highwaySequenceRules(permitType)}
+          render={({ fieldState: { invalid } }) => (
             <div className="highway-sequence-rows">
               {highwayRows.map((highwayRow, rowIndex) => (
                 <div
@@ -148,12 +163,10 @@ export const HighwaySequences = ({
                       margin="normal"
                       error={invalid}
                     >
-                      <FormLabel
-                        className="highway-number-form-control__label"
-                      >
+                      <FormLabel className="highway-number-form-control__label">
                         {rowIndex * 8 + colIndex + 1}
                       </FormLabel>
-                      
+
                       <HighwayNumberInput
                         className="highway-number-form-control__input"
                         highwayNumber={highwayNumber}
@@ -166,9 +179,13 @@ export const HighwaySequences = ({
                 </div>
               ))}
 
-              {errors.permitData?.permittedRoute?.manualRoute?.highwaySequence ? (
+              {errors.permitData?.permittedRoute?.manualRoute
+                ?.highwaySequence ? (
                 <div className="highway-sequence-rows__error">
-                  {errors.permitData.permittedRoute.manualRoute.highwaySequence.message}
+                  {
+                    errors.permitData.permittedRoute.manualRoute.highwaySequence
+                      .message
+                  }
                 </div>
               ) : null}
             </div>
@@ -184,7 +201,10 @@ export const HighwaySequences = ({
             color="tertiary"
             onClick={handleAddHighwayRow}
           >
-            <FontAwesomeIcon className="add-highways-row-btn__icon" icon={faPlus} />
+            <FontAwesomeIcon
+              className="add-highways-row-btn__icon"
+              icon={faPlus}
+            />
             Add Highways
           </Button>
         ) : null}

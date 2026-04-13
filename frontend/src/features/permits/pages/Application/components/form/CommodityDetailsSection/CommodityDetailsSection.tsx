@@ -1,6 +1,5 @@
 import { Box, MenuItem, Tooltip } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-
 import "./CommodityDetailsSection.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
@@ -18,6 +17,8 @@ import {
   DEFAULT_EMPTY_SELECT_OPTION,
   DEFAULT_EMPTY_SELECT_VALUE,
 } from "../../../../../../../common/constants/constants";
+import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
+import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 
 export const CommodityDetailsSection = ({
   feature,
@@ -25,6 +26,8 @@ export const CommodityDetailsSection = ({
   commodityOptions,
   selectedCommodityType,
   onChangeCommodityType,
+  vehicleFormData,
+  vehicleConfiguration,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
@@ -34,6 +37,8 @@ export const CommodityDetailsSection = ({
   }[];
   selectedCommodityType?: Nullable<string>;
   onChangeCommodityType: (commodityType: string) => void;
+  vehicleFormData: PermitVehicleDetails;
+  vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
 }) => {
   const [newCommodityType, setNewCommodityType] = useState<
     string | undefined
@@ -58,21 +63,37 @@ export const CommodityDetailsSection = ({
     trigger("permitData.permittedCommodity.commodityType");
   };
 
+  const hasVin = Boolean(vehicleFormData.vin);
+  const hasDimensions = Boolean(
+    vehicleConfiguration?.overallWidth ||
+      vehicleConfiguration?.overallHeight ||
+      vehicleConfiguration?.overallLength ||
+      vehicleConfiguration?.frontProjection ||
+      vehicleConfiguration?.rearProjection,
+  );
+
   const handleCommodityTypeChange = useCallback(
-    (updatedCommodityType: string) => {
+    async (updatedCommodityType: string) => {
       if (selectedCommodityType === updatedCommodityType) return;
 
-      if (selectedCommodityType !== DEFAULT_EMPTY_SELECT_VALUE) {
+      const isPreviousEmpty =
+        selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
+        !selectedCommodityType;
+
+      // show the dialog if we're switching away from a non‑empty commodity and
+      // there is either a VIN or any loaded‑dimension field has been filled in
+      if (!isPreviousEmpty && (hasVin || hasDimensions)) {
         setNewCommodityType(updatedCommodityType);
         return;
       }
 
       handleConfirmChangeCommodityType(updatedCommodityType);
     },
-    [selectedCommodityType],
+    [selectedCommodityType, hasVin, hasDimensions],
   );
 
-  return permitType === PERMIT_TYPES.STOS ? (
+  return permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STOW ? (
     <Box className="commodity-details-section">
       <Box className="commodity-details-section__header">
         <h3>Commodity Details</h3>

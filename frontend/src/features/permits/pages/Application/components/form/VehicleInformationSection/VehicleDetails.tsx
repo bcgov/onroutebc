@@ -21,10 +21,12 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { isUndefined, Nullable, ORBCFormFeatureType } from "../../../../../../../common/types/common";
 import {
-  disableMouseWheelInputOnNumberField,
-} from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+  isUndefined,
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
+import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   gvwLimit,
@@ -93,12 +95,14 @@ export const VehicleDetails = ({
       PERMIT_TYPES.NRSCV,
       PERMIT_TYPES.NRQCV,
       PERMIT_TYPES.STOS,
+      PERMIT_TYPES.STOW,
     ] as PermitType[]
   ).includes(permitType);
 
   const showGVW = (
     [
       PERMIT_TYPES.STOS,
+      PERMIT_TYPES.STOW,
       PERMIT_TYPES.MFP,
       PERMIT_TYPES.STFR,
       PERMIT_TYPES.QRFR,
@@ -227,7 +231,9 @@ export const VehicleDetails = ({
           chooseFrom={chooseFrom}
           selectedVehicle={vehicleFormData}
           vehicleOptions={vehicleOptions}
-          handleClearVehicle={() => onClearVehicle(Boolean(vehicleFormData.saveVehicle))}
+          handleClearVehicle={() =>
+            onClearVehicle(Boolean(vehicleFormData.saveVehicle))
+          }
           handleSelectVehicle={onSelectVehicle}
         />
       </Box>

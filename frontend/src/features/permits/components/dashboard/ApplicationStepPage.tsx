@@ -73,12 +73,13 @@ export const ApplicationStepPage = ({
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+  const enableSTOW = featureFlags?.["STOW"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
-  
+
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
@@ -121,6 +122,7 @@ export const ApplicationStepPage = ({
       [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[]
     )
       .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
+      .concat(enableSTOW ? [PERMIT_TYPES.STOW] : [])
       .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
       .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
       .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : [])

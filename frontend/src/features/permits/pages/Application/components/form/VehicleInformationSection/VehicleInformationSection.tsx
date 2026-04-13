@@ -71,7 +71,8 @@ export const VehicleInformationSection = ({
   ) => void;
   onUpdateVehicleConfig: (vehicleConfig: PermitVehicleConfiguration) => void;
 }) => {
-  const isSingleTrip = permitType === PERMIT_TYPES.STOS;
+  const isSingleTrip =
+    permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
   const infoSectionClassName =
     `vehicle-information-section__info` +
     `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;

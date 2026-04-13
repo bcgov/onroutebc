@@ -26,7 +26,10 @@ export const ChangeCommodityTypeDialog = ({
       open={Boolean(newCommodityType)}
       onClose={onClose}
     >
-      <DialogTitle className="change-commodity-type-dialog__title-section" component="div">
+      <DialogTitle
+        className="change-commodity-type-dialog__title-section"
+        component="div"
+      >
         <div className="change-commodity-type-dialog__icon">
           <FontAwesomeIcon
             className="warning-icon"
@@ -41,8 +44,9 @@ export const ChangeCommodityTypeDialog = ({
 
       <DialogContent className="change-commodity-type-dialog__content">
         <Typography className="change-commodity-type-dialog__warning-msg">
-          Changing your commodity will require you to re-enter your vehicle information and loaded dimensions.
-        </Typography> 
+          Changing your commodity will require you to re-enter your vehicle
+          information and loaded dimensions.
+        </Typography>
       </DialogContent>
 
       <DialogActions className="change-commodity-type-dialog__actions">

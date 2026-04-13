@@ -157,6 +157,8 @@ export const PermitForm = () => {
           commodityOptions={commodityOptions}
           selectedCommodityType={commodityType}
           onChangeCommodityType={onChangeCommodityType}
+          vehicleFormData={vehicleFormData}
+          vehicleConfiguration={vehicleConfiguration}
         />
 
         <VehicleInformationSection

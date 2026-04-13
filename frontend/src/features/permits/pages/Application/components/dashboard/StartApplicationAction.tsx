@@ -31,14 +31,17 @@ export const StartApplicationAction = () => {
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+  const enableSTOW = featureFlags?.["STOW"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
 
-  const showNonResident = (enableSTFR || enableQRFR || enableNRSCV || enableNRQCV);
-  
+  const showSingleTrip = enableSTOS || enableSTOW;
+  const showNonResident =
+    enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
+
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
     item: PermitTypeChooseFromItem,
@@ -56,32 +59,47 @@ export const StartApplicationAction = () => {
     }
   };
 
-  // Update the structure of menuItems to ensure the callback is applied correctly
-  const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS
-    .filter(option => enableSTOS ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP)
-    .filter(option => showNonResident ? true : option.value !== PERMIT_CATEGORIES.NON_RESIDENT)
-    .filter(option => enableMFP ? true : option.value !== PERMIT_TYPES.MFP)
-    .map(
-      (item: PermitTypeChooseFromItem) => ({
-        ...item,
-        callback: (event: React.MouseEvent<HTMLElement>) =>
-          handleChooseFrom(event, item),
-        // Correctly set the nested item's callback
-        items: item?.items?.filter((nestedItem) => {
-          // If isn't non-resident, return all nested permit types
-          // Otherwise, only return nested permit types that are enabled
-          return item?.value !== PERMIT_CATEGORIES.NON_RESIDENT
-            || (nestedItem?.value === PERMIT_TYPES.STFR && enableSTFR)
-            || (nestedItem?.value === PERMIT_TYPES.QRFR && enableQRFR)
-            || (nestedItem?.value === PERMIT_TYPES.NRSCV && enableNRSCV)
-            || (nestedItem?.value === PERMIT_TYPES.NRQCV && enableNRQCV);
-        })?.map((nestedItem) => ({
+  // Build menu items once: filter disabled top-level items then conditionally
+  // filter nested items based on the top-level category and feature flags.
+  const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS.filter((option) =>
+    showSingleTrip ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP,
+  )
+    .filter((option) => (enableMFP ? true : option.value !== PERMIT_TYPES.MFP))
+    .filter((option) =>
+      showNonResident ? true : option.value !== PERMIT_CATEGORIES.NON_RESIDENT,
+    )
+    .map((item: PermitTypeChooseFromItem) => {
+      const items = item?.items
+        ?.filter((nestedItem) => {
+          if (item.value === PERMIT_CATEGORIES.SINGLE_TRIP) {
+            return (
+              (nestedItem.value === PERMIT_TYPES.STOS && enableSTOS) ||
+              (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW)
+            );
+          }
+          if (item.value === PERMIT_CATEGORIES.NON_RESIDENT) {
+            return (
+              (nestedItem.value === PERMIT_TYPES.STFR && enableSTFR) ||
+              (nestedItem.value === PERMIT_TYPES.QRFR && enableQRFR) ||
+              (nestedItem.value === PERMIT_TYPES.NRSCV && enableNRSCV) ||
+              (nestedItem.value === PERMIT_TYPES.NRQCV && enableNRQCV)
+            );
+          }
+          return true;
+        })
+        ?.map((nestedItem) => ({
           ...nestedItem,
           callback: (event: React.MouseEvent<HTMLElement>) =>
             handleChooseFrom(event, nestedItem),
-        })),
-      }),
-    );
+        }));
+
+      return {
+        ...item,
+        callback: (event: React.MouseEvent<HTMLElement>) =>
+          handleChooseFrom(event, item),
+        items,
+      };
+    });
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>();
   const open = Boolean(anchorEl);

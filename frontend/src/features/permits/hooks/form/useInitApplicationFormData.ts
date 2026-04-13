@@ -29,20 +29,18 @@ import { getEligibleVehicleSubtypes } from "../../helpers/vehicles/subtypes/getE
  * @param shouldInitAsCopy Whether the initialization is part of a permit copy operation
  * @returns Current application form data, methods to manage the form, and selectable input options
  */
-export const useInitApplicationFormData = (
-  data: {
-    permitType: PermitType;
-    isLcvDesignated: boolean;
-    companyLOAs: LOADetail[];
-    inventoryVehicles: (PowerUnit | Trailer)[];
-    companyInfo: Nullable<CompanyProfile>;
-    applicationData?: Nullable<Application>;
-    userDetails?: BCeIDUserDetailContext;
-    policyEngine?: Nullable<Policy>;
-    isStaff: boolean,
-    shouldInitAsCopy: boolean,
-  },
-) => {
+export const useInitApplicationFormData = (data: {
+  permitType: PermitType;
+  isLcvDesignated: boolean;
+  companyLOAs: LOADetail[];
+  inventoryVehicles: (PowerUnit | Trailer)[];
+  companyInfo: Nullable<CompanyProfile>;
+  applicationData?: Nullable<Application>;
+  userDetails?: BCeIDUserDetailContext;
+  policyEngine?: Nullable<Policy>;
+  isStaff: boolean;
+  shouldInitAsCopy: boolean;
+}) => {
   const {
     permitType,
     isLcvDesignated,
@@ -72,7 +70,7 @@ export const useInitApplicationFormData = (
           companyInfo,
           applicationData,
           userDetails,
-          shouldInitAsCopy
+          shouldInitAsCopy,
         ),
         isLcvDesignated,
       ),
