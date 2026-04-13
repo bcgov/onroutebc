@@ -339,7 +339,6 @@ export const ApplicationForm = ({
       {
         onSuccess: ({ data, status }) => {
           const savedApplication = deserializeApplicationResponse(data);
-          console.log({ savedApplication });
           const savedPermitId = onSaveSuccess(savedApplication, status);
           additionalSuccessAction?.(savedPermitId);
         },
