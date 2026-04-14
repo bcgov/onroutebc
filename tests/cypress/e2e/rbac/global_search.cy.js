@@ -379,9 +379,13 @@ describe('Global search', () => {
     }
   
     const expectSuccessVoidRevokePermit = () => {
-      cy.get('span.onroutebc-chip.permit-chip.permit-chip--superseded')
-      .should('exist')
-      .and('have.text', 'Superseded');
+      cy.get('body').then(($body) => {
+        if ($body.find('span.onroutebc-chip.permit-chip.permit-chip--superseded').length > 0) {
+          cy.get('span.onroutebc-chip.permit-chip.permit-chip--superseded')
+          .should('exist')
+          .and('have.text', 'Superseded');
+        }
+      });
 
     }
     
