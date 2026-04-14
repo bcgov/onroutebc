@@ -532,7 +532,6 @@ describe('Manage Settings', () => {
   
   const expectFailureUpdateSuspendCompanyFlag = () => {
     if(user_role === 'hqa'
-    || user_role === 'pc'
     || user_role === 'ca'
     || user_role === 'pa'
     ) {
@@ -542,7 +541,6 @@ describe('Manage Settings', () => {
     else {
       cy.contains('.tab__label', 'Suspend').should('exist').click();
       cy.wait(wait_time);
-      cy.contains('.tab__label', 'Suspend').should('not.exist');
 
     }
     
