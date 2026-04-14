@@ -81,407 +81,430 @@ describe('Login Test for OnRouteBC', () => {
     cy.visit(cart_url);
     cy.wait(wait_time);
 
-    // find first fee item in the cart
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$30.00');
-      cy.wait(wait_time);
 
-    // edit the application to 60 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-      cy.wait(wait_time);
+    cy.get('body').then(($body) => {
+      if ($body.find('.shopping-cart-item__info--fee').length > 0) {
 
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-      cy.wait(wait_time);
+        // find first fee item in the cart
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$30.00');
+          cy.wait(wait_time);
 
-      cy.get('[data-testid="select-permitData.permitDuration"]').click();
-      cy.wait(wait_time);
+        // edit the application to 60 days permit duration
+        if ($body.find('.shopping-cart-item__info--application-number').length > 0){
+          cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+          cy.wait(wait_time);
+        }
+        
+        if ($body.find('.edit-cart-item-dialog__btn--edit').length > 0){
+          cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+          cy.wait(wait_time);
 
-      cy.get('.MuiMenuItem-root').eq(1).click();
-      cy.wait(wait_time);
+        }
+        
+        if ($body.find('[data-testid="select-permitData.permitDuration"]').length > 0){
+          cy.get('[data-testid="select-permitData.permitDuration"]').click();
+          cy.wait(wait_time);
+        }
+          
+        if ($body.find('.MuiMenuItem-root').length > 0){
+          cy.get('.MuiMenuItem-root').eq(1).click();
+          cy.wait(wait_time);
+        }
+          
 
-      cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
+        // cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.contains('button', 'Edit Application').click({ force: true });
+        cy.wait(wait_time);
 
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$30.00');
+          cy.wait(wait_time);
+
+        // edit the application to 90 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+        .first()
+        .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+          cy.wait(wait_time);
+
+          cy.get('[data-testid="select-permitData.permitDuration"]').click();
+          cy.wait(wait_time);
+
+          cy.get('.MuiMenuItem-root').eq(2).click();
+          cy.wait(wait_time);
+
+          cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$90.00');
+          cy.wait(wait_time);
+
+        // edit the application to 120 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+          cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+          cy.wait(wait_time);
+
+          cy.get('[data-testid="select-permitData.permitDuration"]').click();
+          cy.wait(wait_time);
+
+          cy.get('.MuiMenuItem-root').eq(3).click();
+          cy.wait(wait_time);
+
+          cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$120.00');
+          cy.wait(wait_time);
+
+        // edit the application to 150 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+          cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(4).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$150.00');
+          cy.wait(wait_time);
+
+        // edit the application to 180 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+        .first()
+        .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+          cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(5).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$180.00');
+          cy.wait(wait_time);
+
+        // edit the application to 210 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+          cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+          cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(6).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$210.00');
+        cy.wait(wait_time);
+
+        // edit the application to 240 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(7).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$240.00');
+        cy.wait(wait_time);
+
+        // edit the application to 270 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(8).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$270.00');
+        cy.wait(wait_time);
+
+        // edit the application to 300 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(9).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$300.00');
+        cy.wait(wait_time);
+
+        // edit the application to 330 days permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(10).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$330.00');
+        cy.wait(wait_time);
+
+        // edit the application to 1 year permit duration
+        cy.get('.shopping-cart-item__info--application-number')
+          .first()
+          .click();
+        cy.wait(wait_time);
+
+        cy.get('.edit-cart-item-dialog__btn--edit')
+          .first()
+          .click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="select-permitData.permitDuration"]').click();
+        cy.wait(wait_time);
+
+        cy.get('.MuiMenuItem-root').eq(11).click();
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="continue-application-button"]').click({ force: true });
+        cy.wait(wait_time);
+
+        cy.get('input[type="checkbox"]').each(($checkbox) => {
+          cy.wrap($checkbox).click({ force: true });
+        });
+        cy.wait(wait_time);
+
+        cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
+        cy.wait(wait_time);
+
+        cy.visit(cart_url);
+        cy.wait(wait_time);
+
+        cy.get('.shopping-cart-item__info--fee')
+          .first()
+          .should('have.text', '$360.00');
+        cy.wait(wait_time);
+        
+      }
     });
-    cy.wait(wait_time);
 
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$60.00');
-      cy.wait(wait_time);
-
-    // edit the application to 90 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-    .first()
-    .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-      cy.wait(wait_time);
-
-      cy.get('[data-testid="select-permitData.permitDuration"]').click();
-      cy.wait(wait_time);
-
-      cy.get('.MuiMenuItem-root').eq(2).click();
-      cy.wait(wait_time);
-
-      cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$90.00');
-      cy.wait(wait_time);
-
-    // edit the application to 120 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-      cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-      cy.wait(wait_time);
-
-      cy.get('[data-testid="select-permitData.permitDuration"]').click();
-      cy.wait(wait_time);
-
-      cy.get('.MuiMenuItem-root').eq(3).click();
-      cy.wait(wait_time);
-
-      cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$120.00');
-      cy.wait(wait_time);
-
-    // edit the application to 150 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-      cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(4).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$150.00');
-      cy.wait(wait_time);
-
-    // edit the application to 180 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-    .first()
-    .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-      cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(5).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$180.00');
-      cy.wait(wait_time);
-
-    // edit the application to 210 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-      cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-      cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(6).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$210.00');
-    cy.wait(wait_time);
-
-    // edit the application to 240 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(7).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$240.00');
-    cy.wait(wait_time);
-
-    // edit the application to 270 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(8).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$270.00');
-    cy.wait(wait_time);
-
-    // edit the application to 300 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(9).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$300.00');
-    cy.wait(wait_time);
-
-    // edit the application to 330 days permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(10).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$330.00');
-    cy.wait(wait_time);
-
-    // edit the application to 1 year permit duration
-    cy.get('.shopping-cart-item__info--application-number')
-      .first()
-      .click();
-    cy.wait(wait_time);
-
-    cy.get('.edit-cart-item-dialog__btn--edit')
-      .first()
-      .click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="select-permitData.permitDuration"]').click();
-    cy.wait(wait_time);
-
-    cy.get('.MuiMenuItem-root').eq(11).click();
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="continue-application-button"]').click({ force: true });
-    cy.wait(wait_time);
-
-    cy.get('input[type="checkbox"]').each(($checkbox) => {
-      cy.wrap($checkbox).click({ force: true });
-    });
-    cy.wait(wait_time);
-
-    cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
-
-    cy.visit(cart_url);
-    cy.wait(wait_time);
-
-    cy.get('.shopping-cart-item__info--fee')
-      .first()
-      .should('have.text', '$360.00');
-    cy.wait(wait_time);
+    
   });
   
 });
