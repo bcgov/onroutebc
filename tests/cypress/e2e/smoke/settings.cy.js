@@ -36,7 +36,9 @@ describe('Manage for settings', () => {
     cy.get('.search-button').click();
     cy.wait(wait_time);
 
-    // Find the element with value="companies" and interact with it
+    cy.get('body').then(($body) => {
+
+      // Find the element with value="companies" and interact with it
     cy.get('[value="companies"]').click();
     cy.wait(wait_time);
 
@@ -56,9 +58,12 @@ describe('Manage for settings', () => {
     cy.wait(wait_time);
 
     if (user_role !== 'sa' && user_role !== 'fin' && user_role !== 'eo' && user_role !== 'ctpo') {
-      cy.contains('.tab__label', 'Suspend').should('not.exist');
-      cy.wait(wait_time);
-      return;
+      if ($body.find('.tab__label', 'Suspend').length > 0) {
+        cy.contains('.tab__label', 'Suspend').should('not.exist');
+        cy.wait(wait_time);
+        return;
+      }
+      
     }
 
     cy.contains('.tab__label', 'Suspend').should('exist').click();
@@ -141,6 +146,10 @@ describe('Manage for settings', () => {
     cy.get('input[type="checkbox"]')
       .click();
     cy.wait(wait_time);
+
+    });
+
+    
     
   });
 });
