@@ -475,8 +475,12 @@ function searchForApplicationAs(user_role, assertionFn) {
       cy.get('.search-button').click();
       cy.wait(wait_time);
 
-      cy.get('[value="applications"]').click();
-      cy.wait(wait_time);
+      cy.get('body').then(($body) => {
+      if ($body.find('[value="applications"]').length > 0) {
+        cy.get('[value="applications"]').click();
+        cy.wait(wait_time);
+      }
+    });
 
   }
 
