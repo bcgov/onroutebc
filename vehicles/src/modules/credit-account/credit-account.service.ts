@@ -147,7 +147,7 @@ export class CreditAccountService {
     );
     if (creditAccount) {
       throwUnprocessableEntityException(
-        `Credit account already exists mapped to company ${creditAccount?.company?.clientNumber}.`,
+        `Credit account already exists mapped to client ${creditAccount?.company?.clientNumber}.`,
       );
     }
 
@@ -207,7 +207,7 @@ export class CreditAccountService {
       // Log the credit account creation activity for audit trail
       await this.logCreditAccountAndUserActivity({
         queryRunner,
-        creditAccount,
+        creditAccount: newCreditAccount,
         currentUser,
         currentDateTime,
         creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
