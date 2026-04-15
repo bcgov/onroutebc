@@ -20,7 +20,7 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
-import { defaultAxleUnit } from "../../../../../../../common/constants/defaultAxleUnit";
+import { DEFAULT_AXLE_UNIT } from "../../../../../../../common/constants/defaultAxleUnit";
 
 export const AddTrailer = ({
   selectedTrailers,
@@ -72,7 +72,7 @@ export const AddTrailer = ({
         selectedTrailers.concat([
           {
             vehicleSubType: subtype,
-            axleConfiguration: [{ interaxleSpacing: null }, defaultAxleUnit],
+            axleConfiguration: [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT],
           },
         ]),
       );
