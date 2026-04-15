@@ -96,14 +96,18 @@ export const useGetCreditAccountHistoryQuery = (data: {
  * Hook to fetch the company credit account details.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountUsersQuery = (data: {
-  companyId: number;
-  creditAccountId: number;
-}) => {
+export const useGetCreditAccountUsersQuery = (
+  data: {
+    companyId: number;
+    creditAccountId: number;
+  },
+  enabled = true,
+) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
     queryKey: ["credit-account", { companyId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
+    enabled,
     retry: false,
     refetchOnWindowFocus: false,
   });
