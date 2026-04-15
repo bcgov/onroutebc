@@ -10,6 +10,7 @@ import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
+import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
@@ -106,16 +107,18 @@ export const AxleSpacingAndWeightsTable = ({
               isTrailer={false}
             />
 
-            {trailers.map((trailer, trailerIndex) => (
-              <AxleUnitRow
-                key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                control={control}
-                path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`}
-                label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
-                axleUnitNumber={getAxleUnitNumber(trailerIndex)}
-                isTrailer={true}
-              />
-            ))}
+            {trailers.map((trailer, trailerIndex) =>
+              !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
+                <AxleUnitRow
+                  key={`${trailer.vehicleSubType}-${trailerIndex}`}
+                  control={control}
+                  path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`}
+                  label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
+                  axleUnitNumber={getAxleUnitNumber(trailerIndex)}
+                  isTrailer={true}
+                />
+              ) : null,
+            )}
           </tbody>
         </table>
       </div>

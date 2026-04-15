@@ -72,7 +72,9 @@ export const AddTrailer = ({
         selectedTrailers.concat([
           {
             vehicleSubType: subtype,
-            axleConfiguration: [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT],
+            axleConfiguration: !isTrailerSubtypeNone(subtype)
+              ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
+              : null,
           },
         ]),
       );
