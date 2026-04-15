@@ -1,4 +1,5 @@
 import { AxleUnit } from "../types/AxleUnit";
+import { getDefaultRequiredVal } from "./util";
 
 export const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
   return {
@@ -38,6 +39,7 @@ export const mergeInteraxleSpacing = (
   return merged;
 };
 
+/** Separates interaxleSpacing property into its own axleUnit object, e.g. the opposite behaviour of mergeInteraxleSpacing */
 export const unmergeInteraxleSpacingRows = (
   axleConfiguration: AxleUnit[],
   startIndex: number,
@@ -45,7 +47,7 @@ export const unmergeInteraxleSpacingRows = (
   const unmerged = axleConfiguration.map((axle) => ({ ...axle }));
 
   for (let i = startIndex; i < unmerged.length; i++) {
-    const spacing = unmerged[i].interaxleSpacing ?? null;
+    const spacing = getDefaultRequiredVal(null, unmerged[i].interaxleSpacing);
     unmerged.splice(i, 0, { interaxleSpacing: spacing });
 
     // remove spacing value from the axle row since it now lives in the inserted spacing row
