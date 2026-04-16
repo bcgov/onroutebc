@@ -125,6 +125,7 @@ export interface VehicleDetails {
   vehicleSubType: string;
   licensedGVW?: number;
   saveVehicle?: boolean;
+  axleConfiguration?: AxleConfiguration[];
 }
 
 interface Commodities {

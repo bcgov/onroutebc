@@ -8,21 +8,29 @@ import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
 import { MANDATORY_TROW_CONDITIONS, TROW_CONDITIONS } from "../constants/trow";
 import { PermitCondition } from "../types/PermitCondition";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { MANDATORY_NRSCV_CONDITIONS, NRSCV_CONDITIONS } from "../constants/nrscv";
-import { MANDATORY_NRQCV_CONDITIONS, NRQCV_CONDITIONS } from "../constants/nrqcv";
+import {
+  MANDATORY_NRSCV_CONDITIONS,
+  NRSCV_CONDITIONS,
+} from "../constants/nrscv";
+import {
+  MANDATORY_NRQCV_CONDITIONS,
+  NRQCV_CONDITIONS,
+} from "../constants/nrqcv";
 import { Nullable } from "../../../common/types/common";
+import { MANDATORY_STOW_CONDITIONS, STOW_CONDITIONS } from "../constants/stow";
 
 /**
  * Determine whether or not a permit with given permit type can have LCV conditions attached to it.
  * @param permitType Permit type
  * @returns Whether or not a permit with given permit type can have LCV conditions attached to it
  */
-export const canPermitTypeIncludeLCVCondition = (permitType?: Nullable<PermitType>) => {
+export const canPermitTypeIncludeLCVCondition = (
+  permitType?: Nullable<PermitType>,
+) => {
   if (!permitType) return false;
-  return ([
-    PERMIT_TYPES.TROS,
-    PERMIT_TYPES.STOS,
-  ] as PermitType[]).includes(permitType);
+  return ([PERMIT_TYPES.TROS, PERMIT_TYPES.STOS] as PermitType[]).includes(
+    permitType,
+  );
 };
 
 /**
@@ -53,6 +61,8 @@ export const getMandatoryConditions = (
       return MANDATORY_MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return MANDATORY_STOS_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.STOW:
+      return MANDATORY_STOW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
       return MANDATORY_TROW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROS:
@@ -70,7 +80,7 @@ const getConditionsByPermitType = (
     includeLcvCondition && canPermitTypeIncludeLCVCondition(permitType)
       ? [LCV_CONDITION]
       : [];
-  
+
   switch (permitType) {
     case PERMIT_TYPES.QRFR:
       return QRFR_CONDITIONS.concat(additionalConditions);
@@ -84,6 +94,8 @@ const getConditionsByPermitType = (
       return MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return STOS_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.STOW:
+      return STOW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
       return TROW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROS:
@@ -98,7 +110,7 @@ const isConditionMandatory = (
   mandatoryConditions: PermitCondition[],
 ) => {
   return mandatoryConditions
-    .map(mandatoryCondition => mandatoryCondition.condition)
+    .map((mandatoryCondition) => mandatoryCondition.condition)
     .includes(condition.condition);
 };
 
@@ -125,15 +137,20 @@ export const getDefaultConditions = (
   permitType: PermitType,
   includeLcvCondition?: boolean,
 ) => {
-  const mandatoryConditions = getMandatoryConditions(permitType, includeLcvCondition);
+  const mandatoryConditions = getMandatoryConditions(
+    permitType,
+    includeLcvCondition,
+  );
 
   return sortConditions(
-    getConditionsByPermitType(permitType, includeLcvCondition).map((condition) => ({
-      ...condition,
-      // must-select options are checked and disabled (for toggling) by default
-      checked: isConditionMandatory(condition, mandatoryConditions),
-      disabled: isConditionMandatory(condition, mandatoryConditions),
-    })),
+    getConditionsByPermitType(permitType, includeLcvCondition).map(
+      (condition) => ({
+        ...condition,
+        // must-select options are checked and disabled (for toggling) by default
+        checked: isConditionMandatory(condition, mandatoryConditions),
+        disabled: isConditionMandatory(condition, mandatoryConditions),
+      }),
+    ),
   );
 };
 
@@ -157,12 +174,14 @@ export const getUpdatedConditionsForLCV = (
       ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
     );
   }
-  
+
   // If LCV is designated, and vehicle subtype isn't LCV but conditions have LCV,
   // then remove that LCV condition
   if (
-    !isVehicleSubtypeLCV(vehicleSubtype)
-    && prevSelectedConditions.some(({ condition }) => condition === LCV_CONDITION.condition)
+    !isVehicleSubtypeLCV(vehicleSubtype) &&
+    prevSelectedConditions.some(
+      ({ condition }) => condition === LCV_CONDITION.condition,
+    )
   ) {
     return prevSelectedConditions.filter(
       ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
@@ -172,9 +191,11 @@ export const getUpdatedConditionsForLCV = (
   // If LCV is designated, and vehicle subtype is LCV but conditions don't have LCV,
   // then add that LCV condition if the permit type allows it
   if (
-    isVehicleSubtypeLCV(vehicleSubtype)
-    && !prevSelectedConditions.some(({ condition }) => condition === LCV_CONDITION.condition)
-    && canPermitTypeIncludeLCVCondition(permitType)
+    isVehicleSubtypeLCV(vehicleSubtype) &&
+    !prevSelectedConditions.some(
+      ({ condition }) => condition === LCV_CONDITION.condition,
+    ) &&
+    canPermitTypeIncludeLCVCondition(permitType)
   ) {
     return sortConditions([...prevSelectedConditions, LCV_CONDITION]);
   }
