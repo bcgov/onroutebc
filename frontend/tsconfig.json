@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": [
-      "es6",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["es6", "dom", "dom.iterable", "esnext"],
     "types": ["vitest/globals", "vite/client", "vite-plugin-svgr/client"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,10 +20,5 @@
     "noImplicitThis": true,
     "strictNullChecks": true
   },
-  "include": [
-    "eslint.config.cjs",
-    "postcss.config.ts",
-    "src",
-    "public"
-  ]
+  "include": ["eslint.config.cjs", "postcss.config.ts", "src", "public"]
 }

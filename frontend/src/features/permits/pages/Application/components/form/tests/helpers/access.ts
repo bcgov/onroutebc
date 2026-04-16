@@ -1,4 +1,4 @@
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+import { UserEvent } from "@testing-library/user-event";
 import { Matcher, screen, waitFor } from "@testing-library/react";
 
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
@@ -81,11 +81,15 @@ export const selectDayFromDateOptions = async (
 };
 
 export const invalidPastDateMessageElement = async () => {
-  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
+  return await screen.findByTestId(
+    "custom-date-picker-permitData.startDate-error",
+  );
 };
 
 export const invalidFutureDateMessageElement = async () => {
-  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
+  return await screen.findByTestId(
+    "custom-date-picker-permitData.startDate-error",
+  );
 };
 
 export const conditionsInfoBox = async () => {

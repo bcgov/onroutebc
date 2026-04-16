@@ -1,5 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+import { UserEvent } from "@testing-library/user-event";
 
 import { getApplication } from "../fixtures/getActiveApplication";
 import { VehicleType } from "../../../../../../manageVehicles/types/Vehicle";
