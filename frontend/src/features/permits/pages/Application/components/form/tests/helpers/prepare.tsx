@@ -1,8 +1,7 @@
 import { render } from "@testing-library/react";
 import { FormProvider, useForm } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
-import userEvent from "@testing-library/user-event";
-import { Options } from "@testing-library/user-event/";
+import { Options, userEvent } from "@testing-library/user-event/";
 
 import {
   DEFAULT_PERMIT_TYPE,
