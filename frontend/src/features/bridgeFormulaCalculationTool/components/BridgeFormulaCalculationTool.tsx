@@ -11,19 +11,14 @@ import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertT
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
-import { AxleConfiguration, AxleUnit } from "../../../common/types/AxleUnit";
+import { AxleUnit } from "../../../common/types/AxleUnit";
 import {
   convertMetreValuesToCentimetres,
+  getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
 } from "../../../common/helpers/axleUnitHelper";
-
-interface BridgeCalculationResult {
-  startAxleUnit: number;
-  endAxleUnit: number;
-  maxBridge: number;
-  actualWeight: number;
-  success: boolean;
-}
+import { BridgeCalculationResult } from "../../../common/types/BridgeCalculationResult";
+import { getFailedResultText } from "../../../common/helpers/bridgeCalculationHelper";
 
 export const BridgeFormulaCalculationTool = () => {
   const policyEngine = usePolicyEngine();
@@ -112,23 +107,6 @@ export const BridgeFormulaCalculationTool = () => {
     formState.errors.axleUnits?.length ||
     failedBridgeCalculationResults.length ||
     bridgeCalculationSuccess;
-
-  const getFailedResultText = (failedResult: BridgeCalculationResult) =>
-    `⮾ Bridge calculation failed between Axle Unit ${failedResult.startAxleUnit} and ${failedResult.endAxleUnit}, Axle Group Weight is ${failedResult.actualWeight}, Bridge Formula Weight max is ${failedResult.maxBridge}.`;
-
-  const getDefaultAxleConfiguration = (
-    axleUnit: AxleUnit,
-  ): AxleConfiguration => {
-    return {
-      numberOfAxles: getDefaultRequiredVal(0, axleUnit.numberOfAxles),
-      axleSpread: getDefaultRequiredVal(undefined, axleUnit.axleSpread),
-      interaxleSpacing: getDefaultRequiredVal(
-        undefined,
-        axleUnit.interaxleSpacing,
-      ),
-      axleUnitWeight: getDefaultRequiredVal(0, axleUnit.axleUnitWeight),
-    };
-  };
 
   const onSubmit = (data: { axleUnits: AxleUnit[] }) => {
     const mergedAxleUnitData = mergeInteraxleSpacing(data.axleUnits, 1);

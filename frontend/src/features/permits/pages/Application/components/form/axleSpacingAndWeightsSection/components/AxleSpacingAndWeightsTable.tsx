@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
@@ -9,6 +10,16 @@ import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { Button } from "@mui/material";
+import {
+  convertMetreValuesToCentimetres,
+  getDefaultAxleConfiguration,
+  mergeInteraxleSpacing,
+} from "../../../../../../../../common/helpers/axleUnitHelper";
+import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
+import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
+import { BridgeCalculationResult } from "../../../../../../../../common/types/BridgeCalculationResult";
+import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
@@ -28,6 +39,7 @@ export const AxleSpacingAndWeightsTable = ({
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
+  const policyEngine = usePolicyEngine();
   const trailers = vehicleConfiguration?.trailers ?? [];
 
   const powerUnitAxleConfiguration =
@@ -54,6 +66,89 @@ export const AxleSpacingAndWeightsTable = ({
   };
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
+  const [showValidationBanner, setShowValidationBanner] =
+    useState<boolean>(false);
+  const [bridgeCalculationResults, setBridgeCalculationResults] = useState<
+    BridgeCalculationResult[]
+  >([]);
+
+  const failedBridgeCalculationResults = bridgeCalculationResults.filter(
+    (result) => !result.success,
+  );
+
+  const bridgeCalculationSuccess = bridgeCalculationResults.length
+    ? bridgeCalculationResults.every((result) => result.success)
+    : false;
+
+  const shouldShowResultsSection =
+    showValidationBanner ||
+    failedBridgeCalculationResults.length ||
+    bridgeCalculationSuccess;
+
+  const validateAxleConfiguration = (
+    axleConfiguration: AxleUnit[],
+  ): boolean => {
+    return axleConfiguration.every((axleUnit, index) => {
+      // All axle units in merged data need all required fields
+      const hasRequiredFields =
+        axleUnit.numberOfAxles !== null &&
+        axleUnit.numberOfTires !== null &&
+        axleUnit.tireSize !== null &&
+        axleUnit.axleUnitWeight !== null;
+
+      // axleSpread is required unless numberOfAxles === 1
+      const hasAxleSpread =
+        axleUnit.numberOfAxles === 1 || axleUnit.axleSpread !== null;
+
+      // interaxleSpacing is required for all but the first axle unit (i.e. the first axle unit of the power unit)
+      const hasInteraxleSpacing =
+        index === 0 || axleUnit.interaxleSpacing !== null;
+
+      return hasRequiredFields && hasAxleSpread && hasInteraxleSpacing;
+    });
+  };
+
+  const calculateBridgeFormula = () => {
+    setShowValidationBanner(false);
+
+    const mergedPowerUnitAxleConfiguration = mergeInteraxleSpacing(
+      powerUnitAxleConfiguration,
+      1,
+    );
+    const mergedTrailerAxleConfiguration = mergeInteraxleSpacing(
+      trailerAxleConfigurations.flat(),
+      0,
+    );
+
+    const mergedAxleConfigurationData = [
+      ...mergedPowerUnitAxleConfiguration,
+      ...mergedTrailerAxleConfiguration,
+    ];
+
+    if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
+      setShowValidationBanner(true);
+      return;
+    }
+
+    const convertedAxleConfigurationData = mergedAxleConfigurationData.map(
+      (axleUnit) => convertMetreValuesToCentimetres(axleUnit),
+    );
+
+    const serializedAxleConfigurationData = convertedAxleConfigurationData.map(
+      (axleUnit) => getDefaultAxleConfiguration(axleUnit),
+    );
+
+    const bridgeCalculationResults = policyEngine?.calculateBridge(
+      serializedAxleConfigurationData,
+    );
+
+    if (bridgeCalculationResults) {
+      setBridgeCalculationResults(bridgeCalculationResults);
+    }
+
+    console.log(bridgeCalculationResults);
+  };
 
   return (
     <div className="axle-spacing-and-weights-table">
@@ -135,6 +230,52 @@ export const AxleSpacingAndWeightsTable = ({
         <strong>Legend:</strong> Interaxle Spacing (SPC); Axle Spread (SPD);
         Gross Combination Vehicle Weight (GCVW)
       </p>
+      <div className="button-container">
+        <Button
+          variant="contained"
+          onClick={() => {
+            setIsResetModalOpen(true);
+            setShowValidationBanner(false);
+          }}
+          className="button button--reset"
+        >
+          Reset
+        </Button>
+        <Button
+          variant="contained"
+          onClick={calculateBridgeFormula}
+          className="button button--submit"
+        >
+          Calculate
+        </Button>
+      </div>
+      {shouldShowResultsSection && (
+        <div className="results">
+          <h2 className="results__heading">
+            Bridge Formula Calculation Results
+          </h2>
+
+          {showValidationBanner ? (
+            <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
+          ) : failedBridgeCalculationResults.length ? (
+            failedBridgeCalculationResults.map((failedResult, index) => (
+              <>
+                <strong>Total (GCVW):</strong> 69300
+                <p key={index} className="results__text results__text--fail">
+                  {getFailedResultText(failedResult)}
+                </p>
+              </>
+            ))
+          ) : (
+            <>
+              <strong>Total (GCVW):</strong> 69300
+              <p className="results__text results__text--success">
+                &#x2713; Bridge Calculation is ok.
+              </p>
+            </>
+          )}
+        </div>
+      )}
       <AxleUnitHelpModal
         isOpen={isHelpModalOpen}
         onCancel={() => setIsHelpModalOpen(false)}
