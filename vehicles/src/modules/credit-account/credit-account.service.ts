@@ -23,6 +23,7 @@ import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
 import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
 import {
   getCreditAccountActivityType,
+  getCreditAccountStatusFromEGARMS,
   isActiveCreditAccount,
   isClosedCreditAccount,
 } from '../../common/helper/credit-account.helper';
@@ -62,6 +63,7 @@ import { EGARMSCreditAccountService } from '../common/egarms.credit-account.serv
 import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
   EGARMS_CREDIT_ACCOUNT_CLOSED,
+  EGARMS_CREDIT_ACCOUNT_HOLD,
   EGARMS_CREDIT_ACCOUNT_NOT_FOUND,
 } from '../../common/constants/api.constant';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
@@ -92,9 +94,157 @@ export class CreditAccountService {
   ) {}
 
   /**
+   * Creates a new credit account for a company based on an EGARMS credit account number.
+   *
+   * This method orchestrates the creation of a credit account by:
+   * 1. Validating that the company does not already have a credit account
+   * 2. Validating that the credit account number is not already mapped to another company
+   * 3. Fetching and validating the credit account details from EGARMS
+   * 4. Creating a new credit account entity with the appropriate status based on EGARMS response
+   * 5. Persisting the credit account to the database within a transaction
+   * 6. Recording the account creation activity
+   * 7. Mapping the created account to a DTO and returning it
+   *
+   * @param {IUserJWT} currentUser - The current authenticated user creating the credit account.
+   * @param {Object} params - Parameters for creating the credit account.
+   * @param {number} params.companyId - The ID of the company for which the credit account is being created.
+   * @param {string} params.creditAccountNumber - The credit account number from EGARMS to associate with the company.
+   * @returns {Promise<ReadCreditAccountDto>} - The created credit account data transfer object.
+   * @throws {UnprocessableEntityException} - If the company already has a credit account, the credit account number
+   * is already mapped to another company, or the EGARMS credit account status is invalid.
+   * @memberof CreditAccountService
+   */
+  @LogAsyncMethodExecution()
+  async createCreditAccountViaGarms(
+    currentUser: IUserJWT,
+    {
+      companyId,
+      creditAccountNumber,
+    }: { companyId: number; creditAccountNumber: string },
+  ) {
+    // Initiate async fetch of EGARMS credit account details in parallel
+    const egarmsCreditAccountDetailsPromise =
+      this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+        creditAccountNumber,
+      );
+
+    // Validate that the company does not already have a credit account
+    let creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+    );
+
+    if (creditAccount) {
+      throwUnprocessableEntityException(
+        `Company is already associated with a credit account ${creditAccount?.creditAccountNumber}.`,
+      );
+    }
+
+    // Validate that the credit account number is not already mapped to another company
+    creditAccount = await this.findOneByCreditAccountNumber(
+      currentUser,
+      creditAccountNumber,
+    );
+    if (creditAccount) {
+      throwUnprocessableEntityException(
+        `Credit account already exists mapped to client ${creditAccount?.company?.clientNumber}.`,
+      );
+    }
+
+    // Await the EGARMS credit account details from the parallel request
+    const egarmsCreditAccountDetails = await egarmsCreditAccountDetailsPromise;
+
+    // Validate that the credit account status from EGARMS is in an acceptable state
+    if (
+      !(
+        egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_ACTIVE ||
+        egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_CLOSED ||
+        egarmsCreditAccountDetails?.PPABalance?.return_code ===
+          EGARMS_CREDIT_ACCOUNT_HOLD
+      )
+    ) {
+      this.logger.error(
+        `Error: Invalid Credit Account Status in eGARMS. eGARMS Return Code: ${egarmsCreditAccountDetails?.PPABalance?.return_code}`,
+      );
+      throwUnprocessableEntityException(
+        'Credit account is unavailable',
+        'CREDIT_ACCOUNT_UNAVAILABLE',
+      );
+    }
+
+    // Fetch company information for account creation and audit purposes
+    const companyInfo =
+      await this.companyService.findOneCompanyWithAllDetails(companyId);
+
+    const currentDateTime: Date = new Date();
+
+    // Initialize the new credit account entity with EGARMS-derived status
+    let newCreditAccount = new CreditAccount();
+    newCreditAccount.creditAccountStatusType = getCreditAccountStatusFromEGARMS(
+      egarmsCreditAccountDetails?.PPABalance?.return_code,
+    );
+    newCreditAccount.creditAccountType = CreditAccountType.UNSECURED;
+    newCreditAccount.isVerified = false;
+    newCreditAccount.company = new Company();
+    newCreditAccount.company.companyId = companyId;
+    newCreditAccount.creditAccountNumber = creditAccountNumber;
+    setBaseEntityProperties<CreditAccount>({
+      entity: newCreditAccount,
+      currentUser,
+      date: currentDateTime,
+    });
+
+    // Create a database transaction to ensure atomicity of account creation and activity logging
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // Persist the new credit account to the database
+      newCreditAccount = await queryRunner.manager.save(newCreditAccount);
+
+      // Log the credit account creation activity for audit trail
+      await this.logCreditAccountAndUserActivity({
+        queryRunner,
+        creditAccount: newCreditAccount,
+        currentUser,
+        currentDateTime,
+        creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
+        comment: `Opening account for client number: ${companyInfo.clientNumber}`,
+      });
+
+      // Commit the transaction if both save and logging succeed
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // Rollback all changes if any operation within the transaction fails
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      // Release the query runner resources
+      await queryRunner.release();
+    }
+
+    // Map the created credit account entity to the response DTO
+    const createdCreditAccountDto = await this.classMapper.mapAsync(
+      newCreditAccount,
+      CreditAccount,
+      ReadCreditAccountDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
+    );
+
+    return createdCreditAccountDto;
+  }
+
+  /**
    * Creates a new credit account for a company.
    *
-   * The `create` method orchestrates the creation of a new credit account, including the creation
+   * The `createCreditAccountViaCFS` method orchestrates the creation of a new credit account, including the creation
    * of associated entities such as Party, Account, Site, and Site Contact within the CFS system.
    * The method ensures that the credit account is created with the proper references and initial
    * data, and then saves it to the local repository.
@@ -109,7 +259,7 @@ export class CreditAccountService {
    * @memberof CreditAccountService
    */
   @LogAsyncMethodExecution()
-  async create(
+  async createCreditAccountViaCFS(
     currentUser: IUserJWT,
     {
       companyId,
@@ -1720,6 +1870,30 @@ export class CreditAccountService {
         creditAccount = accountDetailsForUser;
       }
     }
+    return creditAccount;
+  }
+
+  /**
+   * Finds one credit account by account number.
+   *
+   * @param {IUserJWT} currentUser - The current user authenticated with JWT.
+   * @param creditAccountNumber - The number of the credit account to find.
+   * @returns {Promise<CreditAccount | null>} - The found credit account or null.
+   */
+  @LogAsyncMethodExecution()
+  public async findOneByCreditAccountNumber(
+    currentUser: IUserJWT,
+    creditAccountNumber: string,
+  ): Promise<CreditAccount | null> {
+    const creditAccount = await this.creditAccountRepository.findOne({
+      where: {
+        creditAccountNumber: creditAccountNumber?.trim()?.toUpperCase(),
+      },
+      relations: this.granularAccessControl(
+        CreditAccountUserType.ACCOUNT_HOLDER,
+        currentUser.orbcUserRole,
+      ),
+    });
     return creditAccount;
   }
 

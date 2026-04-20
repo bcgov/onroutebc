@@ -78,12 +78,15 @@ export class CreditAccountController {
   async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() { creditLimit }: CreateCreditAccountDto,
+    @Body() { creditAccountNumber }: CreateCreditAccountDto,
   ): Promise<ReadCreditAccountDto> {
-    return await this.creditAccountService.create(request.user as IUserJWT, {
-      companyId,
-      creditLimit,
-    });
+    return await this.creditAccountService.createCreditAccountViaGarms(
+      request.user as IUserJWT,
+      {
+        companyId,
+        creditAccountNumber,
+      },
+    );
   }
 
   /**

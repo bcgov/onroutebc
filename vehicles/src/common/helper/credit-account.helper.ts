@@ -1,6 +1,7 @@
 import { CreditAccount } from '../../modules/credit-account/entities/credit-account.entity';
 import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
+  EGARMS_CREDIT_ACCOUNT_CLOSED,
   EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
   EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT_2,
   EGARMS_CREDIT_ACCOUNT_HOLD,
@@ -85,3 +86,24 @@ export const validEgarmsReturnCodesToDisplayCreditDetails = (
       EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT_2
   );
 };
+
+/**
+ * Determines the credit account status based on the EGARMS return code.
+ *
+ * @param returnCode - The return code from EGARMS PPABalance.
+ * @returns The corresponding CreditAccountStatus.
+ */
+export function getCreditAccountStatusFromEGARMS(
+  returnCode: string,
+): CreditAccountStatusType {
+  switch (returnCode) {
+    case EGARMS_CREDIT_ACCOUNT_ACTIVE:
+      return CreditAccountStatus.ACCOUNT_ACTIVE;
+    case EGARMS_CREDIT_ACCOUNT_CLOSED:
+      return CreditAccountStatus.ACCOUNT_CLOSED;
+    case EGARMS_CREDIT_ACCOUNT_HOLD:
+      return CreditAccountStatus.ACCOUNT_ON_HOLD;
+    default:
+      return CreditAccountStatus.ACCOUNT_SETUP_FAIL;
+  }
+}

@@ -1,18 +1,16 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
-import {
-  CreditAccountLimit,
-  CreditAccountLimitType,
-} from '../../../../common/enum/credit-account-limit.enum';
+import { IsString, Length } from 'class-validator';
 
 export class CreateCreditAccountDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The credit limit',
-    example: '10000',
-    enum: CreditAccountLimit,
+    description: 'The credit account number.',
+    example: 'WS5667',
+    maxLength: 12,
+    minLength: 1,
   })
-  @IsEnum(CreditAccountLimit)
-  creditLimit: CreditAccountLimitType;
+  @IsString()
+  @Length(1, 12)
+  creditAccountNumber: string;
 }
