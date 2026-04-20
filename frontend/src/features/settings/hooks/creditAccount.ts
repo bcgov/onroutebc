@@ -53,6 +53,7 @@ export const useGetCreditAccountQuery = (
   return useQuery({
     queryKey: ["credit-account", { companyId }],
     queryFn: () => getCreditAccount(companyId, creditAccountId),
+    enabled: Boolean(creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
   });
