@@ -29,10 +29,14 @@ import { AxiosError } from "axios";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountMetadataQuery = (companyId: number) => {
+export const useGetCreditAccountMetadataQuery = (
+  companyId: number,
+  enabled?: boolean,
+) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }, "metadata"],
     queryFn: () => getCreditAccountMetadata(companyId),
+    enabled,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -47,7 +51,7 @@ export const useGetCreditAccountQuery = (
   creditAccountId: number,
 ) => {
   return useQuery({
-    queryKey: ["credit-account", { companyId, creditAccountId }],
+    queryKey: ["credit-account", { companyId }],
     queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
