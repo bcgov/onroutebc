@@ -7,6 +7,7 @@ import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails"
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import { AxleUnit } from "../../../../../../../common/types/AxleUnit";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
@@ -14,12 +15,19 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
+  onUpdatePowerUnitAxleConfiguration,
+  onUpdateTrailerAxleConfiguration,
 }: {
   permitType: PermitType;
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration: (
+    trailerIndex: number,
+    axleConfiguration: AxleUnit[],
+  ) => void;
 }) => {
   return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
     <Box className="axle-spacing-and-weights-section">
@@ -44,6 +52,10 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
+          onUpdatePowerUnitAxleConfiguration={
+            onUpdatePowerUnitAxleConfiguration
+          }
+          onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
         />
       </Box>
     </Box>

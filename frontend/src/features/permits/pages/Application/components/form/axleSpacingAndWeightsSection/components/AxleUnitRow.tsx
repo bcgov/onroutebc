@@ -1,53 +1,40 @@
-import {
-  Controller,
-  Control,
-  useFieldArray,
-  useFormContext,
-  useWatch,
-} from "react-hook-form";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { Autocomplete } from "../../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
-import { ApplicationFormData } from "../../../../../../types/application";
+import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 
-type AxleConfigurationPath =
-  | "permitData.vehicleConfiguration.axleConfiguration"
-  | `permitData.vehicleConfiguration.trailers.${number}.axleConfiguration`;
-
 export const AxleUnitRow = ({
-  control,
-  path,
+  axleConfiguration,
   label,
   axleUnitNumber,
   isTrailer,
+  onUpdateAxleConfiguration,
 }: {
-  control: Control<ApplicationFormData>;
-  path: AxleConfigurationPath;
+  axleConfiguration: AxleUnit[];
   label: Nullable<string>;
   axleUnitNumber: number;
   isTrailer: boolean;
+  onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
 }) => {
-  const { setValue } = useFormContext<ApplicationFormData>();
-
-  const { fields } = useFieldArray({
-    control,
-    name: path,
-  });
-
-  // Since this component makes use of useFieldArray, rows are index-based and can shift as items are added/removed. Watching this exact array path with useWatch keeps per-row derived values aligned to current indices and avoids re-rendering from unrelated vehicleConfiguration context changes, as opposed to the usual prop based approach used throughout the PermitForm.
-  const axleUnits = useWatch({
-    control,
-    name: path,
-  });
-
   const policyEngine = usePolicyEngine();
 
   const tireSizeOptions = policyEngine?.getStandardTireSizes() ?? [];
 
   const defaultTireSizeOption = tireSizeOptions[1];
+
+  const updateAxleUnit = (
+    axleIndex: number,
+    field: keyof AxleUnit,
+    value: number | string | null,
+  ) => {
+    const updatedConfiguration = axleConfiguration.map((axleUnit, index) =>
+      index === axleIndex ? { ...axleUnit, [field]: value } : axleUnit,
+    );
+    onUpdateAxleConfiguration(updatedConfiguration);
+  };
 
   return (
     <>
@@ -57,7 +44,7 @@ export const AxleUnitRow = ({
         </td>
       </tr>
 
-      {fields.map((field, index) => {
+      {axleConfiguration.map((axleUnit, index) => {
         // Each interaxle spacing row follows a regular (complete) axle unit row, because trailer axle units are displayed with the interaxle spacing row first, we must calculate the interaxle spacing row index differently for trailers and power units.
         const isInteraxleSpacingRow = isTrailer
           ? index % 2 === 0
@@ -67,169 +54,146 @@ export const AxleUnitRow = ({
           ? axleUnitNumber + Math.floor(index / 2) + 1
           : 0;
 
-        const numberOfAxles = axleUnits?.[index]?.numberOfAxles;
+        const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
 
         return (
-          <tr key={field.id} className="table__row">
+          <tr key={`axle-${label}-${index}`} className="table__row">
             <td className="row__label">
               {!isInteraxleSpacingRow && axleUnitNumberDisplay}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.numberOfAxles` as const}
-                  control={control}
-                  render={({ field, fieldState: { invalid } }) => (
-                    <NumberInput
-                      classes={{ root: "table__input-container" }}
-                      inputProps={{
-                        className: "table__input",
-                        value: getDefaultRequiredVal(null, field.value),
-                        onBlur: ({ target: { value } }) => {
-                          const updatedNumberOfAxles = convertToNumberIfValid(
-                            value,
-                            null,
-                          );
+                <NumberInput
+                  classes={{ root: "table__input-container" }}
+                  inputProps={{
+                    className: "table__input",
+                    value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
+                    onBlur: ({ target: { value } }) => {
+                      const updatedNumberOfAxles = convertToNumberIfValid(
+                        value,
+                        null,
+                      );
 
-                          field.onChange(updatedNumberOfAxles);
+                      updateAxleUnit(
+                        index,
+                        "numberOfAxles",
+                        updatedNumberOfAxles,
+                      );
 
-                          if (updatedNumberOfAxles === 1) {
-                            setValue(
-                              `${path}.${index}.axleSpread` as const,
-                              null,
-                            );
-                          }
-
-                          field.onBlur();
-                        },
-                        maskFn: (numericVal) => numericVal.toFixed(0),
-                        error: invalid,
-                      }}
-                    />
-                  )}
+                      if (updatedNumberOfAxles === 1) {
+                        updateAxleUnit(index, "axleSpread", null);
+                      }
+                    },
+                    maskFn: (numericVal) => numericVal.toFixed(0),
+                  }}
                 />
               )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.numberOfTires` as const}
-                  control={control}
-                  render={({ field, fieldState: { invalid } }) => (
-                    <NumberInput
-                      classes={{ root: "table__input-container" }}
-                      inputProps={{
-                        className: "table__input",
-                        value: getDefaultRequiredVal(null, field.value),
-                        onBlur: ({ target: { value } }) => {
-                          field.onChange(convertToNumberIfValid(value, null));
-                          field.onBlur();
-                        },
-                        maskFn: (numericVal) => numericVal.toFixed(0),
-                        error: invalid,
-                      }}
-                    />
-                  )}
+                <NumberInput
+                  classes={{ root: "table__input-container" }}
+                  inputProps={{
+                    className: "table__input",
+                    value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
+                    onBlur: ({ target: { value } }) => {
+                      updateAxleUnit(
+                        index,
+                        "numberOfTires",
+                        convertToNumberIfValid(value, null),
+                      );
+                    },
+                    maskFn: (numericVal) => numericVal.toFixed(0),
+                  }}
                 />
               )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.tireSize` as const}
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      classes={{ root: "table__input-container" }}
-                      autocompleteProps={{
-                        className: "table__input table__input--select",
-                        clearIcon: null,
-                        options: tireSizeOptions,
-                        value:
-                          tireSizeOptions.find(
-                            (option) => option.size === field.value,
-                          ) ?? defaultTireSizeOption,
-                        getOptionLabel: (option) => option.name,
-                        isOptionEqualToValue: (option, value) =>
-                          option.size === value.size,
-                        onChange: (_, selectedOption) => {
-                          field.onChange(
-                            selectedOption ? selectedOption.size : null,
-                          );
-                        },
-                        onBlur: field.onBlur,
-                      }}
-                    />
-                  )}
+                <Autocomplete
+                  classes={{ root: "table__input-container" }}
+                  autocompleteProps={{
+                    className: "table__input table__input--select",
+                    clearIcon: null,
+                    options: tireSizeOptions,
+                    value:
+                      tireSizeOptions.find(
+                        (option) => option.size === axleUnit?.tireSize,
+                      ) ?? defaultTireSizeOption,
+                    getOptionLabel: (option) => option.name,
+                    isOptionEqualToValue: (option, value) =>
+                      option.size === value.size,
+                    onChange: (_, selectedOption) => {
+                      updateAxleUnit(
+                        index,
+                        "tireSize",
+                        selectedOption ? selectedOption.size : null,
+                      );
+                    },
+                  }}
                 />
               )}
             </td>
             <td className="table__cell">
               {isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.interaxleSpacing` as const}
-                  control={control}
-                  render={({ field, fieldState: { invalid } }) => (
-                    <NumberInput
-                      classes={{ root: "table__input-container" }}
-                      inputProps={{
-                        className: "table__input",
-                        value: getDefaultRequiredVal(null, field.value),
-                        onBlur: ({ target: { value } }) => {
-                          field.onChange(convertToNumberIfValid(value, null));
-                          field.onBlur();
-                        },
-                        error: invalid,
-                      }}
-                    />
-                  )}
+                <NumberInput
+                  classes={{ root: "table__input-container" }}
+                  inputProps={{
+                    className: "table__input",
+                    value: getDefaultRequiredVal(
+                      null,
+                      axleUnit?.interaxleSpacing,
+                    ),
+                    onBlur: ({ target: { value } }) => {
+                      updateAxleUnit(
+                        index,
+                        "interaxleSpacing",
+                        convertToNumberIfValid(value, null),
+                      );
+                    },
+                  }}
                 />
               )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.axleSpread` as const}
-                  control={control}
-                  render={({ field, fieldState: { invalid } }) => (
-                    <NumberInput
-                      classes={{ root: "table__input-container" }}
-                      inputProps={{
-                        className: "table__input",
-                        value: getDefaultRequiredVal(null, field.value),
-                        onBlur: ({ target: { value } }) => {
-                          field.onChange(convertToNumberIfValid(value, null));
-                          field.onBlur();
-                        },
-                        error: invalid,
-                        readOnly: disableAxleSpread,
-                        disabled: disableAxleSpread,
-                      }}
-                    />
-                  )}
+                <NumberInput
+                  classes={{ root: "table__input-container" }}
+                  inputProps={{
+                    className: "table__input",
+                    value: getDefaultRequiredVal(null, axleUnit?.axleSpread),
+                    onBlur: ({ target: { value } }) => {
+                      updateAxleUnit(
+                        index,
+                        "axleSpread",
+                        convertToNumberIfValid(value, null),
+                      );
+                    },
+                    readOnly: disableAxleSpread,
+                    disabled: disableAxleSpread,
+                  }}
                 />
               )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
-                <Controller
-                  name={`${path}.${index}.axleUnitWeight` as const}
-                  control={control}
-                  render={({ field, fieldState: { invalid } }) => (
-                    <NumberInput
-                      classes={{ root: "table__input-container" }}
-                      inputProps={{
-                        className: "table__input",
-                        value: getDefaultRequiredVal(null, field.value),
-                        onBlur: ({ target: { value } }) => {
-                          field.onChange(convertToNumberIfValid(value, null));
-                          field.onBlur();
-                        },
-                        error: invalid,
-                      }}
-                    />
-                  )}
+                <NumberInput
+                  classes={{ root: "table__input-container" }}
+                  inputProps={{
+                    className: "table__input",
+                    value: getDefaultRequiredVal(
+                      null,
+                      axleUnit?.axleUnitWeight,
+                    ),
+                    onBlur: ({ target: { value } }) => {
+                      updateAxleUnit(
+                        index,
+                        "axleUnitWeight",
+                        convertToNumberIfValid(value, null),
+                      );
+                    },
+                  }}
                 />
               )}
             </td>

@@ -1,9 +1,7 @@
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
-import { useFormContext } from "react-hook-form";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
-import { ApplicationFormData } from "../../../../../../types/application";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
@@ -17,13 +15,19 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
+  onUpdatePowerUnitAxleConfiguration,
+  onUpdateTrailerAxleConfiguration,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration: (
+    trailerIndex: number,
+    axleConfiguration: AxleUnit[],
+  ) => void;
 }) => {
-  const { control } = useFormContext<ApplicationFormData>();
   const trailers = vehicleConfiguration?.trailers ?? [];
 
   const powerUnitAxleConfiguration =
@@ -98,24 +102,29 @@ export const AxleSpacingAndWeightsTable = ({
           </thead>
           <tbody>
             <AxleUnitRow
-              control={control}
-              path="permitData.vehicleConfiguration.axleConfiguration"
+              axleConfiguration={powerUnitAxleConfiguration}
               label={powerUnitSubtypeNamesMap.get(
                 vehicleFormData.vehicleSubType,
               )}
               axleUnitNumber={0}
               isTrailer={false}
+              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
             />
 
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
                 <AxleUnitRow
                   key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                  control={control}
-                  path={`permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`}
+                  axleConfiguration={trailer.axleConfiguration ?? []}
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
+                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
+                    onUpdateTrailerAxleConfiguration(
+                      trailerIndex,
+                      axleConfiguration,
+                    )
+                  }
                 />
               ) : null,
             )}
