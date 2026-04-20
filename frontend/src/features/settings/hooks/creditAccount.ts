@@ -29,15 +29,11 @@ import { AxiosError } from "axios";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountMetadataQuery = (
-  companyId: number,
-  enabled?: boolean,
-) => {
+export const useGetCreditAccountMetadataQuery = (companyId: number) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }, "metadata"],
     queryFn: () => getCreditAccountMetadata(companyId),
     retry: false,
-    enabled,
     refetchOnWindowFocus: false,
   });
 };
@@ -51,7 +47,7 @@ export const useGetCreditAccountQuery = (
   creditAccountId: number,
 ) => {
   return useQuery({
-    queryKey: ["credit-account", { companyId }],
+    queryKey: ["credit-account", { companyId, creditAccountId }],
     queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
@@ -96,18 +92,14 @@ export const useGetCreditAccountHistoryQuery = (data: {
  * Hook to fetch the company credit account details.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountUsersQuery = (
-  data: {
-    companyId: number;
-    creditAccountId: number;
-  },
-  enabled = true,
-) => {
+export const useGetCreditAccountUsersQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account", { companyId }, "users"],
+    queryKey: ["credit-account", { companyId, creditAccountId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
-    enabled,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -248,6 +240,10 @@ export const useRemoveCreditAccountUsersMutation = () => {
       },
     ) => {
       const { companyId } = variables;
+
+      queryClient.removeQueries({
+        queryKey: ["credit-account"],
+      });
 
       setSnackBar({
         showSnackbar: true,

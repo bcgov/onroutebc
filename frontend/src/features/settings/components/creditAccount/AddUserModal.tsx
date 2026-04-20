@@ -11,6 +11,8 @@ import "./AddUserModal.scss";
 import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip";
 import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const AddUserModal = ({
   showModal,
@@ -37,7 +39,7 @@ export const AddUserModal = ({
     return status === 200;
   };
   const { data: userCreditAccount, isLoading: isUserCreditAccountLoading } =
-    useGetCreditAccountMetadataQuery(userData.companyId, true);
+    useGetCreditAccountMetadataQuery(userData.companyId);
 
   const existingCreditAccountHolder =
     !isUserCreditAccountLoading && Boolean(userCreditAccount?.creditAccountId);
@@ -46,19 +48,16 @@ export const AddUserModal = ({
 
   const { data: associatedCreditAccount } = useGetCreditAccountQuery(
     userData.companyId,
-    existingCreditAccountId!,
+    getDefaultRequiredVal(0, existingCreditAccountId),
   );
 
-  const { data: associatedCreditAccountUsers } = useGetCreditAccountUsersQuery(
-    {
-      companyId: userData.companyId,
-      creditAccountId: existingCreditAccountId!,
-    },
-    !!existingCreditAccountId,
-  );
+  const { data: associatedCreditAccountUsers } = useGetCreditAccountUsersQuery({
+    companyId: userData.companyId,
+    creditAccountId: getDefaultRequiredVal(0, existingCreditAccountId),
+  });
 
   const holder = associatedCreditAccountUsers?.find(
-    (u) => u.userType === "HOLDER",
+    (u) => u.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
@@ -141,32 +140,38 @@ export const AddUserModal = ({
                 </div>
 
                 <div className="existing-holder-modal__body">
-                  <div className="existing-holder-modal__item">
-                    <div className="existing-holder-modal__key">
-                      Client Name
+                  {holder?.legalName ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        Client Name
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {holder.legalName}
+                      </div>
                     </div>
-                    <div className="existing-holder-modal__value">
-                      {holder?.legalName}
-                    </div>
-                  </div>
+                  ) : null}
 
-                  <div className="existing-holder-modal__item">
-                    <div className="existing-holder-modal__key">
-                      onRouteBC Client No.
+                  {holder?.clientNumber ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        onRouteBC Client No.
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {holder.clientNumber}
+                      </div>
                     </div>
-                    <div className="existing-holder-modal__value">
-                      {holder?.clientNumber}
-                    </div>
-                  </div>
+                  ) : null}
 
-                  <div className="existing-holder-modal__item">
-                    <div className="existing-holder-modal__key">
-                      Credit Account No.
+                  {associatedCreditAccount?.creditAccountNumber ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        Credit Account No.
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {associatedCreditAccount.creditAccountNumber}
+                      </div>
                     </div>
-                    <div className="existing-holder-modal__value">
-                      {associatedCreditAccount?.creditAccountNumber}
-                    </div>
-                  </div>
+                  ) : null}
                 </div>
               </div>
             </div>
