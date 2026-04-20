@@ -28,6 +28,7 @@ import {
   ORBCFormFeatureType,
 } from "../../../../../../../common/types/common";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
+import { RemovePowerUnitDialog } from "./RemovePowerUnitDialog";
 
 export const VehicleInformationSection = ({
   permitType,
@@ -40,13 +41,14 @@ export const VehicleInformationSection = ({
   nextAllowedSubtypes,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
-  selectedConfigSubtypes,
+  selectedTrailers,
   selectedCommodityType,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
   onUpdateVehicleConfigTrailers,
   onUpdateVehicleConfig,
+  onClearVehicleConfig,
 }: {
   permitType: PermitType;
   feature: ORBCFormFeatureType;
@@ -61,7 +63,7 @@ export const VehicleInformationSection = ({
   }[];
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
-  selectedConfigSubtypes: string[];
+  selectedTrailers: VehicleInConfiguration[];
   selectedCommodityType?: Nullable<string>;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
@@ -70,6 +72,7 @@ export const VehicleInformationSection = ({
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
   onUpdateVehicleConfig: (vehicleConfig: PermitVehicleConfiguration) => void;
+  onClearVehicleConfig: (permitType: PermitType) => void;
 }) => {
   const isSingleTrip =
     permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
@@ -91,12 +94,25 @@ export const VehicleInformationSection = ({
   const [showPowerUnitDialog, setShowPowerUnitDialog] =
     useState<boolean>(false);
 
+  const [showRemovePowerUnitDialog, setShowRemovePowerUnitDialog] =
+    useState<boolean>(false);
+
   const powerUnitFieldRef = "permitData.vehicleDetails";
   const { clearErrors } = useFormContext<ApplicationFormData>();
 
   const handleClickAddPowerUnit = () => {
     if (isPowerUnitSelectedForSingleTrip || !isCommodityTypeSelected) return;
     setShowPowerUnitDialog(true);
+  };
+
+  const handleClickRemovePowerUnit = () => {
+    if (permitType === PERMIT_TYPES.STOW) {
+      // For STOW, we want to show a confirmation dialog before removing the power unit since the axle spacing and weights information will also be removed and this information is required for the application.
+      setShowRemovePowerUnitDialog(true);
+    } else {
+      // For STOS, we can directly remove the power unit without confirmation since axle spacing and weights information is not required.
+      handleRemovePowerUnit();
+    }
   };
 
   const handleClickEditPowerUnit = () => {
@@ -108,6 +124,11 @@ export const VehicleInformationSection = ({
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
     onUpdateVehicleConfig({});
+    if (permitType === PERMIT_TYPES.STOW) {
+      // For STOW, we also need to clear the axle configuration when the power unit is removed
+      onClearVehicleConfig(permitType);
+      setShowRemovePowerUnitDialog(false);
+    }
   };
 
   const handleClosePowerUnitDialog = () => {
@@ -202,14 +223,14 @@ export const VehicleInformationSection = ({
           <PowerUnitInfo
             powerUnitInfo={vehicleFormData}
             powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
-            onRemovePowerUnit={handleRemovePowerUnit}
+            onRemovePowerUnit={handleClickRemovePowerUnit}
             onEditPowerUnit={handleClickEditPowerUnit}
           />
         ) : null}
 
         {isPowerUnitSelectedForSingleTrip ? (
           <AddTrailer
-            selectedTrailerSubtypes={selectedConfigSubtypes}
+            selectedTrailers={selectedTrailers}
             trailerSubtypeOptions={nextAllowedSubtypes}
             trailerSubtypeNamesMap={trailerSubtypeNamesMap}
             onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
@@ -229,6 +250,14 @@ export const VehicleInformationSection = ({
           permitType={permitType}
           onCancel={handleClosePowerUnitDialog}
           onSavePowerUnit={handleSavePowerUnit}
+        />
+      ) : null}
+
+      {showRemovePowerUnitDialog ? (
+        <RemovePowerUnitDialog
+          isOpen={showRemovePowerUnitDialog}
+          onCancel={() => setShowRemovePowerUnitDialog(false)}
+          onConfirm={handleRemovePowerUnit}
         />
       ) : null}
     </Box>

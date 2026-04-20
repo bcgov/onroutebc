@@ -6,31 +6,16 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import "./BridgeFormulaCalculationTool.scss";
 import { NumberInput } from "../../../common/components/form/subFormComponents/NumberInput";
-import { RequiredOrNull } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertToNumberIfValid";
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
-
-interface AxleUnit {
-  numberOfAxles?: RequiredOrNull<number>;
-  axleSpread?: RequiredOrNull<number>;
-  interaxleSpacing?: RequiredOrNull<number>;
-  axleUnitWeight?: RequiredOrNull<number>;
-  numberOfTires?: RequiredOrNull<number>;
-  tireSize?: RequiredOrNull<number>;
-}
-
-// the type expected by the caculateBridge function in the policy engine
-interface AxleConfiguration {
-  numberOfAxles: number;
-  axleSpread?: number;
-  interaxleSpacing?: number;
-  axleUnitWeight: number;
-  numberOfTires?: number;
-  tireSize?: number;
-}
+import { AxleConfiguration, AxleUnit } from "../../../common/types/AxleUnit";
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../../../common/helpers/axleUnitHelper";
 
 interface BridgeCalculationResult {
   startAxleUnit: number;
@@ -41,7 +26,7 @@ interface BridgeCalculationResult {
 }
 
 export const BridgeFormulaCalculationTool = () => {
-  const policy = usePolicyEngine();
+  const policyEngine = usePolicyEngine();
 
   const { control, handleSubmit, watch, setValue, reset, formState } = useForm<{
     axleUnits: AxleUnit[];
@@ -131,26 +116,6 @@ export const BridgeFormulaCalculationTool = () => {
   const getFailedResultText = (failedResult: BridgeCalculationResult) =>
     `⮾ Bridge calculation failed between Axle Unit ${failedResult.startAxleUnit} and ${failedResult.endAxleUnit}, Axle Group Weight is ${failedResult.actualWeight}, Bridge Formula Weight max is ${failedResult.maxBridge}.`;
 
-  const mergeInteraxleSpacingColumn = (axleUnits: AxleUnit[]) => {
-    for (let i = 1; i < axleUnits.length - 1; i++) {
-      axleUnits[i + 1].interaxleSpacing = axleUnits[i].interaxleSpacing;
-      axleUnits.splice(i, 1);
-    }
-    return axleUnits;
-  };
-
-  const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
-    return {
-      ...axleUnit,
-      axleSpread: axleUnit.axleSpread
-        ? Math.round(axleUnit.axleSpread * 100)
-        : axleUnit.axleSpread,
-      interaxleSpacing: axleUnit.interaxleSpacing
-        ? Math.round(axleUnit.interaxleSpacing * 100)
-        : axleUnit.interaxleSpacing,
-    };
-  };
-
   const getDefaultAxleConfiguration = (
     axleUnit: AxleUnit,
   ): AxleConfiguration => {
@@ -166,7 +131,7 @@ export const BridgeFormulaCalculationTool = () => {
   };
 
   const onSubmit = (data: { axleUnits: AxleUnit[] }) => {
-    const mergedAxleUnitData = mergeInteraxleSpacingColumn(data.axleUnits);
+    const mergedAxleUnitData = mergeInteraxleSpacing(data.axleUnits, 1);
 
     const convertedAxleUnitData = mergedAxleUnitData.map((axleUnit) =>
       convertMetreValuesToCentimetres(axleUnit),
@@ -176,7 +141,7 @@ export const BridgeFormulaCalculationTool = () => {
       getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = policy?.calculateBridge(
+    const bridgeCalculationResults = policyEngine?.calculateBridge(
       serializedAxleUnitData,
     );
 

@@ -54,4 +54,6 @@ export const BANNER_MESSAGES = {
   KNOW_YOUR_SHOPPING_CART: `The shopping cart is shared between all users authorized in the client profile for this onRouteBC client account. These users can modify (edit, remove and purchase) any item in the cart.`,
   YOUR_SHOPPING_CART_CANNOT_BE_COMPLETED:
     "The shopping cart contains Application(s) with one or more errors. Those applications must be deselected or removed from the cart to proceed with payment. Common errors include, but are not limited to, start date is in the past or an invalid vehicle.",
+  CONVERSION_FACTS:
+    "1 mm = 0.1 cm; 1 inch = 2.54 cm; 1 lb = 0.455 kg; 1 ft = 0.305 m.",
 };

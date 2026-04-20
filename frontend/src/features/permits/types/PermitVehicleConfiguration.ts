@@ -1,7 +1,9 @@
+import { AxleUnit } from "../../../common/types/AxleUnit";
 import { Nullable } from "../../../common/types/common";
 
 export interface VehicleInConfiguration {
   vehicleSubType: string;
+  axleConfiguration?: Nullable<AxleUnit[]>;
 }
 
 export interface PermitVehicleConfiguration {
@@ -13,4 +15,5 @@ export interface PermitVehicleConfiguration {
   trailers?: Nullable<VehicleInConfiguration[]>;
   loadedGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
-};
+  axleConfiguration?: Nullable<AxleUnit[]>;
+}

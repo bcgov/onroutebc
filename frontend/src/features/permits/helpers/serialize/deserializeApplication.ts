@@ -13,6 +13,7 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../../common/helpers/formatDate";
+import { deserializePermitVehicleConfiguration } from "./deserializePermitVehicleConfiguration";
 
 /**
  * Deserializes an ApplicationResponseData object (received from backend) to an Application object
@@ -58,6 +59,9 @@ export const deserializeApplicationResponse = (
       ...response.permitData,
       startDate: startDateOrDefault,
       expiryDate: expiryDateOrDefault,
+      vehicleConfiguration: deserializePermitVehicleConfiguration(
+        response.permitData.vehicleConfiguration,
+      ),
     },
   };
 };

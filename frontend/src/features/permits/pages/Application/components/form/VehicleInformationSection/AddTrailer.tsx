@@ -20,14 +20,15 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
+import { DEFAULT_AXLE_UNIT } from "../../../../../../../common/constants/defaultAxleUnit";
 
 export const AddTrailer = ({
-  selectedTrailerSubtypes,
+  selectedTrailers,
   trailerSubtypeOptions,
   trailerSubtypeNamesMap,
   onUpdateVehicleConfigTrailers,
 }: {
-  selectedTrailerSubtypes: string[];
+  selectedTrailers: VehicleInConfiguration[];
   trailerSubtypeOptions: {
     value: string;
     label: string;
@@ -54,7 +55,8 @@ export const AddTrailer = ({
   );
 
   const selectedSubtypesDisplay = useMemoizedSequence(
-    selectedTrailerSubtypes.map((subtype) => {
+    selectedTrailers.map(({ vehicleSubType }) => {
+      const subtype = vehicleSubType;
       if (isTrailerSubtypeNone(subtype)) return "None";
       return getDefaultRequiredVal(
         subtype,
@@ -67,11 +69,14 @@ export const AddTrailer = ({
   const handleAddTrailerSubtype = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(
-        selectedTrailerSubtypes
-          .map((addedSubtype) => ({
-            vehicleSubType: addedSubtype,
-          }))
-          .concat([{ vehicleSubType: subtype }]),
+        selectedTrailers.concat([
+          {
+            vehicleSubType: subtype,
+            axleConfiguration: !isTrailerSubtypeNone(subtype)
+              ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
+              : null,
+          },
+        ]),
       );
 
       setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
