@@ -16,30 +16,27 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
-  onUpdatePowerUnitAxleConfiguration,
-  onUpdateTrailerAxleConfiguration,
-  onAddPowerUnitAxleUnit,
-  onRemovePowerUnitAxleUnit,
-  onAddTrailerAxleUnit,
-  onRemoveTrailerAxleUnit,
+  onUpdateAxleConfiguration,
+  onAddAxleUnit,
+  onRemoveAxleUnit,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
-  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration: (
-    trailerIndex: number,
+  onUpdateAxleConfiguration: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     axleConfiguration: AxleUnit[],
   ) => void;
-  onAddPowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
-  onRemovePowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
-  onAddTrailerAxleUnit: (
-    trailerIndex: number,
+  onAddAxleUnit: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     currentAxleConfiguration: AxleUnit[],
   ) => void;
-  onRemoveTrailerAxleUnit: (
-    trailerIndex: number,
+  onRemoveAxleUnit: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     currentAxleConfiguration: AxleUnit[],
   ) => void;
 }) => {
@@ -127,12 +124,14 @@ export const AxleSpacingAndWeightsTable = ({
               )}
               axleUnitNumber={0}
               isTrailer={false}
-              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
+              onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
+                onUpdateAxleConfiguration(false, undefined, axleConfiguration)
+              }
               onAddAxleUnit={() =>
-                onAddPowerUnitAxleUnit(powerUnitAxleConfiguration)
+                onAddAxleUnit(false, undefined, powerUnitAxleConfiguration)
               }
               onRemoveAxleUnit={() =>
-                onRemovePowerUnitAxleUnit(powerUnitAxleConfiguration)
+                onRemoveAxleUnit(false, undefined, powerUnitAxleConfiguration)
               }
               tireSizeOptions={tireSizeOptions}
             />
@@ -146,19 +145,22 @@ export const AxleSpacingAndWeightsTable = ({
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
                   onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                    onUpdateTrailerAxleConfiguration(
+                    onUpdateAxleConfiguration(
+                      true,
                       trailerIndex,
                       axleConfiguration,
                     )
                   }
                   onAddAxleUnit={() =>
-                    onAddTrailerAxleUnit(
+                    onAddAxleUnit(
+                      true,
                       trailerIndex,
                       trailer.axleConfiguration ?? [],
                     )
                   }
                   onRemoveAxleUnit={() =>
-                    onRemoveTrailerAxleUnit(
+                    onRemoveAxleUnit(
+                      true,
                       trailerIndex,
                       trailer.axleConfiguration ?? [],
                     )

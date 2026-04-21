@@ -283,46 +283,44 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
-  const onUpdatePowerUnitAxleConfiguration = useCallback(
-    (axleConfiguration: AxleUnit[]) => {
-      setValue(
-        "permitData.vehicleConfiguration.axleConfiguration",
-        axleConfiguration,
-      );
+  const onUpdateAxleConfiguration = useCallback(
+    (
+      isTrailer: boolean,
+      trailerIndex: number | undefined,
+      axleConfiguration: AxleUnit[],
+    ) => {
+      if (isTrailer && trailerIndex !== undefined) {
+        setValue(
+          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+          axleConfiguration,
+        );
+      } else {
+        setValue(
+          "permitData.vehicleConfiguration.axleConfiguration",
+          axleConfiguration,
+        );
+      }
     },
     [setValue],
   );
 
-  const onUpdateTrailerAxleConfiguration = useCallback(
-    (trailerIndex: number, axleConfiguration: AxleUnit[]) => {
-      setValue(
-        `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-        axleConfiguration,
-      );
-    },
-    [setValue],
-  );
-
-  const onAddPowerUnitAxleUnit = useCallback(
-    (currentAxleConfiguration: AxleUnit[]) => {
+  const onAddAxleUnit = useCallback(
+    (
+      isTrailer: boolean,
+      trailerIndex: number | undefined,
+      currentAxleConfiguration: AxleUnit[],
+    ) => {
       const newAxleConfiguration = [
         ...currentAxleConfiguration,
         { interaxleSpacing: null },
         DEFAULT_AXLE_UNIT,
       ];
-      setValue(
-        "permitData.vehicleConfiguration.axleConfiguration",
-        newAxleConfiguration,
-      );
-    },
-    [setValue],
-  );
-
-  const onRemovePowerUnitAxleUnit = useCallback(
-    (currentAxleConfiguration: AxleUnit[]) => {
-      if (currentAxleConfiguration.length >= 4) {
-        // Remove the last two items (interaxle spacing + axle unit pair)
-        const newAxleConfiguration = currentAxleConfiguration.slice(0, -2);
+      if (isTrailer && trailerIndex !== undefined) {
+        setValue(
+          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+          newAxleConfiguration,
+        );
+      } else {
         setValue(
           "permitData.vehicleConfiguration.axleConfiguration",
           newAxleConfiguration,
@@ -332,30 +330,26 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
-  const onAddTrailerAxleUnit = useCallback(
-    (trailerIndex: number, currentAxleConfiguration: AxleUnit[]) => {
-      const newAxleConfiguration = [
-        ...currentAxleConfiguration,
-        { interaxleSpacing: null },
-        DEFAULT_AXLE_UNIT,
-      ];
-      setValue(
-        `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-        newAxleConfiguration,
-      );
-    },
-    [setValue],
-  );
-
-  const onRemoveTrailerAxleUnit = useCallback(
-    (trailerIndex: number, currentAxleConfiguration: AxleUnit[]) => {
+  const onRemoveAxleUnit = useCallback(
+    (
+      isTrailer: boolean,
+      trailerIndex: number | undefined,
+      currentAxleConfiguration: AxleUnit[],
+    ) => {
       if (currentAxleConfiguration.length >= 4) {
         // Remove the last two items (interaxle spacing + axle unit pair)
         const newAxleConfiguration = currentAxleConfiguration.slice(0, -2);
-        setValue(
-          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-          newAxleConfiguration,
-        );
+        if (isTrailer && trailerIndex !== undefined) {
+          setValue(
+            `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+            newAxleConfiguration,
+          );
+        } else {
+          setValue(
+            "permitData.vehicleConfiguration.axleConfiguration",
+            newAxleConfiguration,
+          );
+        }
       }
     },
     [setValue],
@@ -392,11 +386,8 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-    onUpdatePowerUnitAxleConfiguration,
-    onUpdateTrailerAxleConfiguration,
-    onAddPowerUnitAxleUnit,
-    onRemovePowerUnitAxleUnit,
-    onAddTrailerAxleUnit,
-    onRemoveTrailerAxleUnit,
+    onUpdateAxleConfiguration,
+    onAddAxleUnit,
+    onRemoveAxleUnit,
   };
 };

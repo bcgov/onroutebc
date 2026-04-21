@@ -15,31 +15,28 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
-  onUpdatePowerUnitAxleConfiguration,
-  onUpdateTrailerAxleConfiguration,
-  onAddPowerUnitAxleUnit,
-  onRemovePowerUnitAxleUnit,
-  onAddTrailerAxleUnit,
-  onRemoveTrailerAxleUnit,
+  onUpdateAxleConfiguration,
+  onAddAxleUnit,
+  onRemoveAxleUnit,
 }: {
   permitType: PermitType;
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
-  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration: (
-    trailerIndex: number,
+  onUpdateAxleConfiguration: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     axleConfiguration: AxleUnit[],
   ) => void;
-  onAddPowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
-  onRemovePowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
-  onAddTrailerAxleUnit: (
-    trailerIndex: number,
+  onAddAxleUnit: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     currentAxleConfiguration: AxleUnit[],
   ) => void;
-  onRemoveTrailerAxleUnit: (
-    trailerIndex: number,
+  onRemoveAxleUnit: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
     currentAxleConfiguration: AxleUnit[],
   ) => void;
 }) => {
@@ -66,14 +63,9 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
-          onUpdatePowerUnitAxleConfiguration={
-            onUpdatePowerUnitAxleConfiguration
-          }
-          onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
-          onAddPowerUnitAxleUnit={onAddPowerUnitAxleUnit}
-          onRemovePowerUnitAxleUnit={onRemovePowerUnitAxleUnit}
-          onAddTrailerAxleUnit={onAddTrailerAxleUnit}
-          onRemoveTrailerAxleUnit={onRemoveTrailerAxleUnit}
+          onUpdateAxleConfiguration={onUpdateAxleConfiguration}
+          onAddAxleUnit={onAddAxleUnit}
+          onRemoveAxleUnit={onRemoveAxleUnit}
         />
       </Box>
     </Box>
