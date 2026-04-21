@@ -17,8 +17,6 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap,
   vehicleConfiguration,
   onUpdateAxleConfiguration,
-  onAddAxleUnit,
-  onRemoveAxleUnit,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
@@ -28,16 +26,6 @@ export const AxleSpacingAndWeightsTable = ({
     isTrailer: boolean,
     trailerIndex: number | undefined,
     axleConfiguration: AxleUnit[],
-  ) => void;
-  onAddAxleUnit: (
-    isTrailer: boolean,
-    trailerIndex: number | undefined,
-    currentAxleConfiguration: AxleUnit[],
-  ) => void;
-  onRemoveAxleUnit: (
-    isTrailer: boolean,
-    trailerIndex: number | undefined,
-    currentAxleConfiguration: AxleUnit[],
   ) => void;
 }) => {
   const policyEngine = usePolicyEngine();
@@ -124,15 +112,7 @@ export const AxleSpacingAndWeightsTable = ({
               )}
               axleUnitNumber={0}
               isTrailer={false}
-              onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                onUpdateAxleConfiguration(false, undefined, axleConfiguration)
-              }
-              onAddAxleUnit={() =>
-                onAddAxleUnit(false, undefined, powerUnitAxleConfiguration)
-              }
-              onRemoveAxleUnit={() =>
-                onRemoveAxleUnit(false, undefined, powerUnitAxleConfiguration)
-              }
+              onUpdateAxleConfiguration={onUpdateAxleConfiguration}
               tireSizeOptions={tireSizeOptions}
             />
 
@@ -144,27 +124,8 @@ export const AxleSpacingAndWeightsTable = ({
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
-                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                    onUpdateAxleConfiguration(
-                      true,
-                      trailerIndex,
-                      axleConfiguration,
-                    )
-                  }
-                  onAddAxleUnit={() =>
-                    onAddAxleUnit(
-                      true,
-                      trailerIndex,
-                      trailer.axleConfiguration ?? [],
-                    )
-                  }
-                  onRemoveAxleUnit={() =>
-                    onRemoveAxleUnit(
-                      true,
-                      trailerIndex,
-                      trailer.axleConfiguration ?? [],
-                    )
-                  }
+                  trailerIndex={trailerIndex}
+                  onUpdateAxleConfiguration={onUpdateAxleConfiguration}
                   tireSizeOptions={tireSizeOptions}
                 />
               ) : null,

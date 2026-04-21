@@ -304,57 +304,6 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
-  const onAddAxleUnit = useCallback(
-    (
-      isTrailer: boolean,
-      trailerIndex: number | undefined,
-      currentAxleConfiguration: AxleUnit[],
-    ) => {
-      const newAxleConfiguration = [
-        ...currentAxleConfiguration,
-        { interaxleSpacing: null },
-        DEFAULT_AXLE_UNIT,
-      ];
-      if (isTrailer && trailerIndex !== undefined) {
-        setValue(
-          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-          newAxleConfiguration,
-        );
-      } else {
-        setValue(
-          "permitData.vehicleConfiguration.axleConfiguration",
-          newAxleConfiguration,
-        );
-      }
-    },
-    [setValue],
-  );
-
-  const onRemoveAxleUnit = useCallback(
-    (
-      isTrailer: boolean,
-      trailerIndex: number | undefined,
-      currentAxleConfiguration: AxleUnit[],
-    ) => {
-      if (currentAxleConfiguration.length >= 4) {
-        // Remove the last two items (interaxle spacing + axle unit pair)
-        const newAxleConfiguration = currentAxleConfiguration.slice(0, -2);
-        if (isTrailer && trailerIndex !== undefined) {
-          setValue(
-            `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-            newAxleConfiguration,
-          );
-        } else {
-          setValue(
-            "permitData.vehicleConfiguration.axleConfiguration",
-            newAxleConfiguration,
-          );
-        }
-      }
-    },
-    [setValue],
-  );
-
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -387,7 +336,5 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateLoadedGVW,
     onUpdateNetWeight,
     onUpdateAxleConfiguration,
-    onAddAxleUnit,
-    onRemoveAxleUnit,
   };
 };

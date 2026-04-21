@@ -7,25 +7,30 @@ import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/ut
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { IconButton, Tooltip } from "@mui/material";
-import { DEFAULT_TIRE_SIZE_OPTION } from "../../../../../../../../common/constants/defaultAxleUnit";
+import {
+  DEFAULT_AXLE_UNIT,
+  DEFAULT_TIRE_SIZE_OPTION,
+} from "../../../../../../../../common/constants/defaultAxleUnit";
 
 export const AxleUnitRow = ({
   axleConfiguration,
   label,
   axleUnitNumber,
   isTrailer,
+  trailerIndex,
   onUpdateAxleConfiguration,
-  onAddAxleUnit,
-  onRemoveAxleUnit,
   tireSizeOptions = [],
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
   axleUnitNumber: number;
   isTrailer: boolean;
-  onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onAddAxleUnit: () => void;
-  onRemoveAxleUnit: () => void;
+  trailerIndex?: number;
+  onUpdateAxleConfiguration: (
+    isTrailer: boolean,
+    trailerIndex: number | undefined,
+    axleConfiguration: AxleUnit[],
+  ) => void;
   tireSizeOptions?: {
     name: string;
     size: number;
@@ -39,7 +44,24 @@ export const AxleUnitRow = ({
     const updatedConfiguration = axleConfiguration.map((axleUnit, index) =>
       index === axleIndex ? { ...axleUnit, [field]: value } : axleUnit,
     );
-    onUpdateAxleConfiguration(updatedConfiguration);
+    onUpdateAxleConfiguration(isTrailer, trailerIndex, updatedConfiguration);
+  };
+
+  const addAxleUnit = () => {
+    const newAxleConfiguration = [
+      ...axleConfiguration,
+      { interaxleSpacing: null },
+      DEFAULT_AXLE_UNIT,
+    ];
+    onUpdateAxleConfiguration(isTrailer, trailerIndex, newAxleConfiguration);
+  };
+
+  const removeAxleUnit = () => {
+    if (axleConfiguration.length >= 4) {
+      // Remove the last two items (interaxle spacing + axle unit pair)
+      const newAxleConfiguration = axleConfiguration.slice(0, -2);
+      onUpdateAxleConfiguration(isTrailer, trailerIndex, newAxleConfiguration);
+    }
   };
 
   const defaultAxleUnitCount = isTrailer ? 1 : 2;
@@ -80,7 +102,7 @@ export const AxleUnitRow = ({
                     <div className="row__actions">
                       <Tooltip title="Add Axle Unit">
                         <IconButton
-                          onClick={onAddAxleUnit}
+                          onClick={addAxleUnit}
                           className="row__button row__button--add"
                           aria-label="Add axle unit"
                         >
@@ -93,7 +115,7 @@ export const AxleUnitRow = ({
                       {canRemoveLastAxleUnit ? (
                         <Tooltip title="Remove Axle Unit">
                           <IconButton
-                            onClick={onRemoveAxleUnit}
+                            onClick={removeAxleUnit}
                             className="row__button row__button--remove"
                             aria-label={`Remove axle unit ${axleUnitNumber}`}
                           >
