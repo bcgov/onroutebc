@@ -54,16 +54,42 @@ export const AxleSpacingAndWeightsTable = ({
     return Math.ceil(axleUnits.length / 2);
   };
 
-  // Compute the starting axle unit number offset for a trailer row group.
-  const getAxleUnitNumber = (trailerIndex: number) => {
-    let offset = getCompleteAxleUnitCount(powerUnitAxleConfiguration);
+  // Create a merged array of all vehicle components (power unit + trailers)
+  const vehicleComponents = (() => {
+    const components = [];
 
-    for (let i = 0; i < trailerIndex; i++) {
-      offset += getCompleteAxleUnitCount(trailerAxleConfigurations[i]);
-    }
+    // Add power unit
+    components.push({
+      axleConfiguration: powerUnitAxleConfiguration,
+      label: powerUnitSubtypeNamesMap.get(vehicleFormData.vehicleSubType),
+      isTrailer: false,
+      startAxleUnitNumber: 0,
+      onUpdateAxleConfiguration: onUpdatePowerUnitAxleConfiguration,
+    });
 
-    return offset;
-  };
+    // Add trailers
+    let currentAxleUnitNumber = getCompleteAxleUnitCount(
+      powerUnitAxleConfiguration,
+    );
+
+    trailers.forEach((trailer, trailerIndex) => {
+      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
+        components.push({
+          axleConfiguration: trailer.axleConfiguration ?? [],
+          label: trailerSubtypeNamesMap.get(trailer.vehicleSubType),
+          isTrailer: true,
+          startAxleUnitNumber: currentAxleUnitNumber,
+          onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) =>
+            onUpdateTrailerAxleConfiguration(trailerIndex, axleConfiguration),
+        });
+        currentAxleUnitNumber += getCompleteAxleUnitCount(
+          trailerAxleConfigurations[trailerIndex],
+        );
+      }
+    });
+
+    return components;
+  })();
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
@@ -112,19 +138,16 @@ export const AxleSpacingAndWeightsTable = ({
   const calculateBridgeFormula = () => {
     setShowValidationBanner(false);
 
-    const mergedPowerUnitAxleConfiguration = mergeInteraxleSpacing(
-      powerUnitAxleConfiguration,
-      1,
+    // Merge all axle configurations from all vehicle components
+    const mergedAxleConfigurationData = vehicleComponents.flatMap(
+      (component) => {
+        const mergedComponentConfig = mergeInteraxleSpacing(
+          component.axleConfiguration,
+          component.isTrailer ? 0 : 1,
+        );
+        return mergedComponentConfig;
+      },
     );
-    const mergedTrailerAxleConfiguration = mergeInteraxleSpacing(
-      trailerAxleConfigurations.flat(),
-      0,
-    );
-
-    const mergedAxleConfigurationData = [
-      ...mergedPowerUnitAxleConfiguration,
-      ...mergedTrailerAxleConfiguration,
-    ];
 
     if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
       setShowValidationBanner(true);
@@ -196,33 +219,29 @@ export const AxleSpacingAndWeightsTable = ({
             </tr>
           </thead>
           <tbody>
-            <AxleUnitRow
-              axleConfiguration={powerUnitAxleConfiguration}
-              label={powerUnitSubtypeNamesMap.get(
-                vehicleFormData.vehicleSubType,
-              )}
-              axleUnitNumber={0}
-              isTrailer={false}
-              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
-            />
-
-            {trailers.map((trailer, trailerIndex) =>
-              !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
-                <AxleUnitRow
-                  key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                  axleConfiguration={trailer.axleConfiguration ?? []}
-                  label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
-                  axleUnitNumber={getAxleUnitNumber(trailerIndex)}
-                  isTrailer={true}
-                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                    onUpdateTrailerAxleConfiguration(
-                      trailerIndex,
-                      axleConfiguration,
-                    )
-                  }
-                />
-              ) : null,
-            )}
+            {vehicleComponents.map((component, componentIndex) => (
+              <AxleUnitRow
+                key={`${component.isTrailer ? "trailer" : "powerunit"}-${componentIndex}`}
+                axleConfiguration={component.axleConfiguration}
+                label={component.label}
+                axleUnitNumber={component.startAxleUnitNumber}
+                isTrailer={component.isTrailer}
+                onUpdateAxleConfiguration={component.onUpdateAxleConfiguration}
+                axleUnitFailure={failedBridgeCalculationResults.some(
+                  (result) => {
+                    const componentStart = component.startAxleUnitNumber;
+                    const componentEnd =
+                      componentStart +
+                      getCompleteAxleUnitCount(component.axleConfiguration) -
+                      1;
+                    return (
+                      componentStart <= result.endAxleUnit &&
+                      componentEnd >= result.startAxleUnit
+                    );
+                  },
+                )}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -258,14 +277,16 @@ export const AxleSpacingAndWeightsTable = ({
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : failedBridgeCalculationResults.length ? (
-            failedBridgeCalculationResults.map((failedResult, index) => (
-              <>
-                <strong>Total (GCVW):</strong> 69300
-                <p key={index} className="results__text results__text--fail">
-                  {getFailedResultText(failedResult)}
-                </p>
-              </>
-            ))
+            <>
+              <strong>Total (GCVW):</strong> 69300
+              {failedBridgeCalculationResults.map((failedResult, index) => (
+                <div key={index}>
+                  <p key={index} className="results__text results__text--fail">
+                    {getFailedResultText(failedResult)}
+                  </p>
+                </div>
+              ))}
+            </>
           ) : (
             <>
               <strong>Total (GCVW):</strong> 69300

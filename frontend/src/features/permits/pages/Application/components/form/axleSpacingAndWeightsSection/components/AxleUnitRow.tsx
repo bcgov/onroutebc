@@ -12,12 +12,14 @@ export const AxleUnitRow = ({
   axleUnitNumber,
   isTrailer,
   onUpdateAxleConfiguration,
+  axleUnitFailure,
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
   axleUnitNumber: number;
   isTrailer: boolean;
   onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  axleUnitFailure: boolean;
 }) => {
   const policyEngine = usePolicyEngine();
 
@@ -59,7 +61,11 @@ export const AxleUnitRow = ({
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
-            <td className="row__label">
+            <td
+              className={`${
+                axleUnitFailure ? "row__label row__label--fail" : "row__label"
+              }`}
+            >
               {!isInteraxleSpacingRow && axleUnitNumberDisplay}
             </td>
             <td className="table__cell">
