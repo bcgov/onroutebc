@@ -12,6 +12,10 @@ import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
 import { AxleConfiguration, AxleUnit } from "../../../common/types/AxleUnit";
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../../../common/helpers/axleUnitHelper";
 
 interface BridgeCalculationResult {
   startAxleUnit: number;
@@ -112,26 +116,6 @@ export const BridgeFormulaCalculationTool = () => {
   const getFailedResultText = (failedResult: BridgeCalculationResult) =>
     `⮾ Bridge calculation failed between Axle Unit ${failedResult.startAxleUnit} and ${failedResult.endAxleUnit}, Axle Group Weight is ${failedResult.actualWeight}, Bridge Formula Weight max is ${failedResult.maxBridge}.`;
 
-  const mergeInteraxleSpacingColumn = (axleUnits: AxleUnit[]) => {
-    for (let i = 1; i < axleUnits.length - 1; i++) {
-      axleUnits[i + 1].interaxleSpacing = axleUnits[i].interaxleSpacing;
-      axleUnits.splice(i, 1);
-    }
-    return axleUnits;
-  };
-
-  const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
-    return {
-      ...axleUnit,
-      axleSpread: axleUnit.axleSpread
-        ? Math.round(axleUnit.axleSpread * 100)
-        : axleUnit.axleSpread,
-      interaxleSpacing: axleUnit.interaxleSpacing
-        ? Math.round(axleUnit.interaxleSpacing * 100)
-        : axleUnit.interaxleSpacing,
-    };
-  };
-
   const getDefaultAxleConfiguration = (
     axleUnit: AxleUnit,
   ): AxleConfiguration => {
@@ -147,7 +131,7 @@ export const BridgeFormulaCalculationTool = () => {
   };
 
   const onSubmit = (data: { axleUnits: AxleUnit[] }) => {
-    const mergedAxleUnitData = mergeInteraxleSpacingColumn(data.axleUnits);
+    const mergedAxleUnitData = mergeInteraxleSpacing(data.axleUnits, 1);
 
     const convertedAxleUnitData = mergedAxleUnitData.map((axleUnit) =>
       convertMetreValuesToCentimetres(axleUnit),

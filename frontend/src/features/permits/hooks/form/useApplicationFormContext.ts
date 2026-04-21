@@ -47,7 +47,7 @@ export const useApplicationFormContext = () => {
     onContinue,
   } = applicationFormContextData;
 
-  // This assignment is type-safe since the parenxt component ensured that
+  // This assignment is type-safe since the parent component ensured that
   // the loading page or error page is rendered when policy engine is null/undefined
   const policyEngine = applicationFormContextData.policyEngine as Policy;
 
@@ -71,6 +71,8 @@ export const useApplicationFormContext = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -348,6 +350,8 @@ export const useApplicationFormContext = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,

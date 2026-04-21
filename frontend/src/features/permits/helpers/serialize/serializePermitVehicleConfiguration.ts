@@ -1,21 +1,10 @@
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../../../../common/helpers/axleUnitHelper";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
-import { AxleUnit } from "../../../../common/types/AxleUnit";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
-
-/** Removes individual interaxle spacing rows and merges their value into the next axleConfiguration object */
-const mergeInteraxleSpacingRows = (
-  axleConfiguration: AxleUnit[],
-  startIndex: number,
-) => {
-  const merged = [...axleConfiguration];
-  for (let i = startIndex; i < merged.length - 1; i++) {
-    merged[i + 1].interaxleSpacing = merged[i].interaxleSpacing;
-    merged.splice(i, 1);
-  }
-
-  return merged;
-};
 
 /**
  * Serialize permit vehicle configuration values as request payload.
@@ -31,7 +20,12 @@ export const serializePermitVehicleConfiguration = (
           ? vehicleConfiguration.trailers.map((trailer) => ({
               ...trailer,
               axleConfiguration: trailer.axleConfiguration
-                ? mergeInteraxleSpacingRows([...trailer.axleConfiguration], 0)
+                ? mergeInteraxleSpacing(
+                    trailer.axleConfiguration.map(
+                      convertMetreValuesToCentimetres,
+                    ),
+                    0,
+                  )
                 : null,
             }))
           : null,
@@ -59,8 +53,10 @@ export const serializePermitVehicleConfiguration = (
         netWeight: convertToNumberIfValid(vehicleConfiguration.netWeight, null),
         // TODO ensure that values recorded in metres are converted to centimetres and then converted back to metres
         axleConfiguration: vehicleConfiguration.axleConfiguration
-          ? mergeInteraxleSpacingRows(
-              [...vehicleConfiguration.axleConfiguration],
+          ? mergeInteraxleSpacing(
+              vehicleConfiguration.axleConfiguration.map(
+                convertMetreValuesToCentimetres,
+              ),
               1,
             )
           : null,
