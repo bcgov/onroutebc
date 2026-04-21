@@ -51,9 +51,9 @@ export const useGetCreditAccountQuery = (
   creditAccountId: number,
 ) => {
   return useQuery({
-    queryKey: ["credit-account", { companyId }],
+    queryKey: ["credit-account", { companyId, creditAccountId }],
+    enabled: Boolean(companyId) && Boolean(creditAccountId),
     queryFn: () => getCreditAccount(companyId, creditAccountId),
-    enabled: Boolean(creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -86,8 +86,9 @@ export const useGetCreditAccountHistoryQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account", { companyId }, "history"],
+    queryKey: ["credit-account", { companyId, creditAccountId }, "history"],
     queryFn: () => getCreditAccountHistory({ companyId, creditAccountId }),
+    enabled: Boolean(companyId) && Boolean(creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -105,6 +106,7 @@ export const useGetCreditAccountUsersQuery = (data: {
   return useQuery({
     queryKey: ["credit-account", { companyId, creditAccountId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
+    enabled: Boolean(companyId) && Boolean(creditAccountId),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -200,7 +202,7 @@ export const useAddCreditAccountUserMutation = () => {
         userData: CompanyProfile;
       },
     ) => {
-      const { companyId } = variables;
+      const { companyId, creditAccountId } = variables;
 
       setSnackBar({
         showSnackbar: true,
@@ -210,7 +212,7 @@ export const useAddCreditAccountUserMutation = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["credit-account", { companyId }],
+        queryKey: ["credit-account", { companyId, creditAccountId }],
       });
     },
     onError: (error: AxiosError) => {
@@ -244,12 +246,7 @@ export const useRemoveCreditAccountUsersMutation = () => {
         companyIds: number[];
       },
     ) => {
-      const { companyId } = variables;
-
-      queryClient.removeQueries({
-        queryKey: ["credit-account"],
-      });
-
+      const { companyId, creditAccountId } = variables;
       setSnackBar({
         showSnackbar: true,
         setShowSnackbar: () => true,
@@ -258,7 +255,7 @@ export const useRemoveCreditAccountUsersMutation = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["credit-account", { companyId }],
+        queryKey: ["credit-account", { companyId, creditAccountId }],
       });
     },
     onError: (error: AxiosError) => {
