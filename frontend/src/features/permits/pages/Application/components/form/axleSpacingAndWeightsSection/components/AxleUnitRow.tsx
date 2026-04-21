@@ -4,7 +4,7 @@ import { NumberInput } from "../../../../../../../../common/components/form/subF
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
-import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
+import { DEFAULT_TIRE_SIZE_OPTION } from "../../../../../../../../common/constants/defaultAxleUnit";
 
 export const AxleUnitRow = ({
   axleConfiguration,
@@ -12,19 +12,18 @@ export const AxleUnitRow = ({
   axleUnitNumber,
   isTrailer,
   onUpdateAxleConfiguration,
+  tireSizeOptions = [],
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
   axleUnitNumber: number;
   isTrailer: boolean;
   onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  tireSizeOptions?: {
+    name: string;
+    size: number;
+  }[];
 }) => {
-  const policyEngine = usePolicyEngine();
-
-  const tireSizeOptions = policyEngine?.getStandardTireSizes() ?? [];
-
-  const defaultTireSizeOption = tireSizeOptions[1];
-
   const updateAxleUnit = (
     axleIndex: number,
     field: keyof AxleUnit,
@@ -117,10 +116,12 @@ export const AxleUnitRow = ({
                     className: "table__input table__input--select",
                     clearIcon: null,
                     options: tireSizeOptions,
-                    value:
+                    value: getDefaultRequiredVal(
+                      DEFAULT_TIRE_SIZE_OPTION,
                       tireSizeOptions.find(
                         (option) => option.size === axleUnit?.tireSize,
-                      ) ?? defaultTireSizeOption,
+                      ),
+                    ),
                     getOptionLabel: (option) => option.name,
                     isOptionEqualToValue: (option, value) =>
                       option.size === value.size,
