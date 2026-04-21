@@ -88,7 +88,7 @@ export const AddUser = ({
                     "Client number must follow the correct format, e.g. XX-XXXXXX-XXX",
                 },
               },
-              label: "Client Number",
+              label: "onRouteBC Client No.",
             }}
           ></CustomFormComponent>
           <Button
