@@ -1,4 +1,4 @@
-import { defaultTireSizeOption } from "../constants/defaultAxleUnit";
+import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/defaultAxleUnit";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 import { getDefaultRequiredVal } from "./util";
 
@@ -39,7 +39,7 @@ export const getDefaultAxleConfiguration = (
     axleUnitWeight: getDefaultRequiredVal(0, axleUnit.axleUnitWeight),
     numberOfTires: getDefaultRequiredVal(0, axleUnit.numberOfTires),
     tireSize: getDefaultRequiredVal(
-      defaultTireSizeOption.size,
+      DEFAULT_TIRE_SIZE_OPTION.size,
       axleUnit.tireSize,
     ),
   };

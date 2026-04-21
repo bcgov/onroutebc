@@ -57,42 +57,16 @@ export const AxleSpacingAndWeightsTable = ({
     return Math.ceil(axleUnits.length / 2);
   };
 
-  // Create a merged array of all vehicle components (power unit + trailers)
-  const vehicleComponents = (() => {
-    const components = [];
+  // Compute the starting axle unit number offset for a trailer row group.
+  const getAxleUnitNumber = (trailerIndex: number) => {
+    let offset = getCompleteAxleUnitCount(powerUnitAxleConfiguration);
 
-    // Add power unit
-    components.push({
-      axleConfiguration: powerUnitAxleConfiguration,
-      label: powerUnitSubtypeNamesMap.get(vehicleFormData.vehicleSubType),
-      isTrailer: false,
-      startAxleUnitNumber: 0,
-      onUpdateAxleConfiguration: onUpdatePowerUnitAxleConfiguration,
-    });
+    for (let i = 0; i < trailerIndex; i++) {
+      offset += getCompleteAxleUnitCount(trailerAxleConfigurations[i]);
+    }
 
-    // Add trailers
-    let currentAxleUnitNumber = getCompleteAxleUnitCount(
-      powerUnitAxleConfiguration,
-    );
-
-    trailers.forEach((trailer, trailerIndex) => {
-      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
-        components.push({
-          axleConfiguration: trailer.axleConfiguration ?? [],
-          label: trailerSubtypeNamesMap.get(trailer.vehicleSubType),
-          isTrailer: true,
-          startAxleUnitNumber: currentAxleUnitNumber,
-          onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) =>
-            onUpdateTrailerAxleConfiguration(trailerIndex, axleConfiguration),
-        });
-        currentAxleUnitNumber += getCompleteAxleUnitCount(
-          trailerAxleConfigurations[trailerIndex],
-        );
-      }
-    });
-
-    return components;
-  })();
+    return offset;
+  };
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
@@ -141,16 +115,18 @@ export const AxleSpacingAndWeightsTable = ({
   const calculateBridgeFormula = () => {
     setShowValidationBanner(false);
 
-    // Merge all axle configurations from all vehicle components
-    const mergedAxleConfigurationData = vehicleComponents.flatMap(
-      (component) => {
-        const mergedComponentConfig = mergeInteraxleSpacing(
-          component.axleConfiguration,
-          component.isTrailer ? 0 : 1,
-        );
-        return mergedComponentConfig;
-      },
+    // Merge all axle configurations from power unit and trailers
+    const powerUnitMerged = mergeInteraxleSpacing(
+      powerUnitAxleConfiguration,
+      1,
     );
+    const trailersMerged = trailers.flatMap((trailer) => {
+      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
+        return mergeInteraxleSpacing(trailer.axleConfiguration ?? [], 0);
+      }
+      return [];
+    });
+    const mergedAxleConfigurationData = [...powerUnitMerged, ...trailersMerged];
 
     if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
       setShowValidationBanner(true);
@@ -222,30 +198,37 @@ export const AxleSpacingAndWeightsTable = ({
             </tr>
           </thead>
           <tbody>
-            {vehicleComponents.map((component, componentIndex) => (
-              <AxleUnitRow
-                key={`${component.isTrailer ? "trailer" : "powerunit"}-${componentIndex}`}
-                axleConfiguration={component.axleConfiguration}
-                label={component.label}
-                axleUnitNumber={component.startAxleUnitNumber}
-                isTrailer={component.isTrailer}
-                onUpdateAxleConfiguration={component.onUpdateAxleConfiguration}
-                tireSizeOptions={tireSizeOptions}
-                axleUnitFailure={failedBridgeCalculationResults.some(
-                  (result) => {
-                    const componentStart = component.startAxleUnitNumber;
-                    const componentEnd =
-                      componentStart +
-                      getCompleteAxleUnitCount(component.axleConfiguration) -
-                      1;
-                    return (
-                      componentStart <= result.endAxleUnit &&
-                      componentEnd >= result.startAxleUnit
-                    );
-                  },
-                )}
-              />
-            ))}
+            <AxleUnitRow
+              key="powerunit"
+              axleConfiguration={powerUnitAxleConfiguration}
+              label={powerUnitSubtypeNamesMap.get(
+                vehicleFormData.vehicleSubType,
+              )}
+              axleUnitNumber={0}
+              isTrailer={false}
+              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
+              tireSizeOptions={tireSizeOptions}
+              axleUnitFailure={false}
+            />
+            {trailers.map((trailer, trailerIndex) =>
+              !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
+                <AxleUnitRow
+                  key={`${trailer.vehicleSubType}-${trailerIndex}`}
+                  axleConfiguration={trailer.axleConfiguration ?? []}
+                  label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
+                  axleUnitNumber={getAxleUnitNumber(trailerIndex)}
+                  isTrailer={true}
+                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
+                    onUpdateTrailerAxleConfiguration(
+                      trailerIndex,
+                      axleConfiguration,
+                    )
+                  }
+                  tireSizeOptions={tireSizeOptions}
+                  axleUnitFailure={false}
+                />
+              ) : null,
+            )}
           </tbody>
         </table>
       </div>
