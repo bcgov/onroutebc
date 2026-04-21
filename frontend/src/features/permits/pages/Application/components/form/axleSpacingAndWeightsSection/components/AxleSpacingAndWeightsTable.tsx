@@ -10,13 +10,13 @@ import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 import { Button } from "@mui/material";
 import {
   convertMetreValuesToCentimetres,
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
 } from "../../../../../../../../common/helpers/axleUnitHelper";
-import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { BridgeCalculationResult } from "../../../../../../../../common/types/BridgeCalculationResult";
 import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
@@ -40,6 +40,9 @@ export const AxleSpacingAndWeightsTable = ({
   ) => void;
 }) => {
   const policyEngine = usePolicyEngine();
+
+  const tireSizeOptions = policyEngine?.getStandardTireSizes();
+
   const trailers = vehicleConfiguration?.trailers ?? [];
 
   const powerUnitAxleConfiguration =
@@ -227,6 +230,7 @@ export const AxleSpacingAndWeightsTable = ({
                 axleUnitNumber={component.startAxleUnitNumber}
                 isTrailer={component.isTrailer}
                 onUpdateAxleConfiguration={component.onUpdateAxleConfiguration}
+                tireSizeOptions={tireSizeOptions}
                 axleUnitFailure={failedBridgeCalculationResults.some(
                   (result) => {
                     const componentStart = component.startAxleUnitNumber;
