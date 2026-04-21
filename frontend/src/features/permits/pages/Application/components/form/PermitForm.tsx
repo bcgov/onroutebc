@@ -23,8 +23,6 @@ import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRe
 import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
-import { usePolicyEngine } from "../../../../../policy/hooks/usePolicyEngine";
-import { useTireSizeOptions } from "../../../../hooks/useTireSizeOptions";
 
 export const PermitForm = () => {
   const {
@@ -65,6 +63,7 @@ export const PermitForm = () => {
     availableCLFs,
     enableLoadedGVW,
     enableNetWeight,
+    tireSizeOptions,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -92,9 +91,6 @@ export const PermitForm = () => {
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
   } = useApplicationFormContext();
-
-  const policyEngine = usePolicyEngine();
-  const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
 
