@@ -17,6 +17,10 @@ export const AxleSpacingAndWeightsSection = ({
   vehicleConfiguration,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
+  onAddPowerUnitAxleUnit,
+  onRemovePowerUnitAxleUnit,
+  onAddTrailerAxleUnit,
+  onRemoveTrailerAxleUnit,
 }: {
   permitType: PermitType;
   powerUnitSubtypeNamesMap: Map<string, string>;
@@ -27,6 +31,16 @@ export const AxleSpacingAndWeightsSection = ({
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
+  ) => void;
+  onAddPowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
+  onRemovePowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
+  onAddTrailerAxleUnit: (
+    trailerIndex: number,
+    currentAxleConfiguration: AxleUnit[],
+  ) => void;
+  onRemoveTrailerAxleUnit: (
+    trailerIndex: number,
+    currentAxleConfiguration: AxleUnit[],
   ) => void;
 }) => {
   return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
@@ -56,6 +70,10 @@ export const AxleSpacingAndWeightsSection = ({
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          onAddPowerUnitAxleUnit={onAddPowerUnitAxleUnit}
+          onRemovePowerUnitAxleUnit={onRemovePowerUnitAxleUnit}
+          onAddTrailerAxleUnit={onAddTrailerAxleUnit}
+          onRemoveTrailerAxleUnit={onRemoveTrailerAxleUnit}
         />
       </Box>
     </Box>

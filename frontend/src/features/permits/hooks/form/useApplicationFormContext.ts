@@ -73,6 +73,10 @@ export const useApplicationFormContext = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onAddPowerUnitAxleUnit,
+    onRemovePowerUnitAxleUnit,
+    onAddTrailerAxleUnit,
+    onRemoveTrailerAxleUnit,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -352,6 +356,10 @@ export const useApplicationFormContext = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onAddPowerUnitAxleUnit,
+    onRemovePowerUnitAxleUnit,
+    onAddTrailerAxleUnit,
+    onRemoveTrailerAxleUnit,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,

@@ -18,6 +18,10 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleConfiguration,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
+  onAddPowerUnitAxleUnit,
+  onRemovePowerUnitAxleUnit,
+  onAddTrailerAxleUnit,
+  onRemoveTrailerAxleUnit,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
@@ -27,6 +31,16 @@ export const AxleSpacingAndWeightsTable = ({
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
+  ) => void;
+  onAddPowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
+  onRemovePowerUnitAxleUnit: (currentAxleConfiguration: AxleUnit[]) => void;
+  onAddTrailerAxleUnit: (
+    trailerIndex: number,
+    currentAxleConfiguration: AxleUnit[],
+  ) => void;
+  onRemoveTrailerAxleUnit: (
+    trailerIndex: number,
+    currentAxleConfiguration: AxleUnit[],
   ) => void;
 }) => {
   const policyEngine = usePolicyEngine();
@@ -114,6 +128,12 @@ export const AxleSpacingAndWeightsTable = ({
               axleUnitNumber={0}
               isTrailer={false}
               onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
+              onAddAxleUnit={() =>
+                onAddPowerUnitAxleUnit(powerUnitAxleConfiguration)
+              }
+              onRemoveAxleUnit={() =>
+                onRemovePowerUnitAxleUnit(powerUnitAxleConfiguration)
+              }
               tireSizeOptions={tireSizeOptions}
             />
 
@@ -129,6 +149,18 @@ export const AxleSpacingAndWeightsTable = ({
                     onUpdateTrailerAxleConfiguration(
                       trailerIndex,
                       axleConfiguration,
+                    )
+                  }
+                  onAddAxleUnit={() =>
+                    onAddTrailerAxleUnit(
+                      trailerIndex,
+                      trailer.axleConfiguration ?? [],
+                    )
+                  }
+                  onRemoveAxleUnit={() =>
+                    onRemoveTrailerAxleUnit(
+                      trailerIndex,
+                      trailer.axleConfiguration ?? [],
                     )
                   }
                   tireSizeOptions={tireSizeOptions}

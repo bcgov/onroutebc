@@ -89,6 +89,10 @@ export const PermitForm = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onAddPowerUnitAxleUnit,
+    onRemovePowerUnitAxleUnit,
+    onAddTrailerAxleUnit,
+    onRemoveTrailerAxleUnit,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -196,6 +200,10 @@ export const PermitForm = () => {
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          onAddPowerUnitAxleUnit={onAddPowerUnitAxleUnit}
+          onRemovePowerUnitAxleUnit={onRemovePowerUnitAxleUnit}
+          onAddTrailerAxleUnit={onAddTrailerAxleUnit}
+          onRemoveTrailerAxleUnit={onRemoveTrailerAxleUnit}
         />
 
         <LoadedDimensionsSection

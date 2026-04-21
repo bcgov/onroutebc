@@ -16,6 +16,7 @@ import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
+import { DEFAULT_AXLE_UNIT } from "../../../../common/constants/defaultAxleUnit";
 import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
 import { VehicleType } from "../../../manageVehicles/types/Vehicle";
 import { ConditionalLicensingFeeType } from "../../types/ConditionalLicensingFee";
@@ -302,6 +303,64 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onAddPowerUnitAxleUnit = useCallback(
+    (currentAxleConfiguration: AxleUnit[]) => {
+      const newAxleConfiguration = [
+        ...currentAxleConfiguration,
+        { interaxleSpacing: null },
+        DEFAULT_AXLE_UNIT,
+      ];
+      setValue(
+        "permitData.vehicleConfiguration.axleConfiguration",
+        newAxleConfiguration,
+      );
+    },
+    [setValue],
+  );
+
+  const onRemovePowerUnitAxleUnit = useCallback(
+    (currentAxleConfiguration: AxleUnit[]) => {
+      if (currentAxleConfiguration.length >= 4) {
+        // Remove the last two items (interaxle spacing + axle unit pair)
+        const newAxleConfiguration = currentAxleConfiguration.slice(0, -2);
+        setValue(
+          "permitData.vehicleConfiguration.axleConfiguration",
+          newAxleConfiguration,
+        );
+      }
+    },
+    [setValue],
+  );
+
+  const onAddTrailerAxleUnit = useCallback(
+    (trailerIndex: number, currentAxleConfiguration: AxleUnit[]) => {
+      const newAxleConfiguration = [
+        ...currentAxleConfiguration,
+        { interaxleSpacing: null },
+        DEFAULT_AXLE_UNIT,
+      ];
+      setValue(
+        `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+        newAxleConfiguration,
+      );
+    },
+    [setValue],
+  );
+
+  const onRemoveTrailerAxleUnit = useCallback(
+    (trailerIndex: number, currentAxleConfiguration: AxleUnit[]) => {
+      if (currentAxleConfiguration.length >= 4) {
+        // Remove the last two items (interaxle spacing + axle unit pair)
+        const newAxleConfiguration = currentAxleConfiguration.slice(0, -2);
+        setValue(
+          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+          newAxleConfiguration,
+        );
+      }
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -335,5 +394,9 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onAddPowerUnitAxleUnit,
+    onRemovePowerUnitAxleUnit,
+    onAddTrailerAxleUnit,
+    onRemoveTrailerAxleUnit,
   };
 };
