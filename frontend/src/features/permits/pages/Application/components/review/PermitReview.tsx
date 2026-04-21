@@ -186,7 +186,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           vehicleWasSaved={props.vehicleWasSaved}
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
-          selectedVehicleConfigSubtypes={props.vehicleConfiguration?.trailers}
+          selectedTrailers={props.vehicleConfiguration?.trailers}
         />
 
         <LoadedDimensions

@@ -233,23 +233,22 @@ export const ApplicationsInProgressList = ({
     renderRowActions: useCallback(
       ({ row }: { row: MRT_Row<ApplicationListItem> }) => (
         <OnRouteBCTableRowActions
-          onSelectOption={
-            (selectedOption) => {
-              if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
-                navigate(
-                  PERMITS_ROUTES.COPY(
-                    companyId,
-                    row.original.permitId,
-                    PERMIT_ACTION_ORIGINS.AIP,
-                  ),
-                );
-              }
+          onSelectOption={(selectedOption) => {
+            if (selectedOption === PERMIT_ACTION_TYPES.COPY) {
+              navigate(
+                PERMITS_ROUTES.COPY(
+                  companyId,
+                  row.original.permitId,
+                  PERMIT_ACTION_ORIGINS.AIP,
+                ),
+              );
             }
-          }
+          }}
           options={
-            canCopyApplication && canRowBeSelected(
-              row.original.permitApplicationOrigin
-            ) ? availableRowOptions : []
+            canCopyApplication &&
+            canRowBeSelected(row.original.permitApplicationOrigin)
+              ? availableRowOptions
+              : []
           }
         />
       ),

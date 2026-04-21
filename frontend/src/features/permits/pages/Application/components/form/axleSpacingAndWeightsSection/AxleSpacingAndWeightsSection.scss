@@ -1,0 +1,28 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".axle-spacing-and-weights-section");
+@include orbcStyles.permit-left-box-style(".axle-spacing-and-weights-section__header");
+@include orbcStyles.permit-right-box-style(".axle-spacing-and-weights-section__body");
+
+.axle-spacing-and-weights-section {
+  border-bottom: none;
+  flex-direction: column;
+
+  & &__info {
+    color: orbcStyles.$bc-black;
+    margin-bottom: 1.5rem;
+
+    .axle-spacing-and-weights-info {
+      &__details {
+        font-weight: normal;
+        font-size: 1rem;
+        margin: 0;
+
+        &--info {
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
+

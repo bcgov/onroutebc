@@ -60,16 +60,19 @@ export const PowerUnitDialog = ({
   // be selected, and only vehicles of that subtype are available to be selected
   const powerUnitSubtypeOptions = useMemo(() => {
     return isEditMode
-      ? subtypeOptions.filter(({ typeCode }) => typeCode === prevSelectedSubtype)
+      ? subtypeOptions.filter(
+          ({ typeCode }) => typeCode === prevSelectedSubtype,
+        )
       : subtypeOptions;
   }, [isEditMode, subtypeOptions, prevSelectedSubtype]);
 
   const allowedVehicleOptions = useMemo(() => {
     return isEditMode
       ? vehicleOptions.filter(
-        v => v.vehicleType === VEHICLE_TYPES.POWER_UNIT
-          && (v as PowerUnit).powerUnitTypeCode === prevSelectedSubtype
-      )
+          (v) =>
+            v.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
+            (v as PowerUnit).powerUnitTypeCode === prevSelectedSubtype,
+        )
       : vehicleOptions;
   }, [isEditMode, vehicleOptions, prevSelectedSubtype]);
 
@@ -139,10 +142,7 @@ export const PowerUnitDialog = ({
     >
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(handleSave)}>
-          <DialogTitle
-            component="div"
-            className="power-unit-dialog__header"
-          >
+          <DialogTitle component="div" className="power-unit-dialog__header">
             <div className="power-unit-dialog__icon">
               <FontAwesomeIcon className="icon" icon={faPlus} />
             </div>

@@ -20,14 +20,17 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
+import { DEFAULT_AXLE_UNIT } from "../../../../../../../common/constants/defaultAxleUnit";
+import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 
 export const AddTrailer = ({
-  selectedTrailerSubtypes,
+  selectedTrailers,
   trailerSubtypeOptions,
   trailerSubtypeNamesMap,
   onUpdateVehicleConfigTrailers,
+  permitType,
 }: {
-  selectedTrailerSubtypes: string[];
+  selectedTrailers: VehicleInConfiguration[];
   trailerSubtypeOptions: {
     value: string;
     label: string;
@@ -36,6 +39,7 @@ export const AddTrailer = ({
   onUpdateVehicleConfigTrailers: (
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
+  permitType: PermitType;
 }) => {
   const [trailerSelection, setTrailerSelection] = useState<string>(
     DEFAULT_EMPTY_SELECT_VALUE,
@@ -54,7 +58,8 @@ export const AddTrailer = ({
   );
 
   const selectedSubtypesDisplay = useMemoizedSequence(
-    selectedTrailerSubtypes.map((subtype) => {
+    selectedTrailers.map(({ vehicleSubType }) => {
+      const subtype = vehicleSubType;
       if (isTrailerSubtypeNone(subtype)) return "None";
       return getDefaultRequiredVal(
         subtype,
@@ -64,14 +69,20 @@ export const AddTrailer = ({
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
-  const handleAddTrailerSubtype = (subtype: string) => {
+  const handleAddTrailer = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(
-        selectedTrailerSubtypes
-          .map((addedSubtype) => ({
-            vehicleSubType: addedSubtype,
-          }))
-          .concat([{ vehicleSubType: subtype }]),
+        selectedTrailers.concat([
+          {
+            vehicleSubType: subtype,
+            axleConfiguration:
+              permitType === PERMIT_TYPES.STOW
+                ? !isTrailerSubtypeNone(subtype)
+                  ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
+                  : null
+                : null,
+          },
+        ]),
       );
 
       setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
@@ -130,7 +141,7 @@ export const AddTrailer = ({
             inputProps={{
               "aria-label": "Add Trailer",
             }}
-            onChange={(e) => handleAddTrailerSubtype(e.target.value)}
+            onChange={(e) => handleAddTrailer(e.target.value)}
             value={trailerSelection}
             MenuProps={{
               className: "form-control__menu",

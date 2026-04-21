@@ -4,7 +4,11 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
+import {
+  isQuarterlyPermit,
+  PERMIT_TYPES,
+  PermitType,
+} from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -15,9 +19,7 @@ import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
 import { DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE } from "../types/ConditionalLicensingFee";
-import {
-  getDefaultVehicleConfiguration
-} from "./vehicles/configuration/getDefaultVehicleConfiguration";
+import { getDefaultVehicleConfiguration } from "./vehicles/configuration/getDefaultVehicleConfiguration";
 
 import {
   getEndOfDate,
@@ -161,18 +163,14 @@ export const getDefaultValues = (
   const defaultPermitId = !shouldInitAsCopy
     ? getDefaultRequiredVal("", applicationData?.permitId)
     : "";
-  
+
   const defaultOriginalPermitId = !shouldInitAsCopy
-    ? getDefaultRequiredVal(
-      "",
-      applicationData?.originalPermitId,
-    ) : "";
+    ? getDefaultRequiredVal("", applicationData?.originalPermitId)
+    : "";
 
   const defaultApplicationNumber = !shouldInitAsCopy
-    ? getDefaultRequiredVal(
-      "",
-      applicationData?.applicationNumber,
-    ) : "";
+    ? getDefaultRequiredVal("", applicationData?.applicationNumber)
+    : "";
 
   const defaultPermitNumber = !shouldInitAsCopy
     ? getDefaultRequiredVal("", applicationData?.permitNumber)
@@ -196,9 +194,7 @@ export const getDefaultValues = (
 
   const startDateOrDefault = getStartDateOrDefault(
     now(),
-    !shouldInitAsCopy
-      ? applicationData?.permitData?.startDate
-      : now(),
+    !shouldInitAsCopy ? applicationData?.permitData?.startDate : now(),
   );
 
   const durationOrDefault = getDurationOrDefault(
@@ -210,9 +206,7 @@ export const getDefaultValues = (
     startDateOrDefault,
     isQuarterlyPermit(permitType),
     durationOrDefault,
-    !shouldInitAsCopy
-      ? applicationData?.permitData?.expiryDate
-      : undefined, // let expiry be automatically calculated/derived for initializing copied permits
+    !shouldInitAsCopy ? applicationData?.permitData?.expiryDate : undefined, // let expiry be automatically calculated/derived for initializing copied permits
   );
 
   const defaultConditions = getDefaultRequiredVal(
@@ -233,11 +227,13 @@ export const getDefaultValues = (
     permitId: defaultPermitId,
     originalPermitId: defaultOriginalPermitId,
     applicationNumber: defaultApplicationNumber,
-    permitNumber: defaultPermitNumber,    
-    permitStatus: !shouldInitAsCopy ? getDefaultRequiredVal(
-      PERMIT_STATUSES.IN_PROGRESS,
-      applicationData?.permitStatus,
-    ) : PERMIT_STATUSES.IN_PROGRESS,
+    permitNumber: defaultPermitNumber,
+    permitStatus: !shouldInitAsCopy
+      ? getDefaultRequiredVal(
+          PERMIT_STATUSES.IN_PROGRESS,
+          applicationData?.permitStatus,
+        )
+      : PERMIT_STATUSES.IN_PROGRESS,
     permitData: {
       companyName: defaultCompanyName,
       doingBusinessAs: getDefaultRequiredVal(
@@ -268,8 +264,13 @@ export const getDefaultValues = (
       feeSummary: "", // not used, as actual fee is derived at the given locations when required
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
-      applicationNotes: permitType !== PERMIT_TYPES.STOS
-        ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
+      applicationNotes:
+        permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.STOW
+          ? null
+          : getDefaultRequiredVal(
+              "",
+              applicationData?.permitData?.applicationNotes,
+            ),
       permittedCommodity: getDefaultPermittedCommodity(
         permitType,
         applicationData?.permitData?.permittedCommodity,
@@ -278,23 +279,22 @@ export const getDefaultValues = (
         permitType,
         applicationData?.permitData?.vehicleConfiguration,
       ),
-      thirdPartyLiability: ([
-        PERMIT_TYPES.STFR,
-        PERMIT_TYPES.QRFR,
-      ] as PermitType[]).includes(permitType)
+      thirdPartyLiability: (
+        [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+      ).includes(permitType)
         ? getDefaultRequiredVal(
-          DEFAULT_THIRD_PARTY_LIABILITY,
-          applicationData?.permitData?.thirdPartyLiability
-        )
+            DEFAULT_THIRD_PARTY_LIABILITY,
+            applicationData?.permitData?.thirdPartyLiability,
+          )
         : null,
-      conditionalLicensingFee: ([
-        PERMIT_TYPES.NRSCV,
-        PERMIT_TYPES.NRQCV,
-      ] as PermitType[]).includes(permitType)
+      conditionalLicensingFee: (
+        [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
+      ).includes(permitType)
         ? getDefaultRequiredVal(
-          DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
-          applicationData?.permitData?.conditionalLicensingFee,
-        ) : null,
+            DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
+            applicationData?.permitData?.conditionalLicensingFee,
+          )
+        : null,
     },
     comment: getDefaultRequiredVal("", applicationData?.comment),
   };
