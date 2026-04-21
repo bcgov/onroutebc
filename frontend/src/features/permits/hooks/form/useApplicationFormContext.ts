@@ -226,16 +226,6 @@ export const useApplicationFormContext = () => {
     vehicleFormData.vehicleSubType,
   );
 
-  const selectedVehicleConfigSubtypes = useMemoizedSequence(
-    getDefaultRequiredVal(
-      [],
-      vehicleConfiguration?.trailers?.map(
-        ({ vehicleSubType }) => vehicleSubType,
-      ),
-    ),
-    (subtype1, subtype2) => subtype1 === subtype2,
-  );
-
   const selectedTrailers = useMemoizedSequence(
     getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     (trailer1, trailer2) => trailer1 === trailer2,
@@ -248,7 +238,7 @@ export const useApplicationFormContext = () => {
       DEFAULT_EMPTY_SELECT_VALUE,
       permittedCommodity?.commodityType,
     ),
-    selectedVehicleConfigSubtypes,
+    selectedTrailers.map(({ vehicleSubType }) => vehicleSubType),
     vehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
   );

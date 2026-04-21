@@ -9,13 +9,14 @@ import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
-import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
+import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
+  tireSizeOptions,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -23,23 +24,22 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
-  const policyEngine = usePolicyEngine();
+  const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
-  const tireSizeOptions = policyEngine?.getStandardTireSizes();
+  const powerUnitAxleConfiguration = getDefaultRequiredVal(
+    [],
+    vehicleConfiguration?.axleConfiguration,
+  );
 
-  const trailers = vehicleConfiguration?.trailers ?? [];
-
-  const powerUnitAxleConfiguration =
-    vehicleConfiguration?.axleConfiguration ?? [];
-
-  const trailerAxleConfigurations: AxleUnit[][] = trailers.map(
-    (trailer) => trailer.axleConfiguration ?? [],
+  const trailerAxleConfigurations: AxleUnit[][] = trailers.map((trailer) =>
+    getDefaultRequiredVal([], trailer.axleConfiguration),
   );
 
   // Convert axle rows into the number of full axle units.
@@ -114,14 +114,17 @@ export const AxleSpacingAndWeightsTable = ({
               axleUnitNumber={0}
               isTrailer={false}
               onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
-              tireSizeOptions={tireSizeOptions}
+              tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
             />
 
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
                 <AxleUnitRow
                   key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                  axleConfiguration={trailer.axleConfiguration ?? []}
+                  axleConfiguration={getDefaultRequiredVal(
+                    [],
+                    trailer.axleConfiguration,
+                  )}
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
@@ -131,7 +134,7 @@ export const AxleSpacingAndWeightsTable = ({
                       axleConfiguration,
                     )
                   }
-                  tireSizeOptions={tireSizeOptions}
+                  tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
                 />
               ) : null,
             )}

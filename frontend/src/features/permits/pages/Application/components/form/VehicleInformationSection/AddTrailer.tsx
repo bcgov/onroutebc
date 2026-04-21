@@ -66,7 +66,7 @@ export const AddTrailer = ({
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
-  const handleAddTrailerSubtype = (subtype: string) => {
+  const handleAddTrailer = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(
         selectedTrailers.concat([
@@ -135,7 +135,7 @@ export const AddTrailer = ({
             inputProps={{
               "aria-label": "Add Trailer",
             }}
-            onChange={(e) => handleAddTrailerSubtype(e.target.value)}
+            onChange={(e) => handleAddTrailer(e.target.value)}
             value={trailerSelection}
             MenuProps={{
               className: "form-control__menu",
