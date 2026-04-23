@@ -19,6 +19,7 @@ import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequence";
 import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
+import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -226,6 +227,11 @@ export const useApplicationFormContext = () => {
     vehicleFormData.vehicleSubType,
   );
 
+  const selectedTrailers = useMemoizedSequence(
+    getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    (trailer1, trailer2) => trailer1.vehicleSubType === trailer2.vehicleSubType,
+  );
+
   const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
@@ -264,6 +270,8 @@ export const useApplicationFormContext = () => {
     vehicleConfiguration?.loadedGVW,
     vehicleConfiguration?.netWeight,
   );
+
+  const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
@@ -326,6 +334,7 @@ export const useApplicationFormContext = () => {
     availableCLFs,
     enableLoadedGVW,
     enableNetWeight,
+    tireSizeOptions,
     onLeave,
     onSave,
     onCancel,

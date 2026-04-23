@@ -15,6 +15,7 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
+  tireSizeOptions,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -23,6 +24,7 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -52,6 +54,7 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
+          tireSizeOptions={tireSizeOptions}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

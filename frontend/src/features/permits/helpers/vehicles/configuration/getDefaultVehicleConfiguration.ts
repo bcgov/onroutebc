@@ -49,9 +49,8 @@ export const getDefaultVehicleConfiguration = (
         vehicleConfiguration?.overallLength,
       ),
       axleConfiguration: getDefaultRequiredVal(
-        [],
-        vehicleConfiguration?.axleConfiguration ??
-          defaultPowerUnitAxleConfiguration,
+        defaultPowerUnitAxleConfiguration,
+        vehicleConfiguration?.axleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     };
@@ -61,9 +60,8 @@ export const getDefaultVehicleConfiguration = (
     return {
       // by default, all power units have 2 axle units (1 axle unit with 1 axle, followed by an interaxle-spacing unit, followed by another axle unit with 1 axle)
       axleConfiguration: getDefaultRequiredVal(
-        [],
-        vehicleConfiguration?.axleConfiguration ??
-          defaultPowerUnitAxleConfiguration,
+        defaultPowerUnitAxleConfiguration,
+        vehicleConfiguration?.axleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     };

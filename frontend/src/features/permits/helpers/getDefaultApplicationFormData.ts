@@ -163,18 +163,14 @@ export const getDefaultValues = (
   const defaultPermitId = !shouldInitAsCopy
     ? getDefaultRequiredVal("", applicationData?.permitId)
     : "";
-  
+
   const defaultOriginalPermitId = !shouldInitAsCopy
-    ? getDefaultRequiredVal(
-      "",
-      applicationData?.originalPermitId,
-    ) : "";
+    ? getDefaultRequiredVal("", applicationData?.originalPermitId)
+    : "";
 
   const defaultApplicationNumber = !shouldInitAsCopy
-    ? getDefaultRequiredVal(
-      "",
-      applicationData?.applicationNumber,
-    ) : "";
+    ? getDefaultRequiredVal("", applicationData?.applicationNumber)
+    : "";
 
   const defaultPermitNumber = !shouldInitAsCopy
     ? getDefaultRequiredVal("", applicationData?.permitNumber)
@@ -198,9 +194,7 @@ export const getDefaultValues = (
 
   const startDateOrDefault = getStartDateOrDefault(
     now(),
-    !shouldInitAsCopy
-      ? applicationData?.permitData?.startDate
-      : now(),
+    !shouldInitAsCopy ? applicationData?.permitData?.startDate : now(),
   );
 
   const durationOrDefault = getDurationOrDefault(
@@ -212,9 +206,7 @@ export const getDefaultValues = (
     startDateOrDefault,
     isQuarterlyPermit(permitType),
     durationOrDefault,
-    !shouldInitAsCopy
-      ? applicationData?.permitData?.expiryDate
-      : undefined, // let expiry be automatically calculated/derived for initializing copied permits
+    !shouldInitAsCopy ? applicationData?.permitData?.expiryDate : undefined, // let expiry be automatically calculated/derived for initializing copied permits
   );
 
   const defaultConditions = getDefaultRequiredVal(
@@ -235,11 +227,13 @@ export const getDefaultValues = (
     permitId: defaultPermitId,
     originalPermitId: defaultOriginalPermitId,
     applicationNumber: defaultApplicationNumber,
-    permitNumber: defaultPermitNumber,    
-    permitStatus: !shouldInitAsCopy ? getDefaultRequiredVal(
-      PERMIT_STATUSES.IN_PROGRESS,
-      applicationData?.permitStatus,
-    ) : PERMIT_STATUSES.IN_PROGRESS,
+    permitNumber: defaultPermitNumber,
+    permitStatus: !shouldInitAsCopy
+      ? getDefaultRequiredVal(
+          PERMIT_STATUSES.IN_PROGRESS,
+          applicationData?.permitStatus,
+        )
+      : PERMIT_STATUSES.IN_PROGRESS,
     permitData: {
       companyName: defaultCompanyName,
       doingBusinessAs: getDefaultRequiredVal(
@@ -271,7 +265,7 @@ export const getDefaultValues = (
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
       applicationNotes:
-        permitType !== PERMIT_TYPES.STOS
+        permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.STOW
           ? null
           : getDefaultRequiredVal(
               "",

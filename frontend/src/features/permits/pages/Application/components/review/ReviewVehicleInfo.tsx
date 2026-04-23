@@ -32,7 +32,7 @@ export const ReviewVehicleInfo = ({
   trailerSubtypeNamesMap,
   showChangedFields = false,
   oldFields,
-  selectedVehicleConfigSubtypes,
+  selectedTrailers,
 }: {
   permitType?: Nullable<PermitType>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
@@ -41,7 +41,7 @@ export const ReviewVehicleInfo = ({
   trailerSubtypeNamesMap: Map<string, string>;
   showChangedFields?: boolean;
   oldFields?: Nullable<PermitVehicleDetails>;
-  selectedVehicleConfigSubtypes?: Nullable<VehicleInConfiguration[]>;
+  selectedTrailers?: Nullable<VehicleInConfiguration[]>;
 }) => {
   const vehicleType = getDefaultRequiredVal(
     DEFAULT_VEHICLE_TYPE,
@@ -55,12 +55,12 @@ export const ReviewVehicleInfo = ({
     getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
   );
 
-  const showLicensedGVW = Boolean(permitType)
-    && ([
-      PERMIT_TYPES.STOS,
-      PERMIT_TYPES.MFP,
-    ] as PermitType[]).includes(permitType as PermitType)
-    && vehicleType === VEHICLE_TYPES.POWER_UNIT;
+  const showLicensedGVW =
+    Boolean(permitType) &&
+    ([PERMIT_TYPES.STOS, PERMIT_TYPES.MFP] as PermitType[]).includes(
+      permitType as PermitType,
+    ) &&
+    vehicleType === VEHICLE_TYPES.POWER_UNIT;
 
   const changedFields = showChangedFields
     ? {
@@ -112,10 +112,7 @@ export const ReviewVehicleInfo = ({
   );
 
   const selectedSubtypesDisplay = useMemoizedArray(
-    getDefaultRequiredVal(
-      [],
-      selectedVehicleConfigSubtypes,
-    ).map(({ vehicleSubType }) => {
+    getDefaultRequiredVal([], selectedTrailers).map(({ vehicleSubType }) => {
       if (isTrailerSubtypeNone(vehicleSubType)) return "None";
       return getDefaultRequiredVal(
         vehicleSubType,
@@ -230,7 +227,9 @@ export const ReviewVehicleInfo = ({
             {provinceDisplay ? (
               <div className="info-section__info">
                 <Typography className="info-section__label">
-                  <span className="info-section__label-text">Province / State</span>
+                  <span className="info-section__label-text">
+                    Province / State
+                  </span>
                   {showDiffChip(changedFields.province)}
                 </Typography>
 
@@ -259,7 +258,9 @@ export const ReviewVehicleInfo = ({
 
             <div className="info-section__info">
               <Typography className="info-section__label">
-                <span className="info-section__label-text">Vehicle Sub-type</span>
+                <span className="info-section__label-text">
+                  Vehicle Sub-type
+                </span>
                 {showDiffChip(changedFields.subtype)}
               </Typography>
 
@@ -274,7 +275,9 @@ export const ReviewVehicleInfo = ({
             {showLicensedGVW && vehicleDetails?.licensedGVW ? (
               <div className="info-section__info">
                 <Typography className="info-section__label">
-                  <span className="info-section__label-text">Licensed GVW (kg)</span>
+                  <span className="info-section__label-text">
+                    Licensed GVW (kg)
+                  </span>
                   {showDiffChip(changedFields.licensedGVW)}
                 </Typography>
 

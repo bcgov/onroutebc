@@ -223,11 +223,8 @@ export const useApplicationFormUpdateMethods = () => {
   );
 
   const onUpdateVehicleConfigTrailers = useCallback(
-    (updatedTrailerSubtypes: VehicleInConfiguration[]) => {
-      setValue(
-        "permitData.vehicleConfiguration.trailers",
-        updatedTrailerSubtypes,
-      );
+    (updatedTrailers: VehicleInConfiguration[]) => {
+      setValue("permitData.vehicleConfiguration.trailers", updatedTrailers);
     },
     [setValue],
   );
