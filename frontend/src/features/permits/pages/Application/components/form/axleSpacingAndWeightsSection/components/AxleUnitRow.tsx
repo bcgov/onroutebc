@@ -13,7 +13,7 @@ export const AxleUnitRow = ({
   isTrailer,
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
-  axleUnitFailure,
+  axleUnitFailures = [],
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
@@ -24,7 +24,7 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
-  axleUnitFailure: boolean;
+  axleUnitFailures?: boolean[];
 }) => {
   const updateAxleUnit = (
     axleIndex: number,
@@ -57,6 +57,8 @@ export const AxleUnitRow = ({
 
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
+
+        const axleUnitFailure = axleUnitFailures[index] ?? false;
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">

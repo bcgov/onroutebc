@@ -155,6 +155,42 @@ export const AxleSpacingAndWeightsTable = ({
     console.log(bridgeCalculationResults);
   };
 
+  const getAxleUnitFailures = (
+    axleConfiguration: AxleUnit[],
+    axleUnitNumber: number,
+    isTrailer: boolean,
+  ) => {
+    return axleConfiguration.map((_, index) => {
+      const isInteraxleSpacingRow = isTrailer
+        ? index % 2 === 0
+        : index % 2 === 1;
+      let associatedAxleUnitNumber: number;
+      if (!isInteraxleSpacingRow) {
+        associatedAxleUnitNumber = axleUnitNumber + Math.floor(index / 2) + 1;
+      } else {
+        if (isTrailer) {
+          associatedAxleUnitNumber = axleUnitNumber + Math.floor(index / 2) + 1;
+        } else {
+          associatedAxleUnitNumber =
+            axleUnitNumber + Math.floor((index + 1) / 2) + 1;
+        }
+      }
+      return failedBridgeCalculationResults.some((result) => {
+        if (!isInteraxleSpacingRow) {
+          return (
+            associatedAxleUnitNumber >= result.startAxleUnit &&
+            associatedAxleUnitNumber <= result.endAxleUnit
+          );
+        } else {
+          return (
+            associatedAxleUnitNumber > result.startAxleUnit &&
+            associatedAxleUnitNumber <= result.endAxleUnit
+          );
+        }
+      });
+    });
+  };
+
   return (
     <div className="axle-spacing-and-weights-table">
       <div className="table-container">
@@ -211,7 +247,11 @@ export const AxleSpacingAndWeightsTable = ({
               isTrailer={false}
               onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
               tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
-              axleUnitFailure={false}
+              axleUnitFailures={getAxleUnitFailures(
+                powerUnitAxleConfiguration,
+                0,
+                false,
+              )}
             />
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
@@ -228,7 +268,11 @@ export const AxleSpacingAndWeightsTable = ({
                     )
                   }
                   tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
-                  axleUnitFailure={false}
+                  axleUnitFailures={getAxleUnitFailures(
+                    trailer.axleConfiguration ?? [],
+                    getAxleUnitNumber(trailerIndex),
+                    true,
+                  )}
                 />
               ) : null,
             )}

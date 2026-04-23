@@ -22,7 +22,6 @@ import { getFailedResultText } from "../../../common/helpers/bridgeCalculationHe
 
 export const BridgeFormulaCalculationTool = () => {
   const policyEngine = usePolicyEngine();
-  const policyEngine = usePolicyEngine();
 
   const { control, handleSubmit, watch, setValue, reset, formState } = useForm<{
     axleUnits: AxleUnit[];
@@ -111,7 +110,6 @@ export const BridgeFormulaCalculationTool = () => {
 
   const onSubmit = (data: { axleUnits: AxleUnit[] }) => {
     const mergedAxleUnitData = mergeInteraxleSpacing(data.axleUnits, 1);
-    const mergedAxleUnitData = mergeInteraxleSpacing(data.axleUnits, 1);
 
     const convertedAxleUnitData = mergedAxleUnitData.map((axleUnit) =>
       convertMetreValuesToCentimetres(axleUnit),
@@ -121,7 +119,6 @@ export const BridgeFormulaCalculationTool = () => {
       getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = policyEngine?.calculateBridge(
     const bridgeCalculationResults = policyEngine?.calculateBridge(
       serializedAxleUnitData,
     );

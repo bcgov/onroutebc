@@ -242,11 +242,6 @@ export const useApplicationFormContext = () => {
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
-  const selectedTrailers = useMemoizedSequence(
-    getDefaultRequiredVal([], vehicleConfiguration?.trailers),
-    (trailer1, trailer2) => trailer1 === trailer2,
-  );
-
   const { nextAllowedSubtypes } = useVehicleConfiguration(
     policyEngine,
     permitType,
