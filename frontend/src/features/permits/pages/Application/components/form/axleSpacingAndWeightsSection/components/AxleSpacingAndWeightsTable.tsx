@@ -119,17 +119,17 @@ export const AxleSpacingAndWeightsTable = ({
     setShowValidationBanner(false);
 
     // Merge all axle configurations from power unit and trailers
-    const powerUnitMerged = mergeInteraxleSpacing(
+    const mergedPowerUnit = mergeInteraxleSpacing(
       powerUnitAxleConfiguration,
       1,
     );
-    const trailersMerged = trailers.flatMap((trailer) => {
+    const mergedTrailers = trailers.flatMap((trailer) => {
       if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
         return mergeInteraxleSpacing(trailer.axleConfiguration ?? [], 0);
       }
       return [];
     });
-    const mergedAxleConfigurationData = [...powerUnitMerged, ...trailersMerged];
+    const mergedAxleConfigurationData = [...mergedPowerUnit, ...mergedTrailers];
 
     if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
       setShowValidationBanner(true);
@@ -155,40 +155,65 @@ export const AxleSpacingAndWeightsTable = ({
     console.log(bridgeCalculationResults);
   };
 
+  type NormalizedAxleRow = {
+    rowType: "axle" | "spacing";
+    axleUnitNumber: number;
+  };
+
+  const normalizeAxleConfigurationRows = (
+    axleConfiguration: AxleUnit[],
+    axleUnitNumber: number,
+    isTrailer: boolean,
+  ): NormalizedAxleRow[] => {
+    return axleConfiguration.map((_, index) => {
+      const isInteraxleSpacingRow = isTrailer
+        ? index % 2 === 0
+        : index % 2 === 1;
+
+      if (isInteraxleSpacingRow) {
+        const associatedAxleUnitNumber = isTrailer
+          ? axleUnitNumber + Math.floor(index / 2)
+          : axleUnitNumber + Math.floor(index / 2) + 1;
+
+        return {
+          rowType: "spacing",
+          axleUnitNumber: associatedAxleUnitNumber,
+        };
+      }
+
+      return {
+        rowType: "axle",
+        axleUnitNumber: axleUnitNumber + Math.floor(index / 2) + 1,
+      };
+    });
+  };
+
   const getAxleUnitFailures = (
     axleConfiguration: AxleUnit[],
     axleUnitNumber: number,
     isTrailer: boolean,
   ) => {
-    return axleConfiguration.map((_, index) => {
-      const isInteraxleSpacingRow = isTrailer
-        ? index % 2 === 0
-        : index % 2 === 1;
-      let associatedAxleUnitNumber: number;
-      if (!isInteraxleSpacingRow) {
-        associatedAxleUnitNumber = axleUnitNumber + Math.floor(index / 2) + 1;
-      } else {
-        if (isTrailer) {
-          associatedAxleUnitNumber = axleUnitNumber + Math.floor(index / 2) + 1;
-        } else {
-          associatedAxleUnitNumber =
-            axleUnitNumber + Math.floor((index + 1) / 2) + 1;
-        }
-      }
-      return failedBridgeCalculationResults.some((result) => {
-        if (!isInteraxleSpacingRow) {
+    const normalizedRows = normalizeAxleConfigurationRows(
+      axleConfiguration,
+      axleUnitNumber,
+      isTrailer,
+    );
+
+    return normalizedRows.map(({ rowType, axleUnitNumber }) =>
+      failedBridgeCalculationResults.some((result) => {
+        if (rowType === "axle") {
           return (
-            associatedAxleUnitNumber >= result.startAxleUnit &&
-            associatedAxleUnitNumber <= result.endAxleUnit
-          );
-        } else {
-          return (
-            associatedAxleUnitNumber > result.startAxleUnit &&
-            associatedAxleUnitNumber <= result.endAxleUnit
+            axleUnitNumber >= result.startAxleUnit &&
+            axleUnitNumber <= result.endAxleUnit
           );
         }
-      });
-    });
+
+        return (
+          axleUnitNumber >= result.startAxleUnit &&
+          axleUnitNumber < result.endAxleUnit
+        );
+      }),
+    );
   };
 
   return (
@@ -269,7 +294,7 @@ export const AxleSpacingAndWeightsTable = ({
                   }
                   tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
                   axleUnitFailures={getAxleUnitFailures(
-                    trailer.axleConfiguration ?? [],
+                    getDefaultRequiredVal([], trailer.axleConfiguration),
                     getAxleUnitNumber(trailerIndex),
                     true,
                   )}
