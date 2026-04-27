@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleXmark,
+  faCircleCheck,
+} from "@fortawesome/free-regular-svg-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import "./BridgeFormulaCalculationTool.scss";
@@ -19,6 +23,10 @@ import {
 } from "../../../common/helpers/axleUnitHelper";
 import { BridgeCalculationResult } from "../../../common/types/BridgeCalculationResult";
 import { getFailedResultText } from "../../../common/helpers/bridgeCalculationHelper";
+import {
+  DEFAULT_AXLE_UNIT,
+  DEFAULT_POWER_UNIT_AXLE_CONFIG,
+} from "../../../common/constants/defaultAxleUnit";
 
 export const BridgeFormulaCalculationTool = () => {
   const policyEngine = usePolicyEngine();
@@ -27,21 +35,7 @@ export const BridgeFormulaCalculationTool = () => {
     axleUnits: AxleUnit[];
   }>({
     defaultValues: {
-      axleUnits: [
-        {
-          numberOfAxles: null,
-          axleSpread: null,
-          axleUnitWeight: null,
-        },
-        {
-          interaxleSpacing: null,
-        },
-        {
-          numberOfAxles: null,
-          axleSpread: null,
-          axleUnitWeight: null,
-        },
-      ],
+      axleUnits: DEFAULT_POWER_UNIT_AXLE_CONFIG,
     },
   });
 
@@ -56,11 +50,7 @@ export const BridgeFormulaCalculationTool = () => {
     append({
       interaxleSpacing: null,
     });
-    append({
-      numberOfAxles: null,
-      axleSpread: null,
-      axleUnitWeight: null,
-    });
+    append(DEFAULT_AXLE_UNIT);
   };
 
   const [isRemoveAxleUnitModalOpen, setIsRemoveAxleUnitModalOpen] =
@@ -419,12 +409,20 @@ export const BridgeFormulaCalculationTool = () => {
           ) : failedBridgeCalculationResults.length ? (
             failedBridgeCalculationResults.map((failedResult, index) => (
               <p key={index} className="results__text results__text--fail">
+                <FontAwesomeIcon
+                  icon={faCircleXmark}
+                  className="results__icon results__icon--fail"
+                />{" "}
                 {getFailedResultText(failedResult)}
               </p>
             ))
           ) : (
             <p className="results__text results__text--success">
-              &#x2713; Bridge Calculation is ok.
+              <FontAwesomeIcon
+                icon={faCircleCheck}
+                className="results__icon results__icon--success"
+              />{" "}
+              Bridge Calculation is ok.
             </p>
           )}
         </div>

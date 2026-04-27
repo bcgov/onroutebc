@@ -82,15 +82,21 @@ export const AxleUnitRow = ({
                         null,
                       );
 
-                      updateAxleUnit(
-                        index,
-                        "numberOfAxles",
-                        updatedNumberOfAxles,
+                      const updatedConfiguration = axleConfiguration.map(
+                        (currentAxleUnit, currentIndex) =>
+                          currentIndex === index
+                            ? {
+                                ...currentAxleUnit,
+                                numberOfAxles: updatedNumberOfAxles,
+                                axleSpread:
+                                  updatedNumberOfAxles === 1
+                                    ? null
+                                    : currentAxleUnit.axleSpread,
+                              }
+                            : currentAxleUnit,
                       );
 
-                      if (updatedNumberOfAxles === 1) {
-                        updateAxleUnit(index, "axleSpread", null);
-                      }
+                      onUpdateAxleConfiguration(updatedConfiguration);
                     },
                     maskFn: (numericVal) => numericVal.toFixed(0),
                   }}

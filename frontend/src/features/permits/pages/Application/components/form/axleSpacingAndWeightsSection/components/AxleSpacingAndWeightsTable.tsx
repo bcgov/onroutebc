@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleXmark,
+  faCircleCheck,
+} from "@fortawesome/free-regular-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
@@ -18,9 +21,14 @@ import {
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
 } from "../../../../../../../../common/helpers/axleUnitHelper";
+import {
+  DEFAULT_POWER_UNIT_AXLE_CONFIG,
+  DEFAULT_TRAILER_AXLE_CONFIG,
+} from "../../../../../../../../common/constants/defaultAxleUnit";
 import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { BridgeCalculationResult } from "../../../../../../../../common/types/BridgeCalculationResult";
 import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
+import { AxleUnitResetModal } from "./AxleUnitResetModal";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
@@ -75,6 +83,7 @@ export const AxleSpacingAndWeightsTable = ({
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [showValidationBanner, setShowValidationBanner] =
     useState<boolean>(false);
+
   const [bridgeCalculationResults, setBridgeCalculationResults] = useState<
     BridgeCalculationResult[]
   >([]);
@@ -86,6 +95,8 @@ export const AxleSpacingAndWeightsTable = ({
   const bridgeCalculationSuccess = bridgeCalculationResults.length
     ? bridgeCalculationResults.every((result) => result.success)
     : false;
+
+  const [totalGCVW, setTotalGCVW] = useState<number>();
 
   const shouldShowResultsSection =
     showValidationBanner ||
@@ -113,6 +124,13 @@ export const AxleSpacingAndWeightsTable = ({
 
       return hasRequiredFields && hasAxleSpread && hasInteraxleSpacing;
     });
+  };
+
+  const calculateGCVW = (axleConfiguration: AxleUnit[]): number => {
+    return axleConfiguration.reduce((totalWeight, axleUnit) => {
+      const axleUnitWeight = axleUnit.axleUnitWeight ?? 0;
+      return totalWeight + axleUnitWeight;
+    }, 0);
   };
 
   const calculateBridgeFormula = () => {
@@ -150,15 +168,16 @@ export const AxleSpacingAndWeightsTable = ({
 
     if (bridgeCalculationResults) {
       setBridgeCalculationResults(bridgeCalculationResults);
+      setTotalGCVW(calculateGCVW(mergedAxleConfigurationData));
     }
 
     console.log(bridgeCalculationResults);
   };
 
-  type NormalizedAxleRow = {
+  interface NormalizedAxleRow {
     rowType: "axle" | "spacing";
     axleUnitNumber: number;
-  };
+  }
 
   const normalizeAxleConfigurationRows = (
     axleConfiguration: AxleUnit[],
@@ -214,6 +233,22 @@ export const AxleSpacingAndWeightsTable = ({
         );
       }),
     );
+  };
+
+  const handleReset = () => {
+    onUpdatePowerUnitAxleConfiguration(DEFAULT_POWER_UNIT_AXLE_CONFIG);
+
+    trailers.forEach((_, trailerIndex) => {
+      onUpdateTrailerAxleConfiguration(
+        trailerIndex,
+        DEFAULT_TRAILER_AXLE_CONFIG,
+      );
+    });
+
+    setShowValidationBanner(false);
+    setBridgeCalculationResults([]);
+    setTotalGCVW(undefined);
+    setIsResetModalOpen(false);
   };
 
   return (
@@ -313,7 +348,6 @@ export const AxleSpacingAndWeightsTable = ({
           variant="contained"
           onClick={() => {
             setIsResetModalOpen(true);
-            setShowValidationBanner(false);
           }}
           className="button button--reset"
         >
@@ -329,18 +363,22 @@ export const AxleSpacingAndWeightsTable = ({
       </div>
       {shouldShowResultsSection && (
         <div className="results">
-          <h2 className="results__heading">
-            Bridge Formula Calculation Results
-          </h2>
+          <h2 className="results__heading">Calculation Results</h2>
 
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : failedBridgeCalculationResults.length ? (
             <>
-              <strong>Total (GCVW):</strong> 69300
+              <span>
+                <strong>Total (GCVW):</strong> {totalGCVW}
+              </span>
               {failedBridgeCalculationResults.map((failedResult, index) => (
                 <div key={index}>
                   <p key={index} className="results__text results__text--fail">
+                    <FontAwesomeIcon
+                      icon={faCircleXmark}
+                      className="results__icon results__icon--fail"
+                    />{" "}
                     {getFailedResultText(failedResult)}
                   </p>
                 </div>
@@ -348,9 +386,15 @@ export const AxleSpacingAndWeightsTable = ({
             </>
           ) : (
             <>
-              <strong>Total (GCVW):</strong> 69300
+              <span>
+                <strong>Total (GCVW):</strong> {totalGCVW}
+              </span>
               <p className="results__text results__text--success">
-                &#x2713; Bridge Calculation is ok.
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  className="results__icon results__icon--success"
+                />{" "}
+                Bridge Calculation is ok.
               </p>
             </>
           )}
@@ -360,6 +404,11 @@ export const AxleSpacingAndWeightsTable = ({
         isOpen={isHelpModalOpen}
         onCancel={() => setIsHelpModalOpen(false)}
         onClose={() => setIsHelpModalOpen(false)}
+      />
+      <AxleUnitResetModal
+        isOpen={isResetModalOpen}
+        onCancel={() => setIsResetModalOpen(false)}
+        onConfirm={handleReset}
       />
     </div>
   );

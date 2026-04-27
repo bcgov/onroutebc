@@ -20,7 +20,7 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
-import { DEFAULT_AXLE_UNIT } from "../../../../../../../common/constants/defaultAxleUnit";
+import { DEFAULT_TRAILER_AXLE_CONFIG } from "../../../../../../../common/constants/defaultAxleUnit";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 
 export const AddTrailer = ({
@@ -78,7 +78,7 @@ export const AddTrailer = ({
             axleConfiguration:
               permitType === PERMIT_TYPES.STOW
                 ? !isTrailerSubtypeNone(subtype)
-                  ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
+                  ? DEFAULT_TRAILER_AXLE_CONFIG
                   : null
                 : null,
           },

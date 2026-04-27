@@ -138,12 +138,10 @@
   }
 
   .results {
-    border-top: 1px solid $bc-border-grey;
-    padding: 2.5rem 0;
-
     &__heading {
       color: $bc-black;
-      margin: 0;
+      margin-top: 0;
+      margin-bottom: 1rem;
     }
 
     &__text {
@@ -154,5 +152,6 @@
         color: $bc-green;
       }
     }
+
   }
 }
