@@ -170,8 +170,6 @@ export const AxleSpacingAndWeightsTable = ({
       setBridgeCalculationResults(bridgeCalculationResults);
       setTotalGCVW(calculateGCVW(mergedAxleConfigurationData));
     }
-
-    console.log(bridgeCalculationResults);
   };
 
   interface NormalizedAxleRow {
