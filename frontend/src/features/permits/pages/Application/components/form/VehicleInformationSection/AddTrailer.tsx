@@ -21,12 +21,14 @@ import {
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
 import { DEFAULT_AXLE_UNIT } from "../../../../../../../common/constants/defaultAxleUnit";
+import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 
 export const AddTrailer = ({
   selectedTrailers,
   trailerSubtypeOptions,
   trailerSubtypeNamesMap,
   onUpdateVehicleConfigTrailers,
+  permitType,
 }: {
   selectedTrailers: VehicleInConfiguration[];
   trailerSubtypeOptions: {
@@ -37,6 +39,7 @@ export const AddTrailer = ({
   onUpdateVehicleConfigTrailers: (
     updatedTrailerSubtypes: VehicleInConfiguration[],
   ) => void;
+  permitType: PermitType;
 }) => {
   const [trailerSelection, setTrailerSelection] = useState<string>(
     DEFAULT_EMPTY_SELECT_VALUE,
@@ -66,15 +69,18 @@ export const AddTrailer = ({
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
-  const handleAddTrailerSubtype = (subtype: string) => {
+  const handleAddTrailer = (subtype: string) => {
     if (subtype !== DEFAULT_EMPTY_SELECT_VALUE) {
       onUpdateVehicleConfigTrailers(
         selectedTrailers.concat([
           {
             vehicleSubType: subtype,
-            axleConfiguration: !isTrailerSubtypeNone(subtype)
-              ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
-              : null,
+            axleConfiguration:
+              permitType === PERMIT_TYPES.STOW
+                ? !isTrailerSubtypeNone(subtype)
+                  ? [{ interaxleSpacing: null }, DEFAULT_AXLE_UNIT]
+                  : null
+                : null,
           },
         ]),
       );
@@ -135,7 +141,7 @@ export const AddTrailer = ({
             inputProps={{
               "aria-label": "Add Trailer",
             }}
-            onChange={(e) => handleAddTrailerSubtype(e.target.value)}
+            onChange={(e) => handleAddTrailer(e.target.value)}
             value={trailerSelection}
             MenuProps={{
               className: "form-control__menu",

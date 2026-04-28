@@ -2,6 +2,10 @@ import {
   convertMetreValuesToCentimetres,
   mergeInteraxleSpacing,
 } from "../../../../common/helpers/axleUnitHelper";
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../../../../common/helpers/axleUnitHelper";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
@@ -51,7 +55,6 @@ export const serializePermitVehicleConfiguration = (
         ),
         loadedGVW: convertToNumberIfValid(vehicleConfiguration.loadedGVW, null),
         netWeight: convertToNumberIfValid(vehicleConfiguration.netWeight, null),
-        // TODO ensure that values recorded in metres are converted to centimetres and then converted back to metres
         axleConfiguration: vehicleConfiguration.axleConfiguration
           ? mergeInteraxleSpacing(
               vehicleConfiguration.axleConfiguration.map(

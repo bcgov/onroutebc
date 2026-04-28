@@ -234,6 +234,7 @@ export const VehicleInformationSection = ({
             trailerSubtypeOptions={nextAllowedSubtypes}
             trailerSubtypeNamesMap={trailerSubtypeNamesMap}
             onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
+            permitType={permitType}
           />
         ) : null}
       </Box>

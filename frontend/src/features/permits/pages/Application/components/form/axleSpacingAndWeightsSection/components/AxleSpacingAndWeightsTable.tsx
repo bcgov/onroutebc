@@ -9,36 +9,37 @@ import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
-import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
+import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 
 export const AxleSpacingAndWeightsTable = ({
   powerUnitSubtypeNamesMap,
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
-  onUpdateAxleConfiguration,
+  tireSizeOptions,
+  onUpdatePowerUnitAxleConfiguration,
+  onUpdateTrailerAxleConfiguration,
 }: {
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
-  onUpdateAxleConfiguration: (
-    isTrailer: boolean,
-    trailerIndex: number | undefined,
+  tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
+  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration: (
+    trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
-  const policyEngine = usePolicyEngine();
+  const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
-  const tireSizeOptions = policyEngine?.getStandardTireSizes();
+  const powerUnitAxleConfiguration = getDefaultRequiredVal(
+    [],
+    vehicleConfiguration?.axleConfiguration,
+  );
 
-  const trailers = vehicleConfiguration?.trailers ?? [];
-
-  const powerUnitAxleConfiguration =
-    vehicleConfiguration?.axleConfiguration ?? [];
-
-  const trailerAxleConfigurations: AxleUnit[][] = trailers.map(
-    (trailer) => trailer.axleConfiguration ?? [],
+  const trailerAxleConfigurations: AxleUnit[][] = trailers.map((trailer) =>
+    getDefaultRequiredVal([], trailer.axleConfiguration),
   );
 
   // Convert axle rows into the number of full axle units.
@@ -69,7 +70,7 @@ export const AxleSpacingAndWeightsTable = ({
                 Axle <br></br>Unit
                 <button
                   type="button"
-                  className="column__button column__button--help"
+                  className="column__button"
                   onClick={() => setIsHelpModalOpen(true)}
                 >
                   <FontAwesomeIcon
@@ -82,7 +83,7 @@ export const AxleSpacingAndWeightsTable = ({
                 No. of Axles{" "}
                 <button
                   type="button"
-                  className="column__button column__button--help"
+                  className="column__button"
                   onClick={() => setIsHelpModalOpen(true)}
                 >
                   <FontAwesomeIcon
@@ -112,21 +113,28 @@ export const AxleSpacingAndWeightsTable = ({
               )}
               axleUnitNumber={0}
               isTrailer={false}
-              onUpdateAxleConfiguration={onUpdateAxleConfiguration}
-              tireSizeOptions={tireSizeOptions}
+              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
+              tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
             />
 
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
                 <AxleUnitRow
                   key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                  axleConfiguration={trailer.axleConfiguration ?? []}
+                  axleConfiguration={getDefaultRequiredVal(
+                    [],
+                    trailer.axleConfiguration,
+                  )}
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
-                  trailerIndex={trailerIndex}
-                  onUpdateAxleConfiguration={onUpdateAxleConfiguration}
-                  tireSizeOptions={tireSizeOptions}
+                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
+                    onUpdateTrailerAxleConfiguration(
+                      trailerIndex,
+                      axleConfiguration,
+                    )
+                  }
+                  tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
                 />
               ) : null,
             )}

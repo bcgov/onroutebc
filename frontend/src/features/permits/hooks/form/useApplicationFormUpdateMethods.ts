@@ -224,11 +224,8 @@ export const useApplicationFormUpdateMethods = () => {
   );
 
   const onUpdateVehicleConfigTrailers = useCallback(
-    (updatedTrailerSubtypes: VehicleInConfiguration[]) => {
-      setValue(
-        "permitData.vehicleConfiguration.trailers",
-        updatedTrailerSubtypes,
-      );
+    (updatedTrailers: VehicleInConfiguration[]) => {
+      setValue("permitData.vehicleConfiguration.trailers", updatedTrailers);
     },
     [setValue],
   );
@@ -283,23 +280,22 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
-  const onUpdateAxleConfiguration = useCallback(
-    (
-      isTrailer: boolean,
-      trailerIndex: number | undefined,
-      axleConfiguration: AxleUnit[],
-    ) => {
-      if (isTrailer && trailerIndex !== undefined) {
-        setValue(
-          `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
-          axleConfiguration,
-        );
-      } else {
-        setValue(
-          "permitData.vehicleConfiguration.axleConfiguration",
-          axleConfiguration,
-        );
-      }
+  const onUpdatePowerUnitAxleConfiguration = useCallback(
+    (axleConfiguration: AxleUnit[]) => {
+      setValue(
+        "permitData.vehicleConfiguration.axleConfiguration",
+        axleConfiguration,
+      );
+    },
+    [setValue],
+  );
+
+  const onUpdateTrailerAxleConfiguration = useCallback(
+    (trailerIndex: number, axleConfiguration: AxleUnit[]) => {
+      setValue(
+        `permitData.vehicleConfiguration.trailers.${trailerIndex}.axleConfiguration`,
+        axleConfiguration,
+      );
     },
     [setValue],
   );
@@ -335,6 +331,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-    onUpdateAxleConfiguration,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
   };
 };

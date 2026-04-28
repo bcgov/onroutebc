@@ -1,8 +1,6 @@
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus } from "@fortawesome/free-solid-svg-icons";
 import {
   useGetCreditAccountMetadataQuery,
   useRemoveCreditAccountUsersMutation,
@@ -72,10 +70,9 @@ export const RemoveUsersModal = ({
       }}
     >
       <div className="remove-users-modal__header">
-        <div className="remove-users-modal__icon">
-          <FontAwesomeIcon className="icon" icon={faMinus} />
-        </div>
-        <h2 className="remove-users-modal__title">Remove User(s)? </h2>
+        <h2 className="remove-users-modal__title">
+          Remove Credit Account User(s)?
+        </h2>
       </div>
 
       <div className="remove-users-modal__body">

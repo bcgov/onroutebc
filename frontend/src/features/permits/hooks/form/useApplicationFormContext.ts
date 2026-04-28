@@ -19,6 +19,7 @@ import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequence";
 import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
+import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -71,7 +72,8 @@ export const useApplicationFormContext = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-    onUpdateAxleConfiguration,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -225,6 +227,11 @@ export const useApplicationFormContext = () => {
     vehicleFormData.vehicleSubType,
   );
 
+  const selectedTrailers = useMemoizedSequence(
+    getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    (trailer1, trailer2) => trailer1.vehicleSubType === trailer2.vehicleSubType,
+  );
+
   const selectedVehicleConfigSubtypes = useMemoizedSequence(
     getDefaultRequiredVal(
       [],
@@ -233,11 +240,6 @@ export const useApplicationFormContext = () => {
       ),
     ),
     (subtype1, subtype2) => subtype1 === subtype2,
-  );
-
-  const selectedTrailers = useMemoizedSequence(
-    getDefaultRequiredVal([], vehicleConfiguration?.trailers),
-    (trailer1, trailer2) => trailer1 === trailer2,
   );
 
   const { nextAllowedSubtypes } = useVehicleConfiguration(
@@ -263,6 +265,8 @@ export const useApplicationFormContext = () => {
     vehicleConfiguration?.loadedGVW,
     vehicleConfiguration?.netWeight,
   );
+
+  const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
@@ -319,12 +323,14 @@ export const useApplicationFormContext = () => {
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     selectedTrailers,
+    selectedTrailers,
     vehicleConfiguration,
     thirdPartyLiability,
     conditionalLicensingFee,
     availableCLFs,
     enableLoadedGVW,
     enableNetWeight,
+    tireSizeOptions,
     onLeave,
     onSave,
     onCancel,
@@ -349,7 +355,8 @@ export const useApplicationFormContext = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-    onUpdateAxleConfiguration,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,

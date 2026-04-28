@@ -1,14 +1,18 @@
-import { faInfoCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Dialog } from "@mui/material";
+import { Box, Button, Dialog } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import {
   useAddCreditAccountUserMutation,
   useGetCreditAccountMetadataQuery,
+  useGetCreditAccountUsersQuery,
+  useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import "./AddUserModal.scss";
-import { StatusChip } from "./StatusChip";
+import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip";
+import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const AddUserModal = ({
   showModal,
@@ -40,6 +44,22 @@ export const AddUserModal = ({
   const existingCreditAccountHolder =
     !isUserCreditAccountLoading && Boolean(userCreditAccount?.creditAccountId);
 
+  const existingCreditAccountId = userCreditAccount?.creditAccountId;
+
+  const { data: associatedCreditAccount } = useGetCreditAccountQuery(
+    userData.companyId,
+    getDefaultRequiredVal(0, existingCreditAccountId),
+  );
+
+  const { data: associatedCreditAccountUsers } = useGetCreditAccountUsersQuery({
+    companyId: userData.companyId,
+    creditAccountId: getDefaultRequiredVal(0, existingCreditAccountId),
+  });
+
+  const holder = associatedCreditAccountUsers?.find(
+    (u) => u.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
+  );
+
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
@@ -70,23 +90,33 @@ export const AddUserModal = ({
       }}
     >
       <div className="add-user-modal__header">
-        <div className="add-user-modal__icon">
-          <FontAwesomeIcon className="icon" icon={faPlusCircle} />
-        </div>
-
         <h2 className="add-user-modal__title">Add Credit Account User</h2>
       </div>
 
       <FormProvider {...formMethods}>
         <div className="add-user-modal__body">
+          {userData.isSuspended && (
+            <Box className="add-user-modal__suspend__container">
+              <div className="add-user-modal__suspend__banner">
+                <ErrorAltBcGovBanner msg="Client is suspended" />
+              </div>
+              <div className="add-user-modal__suspend__info">
+                <span>
+                  A suspended client cannot be added as a Credit Account User
+                </span>
+              </div>
+            </Box>
+          )}
           <dl>
             <div className="add-user-modal__item">
               <dt className="add-user-modal__key">Client Name</dt>
               <dd className="add-user-modal__value">
                 {userData.legalName}{" "}
-                <span className="add-user-modal__suspend-chip">
-                  {userData.isSuspended && <StatusChip status="SUSPENDED" />}
-                </span>
+                <div className="add-user-modal__suspend-chip">
+                  {userData.isSuspended && (
+                    <OnRouteBCChip message="Suspended" hoverText="SUSPENDED" />
+                  )}
+                </div>
               </dd>
             </div>
             {userData.alternateName ? (
@@ -103,33 +133,45 @@ export const AddUserModal = ({
             </div>
           </dl>
           {existingCreditAccountHolder && (
-            <div className="add-user-modal__info info">
-              <div className="info__header">
-                <div className="info__icon">
-                  <FontAwesomeIcon className="icon" icon={faInfoCircle} />
+            <div className="existing-holder-modal">
+              <div className="existing-holder-modal__info">
+                <div className="existing-holder-modal__header">
+                  <InfoBcGovBanner msg="This client already is a Credit Account Holder or User of:" />
                 </div>
-                <h3 className="info__title">
-                  This company already is a holder or user of
-                </h3>
-              </div>
-              <div className="info__body">
-                <div className="add-user-modal__item">
-                  <dt className="add-user-modal__key">Client Name</dt>
-                  <dt className="add-user-modal__value">
-                    {userData.legalName}
-                  </dt>
-                </div>
-                <div className="add-user-modal__item">
-                  <dt className="add-user-modal__key">onRouteBC</dt>
-                  <dt className="add-user-modal__value">
-                    {userData.clientNumber}
-                  </dt>
-                </div>
-                <div className="add-user-modal__item">
-                  <dt className="add-user-modal__key">Credit Account No.</dt>
-                  <dt className="add-user-modal__value">
-                    {userCreditAccount?.creditAccountId}
-                  </dt>
+
+                <div className="existing-holder-modal__body">
+                  {holder?.legalName ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        Client Name
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {holder.legalName}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {holder?.clientNumber ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        onRouteBC Client No.
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {holder.clientNumber}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {associatedCreditAccount?.creditAccountNumber ? (
+                    <div className="existing-holder-modal__item">
+                      <div className="existing-holder-modal__key">
+                        Credit Account No.
+                      </div>
+                      <div className="existing-holder-modal__value">
+                        {associatedCreditAccount.creditAccountNumber}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -146,7 +188,7 @@ export const AddUserModal = ({
             onClick={onCancel}
             data-testid="cancel-add-user-button"
           >
-            Cancel
+            Close
           </Button>
 
           {showConfirmButton && (

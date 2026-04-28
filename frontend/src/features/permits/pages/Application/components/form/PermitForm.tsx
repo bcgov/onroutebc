@@ -63,6 +63,7 @@ export const PermitForm = () => {
     availableCLFs,
     enableLoadedGVW,
     enableNetWeight,
+    tireSizeOptions,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -87,7 +88,8 @@ export const PermitForm = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-    onUpdateAxleConfiguration,
+    onUpdatePowerUnitAxleConfiguration,
+    onUpdateTrailerAxleConfiguration,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -191,7 +193,11 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
-          onUpdateAxleConfiguration={onUpdateAxleConfiguration}
+          tireSizeOptions={tireSizeOptions}
+          onUpdatePowerUnitAxleConfiguration={
+            onUpdatePowerUnitAxleConfiguration
+          }
+          onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
         />
 
         <LoadedDimensionsSection

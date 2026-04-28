@@ -39,11 +39,43 @@
 
     dl {
       margin: 0;
+      width: 100%;
+    }
+  }
+
+  &__suspend {
+    &__container {
+      border: 1px solid;
+      border-radius: 0.25rem;
+      border-color: $bc-messages-red-text;
+      margin: 0 auto 1.5rem auto;
+      width: 100%;
+    }
+
+    &__banner {
+      width: 100%;
+      background-color: $bc-messages-red-background;
+    }
+
+    &__info {
+      background-color: $bc-white;
+      color: $bc-black;
+      margin: 1.5rem;
+      font-size: 1rem;
     }
   }
 
   &__item {
-    margin-bottom: 1.5rem;
+    width: 100%;
+
+    &:not(:last-child)::after {
+      content: "";
+      display: block;
+      width: 100%;
+      margin: 1rem auto;
+      height: 1px;
+      background-color: $bc-border-grey;
+    }
   }
 
   &__key {
@@ -56,35 +88,12 @@
   }
 
   &__suspend-chip {
-    padding-left: 1rem;
-  }
-
-  &__info, .info {
-    width: 100%;
-    background-color: $bc-messages-blue-background;
-    border-radius: 0.25rem;
-    box-sizing: border-box;
-    padding: 2rem 1.5rem;
-    margin-bottom: 1.5rem;
-
-    &__header {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    &__icon {
-      font-size: 1.5rem;
-    }
-
-    &__title {
-      font-size: 18px;
-      margin: 0;
-    }
-
-    &__body {
-      padding-left: 2.5rem;
-    }
+    background-color: $bc-messages-red-text;
+    color: $white;
+    margin-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-radius: 0.5rem;
+    width: fit-content;
   }
 
   .add-user-form {
@@ -136,5 +145,28 @@
         }
       }
     }
+  }
+}
+
+.existing-holder-modal {
+  padding: 1.5rem 0;
+  &__info {
+    border: 1.5px solid $bc-background-blue;
+    border-radius: 4px;
+  }
+
+  &__body {
+    padding: 1.5rem;
+  }
+
+  &__item {
+    margin-bottom: 1.25rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &__key {
+    font-weight: 600;
   }
 }

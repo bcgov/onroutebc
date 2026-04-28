@@ -69,7 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.1",
     "autoprefixer": "^10.4.27",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
@@ -87,7 +87,7 @@
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.6.0",
+    "vitest": "^1.6.1",
     "vitest-canvas-mock": "^0.3.3"
   },
   "overrides": {
