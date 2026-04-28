@@ -444,3 +444,7 @@
 ### Version 92:
 
 - Update ORBC_TPS_MIGRATED_PERMITS_TRG as a temporary stopgap to set company_id to null for all migrated permits, as we are not confident in the integrity of the client-company mapping data in TPS. This will allow the permits to be migrated successfully, and we can then run a data fix later to populate company_id for those permits where we have high confidence in the client-company mapping.
+
+### Version 93:
+
+- Updates to policy config to allow axle units to be added for power units and trailers. Add new trailer subtype. 
