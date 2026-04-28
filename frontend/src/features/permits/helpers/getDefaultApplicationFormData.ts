@@ -9,11 +9,6 @@ import {
   PERMIT_TYPES,
   PermitType,
 } from "../types/PermitType";
-import {
-  isQuarterlyPermit,
-  PERMIT_TYPES,
-  PermitType,
-} from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -24,7 +19,6 @@ import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
 import { DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE } from "../types/ConditionalLicensingFee";
-import { getDefaultVehicleConfiguration } from "./vehicles/configuration/getDefaultVehicleConfiguration";
 import { getDefaultVehicleConfiguration } from "./vehicles/configuration/getDefaultVehicleConfiguration";
 
 import {
@@ -288,13 +282,7 @@ export const getDefaultValues = (
       thirdPartyLiability: (
         [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
       ).includes(permitType)
-      thirdPartyLiability: (
-        [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
-      ).includes(permitType)
         ? getDefaultRequiredVal(
-            DEFAULT_THIRD_PARTY_LIABILITY,
-            applicationData?.permitData?.thirdPartyLiability,
-          )
             DEFAULT_THIRD_PARTY_LIABILITY,
             applicationData?.permitData?.thirdPartyLiability,
           )
@@ -302,14 +290,7 @@ export const getDefaultValues = (
       conditionalLicensingFee: (
         [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
       ).includes(permitType)
-      conditionalLicensingFee: (
-        [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
-      ).includes(permitType)
         ? getDefaultRequiredVal(
-            DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
-            applicationData?.permitData?.conditionalLicensingFee,
-          )
-        : null,
             DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
             applicationData?.permitData?.conditionalLicensingFee,
           )

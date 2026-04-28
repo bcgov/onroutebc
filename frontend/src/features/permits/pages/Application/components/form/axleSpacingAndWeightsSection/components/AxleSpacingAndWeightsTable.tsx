@@ -70,7 +70,7 @@ export const AxleSpacingAndWeightsTable = ({
                 Axle <br></br>Unit
                 <button
                   type="button"
-                  className="column__button"
+                  className="column__button column__button--help"
                   onClick={() => setIsHelpModalOpen(true)}
                 >
                   <FontAwesomeIcon
@@ -83,7 +83,7 @@ export const AxleSpacingAndWeightsTable = ({
                 No. of Axles{" "}
                 <button
                   type="button"
-                  className="column__button"
+                  className="column__button column__button--help"
                   onClick={() => setIsHelpModalOpen(true)}
                 >
                   <FontAwesomeIcon

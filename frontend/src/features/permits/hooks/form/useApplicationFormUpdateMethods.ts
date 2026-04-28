@@ -16,7 +16,6 @@ import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
-import { DEFAULT_AXLE_UNIT } from "../../../../common/constants/defaultAxleUnit";
 import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
 import { VehicleType } from "../../../manageVehicles/types/Vehicle";
 import { ConditionalLicensingFeeType } from "../../types/ConditionalLicensingFee";
