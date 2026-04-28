@@ -11,10 +11,12 @@ GO
 BEGIN TRANSACTION
 GO
 
+-- Delete statement for ORBC_TRAILER_TYPE is commented out due to FK constraints.
+-- Please execute it manually if needed. 
 -- Remove the newly added trailer subtype Platform Trailers - Wheelers
-DELETE FROM [dbo].[ORBC_TRAILER_TYPE]
-WHERE [TRAILER_TYPE] = N'PLATWHE'
-GO
+-- DELETE FROM [dbo].[ORBC_TRAILER_TYPE]
+-- WHERE [TRAILER_TYPE] = N'PLATWHE'
+-- GO
 
 -- Remove the newly added policy configuration
 DELETE FROM [dbo].[ORBC_POLICY_CONFIGURATION]
