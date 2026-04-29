@@ -1,4 +1,5 @@
-import { AxleUnit } from "../types/AxleUnit";
+import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/defaultAxleUnit";
+import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 import { getDefaultRequiredVal } from "./util";
 
 export const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
@@ -22,6 +23,25 @@ export const convertCentimetreValuesToMetres = (axleUnit: AxleUnit) => {
     interaxleSpacing: axleUnit.interaxleSpacing
       ? axleUnit.interaxleSpacing / 100
       : axleUnit.interaxleSpacing,
+  };
+};
+
+export const getDefaultAxleConfiguration = (
+  axleUnit: AxleUnit,
+): AxleConfiguration => {
+  return {
+    numberOfAxles: getDefaultRequiredVal(0, axleUnit.numberOfAxles),
+    axleSpread: getDefaultRequiredVal(undefined, axleUnit.axleSpread),
+    interaxleSpacing: getDefaultRequiredVal(
+      undefined,
+      axleUnit.interaxleSpacing,
+    ),
+    axleUnitWeight: getDefaultRequiredVal(0, axleUnit.axleUnitWeight),
+    numberOfTires: getDefaultRequiredVal(0, axleUnit.numberOfTires),
+    tireSize: getDefaultRequiredVal(
+      DEFAULT_TIRE_SIZE_OPTION.size,
+      axleUnit.tireSize,
+    ),
   };
 };
 

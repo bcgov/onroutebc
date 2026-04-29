@@ -1,4 +1,4 @@
-import { DEFAULT_AXLE_UNIT } from "../../../../../common/constants/defaultAxleUnit";
+import { DEFAULT_POWER_UNIT_AXLE_CONFIG } from "../../../../../common/constants/defaultAxleUnit";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { Nullable } from "../../../../../common/types/common";
 import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
@@ -8,12 +8,6 @@ export const getDefaultVehicleConfiguration = (
   permitType: PermitType,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>,
 ) => {
-  const defaultPowerUnitAxleConfiguration = [
-    DEFAULT_AXLE_UNIT,
-    { interaxleSpacing: null },
-    DEFAULT_AXLE_UNIT,
-  ];
-
   if (
     !(
       [
@@ -49,7 +43,7 @@ export const getDefaultVehicleConfiguration = (
         vehicleConfiguration?.overallLength,
       ),
       axleConfiguration: getDefaultRequiredVal(
-        defaultPowerUnitAxleConfiguration,
+        DEFAULT_POWER_UNIT_AXLE_CONFIG,
         vehicleConfiguration?.axleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
@@ -60,7 +54,7 @@ export const getDefaultVehicleConfiguration = (
     return {
       // by default, all power units have 2 axle units (1 axle unit with 1 axle, followed by an interaxle-spacing unit, followed by another axle unit with 1 axle)
       axleConfiguration: getDefaultRequiredVal(
-        defaultPowerUnitAxleConfiguration,
+        DEFAULT_POWER_UNIT_AXLE_CONFIG,
         vehicleConfiguration?.axleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),

@@ -7,7 +7,11 @@ import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails"
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
-import { AxleUnit } from "../../../../../../../common/types/AxleUnit";
+import {
+  AxleConfiguration,
+  AxleUnit,
+} from "../../../../../../../common/types/AxleUnit";
+import { BridgeCalculationResult } from "../../../../../../../common/types/BridgeCalculationResult";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
@@ -16,6 +20,7 @@ export const AxleSpacingAndWeightsSection = ({
   vehicleFormData,
   vehicleConfiguration,
   tireSizeOptions,
+  calculateBridge,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -25,6 +30,9 @@ export const AxleSpacingAndWeightsSection = ({
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
+  calculateBridge?: (
+    axleConfiguration: AxleConfiguration[],
+  ) => BridgeCalculationResult[];
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -59,6 +67,7 @@ export const AxleSpacingAndWeightsSection = ({
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          calculateBridge={calculateBridge}
         />
       </Box>
     </Box>

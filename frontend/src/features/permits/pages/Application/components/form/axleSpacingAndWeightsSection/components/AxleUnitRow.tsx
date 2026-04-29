@@ -13,6 +13,7 @@ export const AxleUnitRow = ({
   isTrailer,
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
+  axleUnitFailures = [],
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
@@ -23,6 +24,7 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
+  axleUnitFailures?: boolean[];
 }) => {
   const updateAxleUnit = (
     axleIndex: number,
@@ -56,9 +58,18 @@ export const AxleUnitRow = ({
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
 
+        const axleUnitFailure = getDefaultRequiredVal(
+          false,
+          axleUnitFailures[index],
+        );
+
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
-            <td className="row__label">
+            <td
+              className={`${
+                axleUnitFailure ? "row__label row__label--fail" : "row__label"
+              }`}
+            >
               {!isInteraxleSpacingRow && axleUnitNumberDisplay}
             </td>
             <td className="table__cell">
@@ -74,15 +85,21 @@ export const AxleUnitRow = ({
                         null,
                       );
 
-                      updateAxleUnit(
-                        index,
-                        "numberOfAxles",
-                        updatedNumberOfAxles,
+                      const updatedConfiguration = axleConfiguration.map(
+                        (currentAxleUnit, currentIndex) =>
+                          currentIndex === index
+                            ? {
+                                ...currentAxleUnit,
+                                numberOfAxles: updatedNumberOfAxles,
+                                axleSpread:
+                                  updatedNumberOfAxles === 1
+                                    ? null
+                                    : currentAxleUnit.axleSpread,
+                              }
+                            : currentAxleUnit,
                       );
 
-                      if (updatedNumberOfAxles === 1) {
-                        updateAxleUnit(index, "axleSpread", null);
-                      }
+                      onUpdateAxleConfiguration(updatedConfiguration);
                     },
                     maskFn: (numericVal) => numericVal.toFixed(0),
                   }}
