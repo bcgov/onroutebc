@@ -58,7 +58,10 @@ export const AxleUnitRow = ({
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
 
-        const axleUnitFailure = axleUnitFailures[index] ?? false;
+        const axleUnitFailure = getDefaultRequiredVal(
+          false,
+          axleUnitFailures[index],
+        );
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">

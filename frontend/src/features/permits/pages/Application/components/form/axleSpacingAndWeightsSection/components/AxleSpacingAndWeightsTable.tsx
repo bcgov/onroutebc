@@ -11,10 +11,12 @@ import {
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
-import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
+import {
+  AxleConfiguration,
+  AxleUnit,
+} from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
-import { usePolicyEngine } from "../../../../../../../policy/hooks/usePolicyEngine";
 import { Button } from "@mui/material";
 import {
   convertMetreValuesToCentimetres,
@@ -36,6 +38,7 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap,
   vehicleConfiguration,
   tireSizeOptions,
+  calculateBridge,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -44,14 +47,15 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
+  calculateBridge?: (
+    axleConfiguration: AxleConfiguration[],
+  ) => BridgeCalculationResult[];
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
-  const policyEngine = usePolicyEngine();
-
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
   const powerUnitAxleConfiguration = getDefaultRequiredVal(
@@ -162,7 +166,7 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = policyEngine?.calculateBridge(
+    const bridgeCalculationResults = calculateBridge?.(
       serializedAxleConfigurationData,
     );
 
@@ -315,7 +319,10 @@ export const AxleSpacingAndWeightsTable = ({
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
                 <AxleUnitRow
                   key={`${trailer.vehicleSubType}-${trailerIndex}`}
-                  axleConfiguration={trailer.axleConfiguration ?? []}
+                  axleConfiguration={getDefaultRequiredVal(
+                    [],
+                    trailer.axleConfiguration,
+                  )}
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
@@ -372,7 +379,7 @@ export const AxleSpacingAndWeightsTable = ({
               </span>
               {failedBridgeCalculationResults.map((failedResult, index) => (
                 <div key={index}>
-                  <p key={index} className="results__text results__text--fail">
+                  <p className="results__text results__text--fail">
                     <FontAwesomeIcon
                       icon={faCircleXmark}
                       className="results__icon results__icon--fail"

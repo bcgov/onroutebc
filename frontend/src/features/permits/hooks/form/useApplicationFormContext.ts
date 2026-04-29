@@ -20,6 +20,7 @@ import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequenc
 import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
+import { useCalculateBridge } from "../useCalculateBridge";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -268,6 +269,8 @@ export const useApplicationFormContext = () => {
 
   const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
+  const { calculateBridge } = useCalculateBridge(policyEngine);
+
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -330,6 +333,7 @@ export const useApplicationFormContext = () => {
     enableLoadedGVW,
     enableNetWeight,
     tireSizeOptions,
+    calculateBridge,
     onLeave,
     onSave,
     onCancel,
