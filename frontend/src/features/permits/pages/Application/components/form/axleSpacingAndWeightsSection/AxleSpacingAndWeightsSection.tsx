@@ -39,14 +39,14 @@ export const AxleSpacingAndWeightsSection = ({
   ) => BridgeCalculationResult[];
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
-    commodityType?: string | null,
-    powerUnitSubtype?: string | null,
+    commodityType?: Nullable<string>,
+    powerUnitSubtype?: Nullable<string>,
   ) => boolean;
   canAddAxleUnitsToTrailer?: (
     permitType: PermitType,
-    commodityType?: string | null,
-    powerUnitSubtype?: string | null,
-    trailerSubtype?: string | null,
+    commodityType?: Nullable<string>,
+    powerUnitSubtype?: Nullable<string>,
+    trailerSubtype?: Nullable<string>,
   ) => boolean;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (

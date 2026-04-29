@@ -7,8 +7,8 @@ export const useCanAddAxleUnits = (policyEngine: Nullable<Policy>) => {
     canAddAxleUnitsToPowerUnit: policyEngine
       ? (
           permitType: PermitType,
-          commodityType?: string | null,
-          powerUnitSubtype?: string | null,
+          commodityType?: Nullable<string>,
+          powerUnitSubtype?: Nullable<string>,
         ) =>
           policyEngine.canAddAxleUnitsToPowerUnit(
             permitType,
@@ -19,9 +19,9 @@ export const useCanAddAxleUnits = (policyEngine: Nullable<Policy>) => {
     canAddAxleUnitsToTrailer: policyEngine
       ? (
           permitType: PermitType,
-          commodityType?: string | null,
-          powerUnitSubtype?: string | null,
-          trailerSubtype?: string | null,
+          commodityType?: Nullable<string>,
+          powerUnitSubtype?: Nullable<string>,
+          trailerSubtype?: Nullable<string>,
         ) =>
           policyEngine.canAddAxleUnitsToTrailer(
             permitType,
