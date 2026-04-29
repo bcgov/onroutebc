@@ -12,3 +12,14 @@ export const DEFAULT_AXLE_UNIT: AxleUnit = {
   axleSpread: null,
   axleUnitWeight: null,
 };
+
+export const DEFAULT_POWER_UNIT_AXLE_CONFIG = [
+  DEFAULT_AXLE_UNIT,
+  { interaxleSpacing: null },
+  DEFAULT_AXLE_UNIT,
+];
+
+export const DEFAULT_TRAILER_AXLE_CONFIG = [
+  { interaxleSpacing: null },
+  DEFAULT_AXLE_UNIT,
+];
