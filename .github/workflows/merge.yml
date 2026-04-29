@@ -30,7 +30,7 @@ jobs:
       - name: Get PR Number From Event
         if: github.event_name == 'push'
         id: pr_no
-        uses: bcgov/action-get-pr@v0.1.0
+        uses: bcgov/action-get-pr@v0.1.1
       - name: PR Number
         id: pr
         run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
@@ -68,7 +68,7 @@ jobs:
         package: [dops, vehicles, frontend, scheduler, policy, public]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@v5
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
