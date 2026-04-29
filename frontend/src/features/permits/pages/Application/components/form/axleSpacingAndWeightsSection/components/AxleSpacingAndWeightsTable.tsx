@@ -31,17 +31,24 @@ import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/b
 import { BridgeCalculationResult } from "../../../../../../../../common/types/BridgeCalculationResult";
 import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
 import { AxleUnitResetModal } from "./AxleUnitResetModal";
+import { PermitType } from "../../../../../../types/PermitType";
 
 export const AxleSpacingAndWeightsTable = ({
+  permitType,
+  selectedCommodityType,
   powerUnitSubtypeNamesMap,
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
   tireSizeOptions,
   calculateBridge,
+  canAddAxleUnitsToPowerUnit,
+  canAddAxleUnitsToTrailer,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
+  permitType: PermitType;
+  selectedCommodityType?: Nullable<string>;
   powerUnitSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
@@ -50,6 +57,17 @@ export const AxleSpacingAndWeightsTable = ({
   calculateBridge?: (
     axleConfiguration: AxleConfiguration[],
   ) => BridgeCalculationResult[];
+  canAddAxleUnitsToPowerUnit?: (
+    permitType: PermitType,
+    commodityType?: string | null,
+    powerUnitSubtype?: string | null,
+  ) => boolean;
+  canAddAxleUnitsToTrailer?: (
+    permitType: PermitType,
+    commodityType?: string | null,
+    powerUnitSubtype?: string | null,
+    trailerSubtype?: string | null,
+  ) => boolean;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -314,6 +332,11 @@ export const AxleSpacingAndWeightsTable = ({
                 0,
                 false,
               )}
+              canAddAxleUnits={canAddAxleUnitsToPowerUnit?.(
+                permitType,
+                selectedCommodityType,
+                vehicleFormData.vehicleSubType,
+              )}
             />
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
@@ -337,6 +360,12 @@ export const AxleSpacingAndWeightsTable = ({
                     getDefaultRequiredVal([], trailer.axleConfiguration),
                     getAxleUnitNumber(trailerIndex),
                     true,
+                  )}
+                  canAddAxleUnits={canAddAxleUnitsToTrailer?.(
+                    permitType,
+                    selectedCommodityType,
+                    vehicleFormData.vehicleSubType,
+                    trailer.vehicleSubType,
                   )}
                 />
               ) : null,

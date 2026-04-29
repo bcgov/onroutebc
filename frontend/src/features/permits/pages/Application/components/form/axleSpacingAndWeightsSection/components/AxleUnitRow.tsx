@@ -20,6 +20,7 @@ export const AxleUnitRow = ({
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
   axleUnitFailures = [],
+  canAddAxleUnits,
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
@@ -31,6 +32,7 @@ export const AxleUnitRow = ({
     size: number;
   }[];
   axleUnitFailures?: boolean[];
+  canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (
     axleIndex: number,
@@ -103,7 +105,7 @@ export const AxleUnitRow = ({
                 <div className="row__label-content">
                   <span>{axleUnitNumberDisplay}</span>
 
-                  {isLastAxleUnitRow ? (
+                  {isLastAxleUnitRow && canAddAxleUnits ? (
                     <div className="row__actions">
                       <Tooltip title="Add Axle Unit">
                         <IconButton

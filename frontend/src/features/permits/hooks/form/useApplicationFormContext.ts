@@ -21,6 +21,7 @@ import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 import { useCalculateBridge } from "../useCalculateBridge";
+import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -271,6 +272,9 @@ export const useApplicationFormContext = () => {
 
   const { calculateBridge } = useCalculateBridge(policyEngine);
 
+  const { canAddAxleUnitsToPowerUnit, canAddAxleUnitsToTrailer } =
+    useCanAddAxleUnits(policyEngine);
+
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -326,7 +330,6 @@ export const useApplicationFormContext = () => {
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     selectedTrailers,
-    selectedTrailers,
     vehicleConfiguration,
     thirdPartyLiability,
     conditionalLicensingFee,
@@ -335,6 +338,8 @@ export const useApplicationFormContext = () => {
     enableNetWeight,
     tireSizeOptions,
     calculateBridge,
+    canAddAxleUnitsToPowerUnit,
+    canAddAxleUnitsToTrailer,
     onLeave,
     onSave,
     onCancel,
