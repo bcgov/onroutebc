@@ -65,13 +65,41 @@
         padding: 0.75rem 1rem;
       }
     }
+
+    &__label-content {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    &__actions {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
     &__button {
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 1.5rem;
       color: $bc-black;
-      transform: translateY(3px);
+      width: 1.5rem;
+      height: 1.5rem;
+      
+      &--help {
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+        font-size: 1.5rem;
+        transform: translateY(3px);
+      }
+      &--add, &--remove {
+        border: 2px solid $bc-black;
+        border-radius: .25rem;
+        font-size: 1rem;
+
+        &:hover, &:focus {
+          background-color: $bc-border-grey;
+          border: 2px solid $bc-black;
+        }
+      }
     }
   }
 

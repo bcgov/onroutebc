@@ -1,10 +1,16 @@
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { Autocomplete } from "../../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
-import { DEFAULT_TIRE_SIZE_OPTION } from "../../../../../../../../common/constants/defaultAxleUnit";
+import { IconButton, Tooltip } from "@mui/material";
+import {
+  DEFAULT_AXLE_UNIT,
+  DEFAULT_TIRE_SIZE_OPTION,
+} from "../../../../../../../../common/constants/defaultAxleUnit";
 
 export const AxleUnitRow = ({
   axleConfiguration,
@@ -14,6 +20,7 @@ export const AxleUnitRow = ({
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
   axleUnitFailures = [],
+  canAddAxleUnits,
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
@@ -25,6 +32,7 @@ export const AxleUnitRow = ({
     size: number;
   }[];
   axleUnitFailures?: boolean[];
+  canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (
     axleIndex: number,
@@ -36,6 +44,25 @@ export const AxleUnitRow = ({
     );
     onUpdateAxleConfiguration(updatedConfiguration);
   };
+
+  const addAxleUnit = () => {
+    const newAxleConfiguration = [
+      ...axleConfiguration,
+      { interaxleSpacing: null },
+      DEFAULT_AXLE_UNIT,
+    ];
+    onUpdateAxleConfiguration(newAxleConfiguration);
+  };
+
+  const removeAxleUnit = () => {
+    if (axleConfiguration.length >= 4) {
+      // Remove the last two items (interaxle spacing + axle unit pair)
+      const newAxleConfiguration = axleConfiguration.slice(0, -2);
+      onUpdateAxleConfiguration(newAxleConfiguration);
+    }
+  };
+
+  const defaultAxleUnitCount = isTrailer ? 1 : 2;
 
   return (
     <>
@@ -54,6 +81,10 @@ export const AxleUnitRow = ({
         const axleUnitNumberDisplay = !isInteraxleSpacingRow
           ? axleUnitNumber + Math.floor(index / 2) + 1
           : 0;
+        const axleUnitCount = Math.ceil(axleConfiguration.length / 2);
+        const isLastAxleUnitRow =
+          !isInteraxleSpacingRow && index === axleConfiguration.length - 1;
+        const canRemoveLastAxleUnit = axleUnitCount > defaultAxleUnitCount;
 
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = numberOfAxles === 1;
@@ -70,7 +101,42 @@ export const AxleUnitRow = ({
                 axleUnitFailure ? "row__label row__label--fail" : "row__label"
               }`}
             >
-              {!isInteraxleSpacingRow && axleUnitNumberDisplay}
+              {!isInteraxleSpacingRow && (
+                <div className="row__label-content">
+                  <span>{axleUnitNumberDisplay}</span>
+
+                  {isLastAxleUnitRow && canAddAxleUnits ? (
+                    <div className="row__actions">
+                      <Tooltip title="Add Axle Unit">
+                        <IconButton
+                          onClick={addAxleUnit}
+                          className="row__button row__button--add"
+                          aria-label="Add axle unit"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            className="button__icon"
+                          />
+                        </IconButton>
+                      </Tooltip>
+                      {canRemoveLastAxleUnit ? (
+                        <Tooltip title="Remove Axle Unit">
+                          <IconButton
+                            onClick={removeAxleUnit}
+                            className="row__button row__button--remove"
+                            aria-label={`Remove axle unit ${axleUnitNumber}`}
+                          >
+                            <FontAwesomeIcon
+                              icon={faMinus}
+                              className="button__icon"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </td>
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
