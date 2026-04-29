@@ -73,7 +73,7 @@
     "nest-winston": "^1.10.2",
     "nestjs-cls": "^6.2.0",
     "nestjs-typeorm-paginate": "^4.1.0",
-    "onroute-policy-engine": "^2.3.1",
+    "onroute-policy-engine": "^2.4.0",
     "opossum": "^9.0.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
