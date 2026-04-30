@@ -15,16 +15,20 @@ import { BridgeCalculationResult } from "../../../../../../../common/types/Bridg
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
+  selectedCommodityType,
   powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
   tireSizeOptions,
   calculateBridge,
+  canAddAxleUnitsToPowerUnit,
+  canAddAxleUnitsToTrailer,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
   permitType: PermitType;
+  selectedCommodityType?: Nullable<string>;
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
@@ -33,6 +37,17 @@ export const AxleSpacingAndWeightsSection = ({
   calculateBridge?: (
     axleConfiguration: AxleConfiguration[],
   ) => BridgeCalculationResult[];
+  canAddAxleUnitsToPowerUnit?: (
+    permitType: PermitType,
+    commodityType?: Nullable<string>,
+    powerUnitSubtype?: Nullable<string>,
+  ) => boolean;
+  canAddAxleUnitsToTrailer?: (
+    permitType: PermitType,
+    commodityType?: Nullable<string>,
+    powerUnitSubtype?: Nullable<string>,
+    trailerSubtype?: Nullable<string>,
+  ) => boolean;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -58,16 +73,20 @@ export const AxleSpacingAndWeightsSection = ({
       </Box>
       <Box className="axle-spacing-and-weights-section-section__body">
         <AxleSpacingAndWeightsTable
+          permitType={permitType}
+          selectedCommodityType={selectedCommodityType}
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
           tireSizeOptions={tireSizeOptions}
+          calculateBridge={calculateBridge}
+          canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
+          canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
-          calculateBridge={calculateBridge}
         />
       </Box>
     </Box>
