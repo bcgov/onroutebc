@@ -27,9 +27,12 @@ import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_POWER_UNIT_AXLE_CONFIG,
 } from "../../../common/constants/defaultAxleUnit";
+import { useCalculateBridge } from "../../permits/hooks/useCalculateBridge";
 
 export const BridgeFormulaCalculationTool = () => {
   const policyEngine = usePolicyEngine();
+
+  const { calculateBridge } = useCalculateBridge(policyEngine);
 
   const { control, handleSubmit, watch, setValue, reset, formState } = useForm<{
     axleUnits: AxleUnit[];
@@ -109,9 +112,7 @@ export const BridgeFormulaCalculationTool = () => {
       getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = policyEngine?.calculateBridge(
-      serializedAxleUnitData,
-    );
+    const bridgeCalculationResults = calculateBridge?.(serializedAxleUnitData);
 
     if (bridgeCalculationResults) {
       setBridgeCalculationResults(bridgeCalculationResults);

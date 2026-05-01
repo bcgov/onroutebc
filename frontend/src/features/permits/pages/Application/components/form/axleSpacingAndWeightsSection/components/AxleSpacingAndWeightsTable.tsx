@@ -41,7 +41,7 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap,
   vehicleConfiguration,
   tireSizeOptions,
-  calculateBridge,
+  runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   onUpdatePowerUnitAxleConfiguration,
@@ -54,8 +54,12 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
-  calculateBridge?: (
+  runAxleCalculation?: (
+    permitType: PermitType,
+    vehicleDetails: PermitVehicleDetails,
+    vehicleConfiguration: PermitVehicleConfiguration,
     axleConfiguration: AxleConfiguration[],
+    licensedGVW: number,
   ) => BridgeCalculationResult[];
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
@@ -184,8 +188,12 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = calculateBridge?.(
+    const bridgeCalculationResults = runAxleCalculation?.(
+      permitType,
+      vehicleFormData,
+      vehicleConfiguration as PermitVehicleConfiguration,
       serializedAxleConfigurationData,
+      calculateGCVW(mergedAxleConfigurationData),
     );
 
     if (bridgeCalculationResults) {
