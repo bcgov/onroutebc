@@ -31,7 +31,7 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
-  axleUnitFailures?: boolean[];
+  axleUnitFailures?: Nullable<boolean>[];
   canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (

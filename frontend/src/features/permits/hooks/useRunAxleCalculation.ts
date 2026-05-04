@@ -6,6 +6,7 @@ import { PermitVehicleConfiguration } from "../types/PermitVehicleConfiguration"
 import { getDefaultVehicleConfiguration } from "../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../types/PermitType";
 import { VehicleConfiguration } from "onroute-policy-engine/types";
+import { AxleCalcResults } from "../../../common/types/AxleCalcResults";
 
 export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
   return {
@@ -16,14 +17,14 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
           vehicleConfiguration: PermitVehicleConfiguration,
           axleConfiguration: AxleConfiguration[],
           licensedGVW: number,
-        ) => {
+        ): AxleCalcResults => {
           const { getSimplifiedVehicleConfiguration } = policyEngine;
           const serializedVehicleConfiguration = getDefaultVehicleConfiguration(
             permitType,
             vehicleConfiguration,
           );
 
-          const results = policyEngine.runAxleCalculation(
+          const response = policyEngine.runAxleCalculation(
             getSimplifiedVehicleConfiguration(
               vehicleDetails,
               serializedVehicleConfiguration as VehicleConfiguration,
@@ -31,7 +32,7 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             axleConfiguration,
             licensedGVW,
           );
-          return results.results;
+          return response;
         }
       : undefined,
   };
