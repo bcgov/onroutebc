@@ -12,6 +12,7 @@ import {
   AxleUnit,
 } from "../../../../../../../common/types/AxleUnit";
 import { BridgeCalculationResult } from "../../../../../../../common/types/BridgeCalculationResult";
+import { AxleCalcResults } from "../../../../../../../common/types/AxleCalcResults";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
@@ -22,6 +23,7 @@ export const AxleSpacingAndWeightsSection = ({
   vehicleConfiguration,
   tireSizeOptions,
   calculateBridge,
+  runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   onUpdatePowerUnitAxleConfiguration,
@@ -37,6 +39,13 @@ export const AxleSpacingAndWeightsSection = ({
   calculateBridge?: (
     axleConfiguration: AxleConfiguration[],
   ) => BridgeCalculationResult[];
+  runAxleCalculation?: (
+    permitType: PermitType,
+    vehicleDetails: PermitVehicleDetails,
+    vehicleConfiguration: PermitVehicleConfiguration,
+    axleConfiguration: AxleConfiguration[],
+    licensedGVW: number,
+  ) => AxleCalcResults;
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
     commodityType?: Nullable<string>,
@@ -81,6 +90,7 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleConfiguration={vehicleConfiguration}
           tireSizeOptions={tireSizeOptions}
           calculateBridge={calculateBridge}
+          runAxleCalculation={runAxleCalculation}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           onUpdatePowerUnitAxleConfiguration={

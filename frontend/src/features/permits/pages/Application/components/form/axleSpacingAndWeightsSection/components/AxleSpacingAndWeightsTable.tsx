@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
@@ -32,6 +33,7 @@ import { BridgeCalculationResult } from "../../../../../../../../common/types/Br
 import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
 import { AxleUnitResetModal } from "./AxleUnitResetModal";
 import { PermitType } from "../../../../../../types/PermitType";
+import { AxleCalcResults } from "../../../../../../../../common/types/AxleCalcResults";
 
 export const AxleSpacingAndWeightsTable = ({
   permitType,
@@ -42,6 +44,7 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleConfiguration,
   tireSizeOptions,
   calculateBridge,
+  runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   onUpdatePowerUnitAxleConfiguration,
@@ -57,6 +60,13 @@ export const AxleSpacingAndWeightsTable = ({
   calculateBridge?: (
     axleConfiguration: AxleConfiguration[],
   ) => BridgeCalculationResult[];
+  runAxleCalculation?: (
+    permitType: PermitType,
+    vehicleDetails: PermitVehicleDetails,
+    vehicleConfiguration: PermitVehicleConfiguration,
+    axleConfiguration: AxleConfiguration[],
+    licensedGVW: number,
+  ) => AxleCalcResults;
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
     commodityType?: Nullable<string>,
@@ -155,7 +165,7 @@ export const AxleSpacingAndWeightsTable = ({
     }, 0);
   };
 
-  const calculateBridgeFormula = () => {
+  const handleCalculate = () => {
     setShowValidationBanner(false);
 
     // Merge all axle configurations from power unit and trailers
@@ -191,6 +201,18 @@ export const AxleSpacingAndWeightsTable = ({
     if (bridgeCalculationResults) {
       setBridgeCalculationResults(bridgeCalculationResults);
       setTotalGCVW(calculateGCVW(mergedAxleConfigurationData));
+    }
+
+    const axleCalcResults = runAxleCalculation?.(
+      permitType,
+      vehicleFormData,
+      vehicleConfiguration as PermitVehicleConfiguration,
+      serializedAxleConfigurationData,
+      calculateGCVW(mergedAxleConfigurationData),
+    );
+
+    if (axleCalcResults) {
+      console.log({ axleCalcResults });
     }
   };
 
@@ -389,7 +411,7 @@ export const AxleSpacingAndWeightsTable = ({
         </Button>
         <Button
           variant="contained"
-          onClick={calculateBridgeFormula}
+          onClick={handleCalculate}
           className="button button--submit"
         >
           Calculate

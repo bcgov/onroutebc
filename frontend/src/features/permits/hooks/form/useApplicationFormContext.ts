@@ -21,6 +21,7 @@ import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 import { useCalculateBridge } from "../useCalculateBridge";
+import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 
 export const useApplicationFormContext = () => {
@@ -272,6 +273,8 @@ export const useApplicationFormContext = () => {
 
   const { calculateBridge } = useCalculateBridge(policyEngine);
 
+  const { runAxleCalculation } = useRunAxleCalculation(policyEngine);
+
   const { canAddAxleUnitsToPowerUnit, canAddAxleUnitsToTrailer } =
     useCanAddAxleUnits(policyEngine);
 
@@ -338,6 +341,7 @@ export const useApplicationFormContext = () => {
     enableNetWeight,
     tireSizeOptions,
     calculateBridge,
+    runAxleCalculation,
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     onLeave,
