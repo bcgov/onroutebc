@@ -49,8 +49,7 @@ export const EMPTY_PERMIT_TYPE_SELECT = "Select";
 export const TERM_PERMIT_LIST: PermitType[] = [
   PERMIT_TYPES.TROS,
   PERMIT_TYPES.TROW,
-  /* TODO uncomment this when required */
-  // PERMIT_TYPES.HC,
+  PERMIT_TYPES.HC,
 ];
 
 export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
