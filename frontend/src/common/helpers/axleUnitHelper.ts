@@ -1,3 +1,4 @@
+import { VehicleInConfiguration } from "../../features/permits/types/PermitVehicleConfiguration";
 import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/defaultAxleUnit";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 import { getDefaultRequiredVal } from "./util";
@@ -77,4 +78,22 @@ export const unmergeInteraxleSpacingRows = (
   }
 
   return unmerged;
+};
+export const combineAxleConfigurations = (
+  powerUnitAxleConfiguration: AxleUnit[],
+  trailers: VehicleInConfiguration[],
+) => {
+  const powerUnit = powerUnitAxleConfiguration.map((axle) => ({
+    ...axle,
+    vehicleIndex: 0,
+  }));
+
+  const trailerAxles = trailers.flatMap((trailer, trailerIndex) =>
+    trailer?.axleConfiguration?.map((axle) => ({
+      ...axle,
+      vehicleIndex: trailerIndex + 1,
+    })),
+  );
+
+  return [...powerUnit, ...trailerAxles];
 };

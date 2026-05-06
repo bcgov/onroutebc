@@ -20,6 +20,7 @@ import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helper
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { Button } from "@mui/material";
 import {
+  combineAxleConfigurations,
   convertMetreValuesToCentimetres,
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
@@ -179,6 +180,8 @@ export const AxleSpacingAndWeightsTable = ({
       }
       return [];
     });
+    console.log(combineAxleConfigurations(mergedPowerUnit, trailers));
+
     const mergedAxleConfigurationData = [...mergedPowerUnit, ...mergedTrailers];
 
     if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
