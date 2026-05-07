@@ -20,6 +20,7 @@ export const AxleUnitRow = ({
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
   axleUnitFailures = [],
+  axleUnitFieldFailures = [],
   canAddAxleUnits,
 }: {
   axleConfiguration: AxleUnit[];
@@ -32,6 +33,14 @@ export const AxleUnitRow = ({
     size: number;
   }[];
   axleUnitFailures?: boolean[];
+  axleUnitFieldFailures?: Array<
+    Partial<
+      Record<
+        "numberOfAxles" | "numberOfTires" | "tireSize" | "interaxleSpacing" | "axleSpread" | "axleUnitWeight",
+        boolean
+      >
+    >
+  >;
   canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (
@@ -87,11 +96,16 @@ export const AxleUnitRow = ({
         const canRemoveLastAxleUnit = axleUnitCount > defaultAxleUnitCount;
 
         const numberOfAxles = axleUnit?.numberOfAxles;
-        const disableAxleSpread = numberOfAxles === 1;
+        const disableAxleSpread = getDefaultRequiredVal(0, numberOfAxles) <= 1;
 
         const axleUnitFailure = getDefaultRequiredVal(
           false,
           axleUnitFailures[index],
+        );
+
+        const fieldFailures = getDefaultRequiredVal(
+          {},
+          axleUnitFieldFailures[index],
         );
 
         return (
@@ -143,7 +157,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      fieldFailures.numberOfAxles ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
                     onBlur: ({ target: { value } }) => {
                       const updatedNumberOfAxles = convertToNumberIfValid(
@@ -177,7 +193,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      fieldFailures.numberOfTires ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
@@ -196,7 +214,9 @@ export const AxleUnitRow = ({
                 <Autocomplete
                   classes={{ root: "table__input-container" }}
                   autocompleteProps={{
-                    className: "table__input table__input--select",
+                    className: `table__input table__input--select ${
+                      fieldFailures.tireSize ? "table__input--fail" : ""
+                    }`,
                     clearIcon: null,
                     options: tireSizeOptions,
                     value: getDefaultRequiredVal(
@@ -224,7 +244,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      fieldFailures.interaxleSpacing ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.interaxleSpacing,
@@ -245,7 +267,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      fieldFailures.axleSpread ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.axleSpread),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
@@ -265,7 +289,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      fieldFailures.axleUnitWeight ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.axleUnitWeight,

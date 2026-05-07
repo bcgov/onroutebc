@@ -23,12 +23,13 @@
     "jsx": "react-jsx",
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "eslint.config.cjs",
     "postcss.config.ts",
     "src",
     "public"
-  ]
+  ],
 }

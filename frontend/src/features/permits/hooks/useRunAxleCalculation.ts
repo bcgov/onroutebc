@@ -41,8 +41,6 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             licensedGVW,
             // { permitTypeId: "STOW", commodityId: "XXXXXXX" },
           );
-
-          console.log({ axleCalcResults: results });
           return results;
         }
       : undefined,

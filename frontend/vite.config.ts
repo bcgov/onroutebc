@@ -16,24 +16,15 @@ export default defineConfig({
     open: true,
   },
   optimizeDeps: {
-    include: [
-      "@emotion/react",
-      "@emotion/styled",
-      "@mui/material/Tooltip"
-    ]
+    include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
   },
-  plugins: [
-    eslint(),
-    react(),
-    viteTsconfigPaths(),
-    svgrPlugin(),
-  ],
+  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   css: {
     postcss: {
       plugins: [
         autoprefixer({
           remove: false,
-        }), 
+        }),
       ],
     },
   },
@@ -43,7 +34,7 @@ export default defineConfig({
     setupFiles: ["./src/setupTests.ts"],
     server: {
       deps: {
-        inline: ["vitest-canvas-mock"]
+        inline: ["vitest-canvas-mock"],
       },
     },
     coverage: {
@@ -54,5 +45,8 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     outDir: "build",
+  },
+  resolve: {
+    preserveSymlinks: true,
   },
 });

@@ -12,7 +12,7 @@ import {
   AxleUnit,
 } from "../../../../../../../common/types/AxleUnit";
 import { BridgeCalculationResult } from "../../../../../../../common/types/BridgeCalculationResult";
-import { AxleCalcResults } from "../../../../../../../common/types/AxleCalcResults";
+import { AxleCalculationResults } from "../../../../../../../common/types/AxleCalculationResult";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
@@ -45,7 +45,7 @@ export const AxleSpacingAndWeightsSection = ({
     vehicleConfiguration: PermitVehicleConfiguration,
     axleConfiguration: AxleConfiguration[],
     licensedGVW: number,
-  ) => AxleCalcResults;
+  ) => AxleCalculationResults;
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
     commodityType?: Nullable<string>,

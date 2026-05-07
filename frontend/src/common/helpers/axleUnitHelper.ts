@@ -43,6 +43,7 @@ export const getDefaultAxleConfiguration = (
       DEFAULT_TIRE_SIZE_OPTION.size,
       axleUnit.tireSize,
     ),
+    vehicleIndex: getDefaultRequiredVal(undefined, axleUnit.vehicleIndex),
   };
 };
 
@@ -82,18 +83,21 @@ export const unmergeInteraxleSpacingRows = (
 export const combineAxleConfigurations = (
   powerUnitAxleConfiguration: AxleUnit[],
   trailers: VehicleInConfiguration[],
-) => {
-  const powerUnit = powerUnitAxleConfiguration.map((axle) => ({
+): AxleUnit[] => {
+  const powerUnitAxles = powerUnitAxleConfiguration.map((axle) => ({
     ...axle,
     vehicleIndex: 0,
   }));
 
   const trailerAxles = trailers.flatMap((trailer, trailerIndex) =>
-    trailer?.axleConfiguration?.map((axle) => ({
-      ...axle,
-      vehicleIndex: trailerIndex + 1,
-    })),
+    getDefaultRequiredVal(
+      [],
+      trailer.axleConfiguration?.map((axle) => ({
+        ...axle,
+        vehicleIndex: trailerIndex + 1,
+      })),
+    ),
   );
 
-  return [...powerUnit, ...trailerAxles];
+  return [...powerUnitAxles, ...trailerAxles];
 };
