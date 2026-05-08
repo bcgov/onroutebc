@@ -39,7 +39,6 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             simplifiedVehicleConfiguration,
             axleConfiguration,
             licensedGVW,
-            // { permitTypeId: "STOW", commodityId: "XXXXXXX" },
           );
           return results;
         }

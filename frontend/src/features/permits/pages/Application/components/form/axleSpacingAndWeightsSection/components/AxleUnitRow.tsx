@@ -11,6 +11,10 @@ import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_TIRE_SIZE_OPTION,
 } from "../../../../../../../../common/constants/defaultAxleUnit";
+import {
+  POLICY_CHECK_ID_TYPES,
+  PolicyCheckIdType,
+} from "../../../../../../../../common/types/AxleCalculationResult";
 
 export const AxleUnitRow = ({
   axleConfiguration,
@@ -19,8 +23,8 @@ export const AxleUnitRow = ({
   isTrailer,
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
-  axleUnitFailures = [],
-  axleUnitFieldFailures = [],
+  bridgeFormulaFailures = [],
+  axleCalculationFailures = [],
   canAddAxleUnits,
 }: {
   axleConfiguration: AxleUnit[];
@@ -32,15 +36,8 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
-  axleUnitFailures?: boolean[];
-  axleUnitFieldFailures?: Array<
-    Partial<
-      Record<
-        "numberOfAxles" | "numberOfTires" | "tireSize" | "interaxleSpacing" | "axleSpread" | "axleUnitWeight",
-        boolean
-      >
-    >
-  >;
+  bridgeFormulaFailures?: boolean[];
+  axleCalculationFailures?: Array<Partial<Record<PolicyCheckIdType, boolean>>>;
   canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (
@@ -98,21 +95,23 @@ export const AxleUnitRow = ({
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = getDefaultRequiredVal(0, numberOfAxles) <= 1;
 
-        const axleUnitFailure = getDefaultRequiredVal(
+        const bridgeFormulaFailure = getDefaultRequiredVal(
           false,
-          axleUnitFailures[index],
+          bridgeFormulaFailures[index],
         );
 
-        const fieldFailures = getDefaultRequiredVal(
+        const axleCalculationFailure = getDefaultRequiredVal(
           {},
-          axleUnitFieldFailures[index],
+          axleCalculationFailures[index],
         );
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
             <td
               className={`${
-                axleUnitFailure ? "row__label row__label--fail" : "row__label"
+                bridgeFormulaFailure
+                  ? "row__label row__label--fail"
+                  : "row__label"
               }`}
             >
               {!isInteraxleSpacingRow && (
@@ -158,7 +157,11 @@ export const AxleUnitRow = ({
                   classes={{ root: "table__input-container" }}
                   inputProps={{
                     className: `table__input ${
-                      fieldFailures.numberOfAxles ? "table__input--fail" : ""
+                      axleCalculationFailure[
+                        POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES
+                      ]
+                        ? "table__input--fail"
+                        : ""
                     }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
                     onBlur: ({ target: { value } }) => {
@@ -174,7 +177,10 @@ export const AxleUnitRow = ({
                                 ...currentAxleUnit,
                                 numberOfAxles: updatedNumberOfAxles,
                                 axleSpread:
-                                  updatedNumberOfAxles === 1
+                                  getDefaultRequiredVal(
+                                    0,
+                                    updatedNumberOfAxles,
+                                  ) <= 1
                                     ? null
                                     : currentAxleUnit.axleSpread,
                               }
@@ -193,9 +199,7 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: `table__input ${
-                      fieldFailures.numberOfTires ? "table__input--fail" : ""
-                    }`,
+                    className: "table__input",
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
@@ -214,9 +218,7 @@ export const AxleUnitRow = ({
                 <Autocomplete
                   classes={{ root: "table__input-container" }}
                   autocompleteProps={{
-                    className: `table__input table__input--select ${
-                      fieldFailures.tireSize ? "table__input--fail" : ""
-                    }`,
+                    className: "table__input",
                     clearIcon: null,
                     options: tireSizeOptions,
                     value: getDefaultRequiredVal(
@@ -244,9 +246,7 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: `table__input ${
-                      fieldFailures.interaxleSpacing ? "table__input--fail" : ""
-                    }`,
+                    className: "table__input",
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.interaxleSpacing,
@@ -267,9 +267,7 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: `table__input ${
-                      fieldFailures.axleSpread ? "table__input--fail" : ""
-                    }`,
+                    className: "table__input",
                     value: getDefaultRequiredVal(null, axleUnit?.axleSpread),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
@@ -289,9 +287,7 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: `table__input ${
-                      fieldFailures.axleUnitWeight ? "table__input--fail" : ""
-                    }`,
+                    className: "table__input",
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.axleUnitWeight,

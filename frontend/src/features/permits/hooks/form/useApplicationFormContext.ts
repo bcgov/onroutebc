@@ -20,7 +20,6 @@ import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequenc
 import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
-import { useCalculateBridge } from "../useCalculateBridge";
 import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 
@@ -271,8 +270,6 @@ export const useApplicationFormContext = () => {
 
   const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
-  const { calculateBridge } = useCalculateBridge(policyEngine);
-
   const { runAxleCalculation } = useRunAxleCalculation(policyEngine);
 
   const { canAddAxleUnitsToPowerUnit, canAddAxleUnitsToTrailer } =
@@ -340,7 +337,6 @@ export const useApplicationFormContext = () => {
     enableLoadedGVW,
     enableNetWeight,
     tireSizeOptions,
-    calculateBridge,
     runAxleCalculation,
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,

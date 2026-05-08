@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
@@ -30,14 +29,13 @@ import {
   DEFAULT_TRAILER_AXLE_CONFIG,
 } from "../../../../../../../../common/constants/defaultAxleUnit";
 import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
-import { BridgeCalculationResult } from "../../../../../../../../common/types/BridgeCalculationResult";
-import { getFailedResultText } from "../../../../../../../../common/helpers/bridgeCalculationHelper";
 import { AxleUnitResetModal } from "./AxleUnitResetModal";
 import { PermitType } from "../../../../../../types/PermitType";
 import {
   AxleCalculationResult,
   AxleGroupPolicyCheckResult,
-  AXLE_CALCULATION_RESULT_ID_TYPES,
+  POLICY_CHECK_ID_TYPES,
+  PolicyCheckIdType,
 } from "../../../../../../../../common/types/AxleCalculationResult";
 
 export const AxleSpacingAndWeightsTable = ({
@@ -48,7 +46,6 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap,
   vehicleConfiguration,
   tireSizeOptions,
-  calculateBridge,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
@@ -62,9 +59,6 @@ export const AxleSpacingAndWeightsTable = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
-  calculateBridge?: (
-    axleConfiguration: AxleConfiguration[],
-  ) => BridgeCalculationResult[];
   runAxleCalculation?: (
     permitType: PermitType,
     vehicleDetails: PermitVehicleDetails,
@@ -120,19 +114,7 @@ export const AxleSpacingAndWeightsTable = ({
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [showValidationBanner, setShowValidationBanner] =
     useState<boolean>(false);
-
-  const [bridgeCalculationResults, setBridgeCalculationResults] = useState<
-    BridgeCalculationResult[]
-  >([]);
-
-  const failedBridgeCalculationResults = bridgeCalculationResults.filter(
-    (result) => !result.success,
-  );
-
-  const bridgeCalculationSuccess = bridgeCalculationResults.length
-    ? bridgeCalculationResults.every((result) => result.success)
-    : false;
-
+  const [totalGCVW, setTotalGCVW] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
 
@@ -140,20 +122,22 @@ export const AxleSpacingAndWeightsTable = ({
     (result) => result.result === "fail",
   );
 
-  const failedNumberOfAxlesResults = failedAxleCalculationResults?.filter(
-    (result) => result.id === AXLE_CALCULATION_RESULT_ID_TYPES.NUMBER_OF_AXLES,
+  const failedBridgeFormulaResults = failedAxleCalculationResults?.filter(
+    (result) => result.id === POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
   );
 
-  const [totalGCVW, setTotalGCVW] = useState<number>();
+  const failedNumberOfAxlesResults = failedAxleCalculationResults?.filter(
+    (result) => result.id === POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
+  );
 
-  const hasAxleCalculationFailures = Boolean(failedAxleCalculationResults?.length);
+  const hasBridgeFormulaFailures = Boolean(failedBridgeFormulaResults?.length);
   const hasNumberOfAxlesFailures = Boolean(failedNumberOfAxlesResults?.length);
 
   const shouldShowResultsSection =
     showValidationBanner ||
-    failedBridgeCalculationResults.length ||
+    hasBridgeFormulaFailures ||
     hasNumberOfAxlesFailures ||
-    bridgeCalculationSuccess;
+    Boolean(axleCalculationResults);
 
   const validateAxleConfiguration = (
     axleConfiguration: AxleUnit[],
@@ -184,44 +168,6 @@ export const AxleSpacingAndWeightsTable = ({
       const axleUnitWeight = axleUnit.axleUnitWeight ?? 0;
       return totalWeight + axleUnitWeight;
     }, 0);
-  };
-
-  const handleCalculateBridge = () => {
-    // Merge all axle configurations from power unit and trailers
-    const mergedPowerUnit = mergeInteraxleSpacing(
-      powerUnitAxleConfiguration,
-      1,
-    );
-    const mergedTrailers = trailers.flatMap((trailer) => {
-      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
-        return mergeInteraxleSpacing(trailer.axleConfiguration ?? [], 0);
-      }
-      return [];
-    });
-
-    const mergedAxleConfigurationData = [...mergedPowerUnit, ...mergedTrailers];
-
-    if (!validateAxleConfiguration(mergedAxleConfigurationData)) {
-      setShowValidationBanner(true);
-      return;
-    }
-
-    const convertedAxleConfigurationData = mergedAxleConfigurationData.map(
-      (axleUnit) => convertMetreValuesToCentimetres(axleUnit),
-    );
-
-    const serializedAxleConfigurationData = convertedAxleConfigurationData.map(
-      (axleUnit) => getDefaultAxleConfiguration(axleUnit),
-    );
-
-    const bridgeCalculationResults = calculateBridge?.(
-      serializedAxleConfigurationData,
-    );
-
-    if (bridgeCalculationResults) {
-      setBridgeCalculationResults(bridgeCalculationResults);
-      setTotalGCVW(calculateGCVW(mergedAxleConfigurationData));
-    }
   };
 
   const handleCalculate = () => {
@@ -265,15 +211,6 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
-    const bridgeCalculationResults = calculateBridge?.(
-      serializedAxleConfigurationData,
-    );
-
-    if (bridgeCalculationResults) {
-      setBridgeCalculationResults(bridgeCalculationResults);
-      setTotalGCVW(calculateGCVW(serializedAxleConfigurationData));
-    }
-
     const axleCalculationResults = runAxleCalculation?.(
       permitType,
       vehicleFormData,
@@ -285,6 +222,7 @@ export const AxleSpacingAndWeightsTable = ({
     if (axleCalculationResults) {
       console.log({ axleCalculationResults });
       setAxleCalculationResults(axleCalculationResults);
+      setTotalGCVW(calculateGCVW(combinedAxleConfigurationData));
     }
   };
 
@@ -321,7 +259,7 @@ export const AxleSpacingAndWeightsTable = ({
     });
   };
 
-  const getAxleUnitFailures = (
+  const getBridgeFormulaFailures = (
     axleConfiguration: AxleUnit[],
     axleUnitNumber: number,
     isTrailer: boolean,
@@ -333,7 +271,7 @@ export const AxleSpacingAndWeightsTable = ({
     );
 
     return normalizedRows.map(({ rowType, axleUnitNumber }) =>
-      failedBridgeCalculationResults.some((result) => {
+      getDefaultRequiredVal([], failedBridgeFormulaResults).some((result) => {
         if (rowType === "axle") {
           return (
             axleUnitNumber >= result.startAxleUnit &&
@@ -349,26 +287,21 @@ export const AxleSpacingAndWeightsTable = ({
     );
   };
 
-  type AxleUnitRowFieldKey =
-    | "numberOfAxles"
-    | "numberOfTires"
-    | "tireSize"
-    | "interaxleSpacing"
-    | "axleSpread"
-    | "axleUnitWeight";
-
-  const getAxleUnitFieldFailures = (
+  const getAxleCalculationFailures = (
     axleConfiguration: AxleUnit[],
     axleUnitNumber: number,
     isTrailer: boolean,
-  ): Array<Partial<Record<AxleUnitRowFieldKey, boolean>>> => {
+  ): Array<Partial<Record<PolicyCheckIdType, boolean>>> => {
     const normalizedRows = normalizeAxleConfigurationRows(
       axleConfiguration,
       axleUnitNumber,
       isTrailer,
     );
 
-    const failedResults = getDefaultRequiredVal([], failedAxleCalculationResults);
+    const failedResults = getDefaultRequiredVal(
+      [],
+      failedAxleCalculationResults,
+    );
 
     const doesResultApplyToRow = (
       rowType: NormalizedAxleRow["rowType"],
@@ -397,27 +330,31 @@ export const AxleSpacingAndWeightsTable = ({
     const fieldsForResult = (
       result: AxleGroupPolicyCheckResult,
       rowType: NormalizedAxleRow["rowType"],
-    ): AxleUnitRowFieldKey[] => {
+    ): PolicyCheckIdType[] => {
       switch (result.id) {
-        case AXLE_CALCULATION_RESULT_ID_TYPES.NUMBER_OF_AXLES:
-          return rowType === "axle" ? ["numberOfAxles"] : [];
+        case POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES:
+          return rowType === "axle"
+            ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES]
+            : [];
         default:
           return [];
       }
     };
 
-    return normalizedRows.map(({ rowType, axleUnitNumber: rowAxleUnitNumber }) => {
-      const failures: Partial<Record<AxleUnitRowFieldKey, boolean>> = {};
+    return normalizedRows.map(
+      ({ rowType, axleUnitNumber: rowAxleUnitNumber }) => {
+        const failures: Partial<Record<PolicyCheckIdType, boolean>> = {};
 
-      failedResults.forEach((result) => {
-        if (!doesResultApplyToRow(rowType, rowAxleUnitNumber, result)) return;
-        fieldsForResult(result, rowType).forEach((field) => {
-          failures[field] = true;
+        failedResults.forEach((result) => {
+          if (!doesResultApplyToRow(rowType, rowAxleUnitNumber, result)) return;
+          fieldsForResult(result, rowType).forEach((field) => {
+            failures[field] = true;
+          });
         });
-      });
 
-      return failures;
-    });
+        return failures;
+      },
+    );
   };
 
   const handleReset = () => {
@@ -431,7 +368,6 @@ export const AxleSpacingAndWeightsTable = ({
     });
 
     setShowValidationBanner(false);
-    setBridgeCalculationResults([]);
     setTotalGCVW(undefined);
     setIsResetModalOpen(false);
   };
@@ -492,12 +428,12 @@ export const AxleSpacingAndWeightsTable = ({
               isTrailer={false}
               onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
               tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
-              axleUnitFailures={getAxleUnitFailures(
+              bridgeFormulaFailures={getBridgeFormulaFailures(
                 powerUnitAxleConfiguration,
                 0,
                 false,
               )}
-              axleUnitFieldFailures={getAxleUnitFieldFailures(
+              axleCalculationFailures={getAxleCalculationFailures(
                 powerUnitAxleConfiguration,
                 0,
                 false,
@@ -526,12 +462,12 @@ export const AxleSpacingAndWeightsTable = ({
                     )
                   }
                   tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
-                  axleUnitFailures={getAxleUnitFailures(
+                  bridgeFormulaFailures={getBridgeFormulaFailures(
                     getDefaultRequiredVal([], trailer.axleConfiguration),
                     getAxleUnitNumber(trailerIndex),
                     true,
                   )}
-                  axleUnitFieldFailures={getAxleUnitFieldFailures(
+                  axleCalculationFailures={getAxleCalculationFailures(
                     getDefaultRequiredVal([], trailer.axleConfiguration),
                     getAxleUnitNumber(trailerIndex),
                     true,
@@ -576,22 +512,24 @@ export const AxleSpacingAndWeightsTable = ({
 
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
-          ) : failedBridgeCalculationResults.length || hasNumberOfAxlesFailures ? (
+          ) : hasBridgeFormulaFailures || hasNumberOfAxlesFailures ? (
             <>
               <span>
                 <strong>Total (GCVW):</strong> {totalGCVW}
               </span>
-              {failedBridgeCalculationResults.map((failedResult, index) => (
-                <div key={index}>
-                  <p className="results__text results__text--fail">
-                    <FontAwesomeIcon
-                      icon={faCircleXmark}
-                      className="results__icon results__icon--fail"
-                    />{" "}
-                    {getFailedResultText(failedResult)}
-                  </p>
-                </div>
-              ))}
+              {getDefaultRequiredVal([], failedBridgeFormulaResults).map(
+                (failedResult, index) => (
+                  <div key={`bridge-formula-fail-${index}`}>
+                    <p className="results__text results__text--fail">
+                      <FontAwesomeIcon
+                        icon={faCircleXmark}
+                        className="results__icon results__icon--fail"
+                      />{" "}
+                      {failedResult.message}
+                    </p>
+                  </div>
+                ),
+              )}
               {getDefaultRequiredVal([], failedNumberOfAxlesResults).map(
                 (failedResult, index) => (
                   <div key={`axle-calc-fail-${index}`}>
