@@ -94,6 +94,7 @@ import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
 import * as dayjs from 'dayjs';
+import { Case } from 'src/modules/case-management/entities/case.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -467,6 +468,23 @@ export class ApplicationService {
       permitsQuery = permitsQuery.leftJoinAndSelect(
         'cases.assignedUser',
         'assignedCaseUser',
+      );
+    } else {
+      //Display Rejected/Approved/Withdrawn status for applications in queue based on the latest case activity
+      permitsQuery = permitsQuery.leftJoinAndSelect(
+        'permit.cases',
+        'cases',
+        `cases.caseId = (${permitsQuery
+          .subQuery()
+          .select('MAX(innerCase.caseId)')
+          .from(Case, 'innerCase')
+          .where('innerCase.permit = permit.permitId')
+          .getQuery()})`,
+      );
+
+      permitsQuery = permitsQuery.leftJoinAndSelect(
+        'cases.caseActivity',
+        'caseActivity',
       );
     }
 
