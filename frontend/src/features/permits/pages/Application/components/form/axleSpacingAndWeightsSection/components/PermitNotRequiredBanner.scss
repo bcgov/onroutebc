@@ -1,0 +1,21 @@
+@import "../../../../../../../../themes/orbcStyles";
+
+.permit-not-required-banner {
+  border: 1px solid $bc-messages-gold-text;
+  border-radius: 4px;
+  max-width: 757px;
+  &__header {
+    box-sizing: border-box;
+    width: 100%;
+  }
+  &__body {
+    padding: 1.5rem;
+  }
+  &__text {
+    color: $bc-black;
+    margin: 0;
+    &--link {
+      color: $bc-text-links-blue;
+    }
+  }
+}

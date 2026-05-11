@@ -129,7 +129,7 @@
     display: flex;
     gap: 1.5rem;
     padding-top: 1.5rem;
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
   }
   
   .button {
@@ -194,9 +194,10 @@
         color: $bc-red;
       }
       &--success {
-        color: $bc-green;
+        color: $bc-black;
+        font-weight: bold;
+        padding: .5rem 0;
       }
     }
-
   }
 }

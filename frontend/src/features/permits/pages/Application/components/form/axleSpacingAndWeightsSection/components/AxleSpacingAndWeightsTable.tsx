@@ -4,10 +4,7 @@ import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import {
-  faCircleXmark,
-  faCircleCheck,
-} from "@fortawesome/free-regular-svg-icons";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
@@ -34,6 +31,7 @@ import {
   DEFAULT_POWER_UNIT_AXLE_CONFIG,
   DEFAULT_TRAILER_AXLE_CONFIG,
 } from "../../../../../../constants/constants";
+import { PermitNotRequiredBanner } from "./PermitNotRequiredBanner";
 
 export const AxleSpacingAndWeightsTable = ({
   permitType,
@@ -333,6 +331,7 @@ export const AxleSpacingAndWeightsTable = ({
 
     setShowValidationBanner(false);
     setTotalGCVW(undefined);
+    setAxleCalculationResults(undefined);
     setIsResetModalOpen(false);
   };
 
@@ -466,37 +465,33 @@ export const AxleSpacingAndWeightsTable = ({
 
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
-          ) : hasAxleCalculationFailures ? (
-            <>
-              <span>
-                <strong>Total (GCVW):</strong> {totalGCVW}
-              </span>
-              {getDefaultRequiredVal([], failedAxleCalculationResults).map(
-                (failedResult, index) => (
-                  <div key={`axle-calc-fail-${index}`}>
-                    <p className="results__text results__text--fail">
-                      <FontAwesomeIcon
-                        icon={faCircleXmark}
-                        className="results__icon results__icon--fail"
-                      />{" "}
-                      {failedResult.message}
-                    </p>
-                  </div>
-                ),
-              )}
-            </>
           ) : (
             <>
               <span>
                 <strong>Total (GCVW):</strong> {totalGCVW}
               </span>
-              <p className="results__text results__text--success">
-                <FontAwesomeIcon
-                  icon={faCircleCheck}
-                  className="results__icon results__icon--success"
-                />{" "}
-                Bridge Calculation is ok.
-              </p>
+              {hasAxleCalculationFailures ? (
+                getDefaultRequiredVal([], failedAxleCalculationResults).map(
+                  (failedResult, index) => (
+                    <div key={`axle-calc-fail-${index}`}>
+                      <p className="results__text results__text--fail">
+                        <FontAwesomeIcon
+                          icon={faCircleXmark}
+                          className="results__icon results__icon--fail"
+                        />{" "}
+                        {failedResult.message}
+                      </p>
+                    </div>
+                  ),
+                )
+              ) : (
+                <>
+                  <p className="results__text--success">
+                    This permit type is not required.
+                  </p>
+                  <PermitNotRequiredBanner />
+                </>
+              )}
             </>
           )}
         </div>
