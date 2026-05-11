@@ -12,6 +12,7 @@ export const POLICY_CHECK_ID_TYPES = {
 
 export type PolicyCheckIdType =
   (typeof POLICY_CHECK_ID_TYPES)[keyof typeof POLICY_CHECK_ID_TYPES];
+
 export interface AxleGroupPolicyCheckResult {
   id: PolicyCheckIdType;
   result: PolicyCheckResultType;

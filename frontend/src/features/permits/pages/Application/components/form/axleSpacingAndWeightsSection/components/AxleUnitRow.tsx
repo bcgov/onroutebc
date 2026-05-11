@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Nullable } from "../../../../../../../../common/types/common";
@@ -23,7 +24,6 @@ export const AxleUnitRow = ({
   isTrailer,
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
-  bridgeFormulaFailures = [],
   axleCalculationFailures = [],
   canAddAxleUnits,
 }: {
@@ -36,7 +36,6 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
-  bridgeFormulaFailures?: boolean[];
   axleCalculationFailures?: Array<Partial<Record<PolicyCheckIdType, boolean>>>;
   canAddAxleUnits?: boolean;
 }) => {
@@ -95,11 +94,6 @@ export const AxleUnitRow = ({
         const numberOfAxles = axleUnit?.numberOfAxles;
         const disableAxleSpread = getDefaultRequiredVal(0, numberOfAxles) <= 1;
 
-        const bridgeFormulaFailure = getDefaultRequiredVal(
-          false,
-          bridgeFormulaFailures[index],
-        );
-
         const axleCalculationFailure = getDefaultRequiredVal(
           {},
           axleCalculationFailures[index],
@@ -109,7 +103,7 @@ export const AxleUnitRow = ({
           <tr key={`axle-${label}-${index}`} className="table__row">
             <td
               className={`${
-                bridgeFormulaFailure
+                axleCalculationFailure[POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA]
                   ? "row__label row__label--fail"
                   : "row__label"
               }`}
