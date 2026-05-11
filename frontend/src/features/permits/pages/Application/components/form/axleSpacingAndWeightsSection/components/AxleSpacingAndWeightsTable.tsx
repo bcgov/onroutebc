@@ -11,23 +11,9 @@ import {
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
-import {
-  AxleConfiguration,
-  AxleUnit,
-} from "../../../../../../../../common/types/AxleUnit";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { Button } from "@mui/material";
-import {
-  combineAxleConfigurations,
-  convertMetreValuesToCentimetres,
-  getDefaultAxleConfiguration,
-  mergeInteraxleSpacing,
-} from "../../../../../../../../common/helpers/axleUnitHelper";
-import {
-  DEFAULT_POWER_UNIT_AXLE_CONFIG,
-  DEFAULT_TRAILER_AXLE_CONFIG,
-} from "../../../../../../../../common/constants/defaultAxleUnit";
 import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { AxleUnitResetModal } from "./AxleUnitResetModal";
 import { PermitType } from "../../../../../../types/PermitType";
@@ -36,7 +22,18 @@ import {
   AxleGroupPolicyCheckResult,
   POLICY_CHECK_ID_TYPES,
   PolicyCheckIdType,
-} from "../../../../../../../../common/types/AxleCalculationResult";
+} from "../../../../../../types/AxleCalculationResult";
+import {
+  combineAxleConfigurations,
+  convertMetreValuesToCentimetres,
+  getDefaultAxleConfiguration,
+  mergeInteraxleSpacing,
+} from "../../../../../../helpers/axleUnitHelper";
+import { AxleConfiguration, AxleUnit } from "../../../../../../types/AxleUnit";
+import {
+  DEFAULT_POWER_UNIT_AXLE_CONFIG,
+  DEFAULT_TRAILER_AXLE_CONFIG,
+} from "../../../../../../constants/constants";
 
 export const AxleSpacingAndWeightsTable = ({
   permitType,

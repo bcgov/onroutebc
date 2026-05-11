@@ -7,11 +7,9 @@ import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails"
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
-import {
-  AxleConfiguration,
-  AxleUnit,
-} from "../../../../../../../common/types/AxleUnit";
-import { AxleCalculationResult } from "../../../../../../../common/types/AxleCalculationResult";
+import { AxleCalculationResult } from "../../../../../types/AxleCalculationResult";
+import { AxleConfiguration } from "onroute-policy-engine/types";
+import { AxleUnit } from "../../../../../types/AxleUnit";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,

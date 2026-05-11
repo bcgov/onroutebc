@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Nullable } from "../../../../../../../../common/types/common";
@@ -6,16 +5,16 @@ import { Autocomplete } from "../../../../../../../../common/components/form/sub
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
-import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { IconButton, Tooltip } from "@mui/material";
-import {
-  DEFAULT_AXLE_UNIT,
-  DEFAULT_TIRE_SIZE_OPTION,
-} from "../../../../../../../../common/constants/defaultAxleUnit";
 import {
   POLICY_CHECK_ID_TYPES,
   PolicyCheckIdType,
-} from "../../../../../../../../common/types/AxleCalculationResult";
+} from "../../../../../../types/AxleCalculationResult";
+import { AxleUnit } from "../../../../../../types/AxleUnit";
+import {
+  DEFAULT_AXLE_UNIT,
+  DEFAULT_TIRE_SIZE_OPTION,
+} from "../../../../../../constants/constants";
 
 export const AxleUnitRow = ({
   axleConfiguration,

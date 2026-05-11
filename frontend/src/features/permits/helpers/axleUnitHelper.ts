@@ -1,7 +1,7 @@
-import { VehicleInConfiguration } from "../../features/permits/types/PermitVehicleConfiguration";
-import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/defaultAxleUnit";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/constants";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
-import { getDefaultRequiredVal } from "./util";
+import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
 
 export const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
   return {

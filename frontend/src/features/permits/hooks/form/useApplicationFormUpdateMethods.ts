@@ -19,7 +19,7 @@ import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
 import { VehicleType } from "../../../manageVehicles/types/Vehicle";
 import { ConditionalLicensingFeeType } from "../../types/ConditionalLicensingFee";
-import { AxleUnit } from "../../../../common/types/AxleUnit";
+import { AxleUnit } from "../../types/AxleUnit";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.

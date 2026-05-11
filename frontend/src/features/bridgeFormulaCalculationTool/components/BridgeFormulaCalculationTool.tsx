@@ -15,19 +15,19 @@ import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertT
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 import { ResetModal } from "./ResetModal";
 import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
-import { AxleUnit } from "../../../common/types/AxleUnit";
+import { useCalculateBridge } from "../../permits/hooks/useCalculateBridge";
 import {
   convertMetreValuesToCentimetres,
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
-} from "../../../common/helpers/axleUnitHelper";
-import { BridgeCalculationResult } from "../../../common/types/BridgeCalculationResult";
-import { getFailedResultText } from "../../../common/helpers/bridgeCalculationHelper";
+} from "../../permits/helpers/axleUnitHelper";
+import { getFailedResultText } from "../../permits/helpers/bridgeCalculationHelper";
+import { BridgeCalculationResult } from "../../permits/types/BridgeCalculationResult";
+import { AxleUnit } from "../../permits/types/AxleUnit";
 import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_POWER_UNIT_AXLE_CONFIG,
-} from "../../../common/constants/defaultAxleUnit";
-import { useCalculateBridge } from "../../permits/hooks/useCalculateBridge";
+} from "../../permits/constants/constants";
 
 export const BridgeFormulaCalculationTool = () => {
   const policyEngine = usePolicyEngine();

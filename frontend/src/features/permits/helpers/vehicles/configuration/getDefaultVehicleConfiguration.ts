@@ -1,6 +1,6 @@
-import { DEFAULT_POWER_UNIT_AXLE_CONFIG } from "../../../../../common/constants/defaultAxleUnit";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { Nullable } from "../../../../../common/types/common";
+import { DEFAULT_POWER_UNIT_AXLE_CONFIG } from "../../../constants/constants";
 import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
 import { PermitVehicleConfiguration } from "../../../types/PermitVehicleConfiguration";
 
