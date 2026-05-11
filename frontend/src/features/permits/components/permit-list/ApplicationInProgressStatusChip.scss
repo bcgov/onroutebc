@@ -1,0 +1,11 @@
+@import "../../../../themes/orbcStyles";
+
+.permit-chip {
+  display: inline-block;
+  margin-left: 0.5rem;
+
+  &--rejected {
+    background-color: $bc-messages-red-background;
+    color: $bc-messages-red-text;
+  }
+}

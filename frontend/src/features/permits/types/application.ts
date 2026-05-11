@@ -9,6 +9,7 @@ import { PermitApprovalSource } from "./PermitApprovalSource";
 import { PermitData } from "./PermitData";
 import { ApplicationQueueStatus } from "../../queue/types/ApplicationQueueStatus";
 import { ApplicationRejectionHistory } from "./ApplicationRejectionHistory";
+import { CaseActivityType } from "../../queue/types/CaseActivityType";
 
 /**
  * A partial permit type that consists of all common fields used for a permit.
@@ -110,6 +111,7 @@ export interface ApplicationListItem {
   vin?: Nullable<string>;
   plate?: Nullable<string>;
   applicationQueueStatus?: ApplicationQueueStatus;
+  applicationQueueResolution?: CaseActivityType;
   timeInQueue?: string;
   claimedBy?: string;
 }
