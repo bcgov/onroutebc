@@ -9,13 +9,18 @@ import {
  * Returns the theme name for the chip based on the application Queue Resolution.
  * If the permit is inactive or expired, a chip has to be displayed
  * beside the permit number.
- * @param applicationQueueResolution string representing the application queue resolution 
+ * Current scope of application queue resolutions that require chips is limited to Rejected.
+ * @param applicationQueueResolution string representing the application queue resolution
  * @returns A string representing the theme name for the chip
  */
 const getTheme = (applicationQueueResolution?: CaseActivityType) => {
   switch (applicationQueueResolution) {
     case CASE_ACTIVITY_TYPES.REJECTED:
       return "rejected";
+    case CASE_ACTIVITY_TYPES.WITHDRAWN:
+      return undefined;
+    case CASE_ACTIVITY_TYPES.APPROVED:
+      return undefined;
     default:
       return undefined;
   }
@@ -32,6 +37,10 @@ const getStatusText = (
   switch (applicationQueueResolution) {
     case CASE_ACTIVITY_TYPES.REJECTED:
       return "Rejected";
+    case CASE_ACTIVITY_TYPES.WITHDRAWN:
+      return "Withdrawn";
+    case CASE_ACTIVITY_TYPES.APPROVED:
+      return "Approved";
     default:
       return "";
   }
@@ -48,6 +57,10 @@ const getAbbreviatedStatusText = (
   switch (applicationQueueResolution) {
     case CASE_ACTIVITY_TYPES.REJECTED:
       return "R";
+    case CASE_ACTIVITY_TYPES.WITHDRAWN:
+      return "W";
+    case CASE_ACTIVITY_TYPES.APPROVED:
+      return "A";
     default:
       return "";
   }
