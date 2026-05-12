@@ -251,6 +251,7 @@ export const AxleUnitRow = ({
                         convertToNumberIfValid(value, null),
                       );
                     },
+                    maskFn: (numericVal) => numericVal.toFixed(2),
                   }}
                 />
               )}
@@ -271,6 +272,7 @@ export const AxleUnitRow = ({
                     },
                     readOnly: disableAxleSpread,
                     disabled: disableAxleSpread,
+                    maskFn: (numericVal) => numericVal.toFixed(2),
                   }}
                 />
               )}
