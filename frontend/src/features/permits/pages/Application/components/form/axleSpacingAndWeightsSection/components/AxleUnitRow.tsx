@@ -209,9 +209,11 @@ export const AxleUnitRow = ({
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
                 <Autocomplete
-                  classes={{ root: "table__input-container" }}
+                  classes={{
+                    root: "table__input-container",
+                  }}
                   autocompleteProps={{
-                    className: "table__input",
+                    className: "table__input table__input--tire-size",
                     clearIcon: null,
                     options: tireSizeOptions,
                     value: getDefaultRequiredVal(

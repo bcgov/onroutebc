@@ -33,7 +33,7 @@
         }
       }
 
-      &--select {
+      &--tire-size {
         min-width: 144px;
         div.autocomplete__textfield {
           .MuiInputBase-root {
@@ -45,6 +45,7 @@
 
     &__input-container {
       margin: 0;
+
     }
 
     &__cell {
