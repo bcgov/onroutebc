@@ -16,10 +16,7 @@
     &__input {
       margin: 0;
 
-      // Per-field policy failure outline (runAxleCalculation)
       &--fail {
-        // NumberInput uses OutlinedInput; Autocomplete uses an outlined TextField internally.
-        // Both render a <fieldset> for the outline.
         fieldset,
         .MuiOutlinedInput-notchedOutline {
           border: 2px solid $bc-red;
