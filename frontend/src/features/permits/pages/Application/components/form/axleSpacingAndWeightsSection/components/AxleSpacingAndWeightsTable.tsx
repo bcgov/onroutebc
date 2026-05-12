@@ -21,10 +21,12 @@ import {
   PolicyCheckIdType,
 } from "../../../../../../types/AxleCalculationResult";
 import {
+  calculateGCVW,
   combineAxleConfigurations,
   convertMetreValuesToCentimetres,
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
+  validateAxleConfiguration,
 } from "../../../../../../helpers/axleUnitHelper";
 import { AxleConfiguration, AxleUnit } from "../../../../../../types/AxleUnit";
 import {
@@ -130,37 +132,6 @@ export const AxleSpacingAndWeightsTable = ({
 
   const shouldShowResultsSection =
     showValidationBanner || Boolean(axleCalculationResults);
-
-  const validateAxleConfiguration = (
-    axleConfiguration: AxleUnit[],
-  ): boolean => {
-    return axleConfiguration.every((axleUnit, index) => {
-      // All axle units in merged data need all required fields
-      const hasRequiredFields =
-        axleUnit.numberOfAxles !== null &&
-        axleUnit.numberOfTires !== null &&
-        axleUnit.tireSize !== null &&
-        axleUnit.axleUnitWeight !== null;
-
-      // axleSpread is required unless numberOfAxles === 1
-      const hasAxleSpread =
-        getDefaultRequiredVal(0, axleUnit.numberOfAxles) <= 1 ||
-        axleUnit.axleSpread !== null;
-
-      // interaxleSpacing is required for all but the first axle unit (i.e. the first axle unit of the power unit)
-      const hasInteraxleSpacing =
-        index === 0 || axleUnit.interaxleSpacing !== null;
-
-      return hasRequiredFields && hasAxleSpread && hasInteraxleSpacing;
-    });
-  };
-
-  const calculateGCVW = (axleConfiguration: AxleUnit[]): number => {
-    return axleConfiguration.reduce((totalWeight, axleUnit) => {
-      const axleUnitWeight = axleUnit.axleUnitWeight ?? 0;
-      return totalWeight + axleUnitWeight;
-    }, 0);
-  };
 
   const handleCalculate = () => {
     setShowValidationBanner(false);
