@@ -1,5 +1,4 @@
-import { RequiredOrNull } from "./common";
-
+import { RequiredOrNull } from "../../../common/types/common";
 export interface AxleUnit {
   numberOfAxles?: RequiredOrNull<number>;
   axleSpread?: RequiredOrNull<number>;

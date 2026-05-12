@@ -22,6 +22,8 @@ import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
+import { useCombineAxleConfigurations } from "../useCombineAxleConfigurations";
+import { useCalculateGCVW } from "../useCalculateGCVW";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -275,6 +277,11 @@ export const useApplicationFormContext = () => {
   const { canAddAxleUnitsToPowerUnit, canAddAxleUnitsToTrailer } =
     useCanAddAxleUnits(policyEngine);
 
+  const { combineAxleConfigurations } =
+    useCombineAxleConfigurations(policyEngine);
+
+  const { calculateGCVW } = useCalculateGCVW(policyEngine);
+
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -340,6 +347,8 @@ export const useApplicationFormContext = () => {
     runAxleCalculation,
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
+    combineAxleConfigurations,
+    calculateGCVW,
     onLeave,
     onSave,
     onCancel,

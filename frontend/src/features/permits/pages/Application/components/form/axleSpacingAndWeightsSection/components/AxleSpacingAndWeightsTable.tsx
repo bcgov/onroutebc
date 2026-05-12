@@ -7,7 +7,10 @@ import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
-import { PermitVehicleConfiguration } from "../../../../../../types/PermitVehicleConfiguration";
+import {
+  PermitVehicleConfiguration,
+  VehicleInConfiguration,
+} from "../../../../../../types/PermitVehicleConfiguration";
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { Button } from "@mui/material";
@@ -21,8 +24,6 @@ import {
   PolicyCheckIdType,
 } from "../../../../../../types/AxleCalculationResult";
 import {
-  calculateGCVW,
-  combineAxleConfigurations,
   convertMetreValuesToCentimetres,
   getDefaultAxleConfiguration,
   mergeInteraxleSpacing,
@@ -46,6 +47,8 @@ export const AxleSpacingAndWeightsTable = ({
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
+  combineAxleConfigurations,
+  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -74,6 +77,11 @@ export const AxleSpacingAndWeightsTable = ({
     powerUnitSubtype?: Nullable<string>,
     trailerSubtype?: Nullable<string>,
   ) => boolean;
+  combineAxleConfigurations?: (
+    powerUnitAxleConfiguration: AxleConfiguration[],
+    trailers: VehicleInConfiguration[],
+  ) => AxleUnit[];
+  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -156,9 +164,14 @@ export const AxleSpacingAndWeightsTable = ({
       return trailer;
     });
 
-    const combinedAxleConfigurationData = combineAxleConfigurations(
-      mergedPowerUnit,
-      mergedTrailers,
+    const combinedAxleConfigurationData = getDefaultRequiredVal(
+      [],
+      combineAxleConfigurations?.(
+        mergedPowerUnit.map((axleUnit) =>
+          getDefaultAxleConfiguration(axleUnit),
+        ),
+        mergedTrailers,
+      ),
     );
 
     if (!validateAxleConfiguration(combinedAxleConfigurationData)) {
@@ -174,17 +187,22 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
+    const calculatedGCVW = getDefaultRequiredVal(
+      0,
+      calculateGCVW?.(serializedAxleConfigurationData),
+    );
+
     const axleCalculationResults = runAxleCalculation?.(
       permitType,
       vehicleFormData,
-      vehicleConfiguration as PermitVehicleConfiguration,
+      getDefaultRequiredVal({}, vehicleConfiguration),
       serializedAxleConfigurationData,
-      calculateGCVW(combinedAxleConfigurationData),
+      calculatedGCVW,
     );
 
     if (axleCalculationResults) {
       setAxleCalculationResults(axleCalculationResults);
-      setTotalGCVW(calculateGCVW(combinedAxleConfigurationData));
+      setTotalGCVW(calculatedGCVW);
     }
   };
 

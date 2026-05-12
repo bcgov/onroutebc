@@ -6,7 +6,10 @@ import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTa
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
-import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import {
+  PermitVehicleConfiguration,
+  VehicleInConfiguration,
+} from "../../../../../types/PermitVehicleConfiguration";
 import { AxleCalculationResult } from "../../../../../types/AxleCalculationResult";
 import { AxleConfiguration } from "onroute-policy-engine/types";
 import { AxleUnit } from "../../../../../types/AxleUnit";
@@ -22,6 +25,8 @@ export const AxleSpacingAndWeightsSection = ({
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
+  combineAxleConfigurations,
+  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -50,6 +55,11 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitSubtype?: Nullable<string>,
     trailerSubtype?: Nullable<string>,
   ) => boolean;
+  combineAxleConfigurations?: (
+    powerUnitAxleConfiguration: AxleConfiguration[],
+    trailers: VehicleInConfiguration[],
+  ) => AxleUnit[];
+  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -85,6 +95,8 @@ export const AxleSpacingAndWeightsSection = ({
           runAxleCalculation={runAxleCalculation}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
+          combineAxleConfigurations={combineAxleConfigurations}
+          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

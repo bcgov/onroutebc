@@ -81,40 +81,6 @@ export const unmergeInteraxleSpacingRows = (
   return unmerged;
 };
 
-// TODO move to and call this function from policy engine
-/** Combines axle configurations from a power unit and its trailers into a single array, adding an index to each axleConfiguration object */
-export const combineAxleConfigurations = (
-  powerUnitAxleConfiguration: AxleUnit[],
-  trailers: VehicleInConfiguration[],
-): AxleUnit[] => {
-  const powerUnitAxles = powerUnitAxleConfiguration.map((axle) => ({
-    ...axle,
-    vehicleIndex: 0,
-  }));
-
-  const trailerAxles = trailers.flatMap((trailer, trailerIndex) =>
-    getDefaultRequiredVal(
-      [],
-      trailer.axleConfiguration?.map((axle) => ({
-        ...axle,
-        vehicleIndex: trailerIndex + 1,
-      })),
-    ),
-  );
-
-  return [...powerUnitAxles, ...trailerAxles];
-};
-
-// TODO move to and call this function from policy engine
-/** Calculates the Gross Combined Vehicle Weight (GCVW) for a given axle configuration */
-export const calculateGCVW = (axleConfiguration: AxleUnit[]): number => {
-  return axleConfiguration.reduce((totalWeight, axleUnit) => {
-    const axleUnitWeight = axleUnit.axleUnitWeight ?? 0;
-    return totalWeight + axleUnitWeight;
-  }, 0);
-};
-
-// TODO maybe move to and call this function from policy engine
 /** Validates an axle configuration array */
 export const validateAxleConfiguration = (
   axleConfiguration: AxleUnit[],
