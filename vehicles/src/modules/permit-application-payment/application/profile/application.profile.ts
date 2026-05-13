@@ -32,6 +32,7 @@ import { PermitLoa } from '../entities/permit-loa.entity';
 import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
 import * as dayjs from 'dayjs';
 import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
+import { CaseActivityType } from 'src/common/enum/case-activity-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -304,6 +305,37 @@ export class ApplicationProfile extends AutomapperProfile {
               }
             },
           ),
+        ),
+        forMember(
+          (d) => d.isRejectedApplication,
+          mapFrom((s): Nullable<boolean> => {
+            if (!s?.cases?.length) {
+              return undefined;
+            }
+
+            const cases = [...s.cases].sort((a, b) => b.caseId - a.caseId);
+            const latestActivity = cases
+              ?.at(0)
+              ?.caseActivity?.at(0)?.caseActivityType;
+            const previousActivity = cases
+              ?.at(1)
+              ?.caseActivity?.at(0)?.caseActivityType;
+
+            if (!latestActivity) {
+              return undefined;
+            }
+            if (latestActivity === CaseActivityType.REJECTED) {
+              return true;
+            }
+
+            if (
+              latestActivity === CaseActivityType.WITHDRAWN &&
+              previousActivity === CaseActivityType.REJECTED
+            ) {
+              return true;
+            }
+            return false;
+          }),
         ),
         forMember(
           (d) => d.timeInQueue,

@@ -8,6 +8,7 @@ import { canUserAccessApplication } from "../../helpers/canUserAccessApplication
 import { Nullable } from "../../../../common/types/common";
 import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
+import { ApplicationInProgressStatusChip } from "./ApplicationInProgressStatusChip";
 
 export const ApplicationInProgressColumnDefinition = (
   canEditIndividualApplicationInProgressDetails: boolean,
@@ -21,19 +22,30 @@ export const ApplicationInProgressColumnDefinition = (
     accessorFn: (row) => row.applicationNumber,
     Cell: (props: { cell: any; row: any }) => {
       const permitIdStr = `${props.row.original.permitId}`;
+      const statusChip = (
+        <ApplicationInProgressStatusChip
+          isRejectedApplication={props.row.original.isRejectedApplication}
+        />
+      );
 
       return canUserAccessApplication(
         props.row.original.permitApplicationOrigin,
         userRole,
       ) && canEditIndividualApplicationInProgressDetails ? (
-        <CustomNavLink
-          to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
-          className="column-link column-link--application-details"
-        >
-          {props.cell.getValue()}
-        </CustomNavLink>
+        <>
+          <CustomNavLink
+            to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
+            className="column-link column-link--application-details"
+          >
+            {props.cell.getValue()}
+          </CustomNavLink>
+          {statusChip}
+        </>
       ) : (
-        <>{props.cell.getValue()}</>
+        <>
+          {props.cell.getValue()}
+          {statusChip}
+        </>
       );
     },
     size: 160,
