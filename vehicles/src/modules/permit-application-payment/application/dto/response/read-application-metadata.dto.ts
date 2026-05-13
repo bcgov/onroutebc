@@ -6,7 +6,6 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 import { ApplicationQueueStatus } from '../../../../../common/enum/case-status-type.enum';
 import { Nullable } from '../../../../../common/types/common';
 import { IDIR_USER_ROLE_LIST } from '../../../../../common/enum/user-role.enum';
-import { CaseActivityType } from 'src/common/enum/case-activity-type.enum';
 
 export class ReadApplicationMetadataDto {
   @AutoMap()
@@ -140,12 +139,11 @@ export class ReadApplicationMetadataDto {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'Indicates the final resolution of the application when the queue status is CLOSED. Possible values are REJECTED, or WITHDRAWN.',
-    example: CaseActivityType.REJECTED,
+    description: 'Indicates if the application has been rejected by the staff.',
+    example: true,
     required: false,
   })
-  applicationQueueResolution?: Nullable<CaseActivityType>;
+  isRejectedApplication?: Nullable<boolean>;
 
   @AutoMap()
   @ApiProperty({

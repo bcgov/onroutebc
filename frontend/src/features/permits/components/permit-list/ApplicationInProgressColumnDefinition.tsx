@@ -24,7 +24,7 @@ export const ApplicationInProgressColumnDefinition = (
       const permitIdStr = `${props.row.original.permitId}`;
       const statusChip = (
         <ApplicationInProgressStatusChip
-          applicationQueueResolution={props.row.original.applicationQueueResolution}
+          isRejectedApplication={props.row.original.isRejectedApplication}
         />
       );
 

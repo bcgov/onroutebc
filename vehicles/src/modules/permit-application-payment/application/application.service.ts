@@ -470,16 +470,20 @@ export class ApplicationService {
         'assignedCaseUser',
       );
     } else {
-      //Display Rejected/Approved/Withdrawn status for applications in queue based on the latest case activity
+      //Display Rejected status in AIP based on last two case activities.
+      const latestCaseIdsSubquery = permitsQuery
+        .subQuery()
+        .select('innerCase.caseId')
+        .from(Case, 'innerCase')
+        .where('innerCase.permit = permit.permitId')
+        .orderBy('innerCase.caseId', 'DESC')
+        .limit(2)
+        .getQuery();
+
       permitsQuery = permitsQuery.leftJoinAndSelect(
         'permit.cases',
         'cases',
-        `cases.caseId = (${permitsQuery
-          .subQuery()
-          .select('MAX(innerCase.caseId)')
-          .from(Case, 'innerCase')
-          .where('innerCase.permit = permit.permitId')
-          .getQuery()})`,
+        `cases.caseId IN (${latestCaseIdsSubquery})`,
       );
 
       permitsQuery = permitsQuery.leftJoinAndSelect(
