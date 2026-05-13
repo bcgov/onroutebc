@@ -21,6 +21,7 @@ import {
   AxleCalculationResult,
   AxleGroupPolicyCheckResult,
   POLICY_CHECK_ID_TYPES,
+  POLICY_CHECK_RESULT_TYPES,
   PolicyCheckIdType,
 } from "../../../../../../types/AxleCalculationResult";
 import {
@@ -35,6 +36,10 @@ import {
   DEFAULT_TRAILER_AXLE_CONFIG,
 } from "../../../../../../constants/constants";
 import { PermitNotRequiredBanner } from "./PermitNotRequiredBanner";
+import {
+  ASW_TABLE_ROW_TYPES,
+  ASWTableRowType,
+} from "../../../../../../types/ASWTableRowType";
 
 export const AxleSpacingAndWeightsTable = ({
   permitType,
@@ -131,7 +136,8 @@ export const AxleSpacingAndWeightsTable = ({
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
     (result) =>
-      result.result === "fail" && DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
+      result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
+      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
 
   const hasAxleCalculationFailures = Boolean(
@@ -206,13 +212,11 @@ export const AxleSpacingAndWeightsTable = ({
     }
   };
 
-  type RowType = "axle" | "spacing";
-
   const normalizeAxleConfigurationRows = (
     axleConfiguration: AxleUnit[],
     axleUnitNumber: number,
     isTrailer: boolean,
-  ): { rowType: RowType; axleUnitNumber: number }[] => {
+  ): { rowType: ASWTableRowType; axleUnitNumber: number }[] => {
     return axleConfiguration.map((_, index) => {
       const isInteraxleSpacingRow = isTrailer
         ? index % 2 === 0
@@ -224,13 +228,13 @@ export const AxleSpacingAndWeightsTable = ({
           : axleUnitNumber + Math.floor(index / 2) + 1;
 
         return {
-          rowType: "spacing",
+          rowType: ASW_TABLE_ROW_TYPES.SPACING,
           axleUnitNumber: associatedAxleUnitNumber,
         };
       }
 
       return {
-        rowType: "axle",
+        rowType: ASW_TABLE_ROW_TYPES.AXLE,
         axleUnitNumber: axleUnitNumber + Math.floor(index / 2) + 1,
       };
     });
@@ -248,17 +252,20 @@ export const AxleSpacingAndWeightsTable = ({
     );
 
     const doesResultApplyToRow = (
-      rowType: RowType,
+      rowType: ASWTableRowType,
       rowAxleUnitNumber: number,
       result: AxleGroupPolicyCheckResult,
     ) => {
       // Most failures are specifically for a single axle unit
-      if (rowType === "axle" && typeof result.axleUnit === "number") {
+      if (
+        rowType === ASW_TABLE_ROW_TYPES.AXLE &&
+        typeof result.axleUnit === "number"
+      ) {
         return rowAxleUnitNumber === result.axleUnit;
       }
 
       // Bridge formula failures require highlighting multiple axle unit rows
-      if (rowType === "axle") {
+      if (rowType === ASW_TABLE_ROW_TYPES.AXLE) {
         return (
           rowAxleUnitNumber >= result.startAxleUnit &&
           rowAxleUnitNumber <= result.endAxleUnit
@@ -273,11 +280,11 @@ export const AxleSpacingAndWeightsTable = ({
 
     const fieldsForResult = (
       result: AxleGroupPolicyCheckResult,
-      rowType: RowType,
+      rowType: ASWTableRowType,
     ): PolicyCheckIdType[] => {
       switch (result.id) {
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES:
-          return rowType === "axle"
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES]
             : [];
 
@@ -289,23 +296,27 @@ export const AxleSpacingAndWeightsTable = ({
       }
     };
 
-    return normalizedRows.map(
-      ({ rowType, axleUnitNumber: rowAxleUnitNumber }) => {
-        const failures: Partial<Record<PolicyCheckIdType, boolean>> = {};
+    const axleCalculationFailures: Partial<
+      Record<PolicyCheckIdType, boolean>
+    >[] = [];
 
-        getDefaultRequiredVal([], failedAxleCalculationResults).forEach(
-          (result) => {
-            if (!doesResultApplyToRow(rowType, rowAxleUnitNumber, result))
-              return;
-            fieldsForResult(result, rowType).forEach((field) => {
-              failures[field] = true;
-            });
-          },
-        );
+    normalizedRows.forEach(({ rowType, axleUnitNumber: rowAxleUnitNumber }) => {
+      const failures: Partial<Record<PolicyCheckIdType, boolean>> = {};
 
-        return failures;
-      },
-    );
+      getDefaultRequiredVal([], failedAxleCalculationResults).forEach(
+        (result) => {
+          if (!doesResultApplyToRow(rowType, rowAxleUnitNumber, result)) return;
+
+          fieldsForResult(result, rowType).forEach((field) => {
+            failures[field] = true;
+          });
+        },
+      );
+
+      axleCalculationFailures.push(failures);
+    });
+
+    return axleCalculationFailures;
   };
 
   const handleReset = () => {

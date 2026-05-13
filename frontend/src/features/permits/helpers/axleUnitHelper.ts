@@ -1,4 +1,5 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { isNull } from "../../../common/types/common";
 import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/constants";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 
@@ -86,19 +87,19 @@ export const validateAxleConfiguration = (
 ): boolean => {
   return axleConfiguration.every((axleUnit, index) => {
     const hasRequiredFields =
-      axleUnit.numberOfAxles !== null &&
-      axleUnit.numberOfTires !== null &&
-      axleUnit.tireSize !== null &&
-      axleUnit.axleUnitWeight !== null;
+      !isNull(axleUnit.numberOfAxles) &&
+      !isNull(axleUnit.numberOfTires) &&
+      !isNull(axleUnit.tireSize) &&
+      !isNull(axleUnit.axleUnitWeight);
 
     // axleSpread is required unless numberOfAxles === 1
     const hasAxleSpread =
       getDefaultRequiredVal(0, axleUnit.numberOfAxles) <= 1 ||
-      axleUnit.axleSpread !== null;
+      !isNull(axleUnit.axleSpread);
 
     // interaxleSpacing is required for all but the first axle unit (i.e. the first axle unit of the power unit)
     const hasInteraxleSpacing =
-      index === 0 || axleUnit.interaxleSpacing !== null;
+      index === 0 || !isNull(axleUnit.interaxleSpacing);
 
     return hasRequiredFields && hasAxleSpread && hasInteraxleSpacing;
   });

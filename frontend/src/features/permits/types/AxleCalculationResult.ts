@@ -1,4 +1,10 @@
-type PolicyCheckResultType = "pass" | "fail";
+export const POLICY_CHECK_RESULT_TYPES = {
+  PASS: "pass",
+  FAIL: "fail",
+};
+
+export type PolicyCheckResultType =
+  (typeof POLICY_CHECK_RESULT_TYPES)[keyof typeof POLICY_CHECK_RESULT_TYPES];
 
 export const POLICY_CHECK_ID_TYPES = {
   BRIDGE_FORMULA: "bridge-formula",
