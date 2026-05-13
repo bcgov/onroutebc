@@ -110,6 +110,7 @@ export interface ApplicationListItem {
   vin?: Nullable<string>;
   plate?: Nullable<string>;
   applicationQueueStatus?: ApplicationQueueStatus;
+  isRejectedApplication?: Nullable<boolean>;
   timeInQueue?: string;
   claimedBy?: string;
 }
