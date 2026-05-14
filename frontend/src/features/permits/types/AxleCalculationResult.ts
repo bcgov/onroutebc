@@ -7,6 +7,7 @@ export type PolicyCheckResultType =
   (typeof POLICY_CHECK_RESULT_TYPES)[keyof typeof POLICY_CHECK_RESULT_TYPES];
 
 export const POLICY_CHECK_ID_TYPES = {
+  BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
   CHECK_PERMITTABLE_WEIGHT: "check-permittable-weight",
   MAX_TIRE_LOAD: "max-tire-load",

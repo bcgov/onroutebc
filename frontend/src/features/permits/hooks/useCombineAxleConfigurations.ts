@@ -1,9 +1,8 @@
 import { Policy } from "onroute-policy-engine";
 import { Nullable } from "../../../common/types/common";
-import {
-  AxleConfiguration,
-  VehicleInConfiguration,
-} from "onroute-policy-engine/types";
+import { VehicleInConfiguration as VehicleInConfigurationPE } from "onroute-policy-engine/types";
+import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
+import { AxleConfiguration } from "../types/AxleUnit";
 
 export const useCombineAxleConfigurations = (
   policyEngine: Nullable<Policy>,
@@ -16,7 +15,7 @@ export const useCombineAxleConfigurations = (
         ) =>
           policyEngine.combineAxleConfigurations(
             powerUnitAxleConfiguration,
-            trailers,
+            trailers as VehicleInConfigurationPE[],
           )
       : undefined,
   };

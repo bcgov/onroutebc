@@ -11,8 +11,7 @@ import {
   VehicleInConfiguration,
 } from "../../../../../types/PermitVehicleConfiguration";
 import { AxleCalculationResult } from "../../../../../types/AxleCalculationResult";
-import { AxleConfiguration } from "onroute-policy-engine/types";
-import { AxleUnit } from "../../../../../types/AxleUnit";
+import { AxleUnit, AxleConfiguration } from "../../../../../types/AxleUnit";
 
 export const AxleSpacingAndWeightsSection = ({
   permitType,
@@ -58,7 +57,7 @@ export const AxleSpacingAndWeightsSection = ({
   combineAxleConfigurations?: (
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
-  ) => AxleUnit[];
+  ) => AxleConfiguration[];
   calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
