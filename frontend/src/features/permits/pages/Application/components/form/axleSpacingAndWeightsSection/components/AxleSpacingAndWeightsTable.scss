@@ -16,7 +16,21 @@
     &__input {
       margin: 0;
 
-      &--select {
+      &--fail {
+        fieldset,
+        .MuiOutlinedInput-notchedOutline {
+          border: 2px solid $bc-red;
+        }
+
+        &:hover {
+          fieldset,
+          .MuiOutlinedInput-notchedOutline {
+            border: 2px solid $bc-red;
+          }
+        }
+      }
+
+      &--tire-size {
         min-width: 144px;
         div.autocomplete__textfield {
           .MuiInputBase-root {
@@ -28,6 +42,7 @@
 
     &__input-container {
       margin: 0;
+
     }
 
     &__cell {
@@ -112,7 +127,7 @@
     display: flex;
     gap: 1.5rem;
     padding-top: 1.5rem;
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
   }
   
   .button {
@@ -177,9 +192,10 @@
         color: $bc-red;
       }
       &--success {
-        color: $bc-green;
+        color: $bc-black;
+        font-weight: bold;
+        padding: .5rem 0;
       }
     }
-
   }
 }

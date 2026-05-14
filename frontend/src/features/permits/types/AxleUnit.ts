@@ -1,5 +1,4 @@
-import { RequiredOrNull } from "./common";
-
+import { RequiredOrNull } from "../../../common/types/common";
 export interface AxleUnit {
   numberOfAxles?: RequiredOrNull<number>;
   axleSpread?: RequiredOrNull<number>;
@@ -8,6 +7,7 @@ export interface AxleUnit {
   // TODO change this to numberOfWheels in policy engine and frontend
   numberOfTires?: RequiredOrNull<number>;
   tireSize?: RequiredOrNull<number>;
+  vehicleIndex?: RequiredOrNull<number>;
 }
 
 // the type expected by the calculateBridge function in the policy engine
@@ -18,4 +18,5 @@ export interface AxleConfiguration {
   axleUnitWeight: number;
   numberOfTires?: number;
   tireSize?: number;
+  vehicleIndex?: number;
 }
