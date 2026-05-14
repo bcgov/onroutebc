@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
@@ -170,6 +171,23 @@ export const AxleSpacingAndWeightsTable = ({
       return trailer;
     });
 
+    // in order to validate trailer axle configurations we must create a flat array of them, it is important that we do this before calling combineAxleConfigurations, since this replaces undefined values with 0, which will incorrectly pass validation
+    const trailerAxleConfigurationData: AxleUnit[] = [];
+
+    mergedTrailers.forEach((trailer) => {
+      if (trailer.axleConfiguration) {
+        trailerAxleConfigurationData.push(...trailer.axleConfiguration);
+      }
+    });
+
+    if (
+      !validateAxleConfiguration(mergedPowerUnit) ||
+      !validateAxleConfiguration(trailerAxleConfigurationData)
+    ) {
+      setShowValidationBanner(true);
+      return;
+    }
+
     const combinedAxleConfigurationData = getDefaultRequiredVal(
       [],
       combineAxleConfigurations?.(
@@ -179,11 +197,6 @@ export const AxleSpacingAndWeightsTable = ({
         mergedTrailers,
       ),
     );
-
-    if (!validateAxleConfiguration(combinedAxleConfigurationData)) {
-      setShowValidationBanner(true);
-      return;
-    }
 
     const convertedAxleConfigurationData = combinedAxleConfigurationData.map(
       (axleUnit) => convertMetreValuesToCentimetres(axleUnit),
