@@ -87,10 +87,10 @@ export const validateAxleConfiguration = (
 ): boolean => {
   return axleConfiguration.every((axleUnit, index) => {
     const hasRequiredFields =
-      !isNull(axleUnit.numberOfAxles) &&
-      !isNull(axleUnit.numberOfTires) &&
-      !isNull(axleUnit.tireSize) &&
-      !isNull(axleUnit.axleUnitWeight);
+      isNull(axleUnit.numberOfAxles) &&
+      isNull(axleUnit.numberOfTires) &&
+      isNull(axleUnit.tireSize) &&
+      isNull(axleUnit.axleUnitWeight);
 
     // axleSpread is required unless numberOfAxles === 1
     const hasAxleSpread =
