@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./AxleSpacingAndWeightsTable.scss";
 import { useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
