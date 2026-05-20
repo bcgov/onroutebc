@@ -135,7 +135,7 @@ BEGIN
                 t.PERMIT_TYPE,
                 t.NEW_PERMIT_NUMBER,
                 t.PERMIT_NUMBER,
-                t.PERMIT_GENERATION - 1,
+                t.PERMIT_GENERATION - 1 AS PERMIT_GENERATION,
                 t.ISSUED_DATE,
                 t.START_DATE,
                 t.END_DATE,
@@ -156,7 +156,7 @@ BEGIN
             inserted.PERMIT_TYPE,
             inserted.NEW_PERMIT_NUMBER,
             inserted.PERMIT_NUMBER,
-            inserted.PERMIT_GENERATION,
+            inserted.PERMIT_GENERATION -1,
             inserted.ISSUED_DATE,
             inserted.START_DATE,
             inserted.END_DATE,
@@ -308,7 +308,7 @@ BEGIN
                     END
 
                     -- Build JSON‑style permit data
-                    SET @permit_data = CONCAT('{"companyName":"', STRING_ESCAPE(ISNULL(@LegalName, ''), 'json'), '",',
+                    SET @PermitData = CONCAT('{"companyName":"', STRING_ESCAPE(ISNULL(@LegalName, ''), 'json'), '",',
                             '"clientNumber":"', STRING_ESCAPE(ISNULL(@ClientNumber, ''), 'json'), '",',
                             '"startDate":"', @StartDate, '",',
                             '"expiryDate":"', @EndDate, '",',
