@@ -34,6 +34,14 @@ export const VEHICLE_TYPE_OPTIONS = [
   },
 ];
 
+export const HC_VEHICLE_TYPE_OPTIONS = [
+  ...VEHICLE_TYPE_OPTIONS,
+  {
+    value: "other",
+    label: "Other",
+  },
+];
+
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  */

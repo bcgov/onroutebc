@@ -181,3 +181,17 @@ export const getEndOfQuarter = (date: Dayjs | string) => {
 export const getQuarterForDate = (date: Dayjs | string) => {
   return dayjs(date).quarter();
 };
+
+/**
+ * Get the end of the year for any given datetime (ie. the date + time of 23:59:59 pm).
+ * @param date Any Dayjs object or date string representation
+ * @returns Dayjs object representing the end of the year for the datetime (with time 23:59:59 pm)
+ */
+export const getEndOfYear = (date: Dayjs | string) => {
+  return dayjs(date)
+    .endOf("year")
+    .hour(23)
+    .minute(59)
+    .second(59)
+    .millisecond(999);
+};

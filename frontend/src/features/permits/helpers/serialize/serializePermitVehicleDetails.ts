@@ -28,5 +28,6 @@ export const serializePermitVehicleDetails = (
       vehicleDetails.licensedGVW,
       null,
     ),
+    vehicleDescription: vehicleDetails.vehicleDescription,
   };
 };

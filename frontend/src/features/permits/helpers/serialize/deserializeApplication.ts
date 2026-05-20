@@ -5,7 +5,6 @@ import { Application, ApplicationResponseData } from "../../types/application";
 import { getDurationOrDefault } from "../getDefaultApplicationFormData";
 import { getExpiryDate } from "../permitState";
 import { minDurationForPermitType } from "../dateSelection";
-import { isQuarterlyPermit } from "../../types/PermitType";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -40,7 +39,7 @@ export const deserializeApplicationResponse = (
     response.permitData.expiryDate,
     getExpiryDate(
       startDateOrDefault,
-      isQuarterlyPermit(response.permitType),
+      response.permitType,
       durationOrDefault,
     ),
   );
