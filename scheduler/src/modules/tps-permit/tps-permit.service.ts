@@ -42,12 +42,13 @@ export class TpsPermitService {
       return false;
     }
 
+    //Identify permits with status as Pending, and processed flag as 1 (indicating the permit is in ORBC_PERMIT table and ready for S3 upload).
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository
       .createQueryBuilder('tpsPermit')
-      .innerJoin('tpsPermit.newPermit', 'newPermit')
       .where('tpsPermit.s3UploadStatus = :status', {
         status: S3uploadStatus.Pending,
       })
+      .andWhere('tpsPermit.processed = :processed', { processed: '1' })
       .select(['tpsPermit.migrationId'])
       .take(parseInt(process.env.TPS_POLL_LIMIT))
       .getMany();
@@ -118,7 +119,7 @@ export class TpsPermitService {
       s3VersionId: s3Object.VersionId,
       s3Location: s3Object.Location,
       objectMimeType: 'pdf',
-      fileName: tpsPermit?.newPermit?.permitNumber + '.pdf',
+      fileName: tpsPermit.newPermitNumber + '.pdf',
       dmsVersionId: dmsVersionId,
       companyId: companyId,
       createdDateTime: new Date(),
@@ -150,7 +151,6 @@ export class TpsPermitService {
     for (const id of ids) {
       const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
         where: { migrationId: id },
-        relations: ['newPermit'],
       });
 
       const permitExists = await this.permitExists(
