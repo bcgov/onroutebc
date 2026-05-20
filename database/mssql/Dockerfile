@@ -5,7 +5,7 @@ FROM --platform=$TARGETPLATFORM mcr.microsoft.com/mssql/server:2025-latest
 USER root
 
 # make sure PATH is defined for tools used during build
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/mssql-tools18/bin:$PATH"
 
 # prerequisites for adding Microsoft repository
 RUN apt-get update && \
