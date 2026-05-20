@@ -42,11 +42,16 @@ export class TpsPermitService {
       return false;
     }
 
-    const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
-      where: { s3UploadStatus: S3uploadStatus.Pending },
-      select: { migrationId: true },
-      take: parseInt(process.env.TPS_POLL_LIMIT),
-    });
+    const tpsPermits: TpsPermit[] = await this.tpsPermitRepository
+      .createQueryBuilder('tpsPermit')
+      .innerJoin('tpsPermit.newPermit', 'newPermit')
+      .where('tpsPermit.s3UploadStatus = :status', {
+        status: S3uploadStatus.Pending,
+      })
+      .select(['tpsPermit.migrationId'])
+      .take(parseInt(process.env.TPS_POLL_LIMIT))
+      .getMany();
+
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
     if (ids.length > 0) {
@@ -113,7 +118,7 @@ export class TpsPermitService {
       s3VersionId: s3Object.VersionId,
       s3Location: s3Object.Location,
       objectMimeType: 'pdf',
-      fileName: tpsPermit.newPermitNumber + '.pdf',
+      fileName: tpsPermit?.newPermit?.permitNumber + '.pdf',
       dmsVersionId: dmsVersionId,
       companyId: companyId,
       createdDateTime: new Date(),
@@ -145,6 +150,7 @@ export class TpsPermitService {
     for (const id of ids) {
       const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
         where: { migrationId: id },
+        relations: ['newPermit'],
       });
 
       const permitExists = await this.permitExists(
