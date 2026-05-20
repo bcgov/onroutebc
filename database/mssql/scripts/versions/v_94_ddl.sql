@@ -135,7 +135,7 @@ BEGIN
                 t.PERMIT_TYPE,
                 t.NEW_PERMIT_NUMBER,
                 t.PERMIT_NUMBER,
-                t.PERMIT_GENERATION,
+                t.PERMIT_GENERATION - 1,
                 t.ISSUED_DATE,
                 t.START_DATE,
                 t.END_DATE,
@@ -308,17 +308,15 @@ BEGIN
                     END
 
                     -- Build JSON‑style permit data
-                    SET @PermitData = CONCAT(
-                        '{"companyName":"', STRING_ESCAPE(ISNULL(@LegalName, ''), 'json'), '",
-                        "clientNumber":"', STRING_ESCAPE(ISNULL(@ClientNumber, ''), 'json'), '",
-                        "startDate":"', CONVERT(varchar(10), @StartDate, 23), '",
-                        "expiryDate":"', CONVERT(varchar(10), @EndDate, 23), '",
-                        "permitDuration":', DATEDIFF(day, @StartDate, @EndDate) + 1, ',
-                        "vehicleDetails":{
-                            "plate":"', STRING_ESCAPE(ISNULL(@Plate, ''), 'json'), '",
-                            "vin":"', STRING_ESCAPE(ISNULL(@Vin, ''), 'json'), '"
-                        }}'
-                    );
+                    SET @permit_data = CONCAT('{"companyName":"', STRING_ESCAPE(ISNULL(@LegalName, ''), 'json'), '",',
+                            '"clientNumber":"', STRING_ESCAPE(ISNULL(@ClientNumber, ''), 'json'), '",',
+                            '"startDate":"', @StartDate, '",',
+                            '"expiryDate":"', @EndDate, '",',
+                            '"permitDuration":', DATEDIFF(day, @StartDate, @EndDate) + 1, ',',
+                            '"vehicleDetails":{',
+                                '"plate":"', STRING_ESCAPE(ISNULL(@Plate, ''), 'json'), '",',
+                                '"vin":"', STRING_ESCAPE(ISNULL(@Vin, ''), 'json'), '"',
+                            '}}')                                        
 
                     -- Store the permit data
                     INSERT INTO permit.ORBC_PERMIT_DATA (
