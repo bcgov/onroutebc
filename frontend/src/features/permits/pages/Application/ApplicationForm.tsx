@@ -248,6 +248,7 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
+    // TODO validate the AxleSpacingsAndWeights table onContinue
     const updatedViolations = await triggerPolicyValidation();
 
     // If there are policy engine validation errors, form validation fails unless those violations

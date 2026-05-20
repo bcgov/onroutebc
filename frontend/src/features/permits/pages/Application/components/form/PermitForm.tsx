@@ -64,9 +64,11 @@ export const PermitForm = () => {
     enableLoadedGVW,
     enableNetWeight,
     tireSizeOptions,
-    calculateBridge,
+    runAxleCalculation,
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
+    combineAxleConfigurations,
+    calculateGCVW,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -198,9 +200,11 @@ export const PermitForm = () => {
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
           tireSizeOptions={tireSizeOptions}
-          calculateBridge={calculateBridge}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
+          runAxleCalculation={runAxleCalculation}
+          combineAxleConfigurations={combineAxleConfigurations}
+          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

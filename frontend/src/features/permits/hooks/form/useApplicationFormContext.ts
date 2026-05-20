@@ -20,8 +20,10 @@ import { useMemoizedSequence } from "../../../../common/hooks/useMemoizedSequenc
 import { useConditionalLicensingFees } from "../useConditionalLicensingFees";
 import { useVehicleWeights } from "../useVehicleWeights";
 import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
-import { useCalculateBridge } from "../useCalculateBridge";
+import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
+import { useCombineAxleConfigurations } from "../useCombineAxleConfigurations";
+import { useCalculateGCVW } from "../useCalculateGCVW";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -270,10 +272,15 @@ export const useApplicationFormContext = () => {
 
   const { tireSizeOptions } = useTireSizeOptions(policyEngine);
 
-  const { calculateBridge } = useCalculateBridge(policyEngine);
+  const { runAxleCalculation } = useRunAxleCalculation(policyEngine);
 
   const { canAddAxleUnitsToPowerUnit, canAddAxleUnitsToTrailer } =
     useCanAddAxleUnits(policyEngine);
+
+  const { combineAxleConfigurations } =
+    useCombineAxleConfigurations(policyEngine);
+
+  const { calculateGCVW } = useCalculateGCVW(policyEngine);
 
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
@@ -337,9 +344,11 @@ export const useApplicationFormContext = () => {
     enableLoadedGVW,
     enableNetWeight,
     tireSizeOptions,
-    calculateBridge,
+    runAxleCalculation,
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
+    combineAxleConfigurations,
+    calculateGCVW,
     onLeave,
     onSave,
     onCancel,

@@ -2,11 +2,11 @@ import { Policy } from "onroute-policy-engine";
 import { Nullable } from "../../../common/types/common";
 import { AxleConfiguration } from "../types/AxleUnit";
 
-export const useCalculateBridge = (policyEngine: Nullable<Policy>) => {
+export const useCalculateGCVW = (policyEngine: Nullable<Policy>) => {
   return {
-    calculateBridge: policyEngine
+    calculateGCVW: policyEngine
       ? (axleConfig: AxleConfiguration[]) =>
-          policyEngine.calculateBridge(axleConfig)
+          policyEngine.calculateGCVW(axleConfig)
       : undefined,
   };
 };

@@ -20,8 +20,8 @@ import {
   DEFAULT_EMPTY_SELECT_VALUE,
   DEFAULT_SELECT_OPTIONS,
 } from "../../../../../../../common/constants/constants";
-import { DEFAULT_TRAILER_AXLE_CONFIG } from "../../../../../../../common/constants/defaultAxleUnit";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
+import { DEFAULT_TRAILER_AXLE_CONFIG } from "../../../../../constants/constants";
 
 export const AddTrailer = ({
   selectedTrailers,

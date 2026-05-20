@@ -5,12 +5,16 @@ import { Autocomplete } from "../../../../../../../../common/components/form/sub
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
-import { AxleUnit } from "../../../../../../../../common/types/AxleUnit";
 import { IconButton, Tooltip } from "@mui/material";
+import {
+  POLICY_CHECK_ID_TYPES,
+  PolicyCheckIdType,
+} from "../../../../../../types/AxleCalculationResult";
+import { AxleUnit } from "../../../../../../types/AxleUnit";
 import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_TIRE_SIZE_OPTION,
-} from "../../../../../../../../common/constants/defaultAxleUnit";
+} from "../../../../../../constants/constants";
 
 export const AxleUnitRow = ({
   axleConfiguration,
@@ -19,7 +23,7 @@ export const AxleUnitRow = ({
   isTrailer,
   onUpdateAxleConfiguration,
   tireSizeOptions = [],
-  axleUnitFailures = [],
+  axleCalculationFailures = [],
   canAddAxleUnits,
 }: {
   axleConfiguration: AxleUnit[];
@@ -31,7 +35,7 @@ export const AxleUnitRow = ({
     name: string;
     size: number;
   }[];
-  axleUnitFailures?: boolean[];
+  axleCalculationFailures?: Array<Partial<Record<PolicyCheckIdType, boolean>>>;
   canAddAxleUnits?: boolean;
 }) => {
   const updateAxleUnit = (
@@ -87,18 +91,20 @@ export const AxleUnitRow = ({
         const canRemoveLastAxleUnit = axleUnitCount > defaultAxleUnitCount;
 
         const numberOfAxles = axleUnit?.numberOfAxles;
-        const disableAxleSpread = numberOfAxles === 1;
+        const disableAxleSpread = getDefaultRequiredVal(0, numberOfAxles) <= 1;
 
-        const axleUnitFailure = getDefaultRequiredVal(
-          false,
-          axleUnitFailures[index],
+        const axleCalculationFailure = getDefaultRequiredVal(
+          {},
+          axleCalculationFailures[index],
         );
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
             <td
               className={`${
-                axleUnitFailure ? "row__label row__label--fail" : "row__label"
+                axleCalculationFailure[POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA]
+                  ? "row__label row__label--fail"
+                  : "row__label"
               }`}
             >
               {!isInteraxleSpacingRow && (
@@ -143,7 +149,13 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      axleCalculationFailure[
+                        POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES
+                      ]
+                        ? "table__input--fail"
+                        : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
                     onBlur: ({ target: { value } }) => {
                       const updatedNumberOfAxles = convertToNumberIfValid(
@@ -158,7 +170,10 @@ export const AxleUnitRow = ({
                                 ...currentAxleUnit,
                                 numberOfAxles: updatedNumberOfAxles,
                                 axleSpread:
-                                  updatedNumberOfAxles === 1
+                                  getDefaultRequiredVal(
+                                    0,
+                                    updatedNumberOfAxles,
+                                  ) <= 1
                                     ? null
                                     : currentAxleUnit.axleSpread,
                               }
@@ -194,9 +209,11 @@ export const AxleUnitRow = ({
             <td className="table__cell">
               {!isInteraxleSpacingRow && (
                 <Autocomplete
-                  classes={{ root: "table__input-container" }}
+                  classes={{
+                    root: "table__input-container",
+                  }}
                   autocompleteProps={{
-                    className: "table__input table__input--select",
+                    className: "table__input table__input--tire-size",
                     clearIcon: null,
                     options: tireSizeOptions,
                     value: getDefaultRequiredVal(
@@ -236,6 +253,7 @@ export const AxleUnitRow = ({
                         convertToNumberIfValid(value, null),
                       );
                     },
+                    maskFn: (numericVal) => numericVal.toFixed(2),
                   }}
                 />
               )}
@@ -256,6 +274,7 @@ export const AxleUnitRow = ({
                     },
                     readOnly: disableAxleSpread,
                     disabled: disableAxleSpread,
+                    maskFn: (numericVal) => numericVal.toFixed(2),
                   }}
                 />
               )}
