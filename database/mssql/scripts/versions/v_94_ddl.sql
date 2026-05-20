@@ -67,17 +67,18 @@ BEGIN
     CREATE NONCLUSTERED INDEX [IX_ORBC_TPS_MIGRATED_PERMITS_PENDING]
         ON [tps].[ORBC_TPS_MIGRATED_PERMITS] ([PROCESSING_START_UTC], [MIGRATION_ID])
         INCLUDE ([PERMIT_TYPE], [NEW_PERMIT_NUMBER], [PERMIT_NUMBER], [PERMIT_GENERATION], [ISSUED_DATE], [START_DATE], [END_DATE], [PLATE], [VIN], [SERVICE], [CLIENT_HASH])
-        WHERE [PROCESSED] = 0 AND [PROCESSING_START_UTC] IS NULL;
+        WHERE [PROCESSED] = 0 AND [ERROR_MESSAGE] IS NULL;
 END
 GO
 
-CREATE OR ALTER PROCEDURE [tps].[ProcessMigratedTPSPermits]    
+CREATE OR ALTER PROCEDURE [tps].[PROCESS_MIGRATED_TPS_PERMITS]    
 AS
 BEGIN
     SET NOCOUNT ON;
-    SET XACT_ABORT OFF;
+    SET XACT_ABORT ON;
 
     DECLARE @BatchSize int = 500;
+    DECLARE @ClaimTimeoutMinutes int = 30;
 
     DECLARE @MigrationId bigint;
     DECLARE @PermitType nvarchar(50);
@@ -144,7 +145,7 @@ BEGIN
                 t.CLIENT_HASH
             FROM [tps].[ORBC_TPS_MIGRATED_PERMITS] AS t WITH (READPAST, UPDLOCK, ROWLOCK)
             WHERE t.PROCESSED = 0
-              AND t.PROCESSING_START_UTC IS NULL
+              AND (t.PROCESSING_START_UTC IS NULL OR t.PROCESSING_START_UTC < DATEADD(MINUTE, -@ClaimTimeoutMinutes, GETUTCDATE()))
               AND t.ERROR_MESSAGE IS NULL
             ORDER BY t.MIGRATION_ID
         )
@@ -352,7 +353,7 @@ BEGIN
                     ROLLBACK TRANSACTION;
 
                 -- Capture the error message
-                SET @ErrorMessage = LEFT(ERROR_MESSAGE(), 1000);
+                SET @ErrorMessage = LEFT(CONCAT('Error ',ERROR_NUMBER(),' at line ',ERROR_LINE(),': ',ERROR_MESSAGE()),1000);
 
                 -- Mark the record with the error.
                 -- Clear PROCESSING_START_UTC so the row can be retried later.
