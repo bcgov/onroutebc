@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { S3uploadStatus } from '../../common/enum/s3-upload-status.enum';
-import { Permit } from 'src/modules/common/entities/permit.entity';
 
 @Entity({ name: 'tps.ORBC_TPS_MIGRATED_PERMITS' })
 export class TpsPermit {
@@ -32,17 +25,17 @@ export class TpsPermit {
   })
   permitNumber: string;
 
+  @AutoMap()
   @ApiProperty({
     example: 'P2-00000002-120',
     description: 'Unique formatted orbc compliant permit number.',
   })
-  @AutoMap(() => Permit)
-  @OneToOne(() => Permit, { cascade: false, eager: false, nullable: true })
-  @JoinColumn({
+  @Column({
+    length: '19',
     name: 'NEW_PERMIT_NUMBER',
-    referencedColumnName: 'permitNumber',
+    nullable: true,
   })
-  newPermit: Permit;
+  newPermitNumber: string;
 
   @AutoMap()
   @ApiProperty({
@@ -104,4 +97,12 @@ export class TpsPermit {
     name: 'DB_LAST_UPDATE_TIMESTAMP',
   })
   lastUpdateTimestamp: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Processed Flag - 1 (Processed)/ 0 (Not Processed)',
+  })
+  @Column({ type: 'bit', name: 'PROCESSED', nullable: false, default: 0 })
+  processed: string;
 }
