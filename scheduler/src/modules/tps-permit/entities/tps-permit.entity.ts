@@ -97,4 +97,12 @@ export class TpsPermit {
     name: 'DB_LAST_UPDATE_TIMESTAMP',
   })
   lastUpdateTimestamp: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Processed Flag - 1 (Processed)/ 0 (Not Processed)',
+  })
+  @Column({ type: 'bit', name: 'PROCESSED', nullable: false, default: 0 })
+  processed: string;
 }

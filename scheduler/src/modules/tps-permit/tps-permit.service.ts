@@ -42,11 +42,17 @@ export class TpsPermitService {
       return false;
     }
 
-    const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
-      where: { s3UploadStatus: S3uploadStatus.Pending },
-      select: { migrationId: true },
-      take: parseInt(process.env.TPS_POLL_LIMIT),
-    });
+    //Identify permits with status as Pending, and processed flag as 1 (indicating the permit is in ORBC_PERMIT table and ready for S3 upload).
+    const tpsPermits: TpsPermit[] = await this.tpsPermitRepository
+      .createQueryBuilder('tpsPermit')
+      .where('tpsPermit.s3UploadStatus = :status', {
+        status: S3uploadStatus.Pending,
+      })
+      .andWhere('tpsPermit.processed = :processed', { processed: '1' })
+      .select(['tpsPermit.migrationId'])
+      .take(parseInt(process.env.TPS_POLL_LIMIT))
+      .getMany();
+
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
     if (ids.length > 0) {

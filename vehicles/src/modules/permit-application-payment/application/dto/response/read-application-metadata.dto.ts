@@ -139,6 +139,14 @@ export class ReadApplicationMetadataDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Indicates if the application has been rejected by the staff.',
+    example: true,
+    required: false,
+  })
+  isRejectedApplication?: Nullable<boolean>;
+
+  @AutoMap()
+  @ApiProperty({
     description: `Duration for which the application has been in queue, formatted as hh:mm. This field is only visible to users with the following roles: ${Object.values(IDIR_USER_ROLE_LIST).join(', ')}.`,
     example: '01:22',
     required: false,

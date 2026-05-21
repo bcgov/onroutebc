@@ -1,9 +1,9 @@
+import { Nullable, RequiredOrNull } from "../../../../common/types/common";
+import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
 import {
   convertCentimetreValuesToMetres,
   unmergeInteraxleSpacingRows,
-} from "../../../../common/helpers/axleUnitHelper";
-import { Nullable, RequiredOrNull } from "../../../../common/types/common";
-import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
+} from "../axleUnitHelper";
 
 /**
  * Deserialize permit vehicle configuration values from API payload.

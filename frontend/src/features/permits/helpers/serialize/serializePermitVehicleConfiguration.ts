@@ -1,10 +1,10 @@
-import {
-  convertMetreValuesToCentimetres,
-  mergeInteraxleSpacing,
-} from "../../../../common/helpers/axleUnitHelper";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
+import {
+  convertMetreValuesToCentimetres,
+  mergeInteraxleSpacing,
+} from "../axleUnitHelper";
 
 /**
  * Serialize permit vehicle configuration values as request payload.

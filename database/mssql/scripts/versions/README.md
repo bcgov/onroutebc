@@ -447,4 +447,21 @@
 
 ### Version 93:
 
-- Updates to policy config to allow axle units to be added for power units and trailers. Add new trailer subtype. 
+- Updates to policy config to allow axle units to be added for power units and trailers. Add new trailer subtype.
+
+### Version 94:
+
+- Replace `tps.ORBC_TPS_MIGRATED_PERMITS_TRG` trigger with a batch stored procedure
+- Add error tracking and processing metadata to `tps.ORBC_TPS_MIGRATED_PERMITS` (`ERROR_MESSAGE`, `PROCESSING_START_UTC`)
+- Make `PROCESSED` non-nullable with a default of `0`
+- Add indexes for processed, pending, and error rows
+- Add `tps.PROCESS_MIGRATED_TPS_PERMITS` to process migrated permits in batches and mark records processed or errored
+
+### Version 95:
+
+- Replace `tps.ORBC_TPS_MIGRATED_CLIENTS_TRG` and `tps.ORBC_TPS_MIGRATED_USERS_TRG` triggers with batch processing
+- Add error tracking and processing metadata to `tps.ORBC_TPS_MIGRATED_CLIENTS` and `tps.ORBC_TPS_MIGRATED_USERS`
+- Make `PROCESSED` non-nullable with a default of `0`
+- Add indexes for processed, pending, and error rows
+- Add `tps.PROCESS_MIGRATED_TPS_CLIENTS_AND_USERS` to batch process migrated clients and users and insert pending migrated user records
+
