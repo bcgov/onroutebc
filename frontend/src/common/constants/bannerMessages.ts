@@ -16,6 +16,14 @@ export const BANNER_MESSAGES = {
       "Your vehicle may not be available in a permit application because it cannot be used for the type of permit you are applying for.",
     INELIGIBLE_SUBTYPES:
       "If you are creating a new vehicle, a desired Vehicle Sub-Type may not be available because it is not eligible for the permit application you are currently in.",
+    HAS_INSURANCE_INFO:
+      "If your vehicle has a MV1805/APV96, you will be unable to choose it from your inventory or add/update it to your inventory.",
+    OTHER_VEHICLE_TYPE_INFO_START:
+      "If you select",
+    OTHER_VEHICLE_TYPE_VALUE:
+      "Other",
+    OTHER_VEHICLE_TYPE_INFO_END:
+      "for Vehicle Type, you will be unable to add/update it to your inventory.",
   },
   ISSUED_PERMIT_NUMBER_2_YEARS:
     "Enter any Permit No. issued to the above Client No. in the last 2 years",
