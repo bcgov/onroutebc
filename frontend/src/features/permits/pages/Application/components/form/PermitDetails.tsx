@@ -78,6 +78,9 @@ export const PermitDetails = ({
       ? warnPastStartDate()
       : null;
 
+  const showDurationSelection = !isQuarterlyPermit(permitType)
+    && permitType !== PERMIT_TYPES.HC;
+
   return (
     <Box className="permit-details">
       <Box className="permit-details__header">
@@ -117,7 +120,7 @@ export const PermitDetails = ({
             )}
           />
 
-          {!isQuarterlyPermit(permitType) ? (
+          {showDurationSelection ? (
             <CustomFormComponent
               className="permit-details__input permit-details__input--duration"
               type="select"
