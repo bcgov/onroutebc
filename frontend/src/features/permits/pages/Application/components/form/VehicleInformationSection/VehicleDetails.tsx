@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   FormControl,
@@ -41,6 +41,7 @@ import {
   Vehicle,
   VehicleType,
   VEHICLE_TYPE_OPTIONS,
+  HC_VEHICLE_TYPE_OPTIONS,
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
@@ -86,6 +87,12 @@ export const VehicleDetails = ({
   onClearVehicle: (saveVehicle: boolean) => void;
   disableSubtypeSelection?: Nullable<boolean>;
 }) => {
+  const vehicleTypeOptions = useMemo(() => {
+    return permitType === PERMIT_TYPES.HC
+      ? HC_VEHICLE_TYPE_OPTIONS
+      : VEHICLE_TYPE_OPTIONS;
+  }, [permitType]);
+
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
   const disableVehicleType = (
     [
@@ -347,7 +354,7 @@ export const VehicleDetails = ({
               },
               label: "Vehicle Type",
             }}
-            menuOptions={VEHICLE_TYPE_OPTIONS.map((data) => (
+            menuOptions={vehicleTypeOptions.map((data) => (
               <MenuItem
                 key={data.value}
                 value={data.value}

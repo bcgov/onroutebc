@@ -299,6 +299,20 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateHaveCertificate = useCallback((updatedHaveCertificate: boolean) => {
+    setValue(
+      "permitData.icbcInsuranceCertificate.haveCertificate",
+      updatedHaveCertificate,
+    );
+  }, [setValue]);
+
+  const onUpdateICBCCertificateNumber = useCallback((updatedCertificateNumber?: Nullable<string>) => {
+    setValue(
+      "permitData.icbcInsuranceCertificate.certificateNumber",
+      updatedCertificateNumber,
+    );
+  }, [setValue]);
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -332,5 +346,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onUpdateHaveCertificate,
+    onUpdateICBCCertificateNumber,
   };
 };

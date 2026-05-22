@@ -1,0 +1,52 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".icbc-insurance-certificate-section");
+@include orbcStyles.permit-left-box-style(".icbc-insurance-certificate-section__header");
+@include orbcStyles.permit-right-box-style(".icbc-insurance-certificate-section__body");
+
+.icbc-insurance-certificate-section {
+  &__info-banner {
+    //margin-bottom: 1.5rem;
+    width: auto;
+
+    .certificate-info {
+      &__section {
+        margin-top: 2rem;
+        font-weight: normal;
+
+        &--first {
+          margin-top: 0;
+        }
+      }
+
+      &__highlighted-text {
+        font-weight: bold;
+        margin: 0 0.25rem;
+      }
+    }
+  }
+
+  & &__input {
+    max-width: 30.625rem;
+
+    .custom-form-control {
+      margin: 1.5rem 0 0 0;
+    }
+  }
+
+  & &__have-certificate-header {
+    margin: 0;
+    padding: 1.5rem 0 1rem;
+  }
+
+  & &__radio-group {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .have-certificate {
+    &--yes {
+      margin-left: 1.5rem;
+    }
+  }
+}

@@ -24,6 +24,7 @@ import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 import { useCombineAxleConfigurations } from "../useCombineAxleConfigurations";
 import { useCalculateGCVW } from "../useCalculateGCVW";
+import { useICBCInsuranceCertificate } from "../useICBCInsuranceCertificate";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -62,6 +63,7 @@ export const useApplicationFormContext = () => {
     onSetConditions,
     onToggleSaveVehicle,
     onSetVehicle,
+    onSetPlate,
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
@@ -78,6 +80,8 @@ export const useApplicationFormContext = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onUpdateHaveCertificate,
+    onUpdateICBCCertificateNumber,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -87,6 +91,7 @@ export const useApplicationFormContext = () => {
     loas,
     permitDuration,
     startDate: permitStartDate,
+    icbcInsuranceCertificate,
     commodities,
     vehicleDetails: vehicleFormData,
     permittedRoute,
@@ -207,6 +212,14 @@ export const useApplicationFormContext = () => {
     () => handleClearVehicle(Boolean(vehicleFormData.saveVehicle)),
     onClearVehicleConfig,
     permittedCommodity?.commodityType,
+  );
+
+  useICBCInsuranceCertificate(
+    permitType,
+    Boolean(icbcInsuranceCertificate?.haveCertificate),
+    onUpdateICBCCertificateNumber,
+    onSetPlate,
+    icbcInsuranceCertificate?.certificateNumber,
   );
 
   // Check to see if vehicle details is still valid after LOA has been deselected
@@ -378,5 +391,7 @@ export const useApplicationFormContext = () => {
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
+    haveCertificate: Boolean(icbcInsuranceCertificate?.haveCertificate),
+    onUpdateHaveCertificate,
   };
 };
