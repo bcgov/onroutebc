@@ -43,6 +43,7 @@ export const VehicleInformationSection = ({
   trailerSubtypeNamesMap,
   selectedTrailers,
   selectedCommodityType,
+  haveICBCCertificate,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
@@ -65,6 +66,7 @@ export const VehicleInformationSection = ({
   trailerSubtypeNamesMap: Map<string, string>;
   selectedTrailers: VehicleInConfiguration[];
   selectedCommodityType?: Nullable<string>;
+  haveICBCCertificate: boolean;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
@@ -225,6 +227,7 @@ export const VehicleInformationSection = ({
               subtypeOptions={subtypeOptions}
               isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
+              haveICBCCertificate={haveICBCCertificate}
               permitType={permitType}
               onSetSaveVehicle={onSetSaveVehicle}
               onSetVehicle={onSetVehicle}

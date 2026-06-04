@@ -63,6 +63,7 @@ export const useApplicationFormContext = () => {
     onSetConditions,
     onToggleSaveVehicle,
     onSetVehicle,
+    onSetVehicleId,
     onSetPlate,
     onClearVehicle,
     onUpdateLOAs,
@@ -219,6 +220,8 @@ export const useApplicationFormContext = () => {
     Boolean(icbcInsuranceCertificate?.haveCertificate),
     onUpdateICBCCertificateNumber,
     onSetPlate,
+    onSetVehicleId,
+    onToggleSaveVehicle,
     icbcInsuranceCertificate?.certificateNumber,
   );
 

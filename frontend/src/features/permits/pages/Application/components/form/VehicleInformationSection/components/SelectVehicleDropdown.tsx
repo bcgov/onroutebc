@@ -46,6 +46,7 @@ export const SelectVehicleDropdown = ({
   selectedVehicle,
   label,
   vehicleOptions,
+  disabled = false,
   handleSelectVehicle,
   handleClearVehicle,
 }: {
@@ -53,6 +54,7 @@ export const SelectVehicleDropdown = ({
   selectedVehicle: Nullable<PermitVehicleDetails>;
   label: string;
   vehicleOptions: Vehicle[];
+  disabled?: boolean;
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
@@ -99,6 +101,8 @@ export const SelectVehicleDropdown = ({
             handleSelectVehicle(value);
           }
         }}
+        disabled={disabled}
+        readOnly={disabled}
         value={selectedOption}
         inputValue={vehicleTextValue}
         onInputChange={(_, value) => setVehicleTextValue(value)}

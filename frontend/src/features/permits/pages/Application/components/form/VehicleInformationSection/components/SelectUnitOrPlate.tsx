@@ -9,20 +9,18 @@ import "./SelectUnitOrPlate.scss";
 import { CustomSelectDisplayProps } from "../../../../../../../../common/types/formElements";
 import { Optional } from "../../../../../../../../common/types/common";
 
-/**
- * This simple MUI select component without
- * integration with React Hook Forms
- */
 export const SelectUnitOrPlate = ({
   value,
   label,
   onChange,
   menuItems,
+  disabled = false,
 }: {
   value: string;
   label: string;
   onChange: (event: SelectChangeEvent) => void;
   menuItems: Optional<JSX.Element[]>;
+  disabled?: boolean;
 }) => (
   <FormControl
     margin="normal"
@@ -41,6 +39,8 @@ export const SelectUnitOrPlate = ({
       MenuProps={{
         className: "select-unit-or-plate__menu",
       }}
+      readOnly={disabled}
+      disabled={disabled}
     >
       {menuItems}
     </Select>

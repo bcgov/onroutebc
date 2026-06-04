@@ -10,6 +10,7 @@ export const VEHICLE_TYPES = {
 export type VehicleType = (typeof VEHICLE_TYPES)[keyof typeof VEHICLE_TYPES];
 
 export const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
+export const OTHER_VEHICLE_TYPE = "other";
 
 /**
  * Gets display text for vehicle type.

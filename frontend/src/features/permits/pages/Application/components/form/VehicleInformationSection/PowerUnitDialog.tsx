@@ -165,6 +165,7 @@ export const PowerUnitDialog = ({
               onSetVehicle={onSetVehicle}
               onClearVehicle={onClearVehicle}
               disableSubtypeSelection={isEditMode}
+              haveICBCCertificate={false}
             />
           </DialogContent>
 

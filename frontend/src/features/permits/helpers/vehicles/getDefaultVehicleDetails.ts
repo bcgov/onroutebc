@@ -22,6 +22,6 @@ export const getDefaultVehicleDetails = (
   vehicleType: getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, vehicleDetails?.vehicleType),
   vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
   licensedGVW: getDefaultRequiredVal(null, vehicleDetails?.licensedGVW),
-  vehicleDescrption: getDefaultRequiredVal(null, vehicleDetails?.vehicleDescription),
+  vehicleDescription: getDefaultRequiredVal(null, vehicleDetails?.vehicleDescription),
   saveVehicle: false,
 });
