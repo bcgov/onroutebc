@@ -504,6 +504,7 @@ export const VehicleDetails = ({
           <Box className="save-to-inventory__radio-btns">
             <FormControlLabel
               value={true}
+              className="save-to-inventory-option save-to-inventory-option--yes"
               control={
                 <Radio
                   key={`radio-save-vehicle-yes`}
@@ -514,12 +515,20 @@ export const VehicleDetails = ({
                   }
                   readOnly={shouldDisableSaveVehicleToInventory}
                   disabled={shouldDisableSaveVehicleToInventory}
+                  classes={{
+                    root: "save-to-inventory-option__radio",
+                    disabled: "save-to-inventory-option__radio--disabled",
+                  }}
                 />
               }
               label="Yes"
+              classes={{
+                label: "save-to-inventory-option__label",
+              }}
             />
 
             <FormControlLabel
+              className="save-to-inventory-option save-to-inventory-option--no"
               value={false}
               control={
                 <Radio
@@ -531,9 +540,16 @@ export const VehicleDetails = ({
                   }
                   readOnly={shouldDisableSaveVehicleToInventory}
                   disabled={shouldDisableSaveVehicleToInventory}
+                  classes={{
+                    root: "save-to-inventory-option__radio",
+                    disabled: "save-to-inventory-option__radio--disabled",
+                  }}
                 />
               }
               label="No"
+              classes={{
+                label: "save-to-inventory-option__label",
+              }}
             />
           </Box>
         </RadioGroup>

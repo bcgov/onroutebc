@@ -113,7 +113,14 @@ export const SelectVehicleDropdown = ({
           if (!option.unitNumber) option.unitNumber = EMPTY_VEHICLE_UNIT_NUMBER;
           return chooseFrom == VEHICLE_CHOOSE_FROM.PLATE ? option.plate : option.unitNumber;
         }}
-        className="select-vehicle-dropdown__autocomplete"
+        className={
+          `select-vehicle-dropdown__autocomplete ${
+            disabled ? "select-vehicle-dropdown__autocomplete--disabled" : ""
+          }`
+        }
+        classes={{
+          endAdornment: "select-vehicle-dropdown__end-adornment",
+        }}
         renderOption={(props, option) => {
           if (!option) return "";
 
@@ -142,6 +149,7 @@ export const SelectVehicleDropdown = ({
             sx={{ padding: 0 }}
             {...{
               ...params,
+              className: "autocomplete-textfield",
               inputProps: {
                 ...params.inputProps,
                 "data-testid": "select-vehicle-autocomplete",
