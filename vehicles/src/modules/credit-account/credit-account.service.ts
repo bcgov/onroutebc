@@ -70,6 +70,7 @@ import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
 import { getToDateForGarms } from '../../common/helper/garms.helper';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
+import { ReadCreditAccountDetailsDto } from './dto/response/read-credit-account-details.dto';
 
 /**
  * Service functions for credit account operations.
@@ -1653,6 +1654,73 @@ export class CreditAccountService {
         }),
       },
     );
+  }
+
+  /**
+   * Retrieves credit account details from eGARMS and verifies ORBC existence.
+   *
+   * This method fetches credit account details from eGARMS for the provided credit account number
+   * and determines whether the account exists in ORBC. If the account is present in ORBC, it also
+   * calculates the ORBC amount adjustment and maps the combined data into a ReadCreditAccountDetailsDto.
+   *
+   * @param creditAccountNumber - The credit account number.
+   * @param currentUser - The current authenticated user.
+   * @param mapBasedonRole - Optional flag to map based on the user's role.
+   * @returns {Promise<ReadCreditAccountDetailsDto>} - The combined credit account details.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountDetailsFromEGARMSandVerifyORBC({
+    creditAccountNumber,
+    currentUser,
+    mapBasedonRole,
+  }: {
+    creditAccountNumber: string;
+    currentUser: IUserJWT;
+    mapBasedonRole?: Nullable<boolean>;
+  }): Promise<ReadCreditAccountDetailsDto> {
+    const egarmsCreditAccountDetailsPromise =
+      this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+        creditAccountNumber,
+      );
+
+    const readCreditAccountDetailsDto = new ReadCreditAccountDetailsDto();
+
+    let creditAccount = await this.findOneByCreditAccountNumber(
+      currentUser,
+      creditAccountNumber,
+    );
+
+    readCreditAccountDetailsDto.isExistingInORBC = !!creditAccount;
+
+    const egarmsCreditAccountDetails = await egarmsCreditAccountDetailsPromise;
+
+    let orbcAmountToAdjust = 0;
+    if (creditAccount) {
+      orbcAmountToAdjust = await this.getCreditAccountAmountToAdjust(
+        creditAccount.creditAccountId,
+      );
+    }
+
+    if (!readCreditAccountDetailsDto?.isExistingInORBC) {
+      creditAccount = new CreditAccount();
+    }
+
+    const readCreditAccountLimitDto = await this.classMapper.mapAsync(
+      creditAccount,
+      CreditAccount,
+      ReadCreditAccountLimitDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+          egarmsCreditAccountDetails: egarmsCreditAccountDetails,
+          orbcAmountToAdjust: orbcAmountToAdjust,
+          mapBasedonRole: mapBasedonRole,
+        }),
+      },
+    );
+
+    readCreditAccountDetailsDto.creditAccountLimits = readCreditAccountLimitDto;
+    return readCreditAccountDetailsDto;
   }
 
   /**
