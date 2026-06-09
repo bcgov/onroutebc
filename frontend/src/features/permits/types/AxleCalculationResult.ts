@@ -16,6 +16,7 @@ export const POLICY_CHECK_ID_TYPES = {
   MINIMUM_STEER_AXLE_WEIGHT: "minimum-steer-axle-weight",
   NUMBER_OF_AXLES: "number-of-axles",
   NUMBER_OF_WHEELS_PER_AXLE: "number-of-wheels",
+  TRUCK_TRACTOR_WHEELBASE: "truck-tractor-wheelbase",
 } as const;
 
 export type PolicyCheckIdType =
