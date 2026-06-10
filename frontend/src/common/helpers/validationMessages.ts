@@ -1,3 +1,4 @@
+import { EGARMS_ERROR_CODE_TYPE } from "../../features/settings/types/creditAccount";
 import validationMessages from "../constants/validation_messages.json";
 
 const replacePlaceholders = (
@@ -166,6 +167,17 @@ export const provinceVehicleDoesNotRequirePermit = (province: string) => {
 
   return replacePlaceholders(messageTemplate, placeholders, province);
 };
+
+export const creditAccountNumberNotFound = () =>
+  validationMessages.creditAccount.creditAccountNumber.defaultMessage;
+
+export const creditAccountNumberAlreadyAssigned = () =>
+  validationMessages.creditAccount.creditAccountNumber.alreadyAssigned.defaultMessage;
+
+export const creditAccounteGARMSError = (eGARMSReturnCode: EGARMS_ERROR_CODE_TYPE, message: string) =>{
+  const { messageTemplate, placeholders } = validationMessages.creditAccount.eGARMSError;
+  return replacePlaceholders(messageTemplate, placeholders, eGARMSReturnCode, message);
+}
 
 /**
  * Checks if a given string is

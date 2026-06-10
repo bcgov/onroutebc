@@ -11,11 +11,12 @@ import { usePermissionMatrix } from "../../../../common/authentication/Permissio
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 import { TabComponentProps } from "../../../../common/components/tabs/types/TabComponentProps";
+import { RenderIf } from "../../../../common/components/reusable/RenderIf";
+import { AddCreditAccountAction } from "../creditAccount/AddCreditAccountAction";
 
-export const ManageSettingsDashboard = React.memo(() => {
-  const { companyId } = useContext(OnRouteBCContext);
+const ManageSettingsDashboardInner = ({ companyId }: { companyId: number }) => {
   const { data: creditAccountMetadata, isPending } =
-    useGetCreditAccountMetadataQuery(companyId as number, true);
+    useGetCreditAccountMetadataQuery(companyId, true);
 
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
@@ -65,10 +66,6 @@ export const ManageSettingsDashboard = React.memo(() => {
     setHideSuspendTab(hide);
   };
 
-  if (!companyId) {
-    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
-  }
-
   const tabs = [
     canViewSpecialAuthorizations
       ? {
@@ -103,15 +100,70 @@ export const ManageSettingsDashboard = React.memo(() => {
     return tabIndex;
   };
 
-  const selectedTab = getSelectedTabFromNavigation();
+  const selectedTabIndex = getSelectedTabFromNavigation();
+
+  const showAddCreditAccountButton = (selectedTabIndex: number) => {
+    const creditAccountTabIndex = tabs?.findIndex(
+      (tab) => tab.componentKey === SETTINGS_TABS.CREDIT_ACCOUNT,
+    );
+
+    return (
+      !isPending &&
+      !creditAccountMetadata &&
+      selectedTabIndex === creditAccountTabIndex
+    );
+  };
+
+  const [
+    shouldShowAddCreditAccountButton,
+    setShouldShowAddCreditAccountButton,
+  ] = useState<boolean>(showAddCreditAccountButton(selectedTabIndex));
+
+  // Set whether or not to show "Add Credit Account" button when tab changes
+  const handleTabChange = (selectedTabIndex: number) => {
+    setShouldShowAddCreditAccountButton(
+      showAddCreditAccountButton(selectedTabIndex),
+    );
+  };
+
+  const confirmAddCreditAccount = () => {
+    setShouldShowAddCreditAccountButton(false);
+  };
 
   return (
     <TabLayout
       bannerText="Settings"
       componentList={tabs}
-      selectedTabIndex={selectedTab}
+      selectedTabIndex={selectedTabIndex}
+      onTabChange={handleTabChange}
+      bannerButton={
+        <RenderIf
+          component={
+            <AddCreditAccountAction
+              companyId={companyId}
+              onConfirm={confirmAddCreditAccount}
+            />
+          }
+          featureFlag="CREDIT-ACCOUNT"
+          permissionMatrixKeys={{
+            permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+            permissionMatrixFunctionKey: "ADD_CREDIT_ACCOUNT_HOLDER",
+          }}
+          additionalConditionToCheck={() => shouldShowAddCreditAccountButton}
+        />
+      }
     />
   );
+};
+
+export const ManageSettingsDashboard = React.memo(() => {
+  const { companyId } = useContext(OnRouteBCContext);
+
+  if (!companyId) {
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+  }
+
+  return <ManageSettingsDashboardInner companyId={companyId} />;
 });
 
 ManageSettingsDashboard.displayName = "ManageSettingsDashboard";

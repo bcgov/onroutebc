@@ -279,3 +279,8 @@ export interface CreditAccountLimitData {
   availableCredit: number;
   egarmsReturnCode?: EGARMS_ERROR_CODE_TYPE | EGARMS_SUCCESS_CODE_TYPE;
 }
+
+export interface CreditAccountDetailsEgarmsData {
+  isExistingInORBC: boolean;
+  creditAccountLimits: CreditAccountLimitData;
+}

@@ -56,4 +56,5 @@ export const BANNER_MESSAGES = {
     "The shopping cart contains Application(s) with one or more errors. Those applications must be deselected or removed from the cart to proceed with payment. Common errors include, but are not limited to, start date is in the past or an invalid vehicle.",
   CONVERSION_FACTS:
     "1 mm = 0.1 cm; 1 inch = 2.54 cm; 1 lb = 0.455 kg; 1 ft = 0.305 m.",
+  CREDIT_ACCOUNT_VERIFY_CLIENT_DETAILS: "Verify Client Details",
 };
