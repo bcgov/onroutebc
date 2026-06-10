@@ -334,6 +334,9 @@ export const AmendPermitReview = () => {
           amendmentApplication?.permitData?.conditionalLicensingFee
         }
         companyId={companyId}
+        icbcInsuranceCertificate={
+          amendmentApplication?.permitData?.icbcInsuranceCertificate
+        }
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
