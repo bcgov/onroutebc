@@ -1,5 +1,6 @@
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 
 /**
  * Serialize permit vehicles details data to be used as request payload.
@@ -19,7 +20,10 @@ export const serializePermitVehicleDetails = (
     countryCode: vehicleDetails.countryCode,
     provinceCode: vehicleDetails.provinceCode,
     vehicleType: vehicleDetails.vehicleType,
-    vehicleSubType: vehicleDetails.vehicleSubType,
+    vehicleSubType: (
+      !vehicleDetails.vehicleSubType
+      || vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
+    ) ? "" : vehicleDetails.vehicleSubType,
     saveVehicle: vehicleDetails.saveVehicle,
     unitNumber: vehicleDetails.unitNumber,
     // Either powerUnitId or trailerId, depending on vehicleType
