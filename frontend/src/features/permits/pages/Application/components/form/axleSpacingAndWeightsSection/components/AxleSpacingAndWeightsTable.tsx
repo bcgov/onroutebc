@@ -132,6 +132,7 @@ export const AxleSpacingAndWeightsTable = ({
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
     POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
+    POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
   ]);
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
@@ -302,6 +303,11 @@ export const AxleSpacingAndWeightsTable = ({
 
         case POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA:
           return [POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA];
+
+        case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE]
+            : [];
 
         default:
           return [];
