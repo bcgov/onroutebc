@@ -14,14 +14,18 @@ export const OTHER_VEHICLE_TYPE = "other";
 
 /**
  * Gets display text for vehicle type.
- * @param vehicleType Vehicle type (power unit or trailer)
+ * @param vehicleType Vehicle type
  * @returns Display text for the vehicle type
  */
-export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
-  if (vehicleType === VEHICLE_TYPES.TRAILER) {
-    return "Trailer";
+export const vehicleTypeDisplayText = (vehicleType: string) => {
+  switch (vehicleType) {
+    case VEHICLE_TYPES.TRAILER:
+      return "Trailer";
+    case VEHICLE_TYPES.POWER_UNIT:
+      return "Power Unit";
+    default:
+      return "Other";
   }
-  return "Power Unit";
 };
 
 export const VEHICLE_TYPE_OPTIONS = [
