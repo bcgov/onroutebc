@@ -1,4 +1,4 @@
-import { Row } from "@tanstack/table-core/build/lib/types";
+import { Row } from "@tanstack/table-core";
 
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";

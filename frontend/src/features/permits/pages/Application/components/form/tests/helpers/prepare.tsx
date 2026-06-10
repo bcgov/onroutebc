@@ -1,8 +1,7 @@
 import { render } from "@testing-library/react";
 import { FormProvider, useForm } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
-import userEvent from "@testing-library/user-event";
-import { Options } from "@testing-library/user-event/dist/types/options";
+import userEvent, { Options } from "@testing-library/user-event";
 
 import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
 import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
