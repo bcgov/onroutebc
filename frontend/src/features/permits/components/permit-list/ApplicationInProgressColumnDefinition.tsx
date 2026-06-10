@@ -48,7 +48,7 @@ export const ApplicationInProgressColumnDefinition = (
         </>
       );
     },
-    size: 160,
+    minSize: 205,
   },
   {
     accessorKey: "permitType",
