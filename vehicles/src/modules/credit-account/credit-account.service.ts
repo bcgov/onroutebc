@@ -123,6 +123,14 @@ export class CreditAccountService {
       creditAccountNumber,
     }: { companyId: number; creditAccountNumber: string },
   ) {
+    // Fetch company information for account creation and audit purposes
+    const companyInfo =
+      await this.companyService.findOneCompanyWithAllDetails(companyId);
+
+    if (!companyInfo) {
+      throwUnprocessableEntityException('Invalid Company Id');
+    }
+
     // Initiate async fetch of EGARMS credit account details in parallel
     const egarmsCreditAccountDetailsPromise =
       this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
@@ -175,10 +183,6 @@ export class CreditAccountService {
       );
     }
 
-    // Fetch company information for account creation and audit purposes
-    const companyInfo =
-      await this.companyService.findOneCompanyWithAllDetails(companyId);
-
     const currentDateTime: Date = new Date();
 
     // Initialize the new credit account entity with EGARMS-derived status
@@ -187,9 +191,9 @@ export class CreditAccountService {
       egarmsCreditAccountDetails?.PPABalance?.return_code,
     );
     newCreditAccount.creditAccountType = CreditAccountType.UNSECURED;
-    newCreditAccount.isVerified = false;
+    newCreditAccount.isVerified = true;
     newCreditAccount.company = new Company();
-    newCreditAccount.company.companyId = companyId;
+    newCreditAccount.company.companyId = companyInfo?.companyId;
     newCreditAccount.creditAccountNumber = creditAccountNumber;
     setBaseEntityProperties<CreditAccount>({
       entity: newCreditAccount,
@@ -212,7 +216,6 @@ export class CreditAccountService {
         currentUser,
         currentDateTime,
         creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
-        comment: `Opening account for client number: ${companyInfo.clientNumber}`,
       });
 
       // Commit the transaction if both save and logging succeed
@@ -1147,7 +1150,7 @@ export class CreditAccountService {
     currentUser: IUserJWT;
     currentDateTime: Date;
     creditAccountActivityType: CreditAccountActivityType;
-    comment: string;
+    comment?: string;
   }): Promise<void> {
     const creditAccountActivity: CreditAccountActivity =
       new CreditAccountActivity();

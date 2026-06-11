@@ -212,7 +212,7 @@ export type CreditAccountActivityType =
 export const CreditAccountActivityDisplayValues: {
   [key in CreditAccountActivityType]: string;
 } = {
-  OPENED: "Account Opened",
+  OPENED: "Account Added",
   CLOSED: "Account Closed",
   REOPENED: "Account Reopened",
   ONHOLD: "On Hold",
