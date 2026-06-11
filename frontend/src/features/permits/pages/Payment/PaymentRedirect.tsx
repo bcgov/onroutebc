@@ -10,7 +10,6 @@ import {
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
-import { useAddToCart } from "../../hooks/cart";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import {
