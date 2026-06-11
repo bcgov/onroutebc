@@ -3,7 +3,10 @@ import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
@@ -38,7 +41,7 @@ export const PaymentRedirect = () => {
   const companyId: number = getDefaultRequiredVal(
     0,
     companyIdFromContext,
-    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
+    applyWhenNotNullable((id) => Number(id), getCompanyIdFromSession()),
   );
 
   const issuedPermit = useRef(false);
@@ -48,7 +51,6 @@ export const PaymentRedirect = () => {
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
   const transactionQueryString = encodeURIComponent(searchParams.toString());
   const transactionIdQuery = usePaymentByTransactionIdQuery(transactionId);
-  const addToCartMutation = useAddToCart();
 
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
@@ -87,28 +89,10 @@ export const PaymentRedirect = () => {
         });
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
-        // Add back to cart and then redirect to shopping cart.
-        if (!addToCartMutation.isPending && addToCartMutation.isIdle && companyId) {
-          addToCartMutation
-            .mutateAsync({
-              companyId,
-              applicationIds,
-            })
-            .then(({ failure }) => {
-              // Cannot add applications back to cart
-              if (failure.length > 0) {
-                navigate(ERROR_ROUTES.UNEXPECTED);
-              } else {
-                // Payment failed, redirect back to pay now page
-                navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
-                  replace: true,
-                });
-              }
-            })
-            .catch(() => {
-              navigate(ERROR_ROUTES.UNEXPECTED);
-            });
-        }
+        // Payment failed, redirect back to pay now page
+        navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
+          replace: true,
+        });
       }
     }
 
