@@ -49,6 +49,9 @@ export const AddCreditAccountModal = ({
 
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
 
+  const [showCreditAccountDetails, setShowCreditAccountDetails] =
+    useState<boolean>(false);
+
   const {
     data: creditAccountDetails,
     isPending: isCreditAccountDetailsPending,
@@ -62,51 +65,7 @@ export const AddCreditAccountModal = ({
 
   const { mutateAsync, isPending } = useCreateCreditAccountMutation();
 
-  const validateCreditAccountNumber = (creditAccountNumber: string) => {
-    setCreditAccountNumber(creditAccountNumber);
-    if (isCreditAccountDetailsPending) {
-      return true;
-    }
-
-    if (isCreditAccountDetailsError) {
-      return creditAccounteGARMSError(
-        "" as EGARMS_ERROR_CODE_TYPE,
-        EGARMS_CODE_ERROR_MESSAGES.DEFAULT,
-      );
-    }
-
-    if (!creditAccountNumber || !creditAccountDetails) {
-      return true;
-    }
-
-    const eGARMSReturnCode =
-      creditAccountDetails?.creditAccountLimits?.egarmsReturnCode;
-
-    if (creditAccountDetails?.isExistingInORBC) {
-      return creditAccountNumberAlreadyAssigned();
-    } else if (
-      eGARMSReturnCode === EGARMS_SUCCESS_CODE.I0001 ||
-      eGARMSReturnCode === EGARMS_ERROR_CODE.E0003 ||
-      eGARMSReturnCode === EGARMS_ERROR_CODE.E0004 ||
-      eGARMSReturnCode === EGARMS_ERROR_CODE.E1739
-    ) {
-      return true;
-    } else if (eGARMSReturnCode === EGARMS_ERROR_CODE.E0001) {
-      return creditAccountNumberNotFound();
-    }
-
-    const eGARMSErrorMessage =
-      EGARMS_CODE_ERROR_MESSAGES[
-        eGARMSReturnCode as keyof typeof EGARMS_CODE_ERROR_MESSAGES
-      ] || EGARMS_CODE_ERROR_MESSAGES.DEFAULT;
-
-    return creditAccounteGARMSError(
-      eGARMSReturnCode as EGARMS_ERROR_CODE_TYPE,
-      eGARMSErrorMessage,
-    );
-  };
-
-  const { handleSubmit, trigger, reset, clearErrors, watch } = formMethods;
+  const { handleSubmit, reset, setError, clearErrors, watch } = formMethods;
 
   const watchedCreditAccountNumber = watch("creditAccountNumber");
 
@@ -115,16 +74,49 @@ export const AddCreditAccountModal = ({
   }, [watchedCreditAccountNumber, clearErrors]);
 
   useEffect(() => {
-    if (creditAccountNumber && !isCreditAccountDetailsPending) {
-      trigger("creditAccountNumber");
+    if (isCreditAccountDetailsError) {
+      setError("creditAccountNumber", {
+        type: "manual",
+        message: creditAccounteGARMSError(
+          "" as EGARMS_ERROR_CODE_TYPE,
+          EGARMS_CODE_ERROR_MESSAGES.DEFAULT,
+        ),
+      });
+    } else if (!isCreditAccountDetailsPending && creditAccountDetails) {
+      const eGARMSReturnCode =
+        creditAccountDetails?.creditAccountLimits?.egarmsReturnCode;
+      if (creditAccountDetails?.isExistingInORBC) {
+        setError("creditAccountNumber", {
+          type: "manual",
+          message: creditAccountNumberAlreadyAssigned(),
+        });
+      } else if (eGARMSReturnCode === EGARMS_ERROR_CODE.E0001) {
+        setError("creditAccountNumber", {
+          type: "manual",
+          message: creditAccountNumberNotFound(),
+        });
+      } else if (
+        eGARMSReturnCode === EGARMS_SUCCESS_CODE.I0001 ||
+        eGARMSReturnCode === EGARMS_ERROR_CODE.E0003 ||
+        eGARMSReturnCode === EGARMS_ERROR_CODE.E0004 ||
+        eGARMSReturnCode === EGARMS_ERROR_CODE.E1739
+      ) {
+        setShowCreditAccountDetails(true);
+      } else {
+        const eGARMSErrorMessage =
+          EGARMS_CODE_ERROR_MESSAGES[
+            eGARMSReturnCode as keyof typeof EGARMS_CODE_ERROR_MESSAGES
+          ] || EGARMS_CODE_ERROR_MESSAGES.DEFAULT;
+        setError("creditAccountNumber", {
+          type: "manual",
+          message: creditAccounteGARMSError(
+            eGARMSReturnCode as EGARMS_ERROR_CODE_TYPE,
+            eGARMSErrorMessage,
+          ),
+        });
+      }
     }
-  }, [
-    creditAccountNumber,
-    isCreditAccountDetailsPending,
-    isCreditAccountDetailsError,
-    trigger,
-    creditAccountDetails,
-  ]);
+  }, [creditAccountDetails, isCreditAccountDetailsError]);
 
   const handleAddCreditAccount = async () => {
     if (creditAccountNumber) {
@@ -146,6 +138,8 @@ export const AddCreditAccountModal = ({
   };
 
   const onPrevious = async () => {
+    setIsConfirmed(false);
+    setShowCreditAccountDetails(false);
     setCreditAccountNumber("");
     reset();
   };
@@ -153,19 +147,6 @@ export const AddCreditAccountModal = ({
   const onConfirmationToggle = async () => {
     setIsConfirmed((previous) => !previous);
   };
-
-  const showCreditAccountDetails =
-    !isCreditAccountDetailsPending &&
-    Boolean(creditAccountDetails) &&
-    !creditAccountDetails?.isExistingInORBC &&
-    (creditAccountDetails?.creditAccountLimits?.egarmsReturnCode ===
-      EGARMS_SUCCESS_CODE.I0001 ||
-      creditAccountDetails?.creditAccountLimits?.egarmsReturnCode ===
-        EGARMS_ERROR_CODE.E0003 ||
-      creditAccountDetails?.creditAccountLimits?.egarmsReturnCode ===
-        EGARMS_ERROR_CODE.E0004 ||
-      creditAccountDetails?.creditAccountLimits?.egarmsReturnCode ===
-        EGARMS_ERROR_CODE.E1739);
 
   return (
     <Dialog
@@ -232,9 +213,6 @@ export const AddCreditAccountModal = ({
                       required: {
                         value: true,
                         message: requiredMessage(),
-                      },
-                      validate: (creditAccountNumber: string) => {
-                        return validateCreditAccountNumber(creditAccountNumber);
                       },
                     },
                     label: "Enter WS No.",
