@@ -37,7 +37,7 @@ export const AddCreditAccountModal = ({
   companyId: number;
 }) => {
   const formMethods = useForm<{ creditAccountNumber: string }>({
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues: { creditAccountNumber: "" },
   });
 
@@ -65,13 +65,7 @@ export const AddCreditAccountModal = ({
 
   const { mutateAsync, isPending } = useCreateCreditAccountMutation();
 
-  const { handleSubmit, reset, setError, clearErrors, watch } = formMethods;
-
-  const watchedCreditAccountNumber = watch("creditAccountNumber");
-
-  useEffect(() => {
-    clearErrors("creditAccountNumber");
-  }, [watchedCreditAccountNumber, clearErrors]);
+  const { handleSubmit, reset, setError } = formMethods;
 
   useEffect(() => {
     if (isCreditAccountDetailsError) {
