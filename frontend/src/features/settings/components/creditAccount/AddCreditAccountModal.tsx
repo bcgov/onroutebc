@@ -20,7 +20,6 @@ import {
 import {
   EGARMS_CODE_ERROR_MESSAGES,
   EGARMS_ERROR_CODE,
-  EGARMS_ERROR_CODE_TYPE,
   EGARMS_SUCCESS_CODE,
 } from "../../types/creditAccount";
 import { renderValue } from "../../helpers/creditAccount";
@@ -71,10 +70,7 @@ export const AddCreditAccountModal = ({
     if (isCreditAccountDetailsError) {
       setError("creditAccountNumber", {
         type: "manual",
-        message: creditAccounteGARMSError(
-          "" as EGARMS_ERROR_CODE_TYPE,
-          EGARMS_CODE_ERROR_MESSAGES.DEFAULT,
-        ),
+        message: EGARMS_CODE_ERROR_MESSAGES.DEFAULT
       });
     } else if (!isCreditAccountDetailsPending && creditAccountDetails) {
       const eGARMSReturnCode =
@@ -104,7 +100,7 @@ export const AddCreditAccountModal = ({
         setError("creditAccountNumber", {
           type: "manual",
           message: creditAccounteGARMSError(
-            eGARMSReturnCode as EGARMS_ERROR_CODE_TYPE,
+            eGARMSReturnCode,
             eGARMSErrorMessage,
           ),
         });
