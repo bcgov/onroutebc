@@ -434,6 +434,11 @@ export const ApplicationForm = ({
     applicationContext.applicationData?.rejectionHistory,
   );
 
+    const isRejectedApplication = getDefaultRequiredVal(
+    false,
+    applicationContext.applicationData?.isRejectedApplication,
+  );
+
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
@@ -454,6 +459,7 @@ export const ApplicationForm = ({
       companyLOAs: applicableLOAs,
       revisionHistory: [],
       rejectionHistory,
+      isRejectedApplication,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,
@@ -478,6 +484,7 @@ export const ApplicationForm = ({
       pastStartDateStatus,
       applicableLOAs,
       rejectionHistory,
+      isRejectedApplication,
       policyViolations,
       clearViolation,
       triggerPolicyValidation,

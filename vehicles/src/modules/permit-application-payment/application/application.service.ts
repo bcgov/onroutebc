@@ -309,13 +309,20 @@ export class ApplicationService {
   ): Promise<ReadApplicationDto> {
     const application = await this.findOne(applicationId, companyId);
     let readCaseActivityList: ReadCaseActivityDto[];
+    let isRejectedApplication: boolean;
     if (isPermitTypeEligibleForQueue(application?.permitType)) {
       readCaseActivityList =
         await this.caseManagementService.fetchActivityHistory({
           applicationId,
           currentUser,
-          caseActivityType: CaseActivityType.REJECTED,
         });
+      isRejectedApplication =
+        readCaseActivityList?.at(0)?.caseActivityType ===
+        CaseActivityType.REJECTED;
+      readCaseActivityList = readCaseActivityList?.filter(
+        (caseActivity) =>
+          caseActivity.caseActivityType === CaseActivityType.REJECTED,
+      );
     }
 
     const readPermitApplicationdto = await this.classMapper.mapAsync(
@@ -326,6 +333,7 @@ export class ApplicationService {
         extraArgs: () => ({
           currentUserRole: currentUser?.orbcUserRole,
           readCaseActivityList: readCaseActivityList,
+          isRejectedApplication: isRejectedApplication,
         }),
       },
     );
