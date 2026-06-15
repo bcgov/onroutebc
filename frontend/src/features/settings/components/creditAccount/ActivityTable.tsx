@@ -32,7 +32,7 @@ export const ActivityTable = ({
     isError: fetchCreditAccountError,
   } = useGetCreditAccountHistoryQuery({ companyId, creditAccountId });
 
-  const dataToBeShown = getDefaultRequiredVal([], creditAccountActivities).reverse();
+  const dataToBeShown = getDefaultRequiredVal([], creditAccountActivities).toReversed();
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
