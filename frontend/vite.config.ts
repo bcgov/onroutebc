@@ -42,6 +42,9 @@ export default defineConfig({
       exclude: ["node_modules/", "src/setupTests.ts"],
     },
   },
+  resolve: {
+    preserveSymlinks: true,
+  },
   build: {
     emptyOutDir: true,
     outDir: "build",
