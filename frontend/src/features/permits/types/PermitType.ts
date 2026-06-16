@@ -26,6 +26,8 @@ export const PERMIT_TYPES = {
   RIG: "RIG",
   // Increased GVW
   IGVW: "IGVW",
+  //Single Trip Overweight Oversize Empty - Length over 27.5m
+  STWSE: "STWSE",
 
   /* NON RESIDENT */
   // Quarterly ICBC Basic Insurance (FR)
@@ -59,6 +61,7 @@ export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
   PERMIT_TYPES.IGVW,
   PERMIT_TYPES.STOS,
   PERMIT_TYPES.STWS,
+  PERMIT_TYPES.STWSE,
   PERMIT_TYPES.STOW,
   PERMIT_TYPES.RIG,
 ];
@@ -100,6 +103,8 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Rig Move";
     case PERMIT_TYPES.IGVW:
       return "Increased GVW";
+    case PERMIT_TYPES.STWSE:
+      return "Single Trip Overweight Oversize Empty - Length over 27.5m";
 
     /* NON-RESIDENT */
     case PERMIT_TYPES.NRSCV:
@@ -150,7 +155,8 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Rig Move";
     case PERMIT_TYPES.IGVW:
       return "Increased GVW";
-
+    case PERMIT_TYPES.STWSE:
+      return "Overweight Oversize Empty - Length over 27.5m";
     /* NON RESIDENT */
     case PERMIT_TYPES.QRFR:
       return "Quarterly ICBC Basic Insurance (FR)";

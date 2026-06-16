@@ -37,6 +37,7 @@ export const TripDetailsSection = ({
   ) => void;
 }) => {
   return permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STWSE ||
     permitType === PERMIT_TYPES.STOW ||
     permitType === PERMIT_TYPES.MFP ? (
     <Box className="trip-details-section">
@@ -57,6 +58,7 @@ export const TripDetailsSection = ({
         />
 
         {permitType === PERMIT_TYPES.STOS ||
+        permitType === PERMIT_TYPES.STWSE ||
         permitType === PERMIT_TYPES.STOW ? (
           <HighwaySequences
             permitType={permitType}
