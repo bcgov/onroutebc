@@ -1,6 +1,5 @@
-import { EGARMS_ERROR_CODE_TYPE } from "../../features/settings/types/creditAccount";
 import validationMessages from "../constants/validation_messages.json";
-import { Optional } from "../types/common";
+
 
 const replacePlaceholders = (
   messageTemplate: string,
@@ -175,7 +174,7 @@ export const creditAccountNumberNotFound = () =>
 export const creditAccountNumberAlreadyAssigned = () =>
   validationMessages.creditAccount.creditAccountNumber.alreadyAssigned.defaultMessage;
 
-export const creditAccounteGARMSError = (eGARMSReturnCode: Optional<EGARMS_ERROR_CODE_TYPE>, message: string) =>{
+export const creditAccounteGARMSError = (eGARMSReturnCode: string, message: string) =>{
   const { messageTemplate, placeholders } = validationMessages.creditAccount.eGARMSError;
   return replacePlaceholders(messageTemplate, placeholders, eGARMSReturnCode, message);
 }
