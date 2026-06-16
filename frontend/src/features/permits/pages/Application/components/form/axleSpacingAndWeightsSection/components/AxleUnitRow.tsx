@@ -284,7 +284,13 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      axleCalculationFailure[
+                        POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+                      ]
+                        ? "table__input--fail"
+                        : ""
+                    }`,
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.axleUnitWeight,
