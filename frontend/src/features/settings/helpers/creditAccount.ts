@@ -17,7 +17,7 @@ import { EGARMS_CODE_ERROR_MESSAGES } from "../types/creditAccount";
  * @returns Whether or not the user can view the suspend page/features
  */
  const formatValue = (value: number | string): string => {
-    if (typeof value === "number" || !isNaN(Number(value))) {
+    if (typeof value === "number" || !Number.isNaN(Number(value))) {
       return new Intl.NumberFormat("en-US", {
         style: "decimal",
         minimumFractionDigits: 2,
@@ -34,7 +34,7 @@ import { EGARMS_CODE_ERROR_MESSAGES } from "../types/creditAccount";
  * @returns Whether or not the user can view the suspend page/features
  */
   export const renderValue = (value: number | string): string => {
-    if (typeof value === "number" || !isNaN(Number(value))) {
+    if (typeof value === "number" || !Number.isNaN(Number(value))) {
       value = Number(value);
       return `${value < 0 ? "-$" : "$"}${formatValue(Math.abs(value))}`;
     } else {
