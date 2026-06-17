@@ -47,6 +47,7 @@ interface ApplicationFormContextType {
     comment: string;
   }[];
   rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
+  isRejectedApplication?: Nullable<boolean>;
   policyViolations: Record<string, string>;
   clearViolation: (fieldReference: string) => void;
   triggerPolicyValidation: () => Promise<Record<string, string>>;
@@ -77,6 +78,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     companyLOAs: [],
     revisionHistory: [],
     rejectionHistory: [],
+    isRejectedApplication: false,
     policyViolations: {},
     clearViolation: () => undefined,
     triggerPolicyValidation: async () => ({}),

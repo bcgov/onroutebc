@@ -61,4 +61,6 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/status`,
   VERIFY_ACCOUNT_STATUS: (companyId: number, creditAccountId: number) =>
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/verification`,
+  GET_CREDIT_ACCOUNT_DETAILS_EGARMS: (creditAccountNumber: string) =>
+    `${VEHICLES_URL}/credit-accounts/egarms/${creditAccountNumber}`,
 };

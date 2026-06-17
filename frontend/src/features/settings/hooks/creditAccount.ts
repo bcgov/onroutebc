@@ -10,6 +10,7 @@ import {
   getCreditAccountHistory,
   getCreditAccountLimits,
   verifyCreditAccount,
+  getCreditAccountDetailsEgarms,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,6 @@ import { ERROR_ROUTES } from "../../../routes/constants";
 import { SnackBarContext } from "../../../App";
 import { useContext } from "react";
 import {
-  CreditAccountLimitType,
   getResultingSnackbarOptionsFromAction,
   getResultingStatusFromAction,
   UpdateStatusData,
@@ -71,6 +71,26 @@ export const useGetCreditAccountLimitsQuery = (data: {
   return useQuery({
     queryKey: ["credit-account", { companyId }, "limits"],
     queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+/**
+ * Hook to fetch the credit account details via eGarms wrapper.
+ * @returns Query result of the credit account details
+ */
+export const useGetCreditAccountDetailsEgarmsQuery = (
+  data: {
+    creditAccountNumber: string;
+  },
+  enabled = false,
+) => {
+  const { creditAccountNumber } = data;
+  return useQuery({
+    queryKey: ["credit-account", { creditAccountNumber }, "details"],
+    queryFn: () => getCreditAccountDetailsEgarms({ creditAccountNumber }),
+    enabled: enabled && Boolean(creditAccountNumber),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -150,11 +170,11 @@ export const useCreateCreditAccountMutation = () => {
   return useMutation({
     mutationFn: (data: {
       companyId: number;
-      creditLimit: CreditAccountLimitType;
+      creditAccountNumber: string;
     }) => createCreditAccount(data),
     onSuccess: (
       response,
-      variables: { companyId: number; creditLimit: CreditAccountLimitType },
+      variables: { companyId: number; creditAccountNumber: string },
     ) => {
       const { companyId } = variables;
       queryClient.setQueryData(

@@ -333,9 +333,9 @@ const MANAGE_SETTINGS = {
     allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   /**
-   * Add Credit Account - Non-Holder/user
+   * Add Credit Account - Account Holder
    */
-  ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER: { allowedIDIRRoles: [FIN] },
+  ADD_CREDIT_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },  
 
   /**
    * Suspend tab

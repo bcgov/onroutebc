@@ -5,6 +5,7 @@ import { PermitApplicationOrigin } from 'src/common/enum/permit-application-orig
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { ReadCaseActivityDto } from '../../../../case-management/dto/response/read-case-activity.dto';
+import { Nullable } from '../../../../../common/types/common';
 
 export class ReadApplicationDto {
   @AutoMap()
@@ -129,6 +130,14 @@ export class ReadApplicationDto {
     required: false,
   })
   applicant: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Indicates if the application has been rejected by the staff.',
+    example: false,
+    required: false,
+  })
+  isRejectedApplication?: Nullable<boolean>;
 
   @AutoMap()
   @ApiProperty({

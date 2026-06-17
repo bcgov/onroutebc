@@ -1,6 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Nullable } from '../../../../common/types/common';
+import { CaseActivityType } from '../../../../common/enum/case-activity-type.enum';
 
 export class ReadCaseActivityDto {
   @AutoMap()
@@ -18,6 +19,14 @@ export class ReadCaseActivityDto {
     required: false,
   })
   userName?: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The case activity type.',
+    example: CaseActivityType.REJECTED,
+    required: false,
+  })
+  caseActivityType?: CaseActivityType;
 
   @AutoMap()
   @ApiProperty({
