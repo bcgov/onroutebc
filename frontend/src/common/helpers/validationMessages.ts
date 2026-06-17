@@ -1,5 +1,6 @@
 import validationMessages from "../constants/validation_messages.json";
 
+
 const replacePlaceholders = (
   messageTemplate: string,
   placeholders: string[],
@@ -166,6 +167,17 @@ export const provinceVehicleDoesNotRequirePermit = (province: string) => {
 
   return replacePlaceholders(messageTemplate, placeholders, province);
 };
+
+export const creditAccountNumberNotFound = () =>
+  validationMessages.creditAccount.creditAccountNumber.defaultMessage;
+
+export const creditAccountNumberAlreadyAssigned = () =>
+  validationMessages.creditAccount.creditAccountNumber.alreadyAssigned.defaultMessage;
+
+export const creditAccounteGARMSError = (eGARMSReturnCode: string, message: string) =>{
+  const { messageTemplate, placeholders } = validationMessages.creditAccount.eGARMSError;
+  return replacePlaceholders(messageTemplate, placeholders, eGARMSReturnCode, message);
+}
 
 /**
  * Checks if a given string is
