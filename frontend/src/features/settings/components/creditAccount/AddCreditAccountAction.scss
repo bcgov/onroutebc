@@ -1,0 +1,33 @@
+@use "../../../../themes/orbcStyles.scss";
+
+.add-credit-account-action {
+  &__control {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-top: .5rem;
+  }
+
+  // SUBMIT BUTTON
+
+  & &__btn {
+    margin-left: 1.5rem;
+    margin-bottom: 0;
+    padding: 0 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+}
+
+@media (width < 600px) {
+  .add-credit-account-action  {
+    &__control {
+      flex-direction: column;
+    }
+
+    & &__btn {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
+}

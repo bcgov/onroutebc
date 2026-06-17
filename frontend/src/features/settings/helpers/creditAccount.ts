@@ -1,0 +1,56 @@
+import { Optional } from "../../../common/types/common";
+import { EGARMS_CODE_ERROR_MESSAGES } from "../types/creditAccount";
+
+  /**
+ * Determine whether or not a user can view/access suspend page/features given their roles.
+ * @param userClaims claims that a user have
+ * @returns Whether or not the user can view the suspend page/features
+ */
+  const toSentenceCase = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
+  /**
+ * Determine whether or not a user can view/access suspend page/features given their roles.
+ * @param userClaims claims that a user have
+ * @returns Whether or not the user can view the suspend page/features
+ */
+ const formatValue = (value: number | string): string => {
+    if (typeof value === "number" || !Number.isNaN(Number(value))) {
+      return new Intl.NumberFormat("en-US", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(value));
+    } else {
+      return toSentenceCase(value);
+    }
+  };
+
+  /**
+ * Determine whether or not a user can view/access suspend page/features given their roles.
+ * @param userClaims claims that a user have
+ * @returns Whether or not the user can view the suspend page/features
+ */
+  export const renderValue = (value: number | string): string => {
+    if (typeof value === "number" || !Number.isNaN(Number(value))) {
+      value = Number(value);
+      return `${value < 0 ? "-$" : "$"}${formatValue(Math.abs(value))}`;
+    } else {
+      return formatValue(value);
+    }
+  };
+
+  /**
+ * Returns the error messsage assocaited with the egarms error code
+ * @param eGARMSReturnCode EGARMS return code
+ * @returns EGARMS error message
+ */
+  export const getEGARMSErrorMessage = (eGARMSReturnCode: Optional<string>): string => {
+  return (
+    EGARMS_CODE_ERROR_MESSAGES[
+      eGARMSReturnCode as keyof typeof EGARMS_CODE_ERROR_MESSAGES
+    ] || EGARMS_CODE_ERROR_MESSAGES.DEFAULT
+  );
+} ;

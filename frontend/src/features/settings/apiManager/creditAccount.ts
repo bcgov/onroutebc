@@ -1,7 +1,7 @@
 import {
   CreditAccountData,
+  CreditAccountDetailsEgarmsData,
   CreditAccountLimitData,
-  CreditAccountLimitType,
   CreditAccountMetadata,
   CreditAccountStatusType,
   CreditAccountUser,
@@ -22,12 +22,12 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  */
 export const createCreditAccount = async (data: {
   companyId: number;
-  creditLimit: CreditAccountLimitType;
+  creditAccountNumber: string;
 }) => {
-  const { companyId, creditLimit } = data;
+  const { companyId, creditAccountNumber } = data;
   return await httpPOSTRequest(
     CREDIT_ACCOUNT_API_ROUTES.CREATE_CREDIT_ACCOUNT(companyId),
-    { creditLimit },
+    { creditAccountNumber },
   );
 };
 
@@ -120,6 +120,21 @@ export const getCreditAccountLimits = async ({
     ),
   );
   return response.data as CreditAccountLimitData;
+};
+
+/**
+ * Get credit account details for the given credit account number
+ * @param creditAccountNumber credit account number to retrieve details for
+ * @returns Credit account details
+ */
+export const getCreditAccountDetailsEgarms = async (data: {
+  creditAccountNumber: string;
+}) => {
+  const { creditAccountNumber } = data;
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_DETAILS_EGARMS(creditAccountNumber),
+  );
+  return response.data as CreditAccountDetailsEgarmsData;
 };
 
 /**
