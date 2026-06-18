@@ -134,6 +134,7 @@ export const AxleSpacingAndWeightsTable = ({
     POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
+    POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
   ]);
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
@@ -315,6 +316,10 @@ export const AxleSpacingAndWeightsTable = ({
             ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE]
             : [];
 
+        case POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD]
+            : [];
         default:
           return [];
       }
