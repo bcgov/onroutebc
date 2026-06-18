@@ -14,6 +14,7 @@ export const POLICY_CHECK_ID_TYPES = {
   MAX_TIRE_LOAD: "max-tire-load",
   MINIMUM_DRIVE_AXLE_WEIGHT: "minimum-drive-axle-weight",
   MINIMUM_STEER_AXLE_WEIGHT: "minimum-steer-axle-weight",
+  MINIMUM_TANDEM_STEER_AXLE_WEIGHT: "minimum-tandem-steer-axle-weight",
   NUMBER_OF_AXLES: "number-of-axles",
   NUMBER_OF_WHEELS_PER_AXLE: "number-of-wheels",
   TRUCK_TRACTOR_WHEELBASE: "truck-tractor-wheelbase",
