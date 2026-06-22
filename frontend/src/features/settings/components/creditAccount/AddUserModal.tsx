@@ -88,7 +88,7 @@ export const AddUserModal = ({
     }
   };
 
-  const showConfirmButton = !userCreditAccount && !userData.isSuspended;
+  const showConfirmButton = !existingCreditAccountHolder && !userData.isSuspended;
 
   return (
     <Dialog
