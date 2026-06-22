@@ -72,6 +72,12 @@ export const AddUserModal = ({
 
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
 
+  const showConfirmButton =
+    !userData.isSuspended &&
+    !isUserCreditAccountLoading &&
+    !isassociatedCreditAccountLoading &&
+    !existingCreditAccountHolder;
+
   const handleAddUser = async () => {
     if (creditAccountId) {
       const { status } = await mutateAsync({
@@ -87,8 +93,6 @@ export const AddUserModal = ({
       }
     }
   };
-
-  const showConfirmButton = !existingCreditAccountHolder && !userData.isSuspended;
 
   return (
     <Dialog
