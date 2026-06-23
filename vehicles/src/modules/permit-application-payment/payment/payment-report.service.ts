@@ -42,7 +42,7 @@ export class PaymentReportService {
   ) {
     queryBuilder
       .select(
-        `CASE WHEN paymentMethodType.name = 'ACCOUNT' THEN creditAccount.creditAccountNumber ELSE CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name) END`,
+        `CASE WHEN paymentMethodType.paymentMethodTypeCode = 'ACCOUNT' THEN creditAccount.creditAccountNumber ELSE CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name) END`,
         'paymentMethod',
       )
       .addSelect('permit.permitIssueDateTime', 'issuedOn')
