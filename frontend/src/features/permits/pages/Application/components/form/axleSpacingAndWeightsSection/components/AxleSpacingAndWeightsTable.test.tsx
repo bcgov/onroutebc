@@ -8,6 +8,10 @@ import { AxleSpacingAndWeightsTable } from "./AxleSpacingAndWeightsTable";
 
 const loadEqualizationMessage =
   "Axle Unit 2 and Axle Unit 3 must be load equalized within 1000 kg.";
+const singleSteerWeightMessage =
+  "Single steer axle must be a minimum of 27% of tridem drive axle weight";
+const tandemSteerWeightMessage =
+  "Tandem steer axle must be a minimum of 40% of drive axle weight";
 
 const powerUnitAxleConfiguration: AxleUnit[] = [
   {
@@ -140,6 +144,78 @@ describe("AxleSpacingAndWeightsTable", () => {
     ).toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("10999").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+  });
+
+  it("displays and highlights minimum steer axle weight failures", async () => {
+    const user = userEvent.setup();
+    const runAxleCalculation = vi.fn().mockReturnValue({
+      results: [
+        {
+          id: POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
+          result: "fail",
+          message: singleSteerWeightMessage,
+          startAxleUnit: 1,
+          endAxleUnit: 2,
+        },
+        {
+          id: POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT,
+          result: "fail",
+          message: tandemSteerWeightMessage,
+          startAxleUnit: 1,
+          endAxleUnit: 2,
+        },
+      ],
+      totalOverload: 0,
+    });
+
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map()}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={runAxleCalculation}
+        combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
+        calculateGCVW={() => 18700}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(await screen.findByText(singleSteerWeightMessage)).toHaveClass(
+      "results__text--fail",
+    );
+    expect(await screen.findByText(tandemSteerWeightMessage)).toHaveClass(
+      "results__text--fail",
+    );
+
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
     ).toHaveClass("table__input--fail");
   });
 });

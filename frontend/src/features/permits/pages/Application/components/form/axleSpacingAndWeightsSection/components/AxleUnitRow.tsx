@@ -97,6 +97,17 @@ export const AxleUnitRow = ({
           {},
           axleCalculationFailures[index],
         );
+        const hasAxleUnitWeightFailure = Boolean(
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+          ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
+            ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
+            ],
+        );
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
@@ -285,11 +296,7 @@ export const AxleUnitRow = ({
                   classes={{ root: "table__input-container" }}
                   inputProps={{
                     className: `table__input ${
-                      axleCalculationFailure[
-                        POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
-                      ]
-                        ? "table__input--fail"
-                        : ""
+                      hasAxleUnitWeightFailure ? "table__input--fail" : ""
                     }`,
                     value: getDefaultRequiredVal(
                       null,
