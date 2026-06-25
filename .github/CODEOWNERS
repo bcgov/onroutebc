@@ -1,5 +1,5 @@
 # Default codeowners:
-@praju-aot @zgong-gov @acoard-aot
+* @praju-aot @zgong-gov @acoard-aot
 
 # Frontend:
 /frontend/** @zgong-gov @acoard-aot
