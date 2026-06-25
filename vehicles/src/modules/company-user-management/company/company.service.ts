@@ -635,7 +635,7 @@ export class CompanyService {
     legacyClientNumber: string,
   ): Promise<Company> {
     const legacyClientHash = convertToHash(
-      legacyClientNumber?.replace(/-/g, ''),
+      legacyClientNumber?.replace(/-/g, '').replace(/^0+/, ''),
       CRYPTO_ALGORITHM_SHA256,
     );
     return await this.findOneByLegacyClientHash(legacyClientHash);
