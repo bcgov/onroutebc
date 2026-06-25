@@ -106,7 +106,8 @@ export const AxleUnitRow = ({
             ] ||
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
-            ],
+            ] ||
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
         );
 
         return (
@@ -203,7 +204,13 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      axleCalculationFailure[
+                        POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
+                      ]
+                        ? "table__input--fail"
+                        : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
