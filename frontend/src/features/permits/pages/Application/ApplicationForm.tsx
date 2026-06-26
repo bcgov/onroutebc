@@ -64,6 +64,8 @@ import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subty
 import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
+import { AxleCalculationResult } from "../../types/AxleCalculationResult";
+import { ValidationResults } from "../../../policy/types/ValidationResults";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -168,6 +170,8 @@ export const ApplicationForm = ({
   const [policyViolations, setPolicyViolations] = useState<
     Record<string, string>
   >({});
+  const [axleCalculationResults, setAxleCalculationResults] =
+    useState<AxleCalculationResult | null>();
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
@@ -180,10 +184,19 @@ export const ApplicationForm = ({
   };
 
   const triggerPolicyValidation = async () => {
-    const validationResults = await policyEngine?.validate(
+    const validationResults = (await policyEngine?.validate(
       currentFormData.permitId
         ? serializeForUpdateApplication(currentFormData)
         : serializeForCreateApplication(currentFormData),
+    )) as ValidationResults | undefined;
+    const validationAxleCalculationResults =
+      validationResults?.axleCalculationResults;
+    setAxleCalculationResults(
+      validationAxleCalculationResults?.results.some(
+        ({ result }) => result === "fail",
+      )
+        ? validationAxleCalculationResults
+        : null,
     );
 
     const violations = getDefaultRequiredVal(
@@ -461,6 +474,7 @@ export const ApplicationForm = ({
       rejectionHistory,
       isRejectedApplication,
       policyViolations,
+      axleCalculationResults,
       clearViolation,
       triggerPolicyValidation,
       onLeave: handleLeaveApplication,
@@ -486,6 +500,7 @@ export const ApplicationForm = ({
       rejectionHistory,
       isRejectedApplication,
       policyViolations,
+      axleCalculationResults,
       clearViolation,
       triggerPolicyValidation,
       handleLeaveApplication,

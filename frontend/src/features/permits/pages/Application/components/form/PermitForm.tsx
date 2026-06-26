@@ -48,6 +48,7 @@ export const PermitForm = () => {
     revisionHistory,
     rejectionHistory,
     isRejectedApplication,
+    axleCalculationResults,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -204,6 +205,7 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
+          axleCalculationResults={axleCalculationResults}
           tireSizeOptions={tireSizeOptions}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}

@@ -58,6 +58,8 @@ import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCCont
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
+import { AxleCalculationResult } from "../../../types/AxleCalculationResult";
+import { ValidationResults } from "../../../../policy/types/ValidationResults";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -138,6 +140,8 @@ export const AmendPermitForm = () => {
   const [policyViolations, setPolicyViolations] = useState<
     Record<string, string>
   >({});
+  const [axleCalculationResults, setAxleCalculationResults] =
+    useState<AxleCalculationResult | null>();
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
@@ -150,8 +154,17 @@ export const AmendPermitForm = () => {
   };
 
   const triggerPolicyValidation = async () => {
-    const validationResults = await policyEngine?.validate(
+    const validationResults = (await policyEngine?.validate(
       serializeForUpdateApplication(formData),
+    )) as ValidationResults | undefined;
+    const validationAxleCalculationResults =
+      validationResults?.axleCalculationResults;
+    setAxleCalculationResults(
+      validationAxleCalculationResults?.results.some(
+        ({ result }) => result === "fail",
+      )
+        ? validationAxleCalculationResults
+        : null,
     );
 
     const violations = getDefaultRequiredVal(
@@ -338,6 +351,7 @@ export const AmendPermitForm = () => {
       companyLOAs: applicableLOAs,
       revisionHistory,
       policyViolations,
+      axleCalculationResults,
       onLeave: undefined,
       onSave: undefined,
       onCancel: goHome,
@@ -361,6 +375,7 @@ export const AmendPermitForm = () => {
       applicableLOAs,
       revisionHistory,
       policyViolations,
+      axleCalculationResults,
       goHome,
       onContinue,
       triggerPolicyValidation,

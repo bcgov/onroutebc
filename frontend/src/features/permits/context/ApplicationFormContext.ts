@@ -18,6 +18,7 @@ import {
   PastStartDateStatus,
 } from "../../../common/components/form/subFormComponents/CustomDatePicker";
 import { ApplicationRejectionHistory } from "../types/ApplicationRejectionHistory";
+import { AxleCalculationResult } from "../types/AxleCalculationResult";
 
 interface ApplicationFormContextType {
   initialFormData: ApplicationFormData;
@@ -49,6 +50,7 @@ interface ApplicationFormContextType {
   rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
   isRejectedApplication?: Nullable<boolean>;
   policyViolations: Record<string, string>;
+  axleCalculationResults?: AxleCalculationResult | null;
   clearViolation: (fieldReference: string) => void;
   triggerPolicyValidation: () => Promise<Record<string, string>>;
   onLeave?: () => void;
@@ -80,6 +82,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     rejectionHistory: [],
     isRejectedApplication: false,
     policyViolations: {},
+    axleCalculationResults: undefined,
     clearViolation: () => undefined,
     triggerPolicyValidation: async () => ({}),
     onLeave: undefined,
