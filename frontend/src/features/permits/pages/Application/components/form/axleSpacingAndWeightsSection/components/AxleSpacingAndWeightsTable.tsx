@@ -137,6 +137,7 @@ export const AxleSpacingAndWeightsTable = ({
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
     POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
+    POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
   ]);
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
@@ -321,6 +322,13 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [
+                POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
+              ]
             : [];
 
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
