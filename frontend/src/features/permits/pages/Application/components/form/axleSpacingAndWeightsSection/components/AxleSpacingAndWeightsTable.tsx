@@ -131,8 +131,13 @@ export const AxleSpacingAndWeightsTable = ({
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
     POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
+    POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
+    POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
+    POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
+    POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
+    POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
   ]);
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
@@ -304,11 +309,37 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA:
           return [POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA];
 
+        case POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [
+                POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
+              ]
+            : [];
+
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE]
             : [];
 
+        case POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD]
+            : [];
         default:
           return [];
       }

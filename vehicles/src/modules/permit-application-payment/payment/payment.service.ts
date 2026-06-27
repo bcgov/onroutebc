@@ -1002,24 +1002,25 @@ export class PaymentService {
         throw new InternalServerErrorException('Error updating transaction');
       }
 
-      if (updateTransactionTemp.pgApproved === 1) {
-        for (const permitTransaction of transactionToUpdate.permitTransactions) {
-          updateResult = await queryRunner.manager.update(
-            Permit,
-            { permitId: permitTransaction.permit.permitId },
-            {
-              permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
-              updatedDateTime: new Date(),
-              updatedUser: currentUser.userName,
-              updatedUserGuid: currentUser.userGUID,
-              updatedUserDirectory: currentUser.orbcUserDirectory,
-            },
+      for (const permitTransaction of transactionToUpdate.permitTransactions) {
+        updateResult = await queryRunner.manager.update(
+          Permit,
+          { permitId: permitTransaction.permit.permitId },
+          {
+            permitStatus:
+              updateTransactionTemp.pgApproved === 1
+                ? ApplicationStatus.PAYMENT_COMPLETE
+                : ApplicationStatus.IN_CART,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        if (!updateResult?.affected) {
+          throw new InternalServerErrorException(
+            'Error updating permit status',
           );
-          if (!updateResult?.affected) {
-            throw new InternalServerErrorException(
-              'Error updating permit status',
-            );
-          }
         }
       }
 

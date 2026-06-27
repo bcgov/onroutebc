@@ -83,4 +83,5 @@ export const BANNER_MESSAGES = {
       END: "to enter the certificate number.",
     },
   },
+  CREDIT_ACCOUNT_VERIFY_CLIENT_DETAILS: "Verify Client Details",
 };

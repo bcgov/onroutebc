@@ -1,6 +1,5 @@
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { useGetCreditAccountMetadataQuery } from "../hooks/creditAccount";
-import { AddCreditAccount } from "./AddCreditAccount";
 import { ViewCreditAccount } from "./ViewCreditAccount";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
@@ -12,6 +11,7 @@ import {
 import { useContext } from "react";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { IDIR_USER_ROLE } from "../../../common/authentication/types";
+import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 
 export const CreditAccountMetadataComponent = ({
   companyId,
@@ -34,11 +34,11 @@ export const CreditAccountMetadataComponent = ({
     } else if (isFinanceUser) {
       return (
         <RenderIf
-          component={<AddCreditAccount companyId={companyId} />}
+          component={ <NoRecordsFound />}
           permissionMatrixKeys={{
             permissionMatrixFeatureKey: "MANAGE_SETTINGS",
             permissionMatrixFunctionKey:
-              "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER",
+              "ADD_CREDIT_ACCOUNT_HOLDER",
           }}
         />
       );

@@ -97,6 +97,21 @@ export const AxleUnitRow = ({
           {},
           axleCalculationFailures[index],
         );
+        const hasAxleUnitWeightFailure = Boolean(
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+          ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
+            ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
+            ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
+            ] ||
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
+        );
 
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
@@ -192,7 +207,13 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      axleCalculationFailure[
+                        POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
+                      ]
+                        ? "table__input--fail"
+                        : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
@@ -284,7 +305,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      hasAxleUnitWeightFailure ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.axleUnitWeight,
