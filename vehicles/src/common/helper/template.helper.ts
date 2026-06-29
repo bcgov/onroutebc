@@ -32,6 +32,8 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STFR,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR,
+      [PermitType.HIGHWAY_CROSSING]:
+        TemplateName.PERMIT_HC,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
@@ -48,6 +50,8 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STFR_VOID,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR_VOID,
+      [PermitType.HIGHWAY_CROSSING]:
+        TemplateName.PERMIT_HC_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
@@ -64,6 +68,8 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STFR_REVOKED,
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR_REVOKED,
+      [PermitType.HIGHWAY_CROSSING]:
+        TemplateName.PERMIT_HC_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };
