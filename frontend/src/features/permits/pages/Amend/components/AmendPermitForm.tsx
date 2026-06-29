@@ -232,7 +232,7 @@ export const AmendPermitForm = () => {
         data.permitType,
       )
     ) {
-      console.error(updatedViolations, failedAxleCalculationResults);
+      console.error(updatedViolations);
       return;
     }
 

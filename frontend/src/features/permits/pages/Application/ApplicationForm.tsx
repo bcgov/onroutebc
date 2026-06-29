@@ -279,7 +279,7 @@ export const ApplicationForm = ({
         data.permitType,
       )
     ) {
-      console.error(updatedViolations, failedAxleCalculationResults);
+      console.error(updatedViolations);
       return;
     }
 
