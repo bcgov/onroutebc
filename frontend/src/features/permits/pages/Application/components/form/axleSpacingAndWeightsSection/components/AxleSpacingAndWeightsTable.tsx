@@ -95,6 +95,7 @@ export const AxleSpacingAndWeightsTable = ({
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
+  const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
   const powerUnitAxleConfiguration = getDefaultRequiredVal(
@@ -135,6 +136,11 @@ export const AxleSpacingAndWeightsTable = ({
       setShowValidationBanner(false);
       setTotalGCVW(undefined);
       setAxleCalculationResults(axleCalculationResultsFromValidation);
+
+      // Scroll to table if new validation results are different from current
+      if (axleCalculationResultsFromValidation !== axleCalculationResults) {
+        ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
     }
   }, [axleCalculationResultsFromValidation]);
 
@@ -391,16 +397,6 @@ export const AxleSpacingAndWeightsTable = ({
     setAxleCalculationResults(undefined);
     setIsResetModalOpen(false);
   };
-
-  const ASWTableRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (failedAxleCalculationResults) {
-      ASWTableRef.current?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-  }, [failedAxleCalculationResults]);
 
   return (
     <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
