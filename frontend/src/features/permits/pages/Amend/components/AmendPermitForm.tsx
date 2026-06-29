@@ -58,8 +58,10 @@ import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCCont
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
-import { AxleCalculationResult } from "../../../types/AxleCalculationResult";
-import { ValidationResults } from "../../../../policy/types/ValidationResults";
+import {
+  AxleCalculationResult,
+  POLICY_CHECK_RESULT_TYPES,
+} from "../../../types/AxleCalculationResult";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -154,17 +156,20 @@ export const AmendPermitForm = () => {
   };
 
   const triggerPolicyValidation = async () => {
-    const validationResults = (await policyEngine?.validate(
+    const validationResults = await policyEngine?.validate(
       serializeForUpdateApplication(formData),
-    )) as ValidationResults | undefined;
-    const validationAxleCalculationResults =
+    );
+
+    const axleCalculationResultsFromValidation =
       validationResults?.axleCalculationResults;
-    setAxleCalculationResults(
-      validationAxleCalculationResults?.results.some(
-        ({ result }) => result === "fail",
-      )
-        ? validationAxleCalculationResults
-        : null,
+
+    setAxleCalculationResults(axleCalculationResultsFromValidation);
+
+    const failedAxleCalculationResults = getDefaultRequiredVal(
+      [],
+      axleCalculationResultsFromValidation?.results.filter(
+        ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
+      ),
     );
 
     const violations = getDefaultRequiredVal(
@@ -209,17 +214,25 @@ export const AmendPermitForm = () => {
       : policyViolations;
 
     setPolicyViolations(updatedViolations);
-    return updatedViolations;
+    return { updatedViolations, failedAxleCalculationResults };
   };
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const updatedViolations = await triggerPolicyValidation();
+    const { updatedViolations, failedAxleCalculationResults } =
+      await triggerPolicyValidation();
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
-    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
-      console.error(updatedViolations);
+    if (
+      !shouldOverridePolicyViolations(
+        updatedViolations,
+        failedAxleCalculationResults,
+        isStaffUser,
+        data.permitType,
+      )
+    ) {
+      console.error(updatedViolations, failedAxleCalculationResults);
       return;
     }
 

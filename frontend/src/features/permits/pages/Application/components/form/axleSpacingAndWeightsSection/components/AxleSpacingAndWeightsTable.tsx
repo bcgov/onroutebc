@@ -1,5 +1,5 @@
 import "./AxleSpacingAndWeightsTable.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -48,7 +48,7 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
-  axleCalculationResults: validateAxleCalculationResults,
+  axleCalculationResults: axleCalculationResultsFromValidation,
   tireSizeOptions,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
@@ -131,14 +131,12 @@ export const AxleSpacingAndWeightsTable = ({
     useState<AxleCalculationResult>();
 
   useEffect(() => {
-    if (validateAxleCalculationResults !== undefined) {
+    if (axleCalculationResultsFromValidation) {
       setShowValidationBanner(false);
       setTotalGCVW(undefined);
-      setAxleCalculationResults(
-        validateAxleCalculationResults ?? undefined,
-      );
+      setAxleCalculationResults(axleCalculationResultsFromValidation);
     }
-  }, [validateAxleCalculationResults]);
+  }, [axleCalculationResultsFromValidation]);
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
@@ -388,8 +386,18 @@ export const AxleSpacingAndWeightsTable = ({
     setIsResetModalOpen(false);
   };
 
+  const ASWTableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (failedAxleCalculationResults) {
+      ASWTableRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [failedAxleCalculationResults]);
+
   return (
-    <div className="axle-spacing-and-weights-table">
+    <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
       <div className="table-container">
         <table className="table">
           <thead className="table__head">
@@ -520,7 +528,7 @@ export const AxleSpacingAndWeightsTable = ({
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : (
             <>
-              {typeof totalGCVW === "number" ? (
+              {totalGCVW && !isNaN(totalGCVW) && Number(totalGCVW) >= 0 ? (
                 <span>
                   <strong>Total (GCVW):</strong> {totalGCVW}
                 </span>

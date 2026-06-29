@@ -35,7 +35,7 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             axleConfiguration,
             licensedGVW,
           );
-          return results as AxleCalculationResult;
+          return results;
         }
       : undefined,
   };
