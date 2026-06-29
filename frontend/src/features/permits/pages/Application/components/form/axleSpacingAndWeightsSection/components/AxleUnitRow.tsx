@@ -107,6 +107,9 @@ export const AxleUnitRow = ({
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
             ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
+            ] ||
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
         );
 

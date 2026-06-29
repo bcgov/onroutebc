@@ -12,6 +12,8 @@ const singleSteerWeightMessage =
   "Single steer axle must be a minimum of 27% of tridem drive axle weight";
 const tandemSteerWeightMessage =
   "Tandem steer axle must be a minimum of 40% of drive axle weight";
+const pickerTruckTractorWeightMessage =
+  "Axle Unit 1 must carry a minimum 50% of Axle Unit 2 axle unit weight.";
 
 const powerUnitAxleConfiguration: AxleUnit[] = [
   {
@@ -279,6 +281,69 @@ describe("AxleSpacingAndWeightsTable", () => {
       "results__text--fail",
     );
 
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+  });
+
+  it("displays and highlights picker truck tractor weight restriction failures", async () => {
+    const user = userEvent.setup();
+    const runAxleCalculation = vi.fn().mockReturnValue({
+      results: [
+        {
+          id: POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
+          result: "fail",
+          message: pickerTruckTractorWeightMessage,
+          startAxleUnit: 1,
+          endAxleUnit: 2,
+        },
+      ],
+      totalOverload: 0,
+    });
+
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([
+          ["PICKRTT", "Picker Truck Tractor"],
+        ])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "PICKRTT",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map()}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={runAxleCalculation}
+        combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
+        calculateGCVW={() => 18700}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(
+      await screen.findByText(pickerTruckTractorWeightMessage),
+    ).toHaveClass("results__text--fail");
     expect(
       screen.getByDisplayValue("6700").closest(".table__input"),
     ).toHaveClass("table__input--fail");
