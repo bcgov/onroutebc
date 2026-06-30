@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  AxleCalculationResult,
-  AxleGroupPolicyCheckResult,
-} from "../../types/AxleCalculationResult";
+import { AxleGroupPolicyCheckResult } from "../../types/AxleCalculationResult";
 import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 
 /**
