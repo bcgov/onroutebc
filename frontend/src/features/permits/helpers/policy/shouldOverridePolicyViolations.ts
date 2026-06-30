@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   AxleCalculationResult,
-  AxleGroupPolicyCheckResult,
+  POLICY_CHECK_RESULT_TYPES,
 } from "../../types/AxleCalculationResult";
 import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 
@@ -16,16 +16,27 @@ export const shouldOverridePolicyViolations = (
   violations: {
     [key: string]: string;
   },
-  failedAxleCalculationResults: AxleGroupPolicyCheckResult[],
+  axleCalculationResults: AxleCalculationResult,
   isStaffUser: boolean,
   permitType: PermitType,
 ) => {
   const violationFieldReferences = Object.keys(violations);
+  const failedAxleCalculationResults = getDefaultRequiredVal(
+    [],
+    axleCalculationResults?.results.filter(
+      ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
+    ),
+  );
+  const totalOverload = getDefaultRequiredVal(
+    0,
+    axleCalculationResults?.overload,
+  );
 
   // No violations would trivially override
   if (
     violationFieldReferences.length === 0 &&
-    failedAxleCalculationResults.length === 0
+    failedAxleCalculationResults.length === 0 &&
+    totalOverload <= 0
   )
     return true;
 

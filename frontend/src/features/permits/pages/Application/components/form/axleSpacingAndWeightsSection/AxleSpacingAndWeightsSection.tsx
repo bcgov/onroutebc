@@ -26,7 +26,6 @@ export const AxleSpacingAndWeightsSection = ({
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   combineAxleConfigurations,
-  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -60,7 +59,6 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleConfiguration[];
-  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -98,7 +96,6 @@ export const AxleSpacingAndWeightsSection = ({
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           combineAxleConfigurations={combineAxleConfigurations}
-          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

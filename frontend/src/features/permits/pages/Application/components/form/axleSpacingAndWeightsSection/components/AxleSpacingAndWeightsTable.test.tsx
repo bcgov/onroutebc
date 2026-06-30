@@ -114,7 +114,8 @@ describe("AxleSpacingAndWeightsTable", () => {
               endAxleUnit: 3,
             },
           ],
-          totalOverload: 0,
+          totalGCVW: 29699,
+          overload: 0,
         }}
         tireSizeOptions={[
           { name: "330", size: 330 },
@@ -122,7 +123,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={vi.fn()}
         combineAxleConfigurations={() => combinedAxleConfiguration}
-        calculateGCVW={() => 29699}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,
@@ -192,7 +192,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration}
-        calculateGCVW={() => 29699}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,
@@ -270,7 +269,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
-        calculateGCVW={() => 18700}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,
@@ -337,7 +335,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
-        calculateGCVW={() => 18700}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,

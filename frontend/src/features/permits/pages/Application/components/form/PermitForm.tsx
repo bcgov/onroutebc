@@ -70,7 +70,6 @@ export const PermitForm = () => {
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     combineAxleConfigurations,
-    calculateGCVW,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -210,7 +209,6 @@ export const PermitForm = () => {
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           runAxleCalculation={runAxleCalculation}
           combineAxleConfigurations={combineAxleConfigurations}
-          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

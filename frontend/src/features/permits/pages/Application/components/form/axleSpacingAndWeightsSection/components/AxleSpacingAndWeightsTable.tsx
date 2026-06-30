@@ -53,7 +53,6 @@ export const AxleSpacingAndWeightsTable = ({
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   combineAxleConfigurations,
-  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -87,7 +86,6 @@ export const AxleSpacingAndWeightsTable = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleUnit[];
-  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -134,7 +132,8 @@ export const AxleSpacingAndWeightsTable = ({
   useEffect(() => {
     if (axleCalculationResultsFromValidation) {
       setShowValidationBanner(false);
-      setGCVW(undefined);
+      setGCVW(axleCalculationResultsFromValidation.totalGCVW);
+      setOverload(axleCalculationResultsFromValidation.overload);
       setAxleCalculationResults(axleCalculationResultsFromValidation);
 
       // Scroll to table if new validation results are different from current
@@ -227,11 +226,6 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
-    const calculatedGCVW = getDefaultRequiredVal(
-      0,
-      calculateGCVW?.(serializedAxleConfigurationData),
-    );
-
     const axleCalculationResults = runAxleCalculation?.(
       permitType,
       vehicleFormData,
@@ -242,8 +236,8 @@ export const AxleSpacingAndWeightsTable = ({
 
     if (axleCalculationResults) {
       setAxleCalculationResults(axleCalculationResults);
-      setGCVW(calculatedGCVW);
-      setOverload(axleCalculationResults.totalOverload);
+      setGCVW(axleCalculationResults.totalGCVW);
+      setOverload(axleCalculationResults.overload);
     }
   };
 
