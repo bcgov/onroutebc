@@ -379,12 +379,13 @@ export const AxleSpacingAndWeightsTable = ({
 
   const handleReset = () => {
     onUpdatePowerUnitAxleConfiguration(DEFAULT_POWER_UNIT_AXLE_CONFIG);
-
-    trailers.forEach((_, trailerIndex) => {
-      onUpdateTrailerAxleConfiguration(
-        trailerIndex,
-        DEFAULT_TRAILER_AXLE_CONFIG,
-      );
+    trailers.forEach((trailer, trailerIndex) => {
+      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
+        onUpdateTrailerAxleConfiguration(
+          trailerIndex,
+          DEFAULT_TRAILER_AXLE_CONFIG,
+        );
+      }
     });
 
     setShowValidationBanner(false);
