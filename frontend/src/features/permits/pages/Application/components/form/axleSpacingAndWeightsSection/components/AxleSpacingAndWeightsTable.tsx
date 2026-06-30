@@ -4,7 +4,6 @@ import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import {
@@ -526,8 +525,6 @@ export const AxleSpacingAndWeightsTable = ({
       </div>
       {shouldShowResultsSection && (
         <div className="results">
-          <h2 className="results__heading">Calculation Results</h2>
-
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : (
@@ -537,33 +534,34 @@ export const AxleSpacingAndWeightsTable = ({
                   <strong>Total GCVW (kg):</strong> {GCVW}
                 </span>
               ) : null}
-              {Number(overload) >= 0 && !isNaN(Number(overload)) ? (
+              {Number(overload) >= 0 ? (
                 <span className="list__item">
                   <strong>Overload (kg):</strong> {overload}
                 </span>
               ) : null}
-              {hasAxleCalculationFailures ? (
-                getDefaultRequiredVal([], failedAxleCalculationResults).map(
-                  (failedResult, index) => (
-                    <div key={`axle-calc-fail-${index}`}>
-                      <p className="results__text results__text--fail">
-                        <FontAwesomeIcon
-                          icon={faCircleXmark}
-                          className="results__icon results__icon--fail"
-                        />{" "}
-                        {failedResult.message}
-                      </p>
-                    </div>
-                  ),
-                )
-              ) : (
+              <span className="list__item">
+                <strong>Violation(s): </strong>
+                {hasAxleCalculationFailures
+                  ? getDefaultRequiredVal([], failedAxleCalculationResults).map(
+                      (failedResult, index) => (
+                        <div key={`axle-calc-fail-${index}`}>
+                          <p className="results__text results__text--fail">
+                            {failedResult.message}
+                          </p>
+                        </div>
+                      ),
+                    )
+                  : "None"}
+              </span>
+
+              {!hasAxleCalculationFailures && Number(overload) === 0 ? (
                 <>
                   <p className="results__text--success">
                     This permit type is not required.
                   </p>
                   <PermitNotRequiredBanner />
                 </>
-              )}
+              ) : null}
             </div>
           )}
         </div>

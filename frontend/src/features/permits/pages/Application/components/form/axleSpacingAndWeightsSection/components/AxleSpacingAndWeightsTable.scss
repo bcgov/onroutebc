@@ -181,12 +181,6 @@
   }
 
   .results {
-    &__heading {
-      color: $bc-black;
-      margin-top: 0;
-      margin-bottom: 1rem;
-    }
-
     &__list {
       display: flex;
       flex-direction: column;
@@ -194,12 +188,19 @@
 
     .list {
       &__item {
-        border-bottom: 1px solid $bc-border-grey;
         padding: 1rem 0;
+        border-bottom: 1px solid $bc-border-grey;
+        &:last-child {
+          padding-bottom: 0;
+          border-bottom: none;
+        }
       }
     }
 
     &__text {
+      &:last-child {
+          margin-bottom: 0;
+        }
       &--fail {
         color: $bc-red;
       }
