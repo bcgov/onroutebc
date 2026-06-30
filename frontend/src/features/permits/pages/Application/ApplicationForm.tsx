@@ -64,7 +64,10 @@ import { shouldOverridePolicyInvalidSubtype } from "../../helpers/vehicles/subty
 import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverridePolicyViolations";
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
-import { AxleCalculationResult } from "../../types/AxleCalculationResult";
+import {
+  AxleCalculationResult,
+  POLICY_CHECK_RESULT_TYPES,
+} from "../../types/AxleCalculationResult";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -189,12 +192,17 @@ export const ApplicationForm = ({
         : serializeForCreateApplication(currentFormData),
     );
 
-    const axleCalculationResultsFromValidation = getDefaultRequiredVal(
-      { results: [], overload: 0, totalGCVW: 0 },
-      validationResults?.axleCalculationResults,
-    );
+    const axleCalculationResultsFromValidation =
+      validationResults?.axleCalculationResults;
 
     setAxleCalculationResults(axleCalculationResultsFromValidation);
+
+    const failedAxleCalculationResults = getDefaultRequiredVal(
+      [],
+      axleCalculationResultsFromValidation?.results.filter(
+        ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
+      ),
+    );
 
     const violations = getDefaultRequiredVal(
       [],
@@ -228,10 +236,7 @@ export const ApplicationForm = ({
       : policyViolations;
 
     setPolicyViolations(updatedViolations);
-    return {
-      updatedViolations,
-      axleCalculationResults: axleCalculationResultsFromValidation,
-    };
+    return { updatedViolations, failedAxleCalculationResults };
   };
 
   const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
@@ -261,7 +266,7 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
-    const { updatedViolations, axleCalculationResults } =
+    const { updatedViolations, failedAxleCalculationResults } =
       await triggerPolicyValidation();
 
     // If there are policy engine validation errors, form validation fails unless those violations
@@ -269,7 +274,7 @@ export const ApplicationForm = ({
     if (
       !shouldOverridePolicyViolations(
         updatedViolations,
-        axleCalculationResults,
+        failedAxleCalculationResults,
         isStaffUser,
         data.permitType,
       )
