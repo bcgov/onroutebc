@@ -127,14 +127,15 @@ export const AxleSpacingAndWeightsTable = ({
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [showValidationBanner, setShowValidationBanner] =
     useState<boolean>(false);
-  const [totalGCVW, setTotalGCVW] = useState<number>();
+  const [GCVW, setGCVW] = useState<number>();
+  const [overload, setOverload] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
 
   useEffect(() => {
     if (axleCalculationResultsFromValidation) {
       setShowValidationBanner(false);
-      setTotalGCVW(undefined);
+      setGCVW(undefined);
       setAxleCalculationResults(axleCalculationResultsFromValidation);
 
       // Scroll to table if new validation results are different from current
@@ -242,7 +243,8 @@ export const AxleSpacingAndWeightsTable = ({
 
     if (axleCalculationResults) {
       setAxleCalculationResults(axleCalculationResults);
-      setTotalGCVW(calculatedGCVW);
+      setGCVW(calculatedGCVW);
+      setOverload(axleCalculationResults.totalOverload);
     }
   };
 
@@ -393,7 +395,7 @@ export const AxleSpacingAndWeightsTable = ({
     });
 
     setShowValidationBanner(false);
-    setTotalGCVW(undefined);
+    setGCVW(undefined);
     setAxleCalculationResults(undefined);
     setIsResetModalOpen(false);
   };
@@ -529,10 +531,15 @@ export const AxleSpacingAndWeightsTable = ({
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : (
-            <>
-              {totalGCVW && !isNaN(totalGCVW) && Number(totalGCVW) >= 0 ? (
-                <span>
-                  <strong>Total (GCVW):</strong> {totalGCVW}
+            <div className="results__list">
+              {GCVW && !isNaN(GCVW) && Number(GCVW) >= 0 ? (
+                <span className="list__item">
+                  <strong>Total GCVW (kg):</strong> {GCVW}
+                </span>
+              ) : null}
+              {Number(overload) >= 0 && !isNaN(Number(overload)) ? (
+                <span className="list__item">
+                  <strong>Overload (kg):</strong> {overload}
                 </span>
               ) : null}
               {hasAxleCalculationFailures ? (
@@ -557,7 +564,7 @@ export const AxleSpacingAndWeightsTable = ({
                   <PermitNotRequiredBanner />
                 </>
               )}
-            </>
+            </div>
           )}
         </div>
       )}

@@ -187,6 +187,18 @@
       margin-bottom: 1rem;
     }
 
+    &__list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list {
+      &__item {
+        border-bottom: 1px solid $bc-border-grey;
+        padding: 1rem 0;
+      }
+    }
+
     &__text {
       &--fail {
         color: $bc-red;
