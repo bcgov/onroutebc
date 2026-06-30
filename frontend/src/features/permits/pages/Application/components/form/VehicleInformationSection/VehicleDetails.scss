@@ -41,6 +41,20 @@
 
     &__radio-btns {
       display: flex;
+
+      .save-to-inventory-option {
+        &--yes {
+          margin-right: 2.5rem;
+        }
+        
+        .save-to-inventory-option__label {
+          color: orbcStyles.$bc-black;
+        }
+
+        .save-to-inventory-option__radio.save-to-inventory-option__radio--disabled {
+          color: orbcStyles.$disabled-colour;
+        }
+      }
     }
   }
 }

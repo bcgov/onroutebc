@@ -1,0 +1,54 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-icbc-insurance-certificate-section");
+@include orbcStyles.permit-left-box-style(".review-icbc-insurance-certificate-section__header");
+@include orbcStyles.permit-right-box-style(".review-icbc-insurance-certificate-section__body");
+
+.review-icbc-insurance-certificate-section {
+  &__body {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .have-certificate {
+    &__header {
+      margin-bottom: 1.5rem;
+    }
+
+    &__radio-group {
+      display: flex;
+      flex-direction: row;
+    }
+
+    &__option--no {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    &__option--yes {
+      margin-left: 2.5rem;
+    }
+
+    .have-certificate__option {
+      .have-certificate__radio {
+        padding: 0;
+        margin-right: 0.5rem;
+        color: orbcStyles.$disabled-colour;
+      }
+
+      .have-certificate__label {
+        color: orbcStyles.$bc-black;
+      }
+    }
+  }
+}
+
+@media (width < 370px) {
+  .review-icbc-insurance-certificate-section {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+      display: block;
+    }
+  }
+}

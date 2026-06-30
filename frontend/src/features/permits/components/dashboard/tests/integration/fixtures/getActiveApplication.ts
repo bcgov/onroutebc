@@ -4,7 +4,7 @@ import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
 import { TROS_CONDITIONS } from "../../../../../constants/tros";
-import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit, PERMIT_TYPES } from "../../../../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
 import { PermitStatus } from "../../../../../types/PermitStatus";
@@ -142,7 +142,7 @@ export const getDefaultApplication = () => {
   const minDuration = minDurationForPermitType(permitType);
   const expiryDt = getExpiryDate(
     currentDt,
-    isQuarterlyPermit(permitType),
+    permitType,
     minDuration,
   );
   

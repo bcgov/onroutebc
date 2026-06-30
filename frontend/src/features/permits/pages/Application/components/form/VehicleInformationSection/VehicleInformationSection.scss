@@ -58,6 +58,11 @@
 
     .vehicle-inventory-info {
       font-weight: normal;
+
+      .highlighted-value {
+        font-weight: bold;
+        margin: 0 0.25rem;
+      }
     }
   }
 

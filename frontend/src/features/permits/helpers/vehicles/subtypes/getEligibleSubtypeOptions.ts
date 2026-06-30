@@ -1,3 +1,4 @@
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
 import { EMPTY_VEHICLE_SUBTYPE } from "../../../../manageVehicles/helpers/vehicleSubtypes";
 import { VEHICLE_TYPES, VehicleSubType } from "../../../../manageVehicles/types/Vehicle";
 import { sortVehicleSubtypes } from "./sortVehicleSubtypes";
@@ -12,7 +13,10 @@ const getAllowedVehicleSubtypes = (
   allVehicleSubtypes: VehicleSubType[],
   allowedSubtypeCodes: Set<string>,
 ) => {
-  return allVehicleSubtypes.filter(({ typeCode }) => allowedSubtypeCodes.has(typeCode));
+  return allVehicleSubtypes.filter(
+    ({ typeCode }) => typeCode === DEFAULT_EMPTY_SELECT_VALUE
+      || allowedSubtypeCodes.has(typeCode),
+  );
 };
 
 /**
@@ -28,10 +32,10 @@ const getSubtypeOptions = (
   trailerSubtypes: VehicleSubType[],
 ) => {
   if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-    return [...powerUnitSubtypes];
+    return [EMPTY_VEHICLE_SUBTYPE, ...powerUnitSubtypes];
   }
   if (vehicleType === VEHICLE_TYPES.TRAILER) {
-    return [...trailerSubtypes];
+    return [EMPTY_VEHICLE_SUBTYPE, ...trailerSubtypes];
   }
   return [EMPTY_VEHICLE_SUBTYPE];
 };

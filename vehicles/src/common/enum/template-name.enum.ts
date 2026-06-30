@@ -33,6 +33,9 @@ export enum TemplateName {
   PERMIT_STFR = 'PERMIT_STFR',
   PERMIT_STFR_VOID = 'PERMIT_STFR_VOID',
   PERMIT_STFR_REVOKED = 'PERMIT_STFR_REVOKED',
+  PERMIT_HC = 'PERMIT_HC',
+  PERMIT_HC_VOID = 'PERMIT_HC_VOID',
+  PERMIT_HC_REVOKED = 'PERMIT_HC_REVOKED',
 }
 
 export type PermitTemplateMapping = Partial<

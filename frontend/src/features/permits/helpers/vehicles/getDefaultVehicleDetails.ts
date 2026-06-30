@@ -1,3 +1,4 @@
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { DEFAULT_VEHICLE_TYPE } from "../../../manageVehicles/types/Vehicle";
@@ -20,7 +21,8 @@ export const getDefaultVehicleDetails = (
   countryCode: getDefaultRequiredVal("", vehicleDetails?.countryCode),
   provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
   vehicleType: getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, vehicleDetails?.vehicleType),
-  vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+  vehicleSubType: getDefaultRequiredVal(DEFAULT_EMPTY_SELECT_VALUE, vehicleDetails?.vehicleSubType),
   licensedGVW: getDefaultRequiredVal(null, vehicleDetails?.licensedGVW),
+  vehicleDescription: getDefaultRequiredVal(null, vehicleDetails?.vehicleDescription),
   saveVehicle: false,
 });
