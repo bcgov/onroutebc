@@ -1,9 +1,12 @@
+import { AxleCalculationResult } from "../../permits/types/AxleCalculationResult";
+
 export interface ValidationResults {
   violations: ValidationResult[];
   requirements: ValidationResult[];
   warnings: ValidationResult[];
   information: ValidationResult[];
   cost: ValidationResult[];
+  axleCalculationResults?: AxleCalculationResult;
 }
 
 interface ValidationResult {

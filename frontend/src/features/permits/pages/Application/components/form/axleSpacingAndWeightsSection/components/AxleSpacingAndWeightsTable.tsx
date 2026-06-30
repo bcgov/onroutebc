@@ -1,5 +1,5 @@
 import "./AxleSpacingAndWeightsTable.scss";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -48,6 +48,7 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
+  axleCalculationResults: axleCalculationResultsFromValidation,
   tireSizeOptions,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
@@ -63,6 +64,7 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  axleCalculationResults?: AxleCalculationResult | null;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   runAxleCalculation?: (
     permitType: PermitType,
@@ -93,6 +95,7 @@ export const AxleSpacingAndWeightsTable = ({
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
+  const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
   const powerUnitAxleConfiguration = getDefaultRequiredVal(
@@ -127,6 +130,19 @@ export const AxleSpacingAndWeightsTable = ({
   const [totalGCVW, setTotalGCVW] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
+
+  useEffect(() => {
+    if (axleCalculationResultsFromValidation) {
+      setShowValidationBanner(false);
+      setTotalGCVW(undefined);
+      setAxleCalculationResults(axleCalculationResultsFromValidation);
+
+      // Scroll to table if new validation results are different from current
+      if (axleCalculationResultsFromValidation !== axleCalculationResults) {
+        ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [axleCalculationResultsFromValidation]);
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
@@ -221,7 +237,7 @@ export const AxleSpacingAndWeightsTable = ({
       vehicleFormData,
       getDefaultRequiredVal({}, vehicleConfiguration),
       serializedAxleConfigurationData,
-      calculatedGCVW,
+      getDefaultRequiredVal(0, vehicleFormData.licensedGVW),
     );
 
     if (axleCalculationResults) {
@@ -326,9 +342,7 @@ export const AxleSpacingAndWeightsTable = ({
 
         case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
-            ? [
-                POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
-              ]
+            ? [POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS]
             : [];
 
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
@@ -385,7 +399,7 @@ export const AxleSpacingAndWeightsTable = ({
   };
 
   return (
-    <div className="axle-spacing-and-weights-table">
+    <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
       <div className="table-container">
         <table className="table">
           <thead className="table__head">
@@ -516,9 +530,11 @@ export const AxleSpacingAndWeightsTable = ({
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : (
             <>
-              <span>
-                <strong>Total (GCVW):</strong> {totalGCVW}
-              </span>
+              {totalGCVW && !isNaN(totalGCVW) && Number(totalGCVW) >= 0 ? (
+                <span>
+                  <strong>Total (GCVW):</strong> {totalGCVW}
+                </span>
+              ) : null}
               {hasAxleCalculationFailures ? (
                 getDefaultRequiredVal([], failedAxleCalculationResults).map(
                   (failedResult, index) => (
