@@ -23,7 +23,10 @@ import { PermitType } from '../enum/permit-type.enum';
 import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
 import * as dayjs from 'dayjs';
 import { PermitHistoryDto } from '../../modules/permit-application-payment/permit/dto/response/permit-history.dto';
-import { OTHER_VEHICLE_TYPE, OTHER_VEHICLE_TYPE_NAME } from '../constants/vehicle.constant';
+import {
+  OTHER_VEHICLE_TYPE,
+  OTHER_VEHICLE_TYPE_NAME,
+} from '../constants/vehicle.constant';
 import { EMPTY_VALUE } from '../constants/template.constant';
 
 /**
@@ -44,23 +47,25 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
 ): Promise<FullNamesForDgen> => {
   const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
-  const vehicleTypeName = permitData.vehicleDetails?.vehicleType === OTHER_VEHICLE_TYPE
-    ? OTHER_VEHICLE_TYPE_NAME
-    : await getFromCache(
-        cacheManager,
-        CacheKey.VEHICLE_TYPE,
-        permitData.vehicleDetails.vehicleType,
-      );
+  const vehicleTypeName =
+    permitData.vehicleDetails?.vehicleType === OTHER_VEHICLE_TYPE
+      ? OTHER_VEHICLE_TYPE_NAME
+      : await getFromCache(
+          cacheManager,
+          CacheKey.VEHICLE_TYPE,
+          permitData.vehicleDetails.vehicleType,
+        );
 
-  const vehicleSubTypeName = vehicleTypeName === OTHER_VEHICLE_TYPE_NAME
-    ? EMPTY_VALUE
-    : await getFromCache(
-        cacheManager,
-        vehicleTypeName === 'Trailer'
-          ? CacheKey.TRAILER_TYPE
-          : CacheKey.POWER_UNIT_TYPE,
-        permitData.vehicleDetails.vehicleSubType,
-      );
+  const vehicleSubTypeName =
+    vehicleTypeName === OTHER_VEHICLE_TYPE_NAME
+      ? EMPTY_VALUE
+      : await getFromCache(
+          cacheManager,
+          vehicleTypeName === 'Trailer'
+            ? CacheKey.TRAILER_TYPE
+            : CacheKey.POWER_UNIT_TYPE,
+          permitData.vehicleDetails.vehicleSubType,
+        );
 
   const mailingCountryName = await getFromCache(
     cacheManager,
