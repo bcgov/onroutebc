@@ -465,10 +465,10 @@
 - Add indexes for processed, pending, and error rows
 - Add `tps.PROCESS_MIGRATED_TPS_CLIENTS_AND_USERS` to batch process migrated clients and users and insert pending migrated user records
 
-### Version 96:
+### Version 97:
 
 - Updates to policy config to add Highway Crossing permit type.
 
-### Version 97:
+### Version 98:
 
 - Configure HC v1 template
