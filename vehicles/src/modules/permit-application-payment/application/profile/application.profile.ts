@@ -215,6 +215,19 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.isRejectedApplication,
+          mapWithArguments(
+            (
+              s,
+              {
+                isRejectedApplication,
+              }: { isRejectedApplication: Nullable<boolean> },
+            ) => {
+              return isRejectedApplication;
+            },
+          ),
+        ),
+        forMember(
           (d) => d.rejectionHistory,
           mapWithArguments(
             (

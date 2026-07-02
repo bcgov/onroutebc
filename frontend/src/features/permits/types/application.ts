@@ -40,6 +40,7 @@ export interface Application extends PartialApplication {
   updatedDateTime?: Nullable<Dayjs>;
   permitData: PermitData;
   applicant?: Nullable<string>;
+  isRejectedApplication?: Nullable<boolean>;
   rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
 }
 

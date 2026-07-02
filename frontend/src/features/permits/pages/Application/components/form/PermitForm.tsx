@@ -47,6 +47,8 @@ export const PermitForm = () => {
     companyLOAs,
     revisionHistory,
     rejectionHistory,
+    isRejectedApplication,
+    axleCalculationResults,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -107,10 +109,13 @@ export const PermitForm = () => {
   const shouldShowRejectionHistory =
     rejectionHistory && rejectionHistory.length > 0;
 
+  const shouldShowRejectionBanner =
+    isRejectedApplication && rejectionHistory && rejectionHistory.length > 0;
+
   return (
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
-        {shouldShowRejectionHistory && (
+        {shouldShowRejectionBanner && (
           <ErrorAltBcGovBanner
             className="permit-form__rejection-banner"
             msg={
@@ -199,6 +204,7 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
+          axleCalculationResults={axleCalculationResults}
           tireSizeOptions={tireSizeOptions}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
