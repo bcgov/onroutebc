@@ -75,7 +75,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () =>
-    request(app.getHttpServer() as unknown as App)
+    request(app.getHttpServer() as App)
       .get('/')
       .expect(200)
       .expect('Vehicles Healthcheck!'));

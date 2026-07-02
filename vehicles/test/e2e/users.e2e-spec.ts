@@ -141,14 +141,14 @@ describe('Users (e2e)', () => {
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      await request(app.getHttpServer() as unknown as App)
+      await request(app.getHttpServer() as App)
         .post('/users/user-context')
         .expect(201);
     });
     it('should return the  ORBC IDIR userContext.', async () => {
       TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
       repo.findOne.mockResolvedValue(sysAdminStaffUserEntityMock);
-      await request(app.getHttpServer() as unknown as App)
+      await request(app.getHttpServer() as App)
         .post('/users/user-context')
         .expect(201);
     });
@@ -163,7 +163,7 @@ describe('Users (e2e)', () => {
         { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(app.getHttpServer() as App)
         .get('/users/claims?companyId=1')
         .expect(200);
       expect(response.body).toContainEqual(Claim.READ_SELF);
@@ -198,7 +198,7 @@ describe('Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(app.getHttpServer() as App)
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 

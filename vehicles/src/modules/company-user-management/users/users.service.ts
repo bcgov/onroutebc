@@ -828,7 +828,7 @@ export class UsersService {
           updatedUser: currentUser.userName,
           updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
-        } as CompanyUser;
+        };
       });
 
     // Identify which GUIDs were not found (failure to delete)

@@ -41,7 +41,7 @@ export class FeatureFlagsService {
       CacheKey.FEATURE_FLAG_TYPE,
     );
     return featureFlagMap?.size
-      ? (Object.fromEntries(featureFlagMap) as Record<string, string>)
+      ? (Object.fromEntries(featureFlagMap))
       : undefined;
   }
 }

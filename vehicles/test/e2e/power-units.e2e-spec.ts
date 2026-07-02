@@ -47,7 +47,7 @@ describe('Power Units (e2e)', () => {
   describe('/companies/1/vehicles/powerUnits CREATE', () => {
     it('should create a new power unit.', () => {
       repo.save.mockResolvedValue(powerUnitEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .post('/companies/1/vehicles/powerUnits')
         .send(createPowerUnitDtoMock)
         .expect(201)
@@ -58,7 +58,7 @@ describe('Power Units (e2e)', () => {
   describe('/companies/1/vehicles/powerUnits GETALL', () => {
     it('should return an array of power units', () => {
       repo.find.mockResolvedValue([powerUnitEntityMock]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .get('/companies/1/vehicles/powerUnits')
         .expect(200)
         .expect([readPowerUnitDtoMock]);
@@ -68,7 +68,7 @@ describe('Power Units (e2e)', () => {
   describe('/vehicles/powerUnits/1 GET', () => {
     it('should return a power unit with powerUnitId as 1.', () => {
       repo.findOne.mockResolvedValue(powerUnitEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .get('/companies/1/vehicles/powerUnits/1')
         .expect(200)
         .expect(readPowerUnitDtoMock);
@@ -81,7 +81,7 @@ describe('Power Units (e2e)', () => {
         ...powerUnitEntityMock,
         unitNumber: 'KEN2',
       });
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .put('/companies/1/vehicles/powerUnits/1')
         .send(updatePowerUnitDtoMock)
         .expect(200)
@@ -91,7 +91,7 @@ describe('Power Units (e2e)', () => {
 
   describe('/vehicles/powerUnits/1 DELETE', () => {
     it('should delete the power unit.', () => {
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .delete('/companies/1/vehicles/powerUnits/1')
         .expect(200)
         .expect({ deleted: true });
@@ -101,7 +101,7 @@ describe('Power Units (e2e)', () => {
   describe('/companies/1/vehicles/powerUnits/delete-requests DELETE', () => {
     it('should delete the power unit.', () => {
       repo.findBy.mockResolvedValue([]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as App)
         .post('/companies/1/vehicles/powerUnits/delete-requests')
         .send(deletePowerUnitMock)
         .expect(200)

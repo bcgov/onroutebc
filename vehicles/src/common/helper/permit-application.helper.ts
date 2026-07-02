@@ -1,8 +1,5 @@
 import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
-import {
-  PermitData,
-  VehicleDetails,
-} from '../interface/permit.template.interface';
+import { PermitData } from '../interface/permit.template.interface';
 import { getFromCache } from './cache.helper';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { Cache } from 'cache-manager';
@@ -21,10 +18,10 @@ import { User } from '../../modules/company-user-management/users/entities/user.
 import { ApplicationStatus } from '../enum/application-status.enum';
 import { PermitType } from '../enum/permit-type.enum';
 import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
-import * as dayjs from 'dayjs';
 import { PermitHistoryDto } from '../../modules/permit-application-payment/permit/dto/response/permit-history.dto';
 import { OTHER_VEHICLE_TYPE, OTHER_VEHICLE_TYPE_NAME } from '../constants/vehicle.constant';
 import { EMPTY_VALUE } from '../constants/template.constant';
+import dayjs from 'dayjs';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -103,7 +100,7 @@ export const fetchPermitDataDescriptionValuesFromCache = async (
             CacheKey.TRAILER_TYPE,
             trailer?.vehicleSubType,
           );
-          return { ...trailer, vehicleSubType } as VehicleDetails;
+          return { ...trailer, vehicleSubType };
         }),
       )
     : [];
@@ -364,7 +361,7 @@ export const findPermitHistory = async (
         permitTransaction.transaction.transactionApprovedDate,
       pgApproved: permitTransaction.transaction.pgApproved,
     })),
-  ) as PermitHistoryDto[];
+  );
 };
 
 /**
