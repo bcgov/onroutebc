@@ -48,7 +48,7 @@ export const PermitForm = () => {
     revisionHistory,
     rejectionHistory,
     isRejectedApplication,
-    axleCalculationResults,
+    axleCalculationResultsFromValidation,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -70,7 +70,6 @@ export const PermitForm = () => {
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     combineAxleConfigurations,
-    calculateGCVW,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -204,13 +203,14 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
-          axleCalculationResults={axleCalculationResults}
+          axleCalculationResultsFromValidation={
+            axleCalculationResultsFromValidation
+          }
           tireSizeOptions={tireSizeOptions}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           runAxleCalculation={runAxleCalculation}
           combineAxleConfigurations={combineAxleConfigurations}
-          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

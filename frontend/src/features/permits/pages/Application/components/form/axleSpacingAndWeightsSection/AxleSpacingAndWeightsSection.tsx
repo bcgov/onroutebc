@@ -20,13 +20,12 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
-  axleCalculationResults,
+  axleCalculationResultsFromValidation,
   tireSizeOptions,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   combineAxleConfigurations,
-  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -36,7 +35,7 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
-  axleCalculationResults?: AxleCalculationResult | null;
+  axleCalculationResultsFromValidation?: AxleCalculationResult | null;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   runAxleCalculation?: (
     permitType: PermitType,
@@ -60,7 +59,6 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleConfiguration[];
-  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
@@ -92,13 +90,14 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
-          axleCalculationResults={axleCalculationResults}
+          axleCalculationResultsFromValidation={
+            axleCalculationResultsFromValidation
+          }
           tireSizeOptions={tireSizeOptions}
           runAxleCalculation={runAxleCalculation}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           combineAxleConfigurations={combineAxleConfigurations}
-          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }
