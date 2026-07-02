@@ -52,6 +52,14 @@ export const shouldOverridePolicyViolations = (
         "permitData.vehicleConfiguration.netWeight",
       )
     );
+    return (
+      !violationFieldReferences.includes(
+        "permitData.vehicleConfiguration.loadedGVW",
+      ) &&
+      !violationFieldReferences.includes(
+        "permitData.vehicleConfiguration.netWeight",
+      )
+    );
   }
 
   // For all other scenarios, policy violations can be overriden for staff

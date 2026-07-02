@@ -76,6 +76,10 @@ beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = vi.fn();
 });
 
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+});
+
 describe("AxleSpacingAndWeightsTable", () => {
   it("displays and highlights validate-provided axle calculation failures", async () => {
     render(
@@ -309,6 +313,9 @@ describe("AxleSpacingAndWeightsTable", () => {
     render(
       <AxleSpacingAndWeightsTable
         permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={
+          new Map([["PICKRTT", "Picker Truck Tractor"]])
+        }
         powerUnitSubtypeNamesMap={
           new Map([["PICKRTT", "Picker Truck Tractor"]])
         }

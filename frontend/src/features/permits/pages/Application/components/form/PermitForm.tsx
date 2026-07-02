@@ -110,6 +110,7 @@ export const PermitForm = () => {
 
   const shouldShowRejectionBanner =
     isRejectedApplication && rejectionHistory && rejectionHistory.length > 0;
+  isRejectedApplication && rejectionHistory && rejectionHistory.length > 0;
 
   return (
     <Box className="permit-form layout-box">
