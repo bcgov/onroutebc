@@ -11,7 +11,7 @@ import { EGARMS_CREDIT_API_SYSTEM_ID } from '../../common/constants/api.constant
 import { lastValueFrom } from 'rxjs';
 import { XMLParser } from 'fast-xml-parser';
 import { IEGARMSResponse } from '../../common/interface/egarms-response.interface';
-import CircuitBreaker from 'opossum';
+import * as CircuitBreaker from 'opossum';
 
 @Injectable()
 export class EGARMSCreditAccountService {
@@ -64,7 +64,7 @@ export class EGARMSCreditAccountService {
     try {
       return (await this.circuitBreaker.fire({
         creditAccountNumber,
-      }));
+      })) as IEGARMSResponse;
     } catch (error) {
       this.logger.error('Credit Account is unavailable', error);
       throw new InternalServerErrorException('Credit Account is unavailable.');
@@ -115,10 +115,10 @@ export class EGARMSCreditAccountService {
       throw new InternalServerErrorException('Credit Account is unavailable.');
     }
 
-    const status = axiosError?.response?.status;
+    const status = axiosError?.response?.status as HttpStatus;
 
     switch (status) {
-      case Number(HttpStatus.UNAUTHORIZED):
+      case HttpStatus.UNAUTHORIZED:
         this.logger.error(
           'Unauthorized access to EGARMS. Please verify your credentials.',
         );
@@ -126,7 +126,7 @@ export class EGARMSCreditAccountService {
           'Credit Account is unavailable.',
           axiosError?.response?.data,
         );
-      case Number(HttpStatus.BAD_REQUEST):
+      case HttpStatus.BAD_REQUEST:
         this.logger.error(
           'Invalid request to EGARMS:',
           axiosError?.response?.data,

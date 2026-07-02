@@ -129,7 +129,7 @@ describe('Company Users (e2e)', () => {
       jest
         .spyOn(companyServiceMock, 'findOneByCompanyGuid')
         .mockReturnValue(Promise.resolve(redCompanyEntityMock));
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
@@ -152,7 +152,7 @@ describe('Company Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A')
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);

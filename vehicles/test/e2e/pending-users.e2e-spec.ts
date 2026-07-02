@@ -99,7 +99,7 @@ describe('PendingUsers (e2e)', () => {
       mockQueryRunnerManager.save.mockResolvedValue(
         readRedCompanyPendingUserDtoMock,
       );
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies/1/pending-users')
         .send(createRedCompanyPendingUserDtoMock)
         .expect(201);
@@ -114,7 +114,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/companies/1/pending-users')
         .expect(200);
 
@@ -130,7 +130,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .get(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,
@@ -149,7 +149,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as App)
+      const response = await request(app.getHttpServer() as unknown as App)
         .put(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,
