@@ -58,10 +58,7 @@ import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCCont
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
-import {
-  AxleCalculationResult,
-  POLICY_CHECK_RESULT_TYPES,
-} from "../../../types/AxleCalculationResult";
+import { AxleCalculationResult } from "../../../types/AxleCalculationResult";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
