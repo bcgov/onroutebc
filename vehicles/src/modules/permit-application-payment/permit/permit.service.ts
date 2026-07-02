@@ -516,7 +516,7 @@ export class PermitService {
           permitTransaction?.transaction?.creditAccount
             ?.creditAccountStatusType,
       })),
-    );
+    ) as PermitHistoryDto[];
   }
 
   @LogAsyncMethodExecution()
@@ -719,7 +719,7 @@ export class PermitService {
       CacheKey.PERMIT_TYPE,
     );
     return permitTypeMap?.size
-      ? (Object.fromEntries(permitTypeMap))
+      ? (Object.fromEntries(permitTypeMap) as Record<string, string>)
       : undefined;
   }
 

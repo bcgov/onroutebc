@@ -143,9 +143,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     let userGUIDParam: string;
     if (req.params.userGUID) {
-      userGUIDParam = typeof req.params.userGUID === 'string'
-        ? `${req.params.userGUID}`
-        : req.params.userGUID.length > 0 ? `${req.params.userGUID[0]}` : "";
+      userGUIDParam = `${req.params.userGUID}`;
     } else if (typeof req.query.userGUID === 'string') {
       userGUIDParam = req.query.userGUID;
     }

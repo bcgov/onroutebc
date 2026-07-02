@@ -222,7 +222,7 @@ export class PaymentReportService {
       await queryBuilder.getRawMany();
 
     if (paymentReportDataCollection?.length) {
-      return paymentReportDataCollection;
+      return paymentReportDataCollection as unknown;
     }
   }
 
@@ -323,7 +323,7 @@ export class PaymentReportService {
     summaryPayments.push(total);
 
     if (summaryPayments?.length) {
-      return summaryPayments;
+      return summaryPayments as unknown;
     }
   }
 
@@ -380,7 +380,7 @@ export class PaymentReportService {
     });
 
     if (queryResult?.length) {
-      return queryResult;
+      return queryResult as unknown;
     }
   }
 
@@ -641,7 +641,7 @@ export class PaymentReportService {
       await queryBuilder.getRawMany();
 
     if (paymentReportDataCollection?.length) {
-      return paymentReportDataCollection;
+      return paymentReportDataCollection as unknown;
     }
   }
 }

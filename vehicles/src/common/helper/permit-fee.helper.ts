@@ -58,6 +58,6 @@ export const validatePaymentReceived = (
       code: 'cost-validation-error',
       message: `Transaction amount mismatch`,
       cost: cost,
-    };
+    } as ValidationResult;
   }
 };
