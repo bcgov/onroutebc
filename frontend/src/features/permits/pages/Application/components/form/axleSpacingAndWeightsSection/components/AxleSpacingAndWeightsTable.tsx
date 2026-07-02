@@ -1,10 +1,9 @@
 import "./AxleSpacingAndWeightsTable.scss";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { AxleUnitHelpModal } from "./AxleUnitHelpModal";
 import { Nullable } from "../../../../../../../../common/types/common";
 import {
@@ -48,12 +47,12 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData,
   trailerSubtypeNamesMap,
   vehicleConfiguration,
+  axleCalculationResultsFromValidation,
   tireSizeOptions,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
   canAddAxleUnitsToTrailer,
   combineAxleConfigurations,
-  calculateGCVW,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
 }: {
@@ -63,6 +62,7 @@ export const AxleSpacingAndWeightsTable = ({
   vehicleFormData: PermitVehicleDetails;
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
+  axleCalculationResultsFromValidation?: AxleCalculationResult | null;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   runAxleCalculation?: (
     permitType: PermitType,
@@ -86,13 +86,13 @@ export const AxleSpacingAndWeightsTable = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleUnit[];
-  calculateGCVW?: (axleConfiguration: AxleConfiguration[]) => number;
   onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
   onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
+  const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
   const powerUnitAxleConfiguration = getDefaultRequiredVal(
@@ -124,9 +124,24 @@ export const AxleSpacingAndWeightsTable = ({
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
   const [showValidationBanner, setShowValidationBanner] =
     useState<boolean>(false);
-  const [totalGCVW, setTotalGCVW] = useState<number>();
+  const [GCVW, setGCVW] = useState<number>();
+  const [overload, setOverload] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
+
+  useEffect(() => {
+    if (axleCalculationResultsFromValidation) {
+      setShowValidationBanner(false);
+      setGCVW(axleCalculationResultsFromValidation.totalGCVW);
+      setOverload(axleCalculationResultsFromValidation.overload);
+      setAxleCalculationResults(axleCalculationResultsFromValidation);
+
+      // Scroll to table if new validation results are different from current
+      if (axleCalculationResultsFromValidation !== axleCalculationResults) {
+        ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [axleCalculationResultsFromValidation]);
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
@@ -211,22 +226,18 @@ export const AxleSpacingAndWeightsTable = ({
       (axleUnit) => getDefaultAxleConfiguration(axleUnit),
     );
 
-    const calculatedGCVW = getDefaultRequiredVal(
-      0,
-      calculateGCVW?.(serializedAxleConfigurationData),
-    );
-
     const axleCalculationResults = runAxleCalculation?.(
       permitType,
       vehicleFormData,
       getDefaultRequiredVal({}, vehicleConfiguration),
       serializedAxleConfigurationData,
-      calculatedGCVW,
+      getDefaultRequiredVal(0, vehicleFormData.licensedGVW),
     );
 
     if (axleCalculationResults) {
       setAxleCalculationResults(axleCalculationResults);
-      setTotalGCVW(calculatedGCVW);
+      setGCVW(axleCalculationResults.totalGCVW);
+      setOverload(axleCalculationResults.overload);
     }
   };
 
@@ -326,9 +337,7 @@ export const AxleSpacingAndWeightsTable = ({
 
         case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
-            ? [
-                POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
-              ]
+            ? [POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS]
             : [];
 
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
@@ -370,22 +379,23 @@ export const AxleSpacingAndWeightsTable = ({
 
   const handleReset = () => {
     onUpdatePowerUnitAxleConfiguration(DEFAULT_POWER_UNIT_AXLE_CONFIG);
-
-    trailers.forEach((_, trailerIndex) => {
-      onUpdateTrailerAxleConfiguration(
-        trailerIndex,
-        DEFAULT_TRAILER_AXLE_CONFIG,
-      );
+    trailers.forEach((trailer, trailerIndex) => {
+      if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
+        onUpdateTrailerAxleConfiguration(
+          trailerIndex,
+          DEFAULT_TRAILER_AXLE_CONFIG,
+        );
+      }
     });
 
     setShowValidationBanner(false);
-    setTotalGCVW(undefined);
+    setGCVW(undefined);
     setAxleCalculationResults(undefined);
     setIsResetModalOpen(false);
   };
 
   return (
-    <div className="axle-spacing-and-weights-table">
+    <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
       <div className="table-container">
         <table className="table">
           <thead className="table__head">
@@ -510,38 +520,44 @@ export const AxleSpacingAndWeightsTable = ({
       </div>
       {shouldShowResultsSection && (
         <div className="results">
-          <h2 className="results__heading">Calculation Results</h2>
-
           {showValidationBanner ? (
             <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
           ) : (
-            <>
-              <span>
-                <strong>Total (GCVW):</strong> {totalGCVW}
+            <div className="results__list">
+              {GCVW && !isNaN(GCVW) && Number(GCVW) >= 0 ? (
+                <span className="list__item">
+                  <strong>Total GCVW (kg):</strong> {GCVW}
+                </span>
+              ) : null}
+              {Number(overload) >= 0 ? (
+                <span className="list__item">
+                  <strong>Overload (kg):</strong> {overload}
+                </span>
+              ) : null}
+              <span className="list__item">
+                <strong>Violation(s): </strong>
+                {hasAxleCalculationFailures
+                  ? getDefaultRequiredVal([], failedAxleCalculationResults).map(
+                      (failedResult, index) => (
+                        <div key={`axle-calc-fail-${index}`}>
+                          <p className="results__text results__text--fail">
+                            {failedResult.message}
+                          </p>
+                        </div>
+                      ),
+                    )
+                  : "None"}
               </span>
-              {hasAxleCalculationFailures ? (
-                getDefaultRequiredVal([], failedAxleCalculationResults).map(
-                  (failedResult, index) => (
-                    <div key={`axle-calc-fail-${index}`}>
-                      <p className="results__text results__text--fail">
-                        <FontAwesomeIcon
-                          icon={faCircleXmark}
-                          className="results__icon results__icon--fail"
-                        />{" "}
-                        {failedResult.message}
-                      </p>
-                    </div>
-                  ),
-                )
-              ) : (
+
+              {!hasAxleCalculationFailures && Number(overload) === 0 ? (
                 <>
                   <p className="results__text--success">
                     This permit type is not required.
                   </p>
                   <PermitNotRequiredBanner />
                 </>
-              )}
-            </>
+              ) : null}
+            </div>
           )}
         </div>
       )}

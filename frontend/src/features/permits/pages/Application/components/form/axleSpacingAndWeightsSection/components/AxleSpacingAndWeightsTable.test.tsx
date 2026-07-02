@@ -72,7 +72,83 @@ const combinedAxleConfiguration: AxleConfiguration[] = [
   },
 ];
 
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+});
+
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+});
+
 describe("AxleSpacingAndWeightsTable", () => {
+  it("displays and highlights validate-provided axle calculation failures", async () => {
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map([["JEEPSRG", "Jeep"]])}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [
+            {
+              vehicleSubType: "JEEPSRG",
+              axleConfiguration: jeepAxleConfiguration,
+            },
+          ],
+        }}
+        axleCalculationResultsFromValidation={{
+          results: [
+            {
+              id: POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
+              result: "fail",
+              message: loadEqualizationMessage,
+              startAxleUnit: 2,
+              endAxleUnit: 3,
+            },
+          ],
+          totalGCVW: 29699,
+          overload: 0,
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={vi.fn()}
+        combineAxleConfigurations={() => combinedAxleConfiguration}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText(loadEqualizationMessage)).toHaveClass(
+      "results__text--fail",
+    );
+    expect(
+      screen.queryByText("This permit type is not required."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("10999").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+  });
+
   it("displays and highlights a drive and jeep load equalization failure", async () => {
     const user = userEvent.setup();
     const runAxleCalculation = vi.fn().mockReturnValue({
@@ -120,7 +196,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration}
-        calculateGCVW={() => 29699}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,
@@ -198,7 +273,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
-        calculateGCVW={() => 18700}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,
@@ -239,9 +313,9 @@ describe("AxleSpacingAndWeightsTable", () => {
     render(
       <AxleSpacingAndWeightsTable
         permitType={PERMIT_TYPES.STOW}
-        powerUnitSubtypeNamesMap={new Map([
-          ["PICKRTT", "Picker Truck Tractor"],
-        ])}
+        powerUnitSubtypeNamesMap={
+          new Map([["PICKRTT", "Picker Truck Tractor"]])
+        }
         vehicleFormData={{
           vehicleId: "101",
           vin: "654321",
@@ -265,7 +339,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         ]}
         runAxleCalculation={runAxleCalculation}
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
-        calculateGCVW={() => 18700}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
       />,

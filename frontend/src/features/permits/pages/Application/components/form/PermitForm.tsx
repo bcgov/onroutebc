@@ -49,6 +49,7 @@ export const PermitForm = () => {
     revisionHistory,
     rejectionHistory,
     isRejectedApplication,
+    axleCalculationResultsFromValidation,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -70,7 +71,6 @@ export const PermitForm = () => {
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     combineAxleConfigurations,
-    calculateGCVW,
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
@@ -112,8 +112,7 @@ export const PermitForm = () => {
     rejectionHistory && rejectionHistory.length > 0;
 
   const shouldShowRejectionBanner =
-    isRejectedApplication && rejectionHistory && rejectionHistory.length > 0;    
-    
+    isRejectedApplication && rejectionHistory && rejectionHistory.length > 0;
 
   return (
     <Box className="permit-form layout-box">
@@ -215,12 +214,14 @@ export const PermitForm = () => {
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
+          axleCalculationResultsFromValidation={
+            axleCalculationResultsFromValidation
+          }
           tireSizeOptions={tireSizeOptions}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}
           canAddAxleUnitsToTrailer={canAddAxleUnitsToTrailer}
           runAxleCalculation={runAxleCalculation}
           combineAxleConfigurations={combineAxleConfigurations}
-          calculateGCVW={calculateGCVW}
           onUpdatePowerUnitAxleConfiguration={
             onUpdatePowerUnitAxleConfiguration
           }

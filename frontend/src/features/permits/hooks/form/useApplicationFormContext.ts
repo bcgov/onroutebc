@@ -23,7 +23,6 @@ import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 import { useCombineAxleConfigurations } from "../useCombineAxleConfigurations";
-import { useCalculateGCVW } from "../useCalculateGCVW";
 import { useICBCInsuranceCertificate } from "../useICBCInsuranceCertificate";
 
 export const useApplicationFormContext = () => {
@@ -48,6 +47,7 @@ export const useApplicationFormContext = () => {
     revisionHistory,
     rejectionHistory,
     isRejectedApplication,
+    axleCalculationResultsFromValidation,
     onLeave,
     onSave,
     onCancel,
@@ -297,8 +297,6 @@ export const useApplicationFormContext = () => {
   const { combineAxleConfigurations } =
     useCombineAxleConfigurations(policyEngine);
 
-  const { calculateGCVW } = useCalculateGCVW(policyEngine);
-
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -346,6 +344,7 @@ export const useApplicationFormContext = () => {
     revisionHistory: memoizedRevisionHistory,
     rejectionHistory,
     isRejectedApplication,
+    axleCalculationResultsFromValidation,
     commodityOptions,
     highwaySequence,
     tripOrigin: permittedRoute?.manualRoute?.origin,
@@ -366,7 +365,6 @@ export const useApplicationFormContext = () => {
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     combineAxleConfigurations,
-    calculateGCVW,
     onLeave,
     onSave,
     onCancel,

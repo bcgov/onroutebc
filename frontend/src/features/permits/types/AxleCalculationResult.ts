@@ -38,5 +38,6 @@ export interface AxleGroupPolicyCheckResult {
 
 export interface AxleCalculationResult {
   results: Array<AxleGroupPolicyCheckResult>;
-  totalOverload: number;
+  overload: number;
+  totalGCVW: number;
 }

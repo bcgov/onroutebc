@@ -465,6 +465,10 @@
 - Add indexes for processed, pending, and error rows
 - Add `tps.PROCESS_MIGRATED_TPS_CLIENTS_AND_USERS` to batch process migrated clients and users and insert pending migrated user records
 
+### Version 96:
+
+- Configure NRSCV v2 template (bugfixes)
+
 ### Version 97:
 
 - Updates to policy config to add Highway Crossing permit type.

@@ -1,0 +1,125 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+BEGIN TRANSACTION
+GO
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+UPDATE dops.ORBC_DOCUMENT_TEMPLATE set IS_ACTIVE='N' where TEMPLATE_NAME in ('PERMIT_NRSCV','PERMIT_NRSCV_VOID','PERMIT_NRSCV_REVOKED') and TEMPLATE_VERSION='1';
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION],     
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP],
+    [IS_ACTIVE],
+    [FILE_NAME]
+) 
+VALUES (
+    N'PERMIT_NRSCV',
+    2,    
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE(),
+    N'Y',
+    N'nrscv-template-v2.docx'
+)
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION],     
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP],
+    [IS_ACTIVE],
+    [FILE_NAME]
+) 
+VALUES (
+    N'PERMIT_NRSCV_VOID',
+    2,    
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE(),
+    N'Y',
+    N'nrscv-void-template-v2.docx'
+)
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
+    [TEMPLATE_NAME], 
+    [TEMPLATE_VERSION],     
+    [CONCURRENCY_CONTROL_NUMBER], 
+    [DB_CREATE_USERID], 
+    [DB_CREATE_TIMESTAMP], 
+    [DB_LAST_UPDATE_USERID], 
+    [DB_LAST_UPDATE_TIMESTAMP],
+    [IS_ACTIVE],
+    [FILE_NAME]
+) 
+VALUES (
+    N'PERMIT_NRSCV_REVOKED',
+    2,    
+    1,
+    N'dops',
+    GETUTCDATE(),
+    N'dops',
+    GETUTCDATE(),
+    N'Y',
+    N'nrscv-revoked-template-v2.docx'
+)
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Configure NRSCV templates v2'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (96, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+DECLARE @Success AS BIT
+SET @Success = 1
+SET NOEXEC OFF
+IF (@Success = 1) PRINT 'The database update succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database update failed'
+END
+GO
