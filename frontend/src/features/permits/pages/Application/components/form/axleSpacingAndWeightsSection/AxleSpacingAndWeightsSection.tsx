@@ -20,7 +20,7 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap,
   vehicleFormData,
   vehicleConfiguration,
-  axleCalculationResults,
+  axleCalculationResultsFromValidation,
   tireSizeOptions,
   runAxleCalculation,
   canAddAxleUnitsToPowerUnit,
@@ -35,7 +35,7 @@ export const AxleSpacingAndWeightsSection = ({
   trailerSubtypeNamesMap: Map<string, string>;
   vehicleFormData: PermitVehicleDetails;
   vehicleConfiguration: Nullable<PermitVehicleConfiguration>;
-  axleCalculationResults?: AxleCalculationResult | null;
+  axleCalculationResultsFromValidation?: AxleCalculationResult | null;
   tireSizeOptions?: Nullable<{ name: string; size: number }[]>;
   runAxleCalculation?: (
     permitType: PermitType,
@@ -90,7 +90,9 @@ export const AxleSpacingAndWeightsSection = ({
           vehicleFormData={vehicleFormData}
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleConfiguration={vehicleConfiguration}
-          axleCalculationResults={axleCalculationResults}
+          axleCalculationResultsFromValidation={
+            axleCalculationResultsFromValidation
+          }
           tireSizeOptions={tireSizeOptions}
           runAxleCalculation={runAxleCalculation}
           canAddAxleUnitsToPowerUnit={canAddAxleUnitsToPowerUnit}

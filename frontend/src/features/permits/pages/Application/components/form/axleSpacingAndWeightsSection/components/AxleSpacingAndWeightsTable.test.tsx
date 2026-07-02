@@ -104,7 +104,7 @@ describe("AxleSpacingAndWeightsTable", () => {
             },
           ],
         }}
-        axleCalculationResults={{
+        axleCalculationResultsFromValidation={{
           results: [
             {
               id: POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
