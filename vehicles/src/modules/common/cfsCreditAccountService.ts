@@ -37,8 +37,8 @@ export class CFSCreditAccountService {
    */
   private static isSuccess(status: number) {
     return (
-      (status) === Number(HttpStatus.OK) ||
-      (status) === Number(HttpStatus.CREATED)
+      status === Number(HttpStatus.OK) ||
+      status === Number(HttpStatus.CREATED)
     );
   }
 
