@@ -448,7 +448,6 @@ export const ApplicationForm = ({
   );
 
   const isRejectedApplication = getDefaultRequiredVal(
-  const isRejectedApplication = getDefaultRequiredVal(
     false,
     applicationContext.applicationData?.isRejectedApplication,
   );

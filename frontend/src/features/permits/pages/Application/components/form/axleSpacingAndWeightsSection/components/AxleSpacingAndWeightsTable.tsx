@@ -1,6 +1,5 @@
 import "./AxleSpacingAndWeightsTable.scss";
 import { useEffect, useRef, useState } from "react";
-import { useEffect, useRef, useState } from "react";
 import { AxleUnitRow } from "./AxleUnitRow";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -93,7 +92,6 @@ export const AxleSpacingAndWeightsTable = ({
     axleConfiguration: AxleUnit[],
   ) => void;
 }) => {
-  const ASWTableRef = useRef<HTMLDivElement>(null);
   const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
@@ -234,7 +232,6 @@ export const AxleSpacingAndWeightsTable = ({
       getDefaultRequiredVal({}, vehicleConfiguration),
       serializedAxleConfigurationData,
       getDefaultRequiredVal(0, vehicleFormData.licensedGVW),
-      getDefaultRequiredVal(0, vehicleFormData.licensedGVW),
     );
 
     if (axleCalculationResults) {
@@ -341,7 +338,6 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS]
-            ? [POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS]
             : [];
 
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE:
@@ -399,7 +395,6 @@ export const AxleSpacingAndWeightsTable = ({
   };
 
   return (
-    <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
     <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
       <div className="table-container">
         <table className="table">

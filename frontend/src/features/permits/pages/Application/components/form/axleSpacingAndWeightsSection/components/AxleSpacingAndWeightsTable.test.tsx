@@ -316,9 +316,6 @@ describe("AxleSpacingAndWeightsTable", () => {
         powerUnitSubtypeNamesMap={
           new Map([["PICKRTT", "Picker Truck Tractor"]])
         }
-        powerUnitSubtypeNamesMap={
-          new Map([["PICKRTT", "Picker Truck Tractor"]])
-        }
         vehicleFormData={{
           vehicleId: "101",
           vin: "654321",
