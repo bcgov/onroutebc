@@ -142,8 +142,10 @@ export const AmendPermitForm = () => {
   const [policyViolations, setPolicyViolations] = useState<
     Record<string, string>
   >({});
-  const [axleCalculationResults, setAxleCalculationResults] =
-    useState<AxleCalculationResult | null>();
+  const [
+    axleCalculationResultsFromValidation,
+    setAxleCalculationResultsFromValidation,
+  ] = useState<AxleCalculationResult | null>();
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
@@ -160,17 +162,12 @@ export const AmendPermitForm = () => {
       serializeForUpdateApplication(formData),
     );
 
-    const axleCalculationResultsFromValidation =
-      validationResults?.axleCalculationResults;
-
-    setAxleCalculationResults(axleCalculationResultsFromValidation);
-
-    const failedAxleCalculationResults = getDefaultRequiredVal(
-      [],
-      axleCalculationResultsFromValidation?.results.filter(
-        ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
-      ),
+    const axleCalculationResults = getDefaultRequiredVal(
+      { results: [], overload: 0, totalGCVW: 0 },
+      validationResults?.axleCalculationResults,
     );
+
+    setAxleCalculationResultsFromValidation(axleCalculationResults);
 
     const violations = getDefaultRequiredVal(
       [],
@@ -214,12 +211,12 @@ export const AmendPermitForm = () => {
       : policyViolations;
 
     setPolicyViolations(updatedViolations);
-    return { updatedViolations, failedAxleCalculationResults };
+    return { updatedViolations, axleCalculationResults };
   };
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const { updatedViolations, failedAxleCalculationResults } =
+    const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
 
     // If there are policy engine validation errors, form validation fails unless those violations
@@ -227,7 +224,7 @@ export const AmendPermitForm = () => {
     if (
       !shouldOverridePolicyViolations(
         updatedViolations,
-        failedAxleCalculationResults,
+        axleCalculationResults,
         isStaffUser,
         data.permitType,
       )
@@ -364,7 +361,7 @@ export const AmendPermitForm = () => {
       companyLOAs: applicableLOAs,
       revisionHistory,
       policyViolations,
-      axleCalculationResults,
+      axleCalculationResultsFromValidation,
       onLeave: undefined,
       onSave: undefined,
       onCancel: goHome,
@@ -388,7 +385,7 @@ export const AmendPermitForm = () => {
       applicableLOAs,
       revisionHistory,
       policyViolations,
-      axleCalculationResults,
+      axleCalculationResultsFromValidation,
       goHome,
       onContinue,
       triggerPolicyValidation,
