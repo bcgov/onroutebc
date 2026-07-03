@@ -37,11 +37,13 @@ export const shouldOverridePolicyViolations = (
     ) {
       return true;
     }
-  } else {
-    // non-STOW permit types do not need to look at axleCalculationResults, since they will just be default (empty) values in these cases
-    if (violationFieldReferences.length === 0) {
-      return true;
-    }
+
+    return isStaffUser;
+  }
+
+  // non-STOW permit types do not need to look at axleCalculationResults, since they will just be default (empty) values in these cases
+  if (violationFieldReferences.length === 0) {
+    return true;
   }
 
   // If isn't staff user, then policy violations should NOT be overriden
