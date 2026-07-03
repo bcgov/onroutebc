@@ -22,20 +22,29 @@ export const shouldOverridePolicyViolations = (
 ) => {
   const violationFieldReferences = Object.keys(violations);
 
-  const failedAxleCalculationResults = getDefaultRequiredVal(
-    [],
-    axleCalculationResults?.results.filter(
-      ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
-    ),
-  );
+  // if permitType is STOW, we need to check if there are any issues with axle calculations in addition to policy violations.
+  if (permitType === PERMIT_TYPES.STOW) {
+    const failedAxleCalculationResults = getDefaultRequiredVal(
+      [],
+      axleCalculationResults?.results.filter(
+        ({ result }) => result === POLICY_CHECK_RESULT_TYPES.FAIL,
+      ),
+    );
+    if (
+      violationFieldReferences.length === 0 &&
+      failedAxleCalculationResults.length === 0 &&
+      axleCalculationResults.overload > 0
+    ) {
+      return true;
+    }
 
-  // No violations, no failed axle calulations or a non-zero overload number would trivially override
-  if (
-    violationFieldReferences.length === 0 &&
-    failedAxleCalculationResults.length === 0 &&
-    axleCalculationResults.overload > 0
-  )
+    return isStaffUser;
+  }
+
+  // non-STOW permit types do not need to look at axleCalculationResults, since they will just be default (empty) values in these cases
+  if (violationFieldReferences.length === 0) {
     return true;
+  }
 
   // If isn't staff user, then policy violations should NOT be overriden
   if (!isStaffUser) return false;
