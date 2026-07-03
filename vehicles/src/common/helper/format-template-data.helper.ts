@@ -16,6 +16,7 @@ import {
   THIRD_PARTY_LIABILITY_GENERAL_GOODS,
 } from '../constants/api.constant';
 import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
+import { EMPTY_VALUE } from '../constants/template.constant';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -95,6 +96,10 @@ export const formatTemplateData = (
   if (template.permitData?.vehicleConfiguration?.trailers?.length) {
     template.permitData.vehicleConfiguration.trailers =
       fullNames.vehicleConfigurationTrailers;
+  }
+
+  if (!template.permitData?.vehicleDetails?.vehicleDescription) {
+    template.permitData.vehicleDetails.vehicleDescription = EMPTY_VALUE;
   }
 
   // Format Mailing Address

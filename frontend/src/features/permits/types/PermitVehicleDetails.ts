@@ -14,6 +14,7 @@ export interface PermitVehicleDetails {
   unitNumber?: Nullable<string>;
   vehicleId: Nullable<string>; // either powerUnitId or trailerId, depending on vehicleType
   licensedGVW?: Nullable<number>;
+  vehicleDescription?: Nullable<string>;
 }
 
 export const EMPTY_VEHICLE_DETAILS = {

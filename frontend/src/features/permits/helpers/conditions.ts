@@ -18,6 +18,7 @@ import {
 } from "../constants/nrqcv";
 import { Nullable } from "../../../common/types/common";
 import { MANDATORY_STOW_CONDITIONS, STOW_CONDITIONS } from "../constants/stow";
+import { HC_CONDITIONS, MANDATORY_HC_CONDITIONS } from "../constants/hc";
 
 /**
  * Determine whether or not a permit with given permit type can have LCV conditions attached to it.
@@ -67,6 +68,8 @@ export const getMandatoryConditions = (
       return MANDATORY_TROW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROS:
       return MANDATORY_TROS_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.HC:
+      return MANDATORY_HC_CONDITIONS.concat(additionalConditions);
     default:
       return additionalConditions;
   }
@@ -100,6 +103,8 @@ const getConditionsByPermitType = (
       return TROW_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROS:
       return TROS_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.HC:
+      return HC_CONDITIONS.concat(additionalConditions);
     default:
       return additionalConditions;
   }

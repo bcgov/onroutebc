@@ -37,6 +37,7 @@ export const StartApplicationAction = () => {
   const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
+  const enableHC = featureFlags?.["HC"] === "ENABLED";
 
   const showSingleTrip = enableSTOS || enableSTOW;
   const showNonResident =
@@ -71,6 +72,13 @@ export const StartApplicationAction = () => {
     .map((item: PermitTypeChooseFromItem) => {
       const items = item?.items
         ?.filter((nestedItem) => {
+          if (item.value === PERMIT_CATEGORIES.TERM) {
+            return (
+              (nestedItem.value === PERMIT_TYPES.TROS) ||
+              (nestedItem.value === PERMIT_TYPES.TROW) ||
+              (nestedItem.value === PERMIT_TYPES.HC && enableHC)
+            );
+          }
           if (item.value === PERMIT_CATEGORIES.SINGLE_TRIP) {
             return (
               (nestedItem.value === PERMIT_TYPES.STOS && enableSTOS) ||

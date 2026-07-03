@@ -23,6 +23,7 @@ import { ReviewApplicationRejectionHistory } from "../review/ReviewApplicationRe
 import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
+import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
 
 export const PermitForm = () => {
   const {
@@ -96,6 +97,8 @@ export const PermitForm = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    haveCertificate,
+    onUpdateHaveCertificate,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -175,6 +178,13 @@ export const PermitForm = () => {
           vehicleConfiguration={vehicleConfiguration}
         />
 
+        <ICBCInsuranceCertificateSection
+          feature={feature}
+          permitType={permitType}
+          haveCertificate={haveCertificate}
+          onSetHaveCertificate={onUpdateHaveCertificate}
+        />
+
         <VehicleInformationSection
           permitType={permitType}
           feature={feature}
@@ -188,6 +198,7 @@ export const PermitForm = () => {
           trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           selectedTrailers={selectedTrailers}
           selectedCommodityType={commodityType}
+          haveICBCCertificate={haveCertificate}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}

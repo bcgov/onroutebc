@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
-import { isQuarterlyPermit, PermitType } from "../types/PermitType";
+import { PermitType } from "../types/PermitType";
 import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
@@ -248,6 +248,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     durationOptionsForPermitType(applicationData.permitType, isStaff),
     newSelectedLOAs,
     applicationData.permitData.startDate,
+    applicationData.permitType,
   );
 
   const updatedDuration = handleUpdateDurationIfNeeded(
@@ -258,7 +259,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
 
   const updatedExpiryDate = getExpiryDate(
     applicationData.permitData.startDate,
-    isQuarterlyPermit(applicationData.permitType),
+    applicationData.permitType,
     updatedDuration,
   );
 

@@ -1,6 +1,4 @@
-@use "../../../../../../../../common/components/form/CustomFormComponents.scss";
-
-@include CustomFormComponents.custom-form-component(".select-vehicle-dropdown__autocomplete");
+@use "../../../../../../../../themes/orbcStyles";
 
 .select-vehicle-dropdown {
   & &__label {
@@ -12,5 +10,45 @@
     .MuiOutlinedInput-root .MuiAutocomplete-input {
       padding: 0;
     }
+
+    &--disabled {
+      .autocomplete-textfield {
+        z-index: 1;
+        color: orbcStyles.$bc-black;
+        -webkit-text-fill-color: orbcStyles.$bc-black;
+      }
+  
+      svg {
+        z-index: 1;
+      }
+  
+      fieldset {
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
+      }
+    }
+
+    .Mui-focused {
+      fieldset {
+        border: 2px solid orbcStyles.$focus-blue;
+      }
+    }
+
+    &--invalid.Mui-focused,
+    &--invalid .Mui-focused,
+    &--invalid,
+    .Mui-error {
+      fieldset {
+        border: 2px solid orbcStyles.$bc-red;
+      }
+    }
+
+    fieldset {
+      border: 2px solid orbcStyles.$bc-text-box-border-grey;   
+    }
+  }
+
+  & &__end-adornment {
+    z-index: 1;
   }
 }

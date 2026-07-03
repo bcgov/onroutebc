@@ -38,6 +38,7 @@ import {
   maxFutureYear,
   thisYear,
 } from "./helpers/prepare";
+import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
 describe("Permit Details duration", () => {
   it("should have available durations to select", async () => {
@@ -74,7 +75,7 @@ describe("Permit Details duration", () => {
     // Assert
     const expectedExpiry = getExpiryDate(
       dayjs(currentDt),
-      false, // only non-quarterly permits have selectable duration list
+      PERMIT_TYPES.TROS, // only non-quarterly permits have selectable duration list
       durationDays,
     ).format(DATE_FORMATS.SHORT);
 
@@ -210,7 +211,7 @@ describe("Permit Details start date", () => {
     // Assert
     const expectedExpiry = getExpiryDate(
       dayjs(tomorrow),
-      false, // non-quarterly permit being used as test data
+      PERMIT_TYPES.TROS, // non-quarterly permit being used as test data
       defaultDuration,
     ).format(DATE_FORMATS.SHORT);
 
