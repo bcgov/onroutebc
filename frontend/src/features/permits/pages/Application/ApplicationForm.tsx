@@ -270,7 +270,7 @@ export const ApplicationForm = ({
         updatedViolations,
         axleCalculationResults,
         isStaffUser,
-        permitType,
+        data.permitType,
       )
     ) {
       console.error(updatedViolations);
