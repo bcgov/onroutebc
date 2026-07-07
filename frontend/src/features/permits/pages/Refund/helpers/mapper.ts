@@ -16,7 +16,7 @@ export const mapToRefundRequestData = (refundData: RefundFormData[]) => {
   };
 
   return refundData.map((transaction) => ({
-    pgTransactionId: transaction.pgTransactionId,
+    pgTransactionId: transaction.refundTransactionId,
     pgPaymentMethod: transaction.pgPaymentMethod,
     transactionAmount: Number(transaction.refundAmount),
     paymentCardTypeCode: transaction.paymentCardTypeCode,
