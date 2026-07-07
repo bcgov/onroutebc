@@ -4,7 +4,7 @@ import "./RefundPage.scss";
 import { RefundFormData } from "./types/RefundFormData";
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
-import { calculateNetAmount } from "../../helpers/feeSummary";
+import { calculateNetAmount, isZeroAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
@@ -90,8 +90,9 @@ export const RefundPage = ({
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   const onSubmit = (data: { refundData: RefundFormData[] }) => {
-    if (amountToRefund <= 0) {
-      handleFinish(data.refundData);
+    const mostRecentTransaction = data.refundData.at(-1);
+    if (isZeroAmount(amountToRefund) && mostRecentTransaction) {
+      handleFinish([mostRecentTransaction]);
     } else {
       // Get the selected row IDs based on permitNumber from rowSelection
       const selectedRowIds = Object.keys(rowSelection).filter(
