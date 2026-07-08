@@ -24,7 +24,7 @@ export const mapToRefundRequestData = (refundData: RefundFormData[]) => {
   }));
 };
 
-export const mapToZeroDollarRefundRequestData = (
+export const mapToZeroDollarAmendRequestData = (
   permitId: string,
 ): StartTransactionRequestData => {
   const reqData: StartTransactionRequestData = {
