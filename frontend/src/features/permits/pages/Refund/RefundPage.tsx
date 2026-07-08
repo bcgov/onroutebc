@@ -90,7 +90,7 @@ export const RefundPage = ({
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   const onSubmit = (data: { refundData: RefundFormData[] }) => {
-    const mostRecentTransaction = data.refundData.at(-1);
+    const mostRecentTransaction = data.refundData.findLast(() => true);
     if (isZeroAmount(amountToRefund) && mostRecentTransaction) {
       handleFinish([mostRecentTransaction]);
     } else {
