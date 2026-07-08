@@ -113,6 +113,11 @@ export const AxleUnitRow = ({
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
         );
 
+        const hasNumberOfAxlesFailure = Boolean(
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES] ||
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
+        );
+
         return (
           <tr key={`axle-${label}-${index}`} className="table__row">
             <td
@@ -165,11 +170,7 @@ export const AxleUnitRow = ({
                   classes={{ root: "table__input-container" }}
                   inputProps={{
                     className: `table__input ${
-                      axleCalculationFailure[
-                        POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES
-                      ]
-                        ? "table__input--fail"
-                        : ""
+                      hasNumberOfAxlesFailure ? "table__input--fail" : ""
                     }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
                     onBlur: ({ target: { value } }) => {
