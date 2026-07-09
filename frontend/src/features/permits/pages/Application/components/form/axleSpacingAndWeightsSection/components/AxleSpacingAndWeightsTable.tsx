@@ -150,6 +150,7 @@ export const AxleSpacingAndWeightsTable = ({
     POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
     POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
     POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT,
+    POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
     POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
@@ -161,6 +162,8 @@ export const AxleSpacingAndWeightsTable = ({
       result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
       DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
+
+  console.log(failedAxleCalculationResults);
 
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
@@ -341,6 +344,11 @@ export const AxleSpacingAndWeightsTable = ({
             ? [POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT]
             : [];
 
+        case POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT]
+            : [];
+
         case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS]
@@ -379,7 +387,6 @@ export const AxleSpacingAndWeightsTable = ({
 
       axleCalculationFailures.push(failures);
     });
-
     return axleCalculationFailures;
   };
 
