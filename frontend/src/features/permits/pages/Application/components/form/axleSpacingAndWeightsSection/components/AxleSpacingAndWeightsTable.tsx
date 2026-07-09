@@ -145,6 +145,7 @@ export const AxleSpacingAndWeightsTable = ({
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
+    POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT,
     POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
     POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
     POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
@@ -315,6 +316,11 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT]
             : [];
 
         case POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA:
