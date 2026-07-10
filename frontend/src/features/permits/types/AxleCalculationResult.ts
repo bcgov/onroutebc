@@ -20,6 +20,8 @@ export const POLICY_CHECK_ID_TYPES = {
   PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
     "picker-truck-tractor-weight-restrictions",
   TRUCK_TRACTOR_WHEELBASE: "truck-tractor-wheelbase",
+  TRUCK_TRACTOR_WHEELBASE_LEGAL_LIMITS: "truck-tractor-wheelbase-legal-limits",
+  WHEELBASE_LEGAL_LIMITS: "wheelbase-legal-limits",
 } as const;
 
 export type PolicyCheckIdType =
