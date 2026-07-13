@@ -100,8 +100,11 @@ export const AxleUnitRow = ({
 
         const hasAxleUnitWeightFailure = Boolean(
           axleCalculationFailure[
-            POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+            POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD
           ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+            ] ||
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
             ] ||
