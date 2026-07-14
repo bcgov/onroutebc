@@ -8,6 +8,8 @@ export type PolicyCheckResultType =
   (typeof POLICY_CHECK_RESULT_TYPES)[keyof typeof POLICY_CHECK_RESULT_TYPES];
 
 export const POLICY_CHECK_ID_TYPES = {
+  AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD:
+    "axle-group-maximum-legal-weight-threshold",
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
   CHECK_PERMITTABLE_WEIGHT: "check-permittable-weight",
@@ -20,8 +22,6 @@ export const POLICY_CHECK_ID_TYPES = {
   NUMBER_OF_WHEELS_PER_AXLE: "number-of-wheels",
   PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
     "picker-truck-tractor-weight-restrictions",
-  TRUCK_TRACTOR_WHEELBASE: "truck-tractor-wheelbase",
-  TRUCK_TRACTOR_WHEELBASE_LEGAL_LIMITS: "truck-tractor-wheelbase-legal-limits",
   WHEELBASE_LEGAL_LIMITS: "wheelbase-legal-limits",
 } as const;
 

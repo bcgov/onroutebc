@@ -120,21 +120,11 @@ export const AxleUnitRow = ({
         );
 
         const hasAxleSpreadFailure = Boolean(
-          axleCalculationFailure[
-            POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
-          ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.TRUCK_TRACTOR_WHEELBASE_LEGAL_LIMITS
-            ],
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS],
         );
 
         const hasInteraxleSpacingFailure = Boolean(
-          axleCalculationFailure[
-            POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
-          ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.TRUCK_TRACTOR_WHEELBASE_LEGAL_LIMITS
-            ],
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS],
         );
 
         return (
