@@ -43,6 +43,7 @@ export const VehicleInformationSection = ({
   trailerSubtypeNamesMap,
   selectedTrailers,
   selectedCommodityType,
+  haveICBCCertificate,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
@@ -65,6 +66,7 @@ export const VehicleInformationSection = ({
   trailerSubtypeNamesMap: Map<string, string>;
   selectedTrailers: VehicleInConfiguration[];
   selectedCommodityType?: Nullable<string>;
+  haveICBCCertificate: boolean;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
@@ -163,6 +165,20 @@ export const VehicleInformationSection = ({
                 <br />
                 <br />
                 {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.INELIGIBLE_SUBTYPES}
+                {permitType === PERMIT_TYPES.HC ? (
+                  <>
+                    <br />
+                    <br />
+                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.HAS_INSURANCE_INFO}
+                    <br />
+                    <br />
+                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_START}
+                    <span className="highlighted-value">
+                      {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_VALUE}
+                    </span>
+                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_END}
+                  </>
+                ) : null}
               </div>
             }
           />
@@ -211,6 +227,7 @@ export const VehicleInformationSection = ({
               subtypeOptions={subtypeOptions}
               isLOAUsed={isLOAUsed}
               isSelectedLOAVehicle={isSelectedLOAVehicle}
+              haveICBCCertificate={haveICBCCertificate}
               permitType={permitType}
               onSetSaveVehicle={onSetSaveVehicle}
               onSetVehicle={onSetVehicle}

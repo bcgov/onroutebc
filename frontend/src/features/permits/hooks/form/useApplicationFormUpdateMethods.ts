@@ -116,6 +116,13 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onSetVehicleDescription = useCallback(
+    (vehicleDescription: Nullable<string>) => {
+      setValue("permitData.vehicleDetails.vehicleDescription", vehicleDescription);
+    },
+    [setValue],
+  );
+
   const onSetUnitNumber = useCallback(
     (unitNumber: Nullable<string>) => {
       setValue("permitData.vehicleDetails.unitNumber", unitNumber);
@@ -299,6 +306,20 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateHaveCertificate = useCallback((updatedHaveCertificate: boolean) => {
+    setValue(
+      "permitData.icbcInsuranceCertificate.haveCertificate",
+      updatedHaveCertificate,
+    );
+  }, [setValue]);
+
+  const onUpdateICBCCertificateNumber = useCallback((updatedCertificateNumber?: Nullable<string>) => {
+    setValue(
+      "permitData.icbcInsuranceCertificate.certificateNumber",
+      updatedCertificateNumber,
+    );
+  }, [setValue]);
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -312,6 +333,7 @@ export const useApplicationFormUpdateMethods = () => {
     onSetProvinceCode,
     onSetVehicleType,
     onSetVehicleSubtype,
+    onSetVehicleDescription,
     onSetUnitNumber,
     onSetVehicleId,
     onSetLicensedGVW,
@@ -332,5 +354,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onUpdateHaveCertificate,
+    onUpdateICBCCertificateNumber,
   };
 };

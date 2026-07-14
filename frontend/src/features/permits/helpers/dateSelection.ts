@@ -92,6 +92,7 @@ export const durationOptionsForPermitType = (
       return TROS_DURATION_OPTIONS;
     case PERMIT_TYPES.QRFR:
     case PERMIT_TYPES.NRQCV:
+    case PERMIT_TYPES.HC:
     default:
       return [];
   }
@@ -120,6 +121,7 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_TROS_DURATION;
     case PERMIT_TYPES.QRFR:
     case PERMIT_TYPES.NRQCV:
+    case PERMIT_TYPES.HC:
     default:
       return 0;
   }
@@ -188,7 +190,7 @@ export const getMinPermitExpiryDate = (
   startDate: Dayjs,
 ) => {
   const minDuration = minDurationForPermitType(permitType);
-  return getExpiryDate(startDate, isQuarterlyPermit(permitType), minDuration);
+  return getExpiryDate(startDate, permitType, minDuration);
 };
 
 /**
@@ -244,6 +246,7 @@ export const getMinAllowedPermitPastStartDate = (
  * @param fullDurationOptions Full duration select options for a permit
  * @param selectedLOAs Selected LOAs for a permit
  * @param startDate Start date for a permit
+ * @param permitType Permit type
  * @returns Updated available duration select options
  */
 export const getAvailableDurationOptions = (
@@ -253,6 +256,7 @@ export const getAvailableDurationOptions = (
   }[],
   selectedLOAs: PermitLOA[],
   startDate: Dayjs,
+  permitType: PermitType,
 ) => {
   const mostRecentLOAExpiry = getMostRecentExpiryFromLOAs(selectedLOAs);
   if (!mostRecentLOAExpiry) return fullDurationOptions;
@@ -262,7 +266,7 @@ export const getAvailableDurationOptions = (
       !mostRecentLOAExpiry.isBefore(
         getExpiryDate(
           startDate,
-          false, // only non-quarterly permits have duration options
+          permitType, // only non-quarterly permits have duration options
           durationDays,
         ),
       ),

@@ -180,5 +180,17 @@
       "messageTemplate": "Maximum :max characters",
       "placeholders": [":max"]
     }
+  },
+  "creditAccount": {
+    "creditAccountNumber": {
+      "defaultMessage": "WS not found.",
+      "alreadyAssigned": {
+        "defaultMessage": "WS already assigned."
+      }
+    },
+    "eGARMSError": {
+      "messageTemplate": "eGARMS return code :eGARMSReturnCode: :message",
+      "placeholders": [":eGARMSReturnCode", ":message"]
+    }
   }
 }

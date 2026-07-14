@@ -16,6 +16,7 @@ import {
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
 import { RefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
 import { VoidPermitFormData } from "../../features/permits/pages/Void/types/VoidPermit";
+import { CreditAccountData } from "../../features/settings/types/creditAccount";
 
 export interface ErrorResponseData<T = any> {
   error: T[];
@@ -27,6 +28,7 @@ export interface ErrorResponseData<T = any> {
  * The names of onRouteBC forms, used in classNames and determining which fields to show in reusable/shared forms
  */
 export const ORBC_FORM_FEATURES = {
+  ADD_CREDIT_ACCOUNT: "add-credit-account",
   ADD_USER: "add-user",
   AMEND_PERMIT: "amend-permit",
   APPLICATION: "application",
@@ -70,7 +72,8 @@ export type ORBC_FormTypes =
   | PermitContactDetails
   | LOAFormData
   | VoidPermitFormData
-  | { refundData: RefundFormData[] };
+  | { refundData: RefundFormData[] }
+  | CreditAccountData;
 
 /**
  * The options for pagination.

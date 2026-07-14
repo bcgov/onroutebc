@@ -1,4 +1,4 @@
-import { TOLL_FREE_NUMBER } from "./constants";
+import { PPC_EMAIL, TOLL_FREE_NUMBER } from "./constants";
 
 export const BANNER_MESSAGES = {
   COMPANY_CONTACT:
@@ -16,6 +16,14 @@ export const BANNER_MESSAGES = {
       "Your vehicle may not be available in a permit application because it cannot be used for the type of permit you are applying for.",
     INELIGIBLE_SUBTYPES:
       "If you are creating a new vehicle, a desired Vehicle Sub-Type may not be available because it is not eligible for the permit application you are currently in.",
+    HAS_INSURANCE_INFO:
+      "If your vehicle has a MV1805/APV96, you will be unable to choose it from your inventory or add/update it to your inventory.",
+    OTHER_VEHICLE_TYPE_INFO_START:
+      "If you select",
+    OTHER_VEHICLE_TYPE_VALUE:
+      "Other",
+    OTHER_VEHICLE_TYPE_INFO_END:
+      "for Vehicle Type, you will be unable to add/update it to your inventory.",
   },
   ISSUED_PERMIT_NUMBER_2_YEARS:
     "Enter any Permit No. issued to the above Client No. in the last 2 years",
@@ -56,4 +64,24 @@ export const BANNER_MESSAGES = {
     "The shopping cart contains Application(s) with one or more errors. Those applications must be deselected or removed from the cart to proceed with payment. Common errors include, but are not limited to, start date is in the past or an invalid vehicle.",
   CONVERSION_FACTS:
     "1 mm = 0.1 cm; 1 inch = 2.54 cm; 1 lb = 0.455 kg; 1 ft = 0.305 m.",
+  ICBC_INSURANCE_CERTIFICATE: {
+    TITLE: "A valid ICBC Certificate of Insurance is required in addition to a Highway Crossing Permit.",
+    SELECT_NO_MSG: {
+      START: "If the vehicle has a valid BC license plate and insurance, please select", 
+      NO: "No", 
+      END: "and proceed to the Vehicle Information section below.",
+    },
+    CONTACT: {
+      START: "If the vehicle does not have a valid BC license plate and insurance, an ICBC Certificate of Insurance for Crossing Permit (MV1805/APV36) must be obtained by contacting the Provincial Permit Centre at",
+      TOLL_FREE: `Toll-free: ${TOLL_FREE_NUMBER}`,
+      OR: "or",
+      EMAIL: `Email: ${PPC_EMAIL}`,
+    },
+    SELECT_YES_MSG: {
+      START: "Once the MV1805/APV36 is obtained, please select",
+      YES: "Yes",
+      END: "to enter the certificate number.",
+    },
+  },
+  CREDIT_ACCOUNT_VERIFY_CLIENT_DETAILS: "Verify Client Details",
 };

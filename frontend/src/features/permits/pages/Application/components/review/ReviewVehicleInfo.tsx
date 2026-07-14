@@ -17,10 +17,10 @@ import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArra
 import { VehicleInConfiguration } from "../../../../types/PermitVehicleConfiguration";
 import { getSubtypeNameByCode } from "../../../../helpers/mappers";
 import { isTrailerSubtypeNone } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../common/constants/constants";
 import {
   DEFAULT_VEHICLE_TYPE,
   VEHICLE_TYPES,
-  VehicleType,
   vehicleTypeDisplayText,
 } from "../../../../../manageVehicles/types/Vehicle";
 
@@ -46,9 +46,12 @@ export const ReviewVehicleInfo = ({
   const vehicleType = getDefaultRequiredVal(
     DEFAULT_VEHICLE_TYPE,
     vehicleDetails?.vehicleType,
-  ) as VehicleType;
+  );
 
-  const vehicleSubtype = getSubtypeNameByCode(
+  const vehicleSubtype = (
+    !vehicleDetails?.vehicleSubType
+    || vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
+  ) ? "" : getSubtypeNameByCode(
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     vehicleType,
@@ -88,6 +91,10 @@ export const ReviewVehicleInfo = ({
           vehicleDetails?.vehicleSubType,
           oldFields?.vehicleSubType,
         ),
+        description: areValuesDifferent(
+          vehicleDetails?.vehicleDescription,
+          oldFields?.vehicleDescription,
+        ),
         licensedGVW: areValuesDifferent(
           vehicleDetails?.licensedGVW,
           oldFields?.licensedGVW,
@@ -103,6 +110,7 @@ export const ReviewVehicleInfo = ({
         province: false,
         type: false,
         subtype: false,
+        description: false,
         licensedGVW: false,
       };
 
@@ -256,21 +264,41 @@ export const ReviewVehicleInfo = ({
               </Typography>
             </div>
 
-            <div className="info-section__info">
-              <Typography className="info-section__label">
-                <span className="info-section__label-text">
-                  Vehicle Sub-type
-                </span>
-                {showDiffChip(changedFields.subtype)}
-              </Typography>
+            {vehicleSubtype ? (
+              <div className="info-section__info">
+                <Typography className="info-section__label">
+                  <span className="info-section__label-text">
+                    Vehicle Sub-type
+                  </span>
+                  {showDiffChip(changedFields.subtype)}
+                </Typography>
 
-              <Typography
-                className="info-section__data"
-                data-testid="review-vehicle-subtype"
-              >
-                {vehicleSubtype}
-              </Typography>
-            </div>
+                <Typography
+                  className="info-section__data"
+                  data-testid="review-vehicle-subtype"
+                >
+                  {vehicleSubtype}
+                </Typography>
+              </div>
+            ) : null}
+
+            {vehicleDetails?.vehicleDescription ? (
+              <div className="info-section__info">
+                <Typography className="info-section__label">
+                  <span className="info-section__label-text">
+                    Vehicle Description
+                  </span>
+                  {showDiffChip(changedFields.description)}
+                </Typography>
+
+                <Typography
+                  className="info-section__data"
+                  data-testid="review-vehicle-description"
+                >
+                  {vehicleDetails.vehicleDescription}
+                </Typography>
+              </div>
+            ) : null}
 
             {showLicensedGVW && vehicleDetails?.licensedGVW ? (
               <div className="info-section__info">

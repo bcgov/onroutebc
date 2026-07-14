@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   FormControl,
@@ -26,7 +26,10 @@ import {
   Nullable,
   ORBCFormFeatureType,
 } from "../../../../../../../common/types/common";
-import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+
+import {
+  disableMouseWheelInputOnNumberField,
+} from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   gvwLimit,
@@ -41,6 +44,8 @@ import {
   Vehicle,
   VehicleType,
   VEHICLE_TYPE_OPTIONS,
+  HC_VEHICLE_TYPE_OPTIONS,
+  OTHER_VEHICLE_TYPE,
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
@@ -60,6 +65,7 @@ import {
   provinceVehicleDoesNotRequirePermit,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
 
 export const VehicleDetails = ({
   feature,
@@ -69,10 +75,11 @@ export const VehicleDetails = ({
   isLOAUsed,
   isSelectedLOAVehicle,
   permitType,
+  disableSubtypeSelection = false,
+  haveICBCCertificate,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
-  disableSubtypeSelection = false,
 }: {
   feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
@@ -81,11 +88,18 @@ export const VehicleDetails = ({
   isLOAUsed: boolean;
   isSelectedLOAVehicle: boolean;
   permitType: PermitType;
+  disableSubtypeSelection?: Nullable<boolean>;
+  haveICBCCertificate: boolean;
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
-  disableSubtypeSelection?: Nullable<boolean>;
 }) => {
+  const vehicleTypeOptions = useMemo(() => {
+    return permitType === PERMIT_TYPES.HC
+      ? HC_VEHICLE_TYPE_OPTIONS
+      : VEHICLE_TYPE_OPTIONS;
+  }, [permitType]);
+
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
   const disableVehicleType = (
     [
@@ -119,6 +133,26 @@ export const VehicleDetails = ({
   ).includes(permitType);
 
   const vehicleType = vehicleFormData.vehicleType;
+
+  const shouldDisableVehicleSubtype =
+    disableSubtypeSelection
+    || isLOAUsed 
+    || (vehicleType !== VEHICLE_TYPES.POWER_UNIT && vehicleType !== VEHICLE_TYPES.TRAILER);
+
+  const shouldDisableSaveVehicleToInventory = 
+    isSelectedLOAVehicle
+      || (vehicleType !== VEHICLE_TYPES.POWER_UNIT && vehicleType !== VEHICLE_TYPES.TRAILER)
+      || (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
+  
+  const shouldDisableSelectVehicleFromInventory =
+    permitType === PERMIT_TYPES.HC && haveICBCCertificate;
+
+  const shouldDisablePlate =
+    isSelectedLOAVehicle
+      || (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
+
+  const shouldShowVehicleDescription =
+    permitType === PERMIT_TYPES.HC && vehicleType === OTHER_VEHICLE_TYPE;
 
   // Choose vehicle based on either Unit Number or Plate
   const [chooseFrom, setChooseFrom] = useState<VehicleChooseFrom>(
@@ -207,7 +241,7 @@ export const VehicleDetails = ({
       onSetVehicle({
         ...vehicleFormData,
         vehicleType: updatedVehicleType,
-        vehicleSubType: "",
+        vehicleSubType: DEFAULT_EMPTY_SELECT_VALUE,
       });
     }
   };
@@ -224,6 +258,7 @@ export const VehicleDetails = ({
               {data.label}
             </MenuItem>
           ))}
+          disabled={shouldDisableSelectVehicleFromInventory}
         />
 
         <SelectVehicleDropdown
@@ -235,6 +270,7 @@ export const VehicleDetails = ({
             onClearVehicle(Boolean(vehicleFormData.saveVehicle))
           }
           handleSelectVehicle={onSelectVehicle}
+          disabled={shouldDisableSelectVehicleFromInventory}
         />
       </Box>
 
@@ -269,8 +305,8 @@ export const VehicleDetails = ({
             },
             label: "Plate",
           }}
-          readOnly={isSelectedLOAVehicle}
-          disabled={isSelectedLOAVehicle}
+          readOnly={shouldDisablePlate}
+          disabled={shouldDisablePlate}
         />
 
         <CustomFormComponent
@@ -343,11 +379,15 @@ export const VehicleDetails = ({
                   value: true,
                   message: requiredMessage(),
                 },
+                validate: {
+                  mustSelect: (value) =>
+                    value !== DEFAULT_EMPTY_SELECT_VALUE || requiredMessage(),
+                },
                 onChange: handleChangeVehicleType,
               },
               label: "Vehicle Type",
             }}
-            menuOptions={VEHICLE_TYPE_OPTIONS.map((data) => (
+            menuOptions={vehicleTypeOptions.map((data) => (
               <MenuItem
                 key={data.value}
                 value={data.value}
@@ -359,6 +399,23 @@ export const VehicleDetails = ({
           />
         ) : null}
 
+        {shouldShowVehicleDescription ? (
+          <CustomFormComponent
+            type="textarea"
+            feature={feature}
+            className="vehicle-details__input"
+            options={{
+              name: "permitData.vehicleDetails.vehicleDescription",
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                maxLength: 100,
+              },
+              label: "Vehicle Description",
+              showOptionalLabel: false,
+            }}
+          />
+        ) : null}
+
         <CustomFormComponent
           className="vehicle-details__input"
           type="select"
@@ -366,7 +423,17 @@ export const VehicleDetails = ({
           options={{
             name: "permitData.vehicleDetails.vehicleSubType",
             rules: {
-              required: { value: true, message: requiredMessage() },
+              validate: {
+                mustSelect: (value) =>
+                  (
+                    (!value || value === DEFAULT_EMPTY_SELECT_VALUE)
+                      && shouldShowVehicleDescription
+                  ) || (
+                    Boolean(value)
+                      && value !== DEFAULT_EMPTY_SELECT_VALUE
+                      && !shouldShowVehicleDescription
+                  ) || requiredMessage(),
+              },
             },
             label: "Vehicle Sub-type",
           }}
@@ -379,8 +446,8 @@ export const VehicleDetails = ({
               {subtype.type}
             </MenuItem>
           ))}
-          readOnly={disableSubtypeSelection || isLOAUsed}
-          disabled={disableSubtypeSelection || isLOAUsed}
+          readOnly={shouldDisableVehicleSubtype}
+          disabled={shouldDisableVehicleSubtype}
         />
 
         {showGVW ? (
@@ -437,6 +504,7 @@ export const VehicleDetails = ({
           <Box className="save-to-inventory__radio-btns">
             <FormControlLabel
               value={true}
+              className="save-to-inventory-option save-to-inventory-option--yes"
               control={
                 <Radio
                   key={`radio-save-vehicle-yes`}
@@ -445,14 +513,22 @@ export const VehicleDetails = ({
                       "data-testid": "save-vehicle-yes",
                     } as CustomInputHTMLAttributes
                   }
-                  readOnly={isSelectedLOAVehicle}
-                  disabled={isSelectedLOAVehicle}
+                  readOnly={shouldDisableSaveVehicleToInventory}
+                  disabled={shouldDisableSaveVehicleToInventory}
+                  classes={{
+                    root: "save-to-inventory-option__radio",
+                    disabled: "save-to-inventory-option__radio--disabled",
+                  }}
                 />
               }
               label="Yes"
+              classes={{
+                label: "save-to-inventory-option__label",
+              }}
             />
 
             <FormControlLabel
+              className="save-to-inventory-option save-to-inventory-option--no"
               value={false}
               control={
                 <Radio
@@ -462,11 +538,18 @@ export const VehicleDetails = ({
                       "data-testid": "save-vehicle-no",
                     } as CustomInputHTMLAttributes
                   }
-                  readOnly={isSelectedLOAVehicle}
-                  disabled={isSelectedLOAVehicle}
+                  readOnly={shouldDisableSaveVehicleToInventory}
+                  disabled={shouldDisableSaveVehicleToInventory}
+                  classes={{
+                    root: "save-to-inventory-option__radio",
+                    disabled: "save-to-inventory-option__radio--disabled",
+                  }}
                 />
               }
               label="No"
+              classes={{
+                label: "save-to-inventory-option__label",
+              }}
             />
           </Box>
         </RadioGroup>

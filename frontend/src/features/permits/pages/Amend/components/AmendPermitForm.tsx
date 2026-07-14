@@ -58,6 +58,7 @@ import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCCont
 import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/subtypes/shouldOverridePolicyInvalidSubtype";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
+import { AxleCalculationResult } from "../../../types/AxleCalculationResult";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -138,6 +139,10 @@ export const AmendPermitForm = () => {
   const [policyViolations, setPolicyViolations] = useState<
     Record<string, string>
   >({});
+  const [
+    axleCalculationResultsFromValidation,
+    setAxleCalculationResultsFromValidation,
+  ] = useState<AxleCalculationResult | null>();
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
@@ -153,6 +158,13 @@ export const AmendPermitForm = () => {
     const validationResults = await policyEngine?.validate(
       serializeForUpdateApplication(formData),
     );
+
+    const axleCalculationResults = getDefaultRequiredVal(
+      { results: [], overload: 0, totalGCVW: 0 },
+      validationResults?.axleCalculationResults,
+    );
+
+    setAxleCalculationResultsFromValidation(axleCalculationResults);
 
     const violations = getDefaultRequiredVal(
       [],
@@ -196,16 +208,24 @@ export const AmendPermitForm = () => {
       : policyViolations;
 
     setPolicyViolations(updatedViolations);
-    return updatedViolations;
+    return { updatedViolations, axleCalculationResults };
   };
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const updatedViolations = await triggerPolicyValidation();
+    const { updatedViolations, axleCalculationResults } =
+      await triggerPolicyValidation();
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
-    if (!shouldOverridePolicyViolations(updatedViolations, isStaffUser, data.permitType)) {
+    if (
+      !shouldOverridePolicyViolations(
+        updatedViolations,
+        axleCalculationResults,
+        isStaffUser,
+        data.permitType,
+      )
+    ) {
       console.error(updatedViolations);
       return;
     }
@@ -338,6 +358,7 @@ export const AmendPermitForm = () => {
       companyLOAs: applicableLOAs,
       revisionHistory,
       policyViolations,
+      axleCalculationResultsFromValidation,
       onLeave: undefined,
       onSave: undefined,
       onCancel: goHome,
@@ -361,6 +382,7 @@ export const AmendPermitForm = () => {
       applicableLOAs,
       revisionHistory,
       policyViolations,
+      axleCalculationResultsFromValidation,
       goHome,
       onContinue,
       triggerPolicyValidation,

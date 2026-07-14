@@ -46,6 +46,7 @@ export const SelectVehicleDropdown = ({
   selectedVehicle,
   label,
   vehicleOptions,
+  disabled = false,
   handleSelectVehicle,
   handleClearVehicle,
 }: {
@@ -53,6 +54,7 @@ export const SelectVehicleDropdown = ({
   selectedVehicle: Nullable<PermitVehicleDetails>;
   label: string;
   vehicleOptions: Vehicle[];
+  disabled?: boolean;
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
@@ -99,6 +101,8 @@ export const SelectVehicleDropdown = ({
             handleSelectVehicle(value);
           }
         }}
+        disabled={disabled}
+        readOnly={disabled}
         value={selectedOption}
         inputValue={vehicleTextValue}
         onInputChange={(_, value) => setVehicleTextValue(value)}
@@ -109,7 +113,14 @@ export const SelectVehicleDropdown = ({
           if (!option.unitNumber) option.unitNumber = EMPTY_VEHICLE_UNIT_NUMBER;
           return chooseFrom == VEHICLE_CHOOSE_FROM.PLATE ? option.plate : option.unitNumber;
         }}
-        className="select-vehicle-dropdown__autocomplete"
+        className={
+          `select-vehicle-dropdown__autocomplete ${
+            disabled ? "select-vehicle-dropdown__autocomplete--disabled" : ""
+          }`
+        }
+        classes={{
+          endAdornment: "select-vehicle-dropdown__end-adornment",
+        }}
         renderOption={(props, option) => {
           if (!option) return "";
 
@@ -138,6 +149,7 @@ export const SelectVehicleDropdown = ({
             sx={{ padding: 0 }}
             {...{
               ...params,
+              className: "autocomplete-textfield",
               inputProps: {
                 ...params.inputProps,
                 "data-testid": "select-vehicle-autocomplete",

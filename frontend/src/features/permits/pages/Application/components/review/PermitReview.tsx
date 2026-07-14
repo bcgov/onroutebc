@@ -40,6 +40,8 @@ import {
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
 import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
+import { ICBCInsuranceCertificate } from "../../../../types/ICBCInsuranceCertificate";
+import { ReviewICBCInsuranceCertificateSection } from "./ReviewICBCInsuranceCertificateSection";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -87,6 +89,7 @@ interface PermitReviewProps {
   isStaffUser: boolean;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
+  icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
 }
 
@@ -176,6 +179,15 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldCommodity={props.oldFields?.permitData?.permittedCommodity}
           showChangedFields={props.showChangedFields}
           commodityOptions={props.commodityOptions}
+        />
+
+        <ReviewICBCInsuranceCertificateSection
+          permitType={props.permitType}
+          haveCertificate={Boolean(props.icbcInsuranceCertificate?.haveCertificate)}
+          oldHaveCertificate={
+            Boolean(props.oldFields?.permitData?.icbcInsuranceCertificate?.haveCertificate)
+          }
+          showChangedFields={props.showChangedFields}
         />
 
         <ReviewVehicleInfo

@@ -12,7 +12,10 @@ import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip"
 import { ErrorAltBcGovBanner } from "../../../../common/components/banners/ErrorAltBcGovBanner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
+import {
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  CREDIT_ACCOUNT_USER_TYPE,
+} from "../../types/creditAccount";
 
 export const AddUserModal = ({
   showModal,
@@ -41,12 +44,12 @@ export const AddUserModal = ({
   const { data: userCreditAccount, isLoading: isUserCreditAccountLoading } =
     useGetCreditAccountMetadataQuery(userData.companyId, true);
 
-  const existingCreditAccountHolder =
-    !isUserCreditAccountLoading && Boolean(userCreditAccount?.creditAccountId);
-
   const existingCreditAccountId = userCreditAccount?.creditAccountId;
 
-  const { data: associatedCreditAccount } = useGetCreditAccountQuery(
+  const {
+    data: associatedCreditAccount,
+    isLoading: isassociatedCreditAccountLoading,
+  } = useGetCreditAccountQuery(
     userData.companyId,
     getDefaultRequiredVal(0, existingCreditAccountId),
   );
@@ -56,11 +59,24 @@ export const AddUserModal = ({
     creditAccountId: getDefaultRequiredVal(0, existingCreditAccountId),
   });
 
+  const existingCreditAccountHolder =
+    !isUserCreditAccountLoading &&
+    Boolean(userCreditAccount?.creditAccountId) &&
+    !isassociatedCreditAccountLoading &&
+    associatedCreditAccount?.creditAccountStatusType !==
+      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED;
+
   const holder = associatedCreditAccountUsers?.find(
     (u) => u.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
+
+  const showConfirmButton =
+    !userData.isSuspended &&
+    !isUserCreditAccountLoading &&
+    !isassociatedCreditAccountLoading &&
+    !existingCreditAccountHolder;
 
   const handleAddUser = async () => {
     if (creditAccountId) {
@@ -77,8 +93,6 @@ export const AddUserModal = ({
       }
     }
   };
-
-  const showConfirmButton = !userCreditAccount && !userData.isSuspended;
 
   return (
     <Dialog

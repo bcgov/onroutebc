@@ -12,6 +12,7 @@ import { isPermitVehicleWithinGvwLimit } from "../helpers/vehicles/rules/gvw";
 import { useApplicationFormUpdateMethods } from "./form/useApplicationFormUpdateMethods";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
+  OTHER_VEHICLE_TYPE,
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
@@ -45,6 +46,7 @@ export const usePermitVehicles = ({
     onSetProvinceCode,
     onSetVehicleType,
     onSetVehicleSubtype,
+    onSetVehicleDescription,
     onSetUnitNumber,
     onSetVehicleId,
     onSetLicensedGVW,
@@ -77,6 +79,7 @@ export const usePermitVehicles = ({
     unitNumber: unitNumberInForm,
     vehicleId: vehicleIdInForm,
     licensedGVW: licensedGVWInForm,
+    vehicleDescription: vehicleDescriptionInForm,
   } = vehicleFormData;
 
   // Get vehicle subtypes options based on current vehicle details in the form
@@ -161,6 +164,7 @@ export const usePermitVehicles = ({
         unitNumber: unitNumberInForm,
         vehicleId: vehicleIdInForm,
         licensedGVW: licensedGVWInForm,
+        vehicleDescription: vehicleDescriptionInForm,
       },
       eligibleVehicleSubtypes,
       [
@@ -204,6 +208,7 @@ export const usePermitVehicles = ({
     unitNumberInForm,
     vehicleIdInForm,
     licensedGVWInForm,
+    vehicleDescriptionInForm,
     eligibleVehicleSubtypes,
     permitType,
     subtypeOptions,
@@ -224,6 +229,7 @@ export const usePermitVehicles = ({
     unitNumber: updatedUnitNumber,
     vehicleId: updatedVehicleId,
     licensedGVW: updatedLicensedGVW,
+    vehicleDescription: updatedVehicleDescription,
   } = updatedVehicle;
 
   // If the fields in the updated vehicle details differ from the ones already in
@@ -312,6 +318,24 @@ export const usePermitVehicles = ({
       onSetVehicleType(updatedVehicleType);
     }
   }, [vehicleTypeInForm, updatedVehicleType]);
+
+  useEffect(() => {
+    if (getDefaultRequiredVal("", vehicleDescriptionInForm)
+      !== getDefaultRequiredVal("", updatedVehicleDescription)
+    ) {
+      onSetVehicleDescription(
+        getDefaultRequiredVal("", updatedVehicleDescription),
+      );
+    }
+  }, [vehicleDescriptionInForm, updatedVehicleDescription]);
+
+  useEffect(() => {
+    if (vehicleTypeInForm !== OTHER_VEHICLE_TYPE) {
+      onSetVehicleDescription(null);
+    } else {
+      onToggleSaveVehicle(false);
+    }
+  }, [vehicleTypeInForm]);
 
   return {
     filteredVehicleOptions,

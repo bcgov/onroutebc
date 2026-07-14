@@ -1,11 +1,16 @@
-import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../common/constants/constants";
 import { Nullable } from "../../../common/types/common";
 import { LCV_VEHICLE_SUBTYPES } from "../../permits/constants/constants";
+import {
+  DEFAULT_EMPTY_SELECT_OPTION,
+  DEFAULT_EMPTY_SELECT_VALUE,
+} from "../../../common/constants/constants";
+
 import {
   BaseVehicle,
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
+  VehicleSubType,
 } from "../types/Vehicle";
 
 /**
@@ -17,9 +22,9 @@ export const isVehicleSubtypeLCV = (subtype: string) => {
   return LCV_VEHICLE_SUBTYPES.map(({ typeCode }) => typeCode).includes(subtype);
 };
 
-export const EMPTY_VEHICLE_SUBTYPE = {
-  typeCode: "",
-  type: "",
+export const EMPTY_VEHICLE_SUBTYPE: VehicleSubType = {
+  typeCode: DEFAULT_EMPTY_SELECT_VALUE,
+  type: DEFAULT_EMPTY_SELECT_OPTION.label,
   description: "",
 };
 

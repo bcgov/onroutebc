@@ -908,20 +908,26 @@ export class CaseManagementService {
   }: {
     currentUser: IUserJWT;
     applicationId: Nullable<string>;
-    caseActivityType: CaseActivityType;
+    caseActivityType?: Nullable<CaseActivityType>;
   }): Promise<ReadCaseActivityDto[]> {
-    const caseActivity = await this.caseActivityRepository
+    const caseActivityQuery = this.caseActivityRepository
       .createQueryBuilder('caseActivity')
       .innerJoinAndSelect('caseActivity.user', 'user')
       .leftJoinAndSelect('caseActivity.caseNotes', 'caseNotes')
       .innerJoinAndSelect('caseActivity.case', 'case')
       .innerJoinAndSelect('case.permit', 'permit')
       .where('permit.id = :applicationId', { applicationId })
-      .andWhere('caseActivity.caseActivityType = :caseActivityType', {
-        caseActivityType,
-      })
-      .orderBy('caseActivity.dateTime', 'DESC')
-      .getMany();
+      .orderBy('caseActivity.caseActivityId', 'DESC');
+
+    if (caseActivityType) {
+      caseActivityQuery.andWhere(
+        'caseActivity.caseActivityType = :caseActivityType',
+        {
+          caseActivityType,
+        },
+      );
+    }
+    const caseActivity = await caseActivityQuery.getMany();
 
     const caseActivityDto = await this.classMapper.mapArrayAsync(
       caseActivity,

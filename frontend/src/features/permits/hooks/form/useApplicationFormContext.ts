@@ -23,7 +23,7 @@ import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 import { useRunAxleCalculation } from "../useRunAxleCalculation";
 import { useCanAddAxleUnits } from "../useCanAddAxleUnits";
 import { useCombineAxleConfigurations } from "../useCombineAxleConfigurations";
-import { useCalculateGCVW } from "../useCalculateGCVW";
+import { useICBCInsuranceCertificate } from "../useICBCInsuranceCertificate";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -46,6 +46,8 @@ export const useApplicationFormContext = () => {
     companyLOAs,
     revisionHistory,
     rejectionHistory,
+    isRejectedApplication,
+    axleCalculationResultsFromValidation,
     onLeave,
     onSave,
     onCancel,
@@ -62,6 +64,8 @@ export const useApplicationFormContext = () => {
     onSetConditions,
     onToggleSaveVehicle,
     onSetVehicle,
+    onSetVehicleId,
+    onSetPlate,
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
@@ -78,6 +82,8 @@ export const useApplicationFormContext = () => {
     onUpdateNetWeight,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
+    onUpdateHaveCertificate,
+    onUpdateICBCCertificateNumber,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -87,6 +93,7 @@ export const useApplicationFormContext = () => {
     loas,
     permitDuration,
     startDate: permitStartDate,
+    icbcInsuranceCertificate,
     commodities,
     vehicleDetails: vehicleFormData,
     permittedRoute,
@@ -209,6 +216,16 @@ export const useApplicationFormContext = () => {
     permittedCommodity?.commodityType,
   );
 
+  useICBCInsuranceCertificate(
+    permitType,
+    Boolean(icbcInsuranceCertificate?.haveCertificate),
+    onUpdateICBCCertificateNumber,
+    onSetPlate,
+    onSetVehicleId,
+    onToggleSaveVehicle,
+    icbcInsuranceCertificate?.certificateNumber,
+  );
+
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
   const { filteredVehicleOptions, subtypeOptions, isSelectedLOAVehicle } =
@@ -280,8 +297,6 @@ export const useApplicationFormContext = () => {
   const { combineAxleConfigurations } =
     useCombineAxleConfigurations(policyEngine);
 
-  const { calculateGCVW } = useCalculateGCVW(policyEngine);
-
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -328,6 +343,8 @@ export const useApplicationFormContext = () => {
     companyLOAs: memoizedCompanyLOAs,
     revisionHistory: memoizedRevisionHistory,
     rejectionHistory,
+    isRejectedApplication,
+    axleCalculationResultsFromValidation,
     commodityOptions,
     highwaySequence,
     tripOrigin: permittedRoute?.manualRoute?.origin,
@@ -348,7 +365,6 @@ export const useApplicationFormContext = () => {
     canAddAxleUnitsToPowerUnit,
     canAddAxleUnitsToTrailer,
     combineAxleConfigurations,
-    calculateGCVW,
     onLeave,
     onSave,
     onCancel,
@@ -378,5 +394,7 @@ export const useApplicationFormContext = () => {
     minAllowedPastStartDate,
     maxAllowedFutureStartDate,
     maxNumDaysAllowedInFuture,
+    haveCertificate: Boolean(icbcInsuranceCertificate?.haveCertificate),
+    onUpdateHaveCertificate,
   };
 };

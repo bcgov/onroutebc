@@ -1,4 +1,4 @@
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+import { UserEvent } from "@testing-library/user-event";
 import { Matcher, screen, waitFor } from "@testing-library/react";
 
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";

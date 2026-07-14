@@ -12,7 +12,7 @@ import { pastStartOrExpiryDate } from "../../../../../../common/helpers/validati
 import { ErrorBcGovBanner } from "../../../../../../common/components/banners/ErrorBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
-import { isQuarterlyPermit, PermitType } from "../../../../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -61,6 +61,8 @@ export const ReviewPermitDetails = ({
         startDate: false,
         duration: false,
       };
+
+  const showDuration = permitType !== PERMIT_TYPES.HC;
 
   const displayDuration = (duration: number) => {
     const measurementUnit = duration !== 1 ? "Days" : "Day";
@@ -113,27 +115,29 @@ export const ReviewPermitDetails = ({
             </Typography>
           </div>
           
-          <div className="permit-dates__duration">
-            <Typography className="permit-dates__label">
-              <span className="permit-dates__label-text">Permit Duration</span>
-              {changedFields.duration ? <DiffChip /> : null}
-            </Typography>
+          {showDuration ? (
+            <div className="permit-dates__duration">
+              <Typography className="permit-dates__label">
+                <span className="permit-dates__label-text">Permit Duration</span>
+                {changedFields.duration ? <DiffChip /> : null}
+              </Typography>
 
-            <Typography
-              className="permit-dates__data"
-              data-testid="permit-duration"
-            >
-              {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
-                displayDuration,
-                permitDuration,
-                "",
-              ) : applyWhenNotNullable(
-                displayDurationQuarter,
-                startDate,
-                "",
-              )}
-            </Typography>
-          </div>
+              <Typography
+                className="permit-dates__data"
+                data-testid="permit-duration"
+              >
+                {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
+                  displayDuration,
+                  permitDuration,
+                  "",
+                ) : applyWhenNotNullable(
+                  displayDurationQuarter,
+                  startDate,
+                  "",
+                )}
+              </Typography>
+            </div>
+          ) : null}
         </Box>
 
         <Box className="permit-expiry-banner">
