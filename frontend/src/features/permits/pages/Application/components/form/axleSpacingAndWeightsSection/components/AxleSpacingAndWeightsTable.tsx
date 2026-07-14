@@ -170,10 +170,18 @@ export const AxleSpacingAndWeightsTable = ({
       DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
 
-  // console.log(failedAxleCalculationResults);
-
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
+  );
+
+  const warningAxleCalculationResults = axleCalculationResults?.results.filter(
+    (result) =>
+      result.result === POLICY_CHECK_RESULT_TYPES.WARNING &&
+      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
+  );
+
+  const hasAxleCalculationWarnings = Boolean(
+    warningAxleCalculationResults?.length,
   );
 
   const shouldShowResultsSection =
@@ -424,14 +432,6 @@ export const AxleSpacingAndWeightsTable = ({
     return message.toLowerCase().includes(CTPM_CHAPTER_5_TITLE.toLowerCase());
   };
 
-  const showWarningBanner =
-    axleCalculationResults?.results.some(
-      (result) =>
-        result.result === POLICY_CHECK_RESULT_TYPES.PASS &&
-        result.id ===
-          POLICY_CHECK_ID_TYPES.TRUCK_TRACTOR_WHEELBASE_LEGAL_LIMITS,
-    ) && !failedAxleCalculationResults?.length;
-
   const showPermitNotRequiredBanner =
     !hasAxleCalculationFailures && Number(overload) === 0;
 
@@ -605,8 +605,32 @@ export const AxleSpacingAndWeightsTable = ({
                     )
                   : "None"}
               </span>
-              {showWarningBanner ? (
-                <WarningBanner />
+              {hasAxleCalculationWarnings ? (
+                getDefaultRequiredVal([], warningAxleCalculationResults).map(
+                  (warningResult, index) => (
+                    <WarningBanner
+                      key={index}
+                      content={
+                        isReferencingCTPMChapter5(warningResult.message) ? (
+                          <>
+                            {warningResult.message.replace(
+                              CTPM_CHAPTER_5_TITLE,
+                              "",
+                            )}
+                            <CustomExternalLink
+                              href={ONROUTE_WEBPAGE_LINKS.CTPM_CHAPTER_5}
+                              openInNewTab={true}
+                            >
+                              {CTPM_CHAPTER_5_TITLE}
+                            </CustomExternalLink>
+                          </>
+                        ) : (
+                          <>{warningResult.message}</>
+                        )
+                      }
+                    />
+                  ),
+                )
               ) : showPermitNotRequiredBanner ? (
                 <>
                   <p className="results__text--success">

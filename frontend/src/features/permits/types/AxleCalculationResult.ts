@@ -1,6 +1,7 @@
 export const POLICY_CHECK_RESULT_TYPES = {
   PASS: "pass",
   FAIL: "fail",
+  WARNING: "warning",
 };
 
 export type PolicyCheckResultType =
