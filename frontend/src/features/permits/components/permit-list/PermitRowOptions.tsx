@@ -13,13 +13,20 @@ import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/Unfinis
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../types/PermitActionOrigin";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
-import { getPermitActionOptions } from "../../helpers/getPermitActionOptions";
+import {
+  getPermitRowActionOptions,
+  PermitActionPermissions,
+} from "../../helpers/getPermitActionOptions";
 import { useSetCompanyHandler } from "../../../idir/search/helpers/useSetCompanyHandler";
 import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
+import { PermitStatus } from "../../types/PermitStatus";
+import { PermitApprovalSource } from "../../types/PermitApprovalSource";
 
 export const PermitRowOptions = ({
   permitId,
-  isPermitInactive,
+  isPermitInactiveOrExpired,
+  permitStatus,
+  permitApprovalSource,
   permitNumber,
   companyId,
   permitActionOrigin,
@@ -27,20 +34,15 @@ export const PermitRowOptions = ({
 }: {
   permitId: string;
   // Is the permit inactive (voided/superseded/revoked) or expired?
-  isPermitInactive: boolean;
+  isPermitInactiveOrExpired: boolean;
+  permitStatus: PermitStatus;
+  permitApprovalSource: PermitApprovalSource;
   permitNumber: string;
   companyId: number;
   // The application location from where the permit action (amend/void/revoke/copy) originated
   permitActionOrigin: PermitActionOrigin;
   // Object containing the relevant permission matrix checks for each action
-  permissions: {
-    canResendPermit: boolean;
-    canViewPermitReceipt: boolean;
-    canViewExpiredPermitReceipt: boolean;
-    canAmendPermit: boolean;
-    canVoidPermit: boolean;
-    canCopyPermit: boolean;
-  };
+  permissions: PermitActionPermissions;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -146,45 +148,18 @@ export const PermitRowOptions = ({
     }
   };
 
-  const {
-    canResendPermit,
-    canViewPermitReceipt,
-    canViewExpiredPermitReceipt,
-    canAmendPermit,
-    canVoidPermit,
-    canCopyPermit,
-  } = permissions;
-
-  const permitActions = [
-    {
-      action: PERMIT_ACTION_TYPES.COPY,
-      isAuthorized: () => canCopyPermit,
-    },
-    {
-      action: PERMIT_ACTION_TYPES.RESEND,
-      isAuthorized: () => canResendPermit,
-    },
-    {
-      action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
-      isAuthorized: (isExpired: boolean) =>
-        (!isExpired && canViewPermitReceipt) ||
-        (isExpired && canViewExpiredPermitReceipt),
-    },
-    {
-      action: PERMIT_ACTION_TYPES.AMEND,
-      isAuthorized: (isExpired: boolean) => !isExpired && canAmendPermit,
-    },
-    {
-      action: PERMIT_ACTION_TYPES.VOID_REVOKE,
-      isAuthorized: (isExpired: boolean) => !isExpired && canVoidPermit,
-    },
-  ];
-
   return (
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getPermitActionOptions(permitActions, isPermitInactive)}
+        options={
+          getPermitRowActionOptions({
+            isPermitInactiveOrExpired,
+            permitStatus,
+            permitApprovalSource,
+            permissions,
+          })
+        }
         key={`idir-search-row-${permitNumber}`}
       />
 

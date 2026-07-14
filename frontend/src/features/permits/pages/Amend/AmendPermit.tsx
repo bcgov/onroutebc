@@ -8,7 +8,7 @@ import {
 import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
-import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
+import { isPermitInactive } from "../../types/PermitStatus";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
@@ -38,10 +38,13 @@ import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import { PERMIT_TABS } from "../../types/PermitTabs";
 import { USER_ROLE } from "../../../../common/authentication/types";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+import { getPermitTabForActionOrigin } from "../../helpers/getPermitTabForActionOrigin";
+import {
+  isMigratedPermit,
+  isPermitEligibleForAmendOrRevokeActions,
+} from "../../helpers/isPermitEligibleForAmendOrRevokeActions";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -64,14 +67,18 @@ const displayHeaderText = (stepKey: AmendPermitStep) => {
 };
 
 /**
- * Determine if a permit is amendable (ie. if it's ISSUED or is active)
+ * Determine if a permit is eligible for amendment.
  * @param permit Permit to amend
  * @returns whether or not the permit is amendable
  */
 const isAmendable = (permit: Permit) => {
   return (
-    permit.permitStatus === PERMIT_STATUSES.ISSUED ||
-    (!isPermitInactive(permit.permitStatus) &&
+    isPermitEligibleForAmendOrRevokeActions(
+      permit.permitStatus,
+      permit.permitApprovalSource,
+    ) ||
+    (!isMigratedPermit(permit.permitApprovalSource) &&
+      !isPermitInactive(permit.permitStatus) &&
       !hasPermitExpired(permit.permitData.expiryDate))
   );
 };
@@ -138,27 +145,33 @@ export const AmendPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}${getBasePermitNumber()}`;
 
-  const goHome = () =>
-    stateFromNavigation.permitActionOrigin ===
-    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-      ? navigate(APPLICATIONS_ROUTES.BASE, {
-          state: {
-            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
-          },
-        })
-      : // return to global permit search results
-        navigate(-1);
+  const originPermitTab = getPermitTabForActionOrigin(
+    stateFromNavigation.permitActionOrigin,
+  );
 
-  const goHomeSuccess = () =>
-    stateFromNavigation.permitActionOrigin ===
-    PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-      ? navigate(APPLICATIONS_ROUTES.BASE, {
-          state: {
-            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
-          },
-        })
-      : // return to global permit search results
-        navigate(fullSearchRoute);
+  const goHome = () => {
+    if (originPermitTab) {
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: { selectedTab: originPermitTab },
+      });
+      return;
+    }
+
+    // Return to global permit search results.
+    navigate(-1);
+  };
+
+  const goHomeSuccess = () => {
+    if (originPermitTab) {
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: { selectedTab: originPermitTab },
+      });
+      return;
+    }
+
+    // Return to global permit search results.
+    navigate(fullSearchRoute);
+  };
 
   const allLinks = [
     {

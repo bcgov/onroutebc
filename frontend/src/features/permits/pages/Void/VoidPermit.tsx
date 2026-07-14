@@ -18,27 +18,25 @@ import {
 } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
-import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
-import { hasPermitExpired } from "../../helpers/permitState";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
-import { PERMIT_TABS } from "../../types/PermitTabs";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
+import { getPermitTabForActionOrigin } from "../../helpers/getPermitTabForActionOrigin";
+import { isPermitEligibleForAmendOrRevokeActions } from "../../helpers/isPermitEligibleForAmendOrRevokeActions";
 
 const searchRoute =
   `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
 const isVoidable = (permit: Permit) => {
-  return (
-    !isPermitInactive(permit.permitStatus) &&
-    !hasPermitExpired(permit.permitData.expiryDate)
+  return isPermitEligibleForAmendOrRevokeActions(
+    permit.permitStatus,
+    permit.permitApprovalSource,
   );
 };
 
@@ -87,25 +85,31 @@ export const VoidPermit = () => {
   };
 
   const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
-  const goHome = () =>
-    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-      ? navigate(APPLICATIONS_ROUTES.BASE, {
-          state: {
-            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
-          },
-        })
-      : // return to global permit search results
-        navigate(-1);
+  const originPermitTab = getPermitTabForActionOrigin(permitActionOrigin);
 
-  const goHomeSuccess = () =>
-    permitActionOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-      ? navigate(APPLICATIONS_ROUTES.BASE, {
-          state: {
-            selectedTab: PERMIT_TABS.ACTIVE_PERMITS,
-          },
-        })
-      : // return to global permit search results
-        navigate(fullSearchRoute);
+  const goHome = () => {
+    if (originPermitTab) {
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: { selectedTab: originPermitTab },
+      });
+      return;
+    }
+
+    // Return to global permit search results.
+    navigate(-1);
+  };
+
+  const goHomeSuccess = () => {
+    if (originPermitTab) {
+      navigate(APPLICATIONS_ROUTES.BASE, {
+        state: { selectedTab: originPermitTab },
+      });
+      return;
+    }
+
+    // Return to global permit search results.
+    navigate(fullSearchRoute);
+  };
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>

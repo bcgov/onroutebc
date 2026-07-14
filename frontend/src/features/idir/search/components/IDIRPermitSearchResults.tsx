@@ -221,7 +221,7 @@ export const IDIRPermitSearchResults = memo(
       },
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<PermitListItem> }) => {
-          const isInactive =
+          const isPermitInactiveOrExpired =
             hasPermitExpired(row.original.expiryDate) ||
             isPermitInactive(row.original.permitStatus);
 
@@ -236,7 +236,9 @@ export const IDIRPermitSearchResults = memo(
             return (
               <Box className="idir-search-results__row-actions">
                 <PermitRowOptions
-                  isPermitInactive={isInactive}
+                  isPermitInactiveOrExpired={isPermitInactiveOrExpired}
+                  permitStatus={row.original.permitStatus}
+                  permitApprovalSource={row.original.permitApprovalSource}
                   permitNumber={row.original.permitNumber}
                   permitId={row.original.permitId}
                   companyId={row.original.companyId}
