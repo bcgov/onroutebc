@@ -54,3 +54,12 @@ export const PERMIT_STATUS: readonly ApplicationStatus[] = [
   ApplicationStatus.REVOKED,
   ApplicationStatus.SUPERSEDED,
 ];
+
+/**
+ * List of valid status for permit and receipt document generation
+ */
+export const PERMIT_STATUS_FOR_DOC_GENERATION: readonly ApplicationStatus[] = [
+  ApplicationStatus.ISSUED,
+  ApplicationStatus.VOIDED,
+  ApplicationStatus.REVOKED,
+];
