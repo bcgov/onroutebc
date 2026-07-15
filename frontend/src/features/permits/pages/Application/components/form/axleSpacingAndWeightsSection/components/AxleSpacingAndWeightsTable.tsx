@@ -39,6 +39,12 @@ import {
   ASW_TABLE_ROW_TYPES,
   ASWTableRowType,
 } from "../../../../../../types/ASWTableRowType";
+import { WarningBanner } from "./WarningBanner";
+import { CustomExternalLink } from "../../../../../../../../common/components/links/CustomExternalLink";
+import {
+  CTPM_CHAPTER_5_TITLE,
+  ONROUTE_WEBPAGE_LINKS,
+} from "../../../../../../../../routes/constants";
 
 export const AxleSpacingAndWeightsTable = ({
   permitType,
@@ -155,6 +161,7 @@ export const AxleSpacingAndWeightsTable = ({
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
     POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
     POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
+    POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS,
   ]);
 
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
@@ -167,6 +174,16 @@ export const AxleSpacingAndWeightsTable = ({
 
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
+  );
+
+  const warningAxleCalculationResults = axleCalculationResults?.results.filter(
+    (result) =>
+      result.result === POLICY_CHECK_RESULT_TYPES.WARNING &&
+      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
+  );
+
+  const hasAxleCalculationWarnings = Boolean(
+    warningAxleCalculationResults?.length,
   );
 
   const shouldShowResultsSection =
@@ -363,6 +380,11 @@ export const AxleSpacingAndWeightsTable = ({
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD]
             : [];
+
+        case POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS]
+            : [];
         default:
           return [];
       }
@@ -406,6 +428,13 @@ export const AxleSpacingAndWeightsTable = ({
     setAxleCalculationResults(undefined);
     setIsResetModalOpen(false);
   };
+
+  const isReferencingCTPMChapter5 = (message: string) => {
+    return message.toLowerCase().includes(CTPM_CHAPTER_5_TITLE.toLowerCase());
+  };
+
+  const showPermitNotRequiredBanner =
+    !hasAxleCalculationFailures && Number(overload) === 0;
 
   return (
     <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
@@ -553,16 +582,57 @@ export const AxleSpacingAndWeightsTable = ({
                   ? getDefaultRequiredVal([], failedAxleCalculationResults).map(
                       (failedResult, index) => (
                         <div key={`axle-calc-fail-${index}`}>
-                          <p className="results__text results__text--fail">
-                            {failedResult.message}
-                          </p>
+                          {isReferencingCTPMChapter5(failedResult.message) ? (
+                            <p className="results__text results__text--fail">
+                              {failedResult.message.replace(
+                                CTPM_CHAPTER_5_TITLE,
+                                "",
+                              )}
+                              <CustomExternalLink
+                                href={ONROUTE_WEBPAGE_LINKS.CTPM_CHAPTER_5}
+                                className="warning-banner__text--link"
+                                openInNewTab={true}
+                              >
+                                {CTPM_CHAPTER_5_TITLE}
+                              </CustomExternalLink>
+                            </p>
+                          ) : (
+                            <p className="results__text results__text--fail">
+                              {failedResult.message}
+                            </p>
+                          )}
                         </div>
                       ),
                     )
                   : "None"}
               </span>
-
-              {!hasAxleCalculationFailures && Number(overload) === 0 ? (
+              {hasAxleCalculationWarnings ? (
+                getDefaultRequiredVal([], warningAxleCalculationResults).map(
+                  (warningResult, index) => (
+                    <WarningBanner
+                      key={index}
+                      content={
+                        isReferencingCTPMChapter5(warningResult.message) ? (
+                          <>
+                            {warningResult.message.replace(
+                              CTPM_CHAPTER_5_TITLE,
+                              "",
+                            )}
+                            <CustomExternalLink
+                              href={ONROUTE_WEBPAGE_LINKS.CTPM_CHAPTER_5}
+                              openInNewTab={true}
+                            >
+                              {CTPM_CHAPTER_5_TITLE}
+                            </CustomExternalLink>
+                          </>
+                        ) : (
+                          <>{warningResult.message}</>
+                        )
+                      }
+                    />
+                  ),
+                )
+              ) : showPermitNotRequiredBanner ? (
                 <>
                   <p className="results__text--success">
                     This permit type is not required.

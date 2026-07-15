@@ -22,7 +22,7 @@ import { useRefundPermitMutation } from "../../Refund/hooks/useRefundPermit";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
   mapToRefundRequestData,
-  mapToZeroDollarRefundRequestData,
+  mapToZeroDollarAmendRequestData,
 } from "../../Refund/helpers/mapper";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
@@ -74,7 +74,8 @@ export const AmendPermitFinish = () => {
   const amountToRefund = -1 * Number(calculatedRefundAmount.toFixed(2));
 
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
-  const [refundErrorMessage, setRefundErrorMessage] = useState<Nullable<string>>();
+  const [refundErrorMessage, setRefundErrorMessage] =
+    useState<Nullable<string>>();
 
   // Refund mutation
   const { mutation: refundPermitMutation, transaction: refundTransaction } =
@@ -102,7 +103,7 @@ export const AmendPermitFinish = () => {
 
     if (isZeroAmount(amountToRefund)) {
       startTransactionMutation.mutate(
-        mapToZeroDollarRefundRequestData(permitId),
+        mapToZeroDollarAmendRequestData(permitId),
       );
     } else {
       refundPermitMutation.mutate({

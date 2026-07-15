@@ -95,8 +95,9 @@ export const AxleUnitRow = ({
 
         const axleCalculationFailure = getDefaultRequiredVal(
           {},
-          axleCalculationFailures[index],
+          axleCalculationFailures[isInteraxleSpacingRow ? index + 1 : index],
         );
+
         const hasAxleUnitWeightFailure = Boolean(
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
@@ -119,6 +120,14 @@ export const AxleUnitRow = ({
         const hasNumberOfAxlesFailure = Boolean(
           axleCalculationFailure[POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES] ||
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
+        );
+
+        const hasAxleSpreadFailure = Boolean(
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS],
+        );
+
+        const hasInteraxleSpacingFailure = Boolean(
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS],
         );
 
         return (
@@ -266,7 +275,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      hasInteraxleSpacingFailure ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(
                       null,
                       axleUnit?.interaxleSpacing,
@@ -288,7 +299,9 @@ export const AxleUnitRow = ({
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
-                    className: "table__input",
+                    className: `table__input ${
+                      hasAxleSpreadFailure ? "table__input--fail" : ""
+                    }`,
                     value: getDefaultRequiredVal(null, axleUnit?.axleSpread),
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(

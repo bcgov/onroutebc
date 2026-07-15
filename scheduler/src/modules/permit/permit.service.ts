@@ -17,7 +17,10 @@ import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permit } from 'src/modules/common/entities/permit.entity';
 import { Repository } from 'typeorm';
-import { ApplicationStatus } from '../common/enum/application-status.enum';
+import {
+  ApplicationStatus,
+  PERMIT_STATUS_FOR_DOC_GENERATION,
+} from '../common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
 import * as dayjs from 'dayjs';
 import {
@@ -86,8 +89,8 @@ export class PermitService {
       const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
-        .where('permit.permitStatus = :permitStatus', {
-          permitStatus: ApplicationStatus.ISSUED,
+        .where('permit.permitStatus IN (:...permitStatus)', {
+          permitStatus: PERMIT_STATUS_FOR_DOC_GENERATION,
         })
         .andWhere('permit.documentId IS NULL')
         .andWhere('permit.tpsPermitNumber IS NULL')
@@ -120,8 +123,8 @@ export class PermitService {
         .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
         .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
         .innerJoinAndSelect('transaction.receipt', 'receipt')
-        .where('permit.permitStatus = :permitStatus', {
-          permitStatus: ApplicationStatus.ISSUED,
+        .where('permit.permitStatus IN (:...permitStatus)', {
+          permitStatus: PERMIT_STATUS_FOR_DOC_GENERATION,
         })
         .andWhere('receipt.receiptDocumentId IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
