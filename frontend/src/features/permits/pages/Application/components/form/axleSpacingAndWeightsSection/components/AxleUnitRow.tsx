@@ -111,7 +111,10 @@ export const AxleUnitRow = ({
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
             ] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT
+            ],
         );
 
         const hasNumberOfAxlesFailure = Boolean(
