@@ -250,6 +250,8 @@ export const SETTINGS_ROUTES = {
 //URL
 export const onRouteBCUrl = "www.onroutebc.gov.bc.ca";
 
+export const CTPM_CHAPTER_5_TITLE = "CTPM 5.3.7.A.";
+
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {
   HOME: "https://onroutebc.gov.bc.ca",
@@ -261,6 +263,8 @@ export const ONROUTE_WEBPAGE_LINKS = {
     "https://www2.gov.bc.ca/gov/content/home/accessible-government",
   COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
   CONTACT_US: "https://onroutebc.gov.bc.ca",
+  CTPM_CHAPTER_5:
+    "https://www2.gov.bc.ca/assets/gov/driving-and-transportation/cvse/commercial-transportation-manual/chapter-5.pdf",
   SERVICE_BC_OFFICE_LOCATIONS:
     "https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations",
   LIST_OF_BC_HIGHWAYS:
