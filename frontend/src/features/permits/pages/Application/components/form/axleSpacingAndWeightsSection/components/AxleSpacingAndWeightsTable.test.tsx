@@ -14,6 +14,8 @@ const tandemSteerWeightMessage =
   "Tandem steer axle must be a minimum of 40% of drive axle weight";
 const pickerTruckTractorWeightMessage =
   "Axle Unit 1 must carry a minimum 50% of Axle Unit 2 axle unit weight.";
+const axleGroupMaximumLegalWeightMessage =
+  "Axle Group 2 to 3 exceeds the maximum legal weight threshold of 21000 kg by 1999 kg.";
 
 const powerUnitAxleConfiguration: AxleUnit[] = [
   {
@@ -222,6 +224,83 @@ describe("AxleSpacingAndWeightsTable", () => {
     expect(
       screen.getByDisplayValue("10999").closest(".table__input"),
     ).toHaveClass("table__input--fail");
+  });
+
+  it("displays an axle group maximum legal weight failure and highlights only the group weights", async () => {
+    const user = userEvent.setup();
+    const runAxleCalculation = vi.fn().mockReturnValue({
+      results: [
+        {
+          id: POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
+          result: "fail",
+          message: axleGroupMaximumLegalWeightMessage,
+          actualWeight: 22999,
+          thresholdWeight: 21000,
+          startAxleUnit: 2,
+          endAxleUnit: 3,
+        },
+      ],
+      totalGCVW: 29699,
+      overload: 1999,
+    });
+
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map([["JEEPSRG", "Jeep"]])}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [
+            {
+              vehicleSubType: "JEEPSRG",
+              axleConfiguration: jeepAxleConfiguration,
+            },
+          ],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={runAxleCalculation}
+        combineAxleConfigurations={() => combinedAxleConfiguration}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(
+      await screen.findByText(axleGroupMaximumLegalWeightMessage),
+    ).toHaveClass("results__text--fail");
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("10999").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("3.50").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("3.00").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
   });
 
   it("displays and highlights minimum steer axle weight failures", async () => {
