@@ -126,7 +126,7 @@ export const TransactionHistoryTable = ({
           cell: MRT_Cell<RefundFormData>;
         }) => (
           <div className="cell__inner ">
-            <div className="cell__value">              
+            <div className="cell__value">
               {cell.getValue<string>()}
               {row?.original?.creditAccountStatusType && (
                 <StatusChip
@@ -140,7 +140,11 @@ export const TransactionHistoryTable = ({
                 <div className="transaction-history-table__egarms-error">
                   <span>
                     eGARMS return code {row.original.egarmsReturnCode}
-                    <Tooltip title={getEGARMSErrorMessage(row.original.egarmsReturnCode)}>
+                    <Tooltip
+                      title={getEGARMSErrorMessage(
+                        row.original.egarmsReturnCode,
+                      )}
+                    >
                       <FontAwesomeIcon
                         icon={faQuestionCircle}
                         className="button__icon"
@@ -269,7 +273,10 @@ export const TransactionHistoryTable = ({
     enableRowSelection: (row: MRT_Row<RefundFormData>) => isRowSelectable(row),
     enableSelectAll: false,
     muiSelectCheckboxProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
-      className: `transaction-history-table__checkbox ${isCreditAccountClosed(row) && "transaction-history-table__checkbox--inactive"} ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
+      className:
+        "transaction-history-table__checkbox " +
+        `${isCreditAccountClosed(row) ? "transaction-history-table__checkbox--inactive " : ""}` +
+        `${!isRowSelectable(row) ? "transaction-history-table__checkbox--disabled" : ""}`,
     }),
     muiTablePaperProps: {
       className: "transaction-history-table",
@@ -288,7 +295,9 @@ export const TransactionHistoryTable = ({
       className: `transaction-history-table__row ${row.getIsSelected() && "transaction-history-table__row--selected"}`,
     }),
     muiTableBodyCellProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
-      className: `transaction-history-table__cell transaction-history-table__cell--body ${isCreditAccountEgarmsError(row) && "transaction-history-table__cell--egarms-error"}`,
+      className:
+        "transaction-history-table__cell transaction-history-table__cell--body " +
+        `${isCreditAccountEgarmsError(row) ? "transaction-history-table__cell--egarms-error" : ""}`,
     }),
   });
 
