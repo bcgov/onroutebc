@@ -21,6 +21,7 @@ const getPermitHistory = (
   pgApproved: 1,
   creditAccountMismatch: false,
   creditAccountStatusType: null,
+  egarmsReturnCode: null,
   ...overrides,
 });
 
