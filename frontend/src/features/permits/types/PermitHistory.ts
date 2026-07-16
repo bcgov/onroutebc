@@ -1,5 +1,5 @@
 import { TransactionType } from "./payment";
-import { RequiredOrNull } from "../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import {
   PaymentCardTypeCode,
   PaymentMethodTypeCode,
@@ -23,4 +23,5 @@ export interface PermitHistory {
   pgApproved: RequiredOrNull<number>;
   creditAccountMismatch: RequiredOrNull<boolean>;
   creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
+  egarmsReturnCode: Nullable<string>;
 }

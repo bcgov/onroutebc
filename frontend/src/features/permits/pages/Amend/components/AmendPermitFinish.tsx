@@ -30,6 +30,8 @@ import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmoun
 import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import { Nullable } from "../../../../../common/types/common";
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
+import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../../settings/types/creditAccount";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -77,6 +79,19 @@ export const AmendPermitFinish = () => {
   const [refundErrorMessage, setRefundErrorMessage] =
     useState<Nullable<string>>();
 
+  const hasClosedCreditAccountRefund =
+    validTransactionHistory?.every(
+      (transaction) =>
+        transaction.paymentMethodTypeCode ===
+          PAYMENT_METHOD_TYPE_CODE.ACCOUNT ||
+        transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.NP,
+    ) &&
+    validTransactionHistory?.some(
+      (transaction) =>
+        transaction.creditAccountStatusType ===
+        CREDIT_ACCOUNT_STATUS_TYPE.CLOSED,
+    );
+
   // Refund mutation
   const { mutation: refundPermitMutation, transaction: refundTransaction } =
     useRefundPermitMutation();
@@ -87,6 +102,14 @@ export const AmendPermitFinish = () => {
   } = useStartTransaction();
 
   const handleFinish = (refundData: RefundFormData[]) => {
+    if (!isZeroAmount(amountToRefund) && hasClosedCreditAccountRefund) {
+      setRefundErrorMessage(
+        "Refunds can't be processed for closed Credit Accounts.",
+      );
+      setShowRefundErrorModal(true);
+      return;
+    }
+
     const totalRefundAmount = refundData.reduce(
       (sum: number, transaction: RefundFormData) =>
         sum + Number(transaction.refundAmount),
