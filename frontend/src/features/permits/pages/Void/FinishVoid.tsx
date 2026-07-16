@@ -47,7 +47,7 @@ export const FinishVoid = () => {
   const amountToRefund =
     !permit || transactionHistory.length === 0
       ? 0
-      : -1 * calculateAmountForVoid(permit, transactionHistory);
+      : -1 * calculateAmountForVoid(transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidOrRevokePermit();
 
