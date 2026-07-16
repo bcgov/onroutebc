@@ -499,7 +499,7 @@ export class PermitService {
         );
       egarmsReturnCode = egarmsCreditAccountDetails?.PPABalance?.return_code;
     } catch (error) {
-      //log and swallow the error, since we don't want to block the user from viewing their permit history if EGARMS is down or there is an issue with the request
+      //log and swallow the error, since we don't want to block the user from viewing their permit history if EGARMS is down or there is an issue with the request.
       this.logger.error('Error fetching EGARMS credit account details', error);
       egarmsReturnCode = EGARMS_CREDIT_ACCOUNT_ERROR;
     }
