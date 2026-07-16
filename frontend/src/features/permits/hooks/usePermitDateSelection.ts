@@ -115,6 +115,7 @@ export const usePermitDateSelection = ({
         isAmend,
       ),
       maxAllowedFutureStartDate: getMaxAllowedPermitFutureStartDate(
+        permitType,
         currentDate,
         isStaff,
       ),
