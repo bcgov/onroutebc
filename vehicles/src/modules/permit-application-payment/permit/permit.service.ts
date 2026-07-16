@@ -62,6 +62,8 @@ import { convertUtcToPt } from '../../../common/helper/date-time.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
 import { Nullable } from '../../../common/types/common';
 import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
+import { EGARMSCreditAccountService } from '../../common/egarms.credit-account.service';
+import { EGARMS_CREDIT_ACCOUNT_ERROR } from '../../../common/constants/api.constant';
 
 @Injectable()
 export class PermitService {
@@ -76,6 +78,7 @@ export class PermitService {
     private readonly dopsService: DopsService,
     private paymentService: PaymentService,
     private readonly creditAccountService: CreditAccountService,
+    private readonly egarmsCreditAccountService: EGARMSCreditAccountService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -465,6 +468,7 @@ export class PermitService {
       .getMany();
 
     let creditAccountId: Nullable<number>;
+    let creditAccountNumber: Nullable<string>;
     let creditAccount: Nullable<CreditAccount>;
     let creditAccountMismatch: Nullable<boolean>;
 
@@ -472,9 +476,12 @@ export class PermitService {
       permit.permitTransactions?.some((permitTransaction) => {
         creditAccountId =
           permitTransaction?.transaction?.creditAccount?.creditAccountId;
+        creditAccountNumber =
+          permitTransaction?.transaction?.creditAccount?.creditAccountNumber;
         return !!creditAccountId;
       }),
     );
+
     if (creditAccountId) {
       creditAccount = await this.creditAccountService.findCreditAccountDetails(
         companyId,
@@ -484,9 +491,22 @@ export class PermitService {
         creditAccountId !== creditAccount?.creditAccountId;
     }
 
+    let egarmsReturnCode: Nullable<string>;
+    try {
+      const egarmsCreditAccountDetails =
+        await this.egarmsCreditAccountService.getCreditAccountDetailsFromEGARMS(
+          creditAccountNumber,
+        );
+      egarmsReturnCode = egarmsCreditAccountDetails?.PPABalance?.return_code;
+    } catch (error) {
+      this.logger.error('Error fetching EGARMS credit account details', error);
+      egarmsReturnCode = EGARMS_CREDIT_ACCOUNT_ERROR;
+    }
+
     const isCreditAccountTransaction = (
       paymentMethodTyeCode: PaymentMethodType,
     ) => paymentMethodTyeCode === PaymentMethodType.ACCOUNT && creditAccountId;
+
     return permits.flatMap((permit) =>
       permit.permitTransactions.map((permitTransaction) => ({
         permitNumber: permit.permitNumber,
@@ -515,6 +535,11 @@ export class PermitService {
         creditAccountStatusType:
           permitTransaction?.transaction?.creditAccount
             ?.creditAccountStatusType,
+        egarmsReturnCode: isCreditAccountTransaction(
+          permitTransaction.transaction.paymentMethodTypeCode,
+        )
+          ? egarmsReturnCode
+          : undefined,
       })),
     ) as PermitHistoryDto[];
   }

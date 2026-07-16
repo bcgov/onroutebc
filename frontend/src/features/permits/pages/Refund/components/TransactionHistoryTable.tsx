@@ -11,7 +11,10 @@ import {
 
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
-import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
+import {
+  getPaymentMethod,
+  PAYMENT_METHOD_TYPE_CODE,
+} from "../../../../../common/types/paymentMethods";
 import { isValidTransaction } from "../../../helpers/payment";
 import {
   applyWhenNotNullable,
@@ -34,7 +37,15 @@ import { RefundAmountInput } from "./RefundAmountInput";
 import { RefundTransactionIdInput } from "./RefundTransactionIdInput";
 import { ChequeRefundCheckbox } from "./ChequeRefundCheckbox";
 import { StatusChip } from "../../../../settings/components/creditAccount/StatusChip";
-import { CreditAccountStatusType } from "../../../../settings/types/creditAccount";
+import {
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  CreditAccountStatusType,
+  EGARMS_SUCCESS_CODE,
+} from "../../../../settings/types/creditAccount";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@mui/material";
+import { getEGARMSErrorMessage } from "../../../../settings/helpers/creditAccount";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -56,6 +67,28 @@ export const TransactionHistoryTable = ({
       !isTransactionTypeRefund(row.original.transactionTypeId) &&
       !isZeroAmount(row.original.transactionAmount) &&
       totalRefundDue !== 0
+    );
+  };
+
+  const isCreditAccount = (row: MRT_Row<RefundFormData>): boolean => {
+    return (
+      row.original.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT
+    );
+  };
+
+  const isCreditAccountClosed = (row: MRT_Row<RefundFormData>): boolean => {
+    return (
+      isCreditAccount(row) &&
+      row.original.creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED
+    );
+  };
+
+  const isCreditAccountEgarmsError = (
+    row: MRT_Row<RefundFormData>,
+  ): boolean => {
+    return (
+      isCreditAccount(row) &&
+      row.original.egarmsReturnCode !== EGARMS_SUCCESS_CODE.I0001
     );
   };
 
@@ -82,7 +115,7 @@ export const TransactionHistoryTable = ({
         },
         id: "paymentMethod",
         header: "Payment Method",
-        size: 100,
+        size: 200,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({
@@ -93,7 +126,7 @@ export const TransactionHistoryTable = ({
           cell: MRT_Cell<RefundFormData>;
         }) => (
           <div className="cell__inner ">
-            <div className="cell__value">
+            <div className="cell__value">              
               {cell.getValue<string>()}
               {row?.original?.creditAccountStatusType && (
                 <StatusChip
@@ -102,6 +135,19 @@ export const TransactionHistoryTable = ({
                       ?.creditAccountStatusType as CreditAccountStatusType
                   }
                 />
+              )}
+              {isCreditAccountEgarmsError(row) && (
+                <div className="transaction-history-table__egarms-error">
+                  <span>
+                    eGARMS return code {row.original.egarmsReturnCode}
+                    <Tooltip title={getEGARMSErrorMessage(row.original.egarmsReturnCode)}>
+                      <FontAwesomeIcon
+                        icon={faQuestionCircle}
+                        className="button__icon"
+                      />
+                    </Tooltip>
+                  </span>
+                </div>
               )}
             </div>
           </div>
@@ -167,7 +213,9 @@ export const TransactionHistoryTable = ({
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
           return (
             isRowSelectable(cell.row) && (
-              <RefundTransactionIdInput cell={cell} />
+              <div className="cell__inner">
+                <RefundTransactionIdInput cell={cell} />
+              </div>
             )
           );
         },
@@ -180,7 +228,8 @@ export const TransactionHistoryTable = ({
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
           return (
-            isRowSelectable(cell.row) && (
+            isRowSelectable(cell.row) &&
+            !isCreditAccount(cell.row) && (
               <div className="cell__inner">
                 <ChequeRefundCheckbox cell={cell} />
               </div>
@@ -220,7 +269,7 @@ export const TransactionHistoryTable = ({
     enableRowSelection: (row: MRT_Row<RefundFormData>) => isRowSelectable(row),
     enableSelectAll: false,
     muiSelectCheckboxProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
-      className: `transaction-history-table__checkbox ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
+      className: `transaction-history-table__checkbox ${isCreditAccountClosed(row) && "transaction-history-table__checkbox--inactive"} ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
     }),
     muiTablePaperProps: {
       className: "transaction-history-table",
@@ -238,10 +287,9 @@ export const TransactionHistoryTable = ({
     muiTableBodyRowProps: ({ row }) => ({
       className: `transaction-history-table__row ${row.getIsSelected() && "transaction-history-table__row--selected"}`,
     }),
-    muiTableBodyCellProps: {
-      className:
-        "transaction-history-table__cell transaction-history-table__cell--body",
-    },
+    muiTableBodyCellProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
+      className: `transaction-history-table__cell transaction-history-table__cell--body ${isCreditAccountEgarmsError(row) && "transaction-history-table__cell--egarms-error"}`,
+    }),
   });
 
   return (
