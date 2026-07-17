@@ -12,14 +12,15 @@ export const getDefaultManualRoute = (
     destination: getDefaultRequiredVal("", manualRoute?.destination),
     highwaySequence: getDefaultRequiredVal(
       [],
-      manualRoute?.highwaySequence)
-        .filter(highwayNumber => Boolean(highwayNumber.trim()),
-    ),
-    exitPoint: permitType === PERMIT_TYPES.MFP
-      ? getDefaultRequiredVal(null, manualRoute?.exitPoint)
-      : null,
-    totalDistance: permitType === PERMIT_TYPES.MFP
-      ? getDefaultRequiredVal(null, manualRoute?.totalDistance)
-      : null,
+      manualRoute?.highwaySequence,
+    ).filter((highwayNumber) => Boolean(highwayNumber.trim())),
+    exitPoint:
+      permitType === PERMIT_TYPES.MFP
+        ? getDefaultRequiredVal(null, manualRoute?.exitPoint)
+        : null,
+    totalDistance:
+      permitType === PERMIT_TYPES.MFP || permitType === PERMIT_TYPES.STOW
+        ? getDefaultRequiredVal(null, manualRoute?.totalDistance)
+        : null,
   };
 };

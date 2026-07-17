@@ -228,7 +228,7 @@ export const BasePermitList = ({
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback(
       ({ row }: { row: MRT_Row<PermitListItem> }) => {
-        const isInactive =
+        const isPermitInactiveOrExpired =
           hasPermitExpired(row.original.expiryDate) ||
           isPermitInactive(row.original.permitStatus);
 
@@ -242,7 +242,9 @@ export const BasePermitList = ({
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions
-              isPermitInactive={isInactive}
+              isPermitInactiveOrExpired={isPermitInactiveOrExpired}
+              permitStatus={row.original.permitStatus}
+              permitApprovalSource={row.original.permitApprovalSource}
               permitNumber={row.original.permitNumber}
               permitId={row.original.permitId}
               companyId={row.original.companyId}

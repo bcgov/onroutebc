@@ -50,6 +50,15 @@ export interface PermitData {
    */
   thirdPartyLiability?: ThirdPartyLiability;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFee>;
+  /**
+   * ICBC Insurance Certificate into for HC permit types
+   */
+  icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
+}
+
+interface ICBCInsuranceCertificate {
+  haveCertificate: boolean;
+  certificateNumber?: Nullable<string>;
 }
 
 interface AxleConfiguration {
@@ -126,6 +135,7 @@ export interface VehicleDetails {
   licensedGVW?: number;
   saveVehicle?: boolean;
   axleConfiguration?: AxleConfiguration[];
+  vehicleDescription?: Nullable<string>;
 }
 
 interface Commodities {

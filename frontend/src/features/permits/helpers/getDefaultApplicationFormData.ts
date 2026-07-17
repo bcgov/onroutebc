@@ -4,11 +4,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import {
-  isQuarterlyPermit,
-  PERMIT_TYPES,
-  PermitType,
-} from "../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -128,14 +124,14 @@ export const getStartDateOrDefault = (
 
 export const getExpiryDateOrDefault = (
   startDateOrDefault: Dayjs,
-  isQuarterly: boolean,
+  permitType: PermitType,
   durationOrDefault: number,
   expiryDate?: Nullable<Dayjs | string>,
 ): Dayjs => {
   return applyWhenNotNullable(
     (date) => getEndOfDate(dayjs(date)),
     expiryDate,
-    getExpiryDate(startDateOrDefault, isQuarterly, durationOrDefault),
+    getExpiryDate(startDateOrDefault, permitType, durationOrDefault),
   );
 };
 
@@ -204,7 +200,7 @@ export const getDefaultValues = (
 
   const expiryDateOrDefault = getExpiryDateOrDefault(
     startDateOrDefault,
-    isQuarterlyPermit(permitType),
+    permitType,
     durationOrDefault,
     !shouldInitAsCopy ? applicationData?.permitData?.expiryDate : undefined, // let expiry be automatically calculated/derived for initializing copied permits
   );
@@ -294,6 +290,21 @@ export const getDefaultValues = (
             DEFAULT_CONDITIONAL_LICENSING_FEE_TYPE,
             applicationData?.permitData?.conditionalLicensingFee,
           )
+        : null,
+      icbcInsuranceCertificate: (permitType === PERMIT_TYPES.HC)
+        ? {
+            haveCertificate: getDefaultRequiredVal(
+              false,
+              applicationData?.permitData?.icbcInsuranceCertificate?.haveCertificate,
+            ),
+            certificateNumber:
+              applicationData?.permitData?.icbcInsuranceCertificate?.haveCertificate
+                ? getDefaultRequiredVal(
+                    "",
+                    applicationData?.permitData?.icbcInsuranceCertificate?.certificateNumber,
+                  )
+                : "",
+          }
         : null,
     },
     comment: getDefaultRequiredVal("", applicationData?.comment),

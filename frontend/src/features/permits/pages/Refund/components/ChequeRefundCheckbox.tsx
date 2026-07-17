@@ -4,7 +4,6 @@ import { useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
-import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../../settings/types/creditAccount";
 
 export const ChequeRefundCheckbox = ({
   cell,
@@ -26,31 +25,11 @@ export const ChequeRefundCheckbox = ({
   );
   const paymentMethodTypeCode = refundData[fieldIndex].paymentMethodTypeCode;
 
-  const creditAccountStatusType = getValues(
-    `refundData.${fieldIndex}.creditAccountStatusType`,
-  );
-
-  const creditAccountMismatch = getValues(
-    `refundData.${fieldIndex}.creditAccountMismatch`,
-  ) as boolean;
-
-  const isCreditAccount =
-    paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT;
-
-  const isCreditAccountClosed =
-    isCreditAccount &&
-    creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED;
-
-  const isCreditAccountMismatch = isCreditAccount && creditAccountMismatch;
-
-  const shouldRefundByCheque =
-    [
-      PAYMENT_METHOD_TYPE_CODE.CASH,
-      PAYMENT_METHOD_TYPE_CODE.CHEQUE,
-      PAYMENT_METHOD_TYPE_CODE.GA,
-    ].includes(paymentMethodTypeCode) ||
-    isCreditAccountClosed ||
-    isCreditAccountMismatch;
+  const shouldRefundByCheque = [
+    PAYMENT_METHOD_TYPE_CODE.CASH,
+    PAYMENT_METHOD_TYPE_CODE.CHEQUE,
+    PAYMENT_METHOD_TYPE_CODE.GA,
+  ].includes(paymentMethodTypeCode);
 
   const rowIsSelected = cell.row.getIsSelected();
 

@@ -71,7 +71,7 @@ export const VoidPermitForm = () => {
   const amountToRefund =
     !permit || transactionHistory.length === 0
       ? 0
-      : -1 * calculateAmountForVoid(permit, transactionHistory);
+      : -1 * calculateAmountForVoid(transactionHistory);
 
   const currentPermitValue = calculateNetAmount(transactionHistory);
 

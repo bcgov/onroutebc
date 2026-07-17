@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+import { UserEvent } from "@testing-library/user-event";
 
 export const reviewConfirmWarning = async () => {
   return await screen.findByText(

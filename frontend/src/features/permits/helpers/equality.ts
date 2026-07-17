@@ -11,6 +11,7 @@ import { ReplaceDayjsWithString } from "../types/utility";
 import { PermittedCommodity } from "../types/PermittedCommodity";
 import { ManualRoute, PermittedRoute } from "../types/PermittedRoute";
 import { PermitVehicleConfiguration } from "../types/PermitVehicleConfiguration";
+import { ICBCInsuranceCertificate } from "../types/ICBCInsuranceCertificate";
 
 /**
  * Compare whether or not two mailing addresses are equal.
@@ -246,6 +247,25 @@ export const arePermittedRoutesEqual = (
 };
 
 /**
+ * Compare whether or not the selected ICBC insurance certificate for two permits are equal.
+ * @param certData1 ICBC insurance certificate data for the first permit
+ * @param certData2 ICBC insurance certificate data for the second permit
+ * @returns true when the ICBC insurance certificate data are considered equivalent, false otherwise
+ */
+export const areICBCInsuranceCertificatesEqual = (
+  certData1?: Nullable<ICBCInsuranceCertificate>,
+  certData2?: Nullable<ICBCInsuranceCertificate>,
+) => {
+  return (
+    getDefaultRequiredVal(false, certData1?.haveCertificate)
+      === getDefaultRequiredVal(false, certData2?.haveCertificate)
+  ) && (
+    getDefaultRequiredVal("", certData1?.certificateNumber)
+      === getDefaultRequiredVal("", certData2?.certificateNumber)
+  );
+};
+
+/**
  * Compare whether or not the permit data belonging to two applications are equal.
  * @param data1 Permit data belonging to first application
  * @param data2 Permit data belonging to second application
@@ -267,6 +287,10 @@ export const areApplicationPermitDataEqual = (
     arePermittedCommoditiesEqual(data1.permittedCommodity, data2.permittedCommodity) &&
     areVehicleConfigurationsEqual(data1.vehicleConfiguration, data2.vehicleConfiguration) &&
     arePermittedRoutesEqual(data1.permittedRoute, data2.permittedRoute) &&
+    areICBCInsuranceCertificatesEqual(
+      data1.icbcInsuranceCertificate,
+      data2.icbcInsuranceCertificate,
+    ) &&
     (getDefaultRequiredVal("", data1.applicationNotes)
       === getDefaultRequiredVal("", data2.applicationNotes)) &&
     (getDefaultRequiredVal("", data1.thirdPartyLiability)

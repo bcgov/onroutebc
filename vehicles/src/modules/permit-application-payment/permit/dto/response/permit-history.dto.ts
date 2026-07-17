@@ -132,4 +132,12 @@ export class PermitHistoryDto {
       'Represents the status of the credit account used at the time of the transanction',
   })
   creditAccountStatusType?: CreditAccountStatusType;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'EGARMS return Code.',
+    example: 'I0001',
+    required: false,
+  })
+  egarmsReturnCode?: string;
 }

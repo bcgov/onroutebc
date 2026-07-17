@@ -431,6 +431,7 @@ export const ApplicationReview = ({
             applicationData?.permitData?.conditionalLicensingFee
           }
           companyId={companyId}
+          icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
         />
       </FormProvider>
 

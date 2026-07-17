@@ -1,4 +1,4 @@
-import { Optional } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import { EGARMS_CODE_ERROR_MESSAGES } from "../types/creditAccount";
 
   /**
@@ -47,10 +47,12 @@ import { EGARMS_CODE_ERROR_MESSAGES } from "../types/creditAccount";
  * @param eGARMSReturnCode EGARMS return code
  * @returns EGARMS error message
  */
-  export const getEGARMSErrorMessage = (eGARMSReturnCode: Optional<string>): string => {
-  return (
-    EGARMS_CODE_ERROR_MESSAGES[
-      eGARMSReturnCode as keyof typeof EGARMS_CODE_ERROR_MESSAGES
-    ] || EGARMS_CODE_ERROR_MESSAGES.DEFAULT
-  );
-} ;
+  export const getEGARMSErrorMessage = (
+    eGARMSReturnCode: Nullable<string>,
+  ): string => {
+    return (
+      EGARMS_CODE_ERROR_MESSAGES[
+        eGARMSReturnCode as keyof typeof EGARMS_CODE_ERROR_MESSAGES
+      ] || EGARMS_CODE_ERROR_MESSAGES.DEFAULT
+    );
+  };

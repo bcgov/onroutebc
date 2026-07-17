@@ -11,6 +11,7 @@ import { PermittedRoute } from "./PermittedRoute";
 import { PermitLOA } from "./PermitLOA";
 import { ThirdPartyLiability } from "./ThirdPartyLiability";
 import { ConditionalLicensingFeeType } from "./ConditionalLicensingFee";
+import { ICBCInsuranceCertificate } from "./ICBCInsuranceCertificate";
 
 export interface PermitData {
   startDate: Dayjs;
@@ -31,4 +32,5 @@ export interface PermitData {
   applicationNotes?: Nullable<string>;
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
+  icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
 }

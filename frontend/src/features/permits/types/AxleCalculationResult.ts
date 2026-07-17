@@ -1,12 +1,15 @@
 export const POLICY_CHECK_RESULT_TYPES = {
   PASS: "pass",
   FAIL: "fail",
+  WARNING: "warning",
 };
 
 export type PolicyCheckResultType =
   (typeof POLICY_CHECK_RESULT_TYPES)[keyof typeof POLICY_CHECK_RESULT_TYPES];
 
 export const POLICY_CHECK_ID_TYPES = {
+  AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD:
+    "axle-group-maximum-legal-weight-threshold",
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
   CHECK_PERMITTABLE_WEIGHT: "check-permittable-weight",
@@ -14,9 +17,12 @@ export const POLICY_CHECK_ID_TYPES = {
   MAX_TIRE_LOAD: "max-tire-load",
   MINIMUM_DRIVE_AXLE_WEIGHT: "minimum-drive-axle-weight",
   MINIMUM_STEER_AXLE_WEIGHT: "minimum-steer-axle-weight",
+  MINIMUM_TANDEM_STEER_AXLE_WEIGHT: "minimum-tandem-steer-axle-weight",
   NUMBER_OF_AXLES: "number-of-axles",
   NUMBER_OF_WHEELS_PER_AXLE: "number-of-wheels",
-  TRUCK_TRACTOR_WHEELBASE: "truck-tractor-wheelbase",
+  PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
+    "picker-truck-tractor-weight-restrictions",
+  WHEELBASE_LEGAL_LIMITS: "wheelbase-legal-limits",
 } as const;
 
 export type PolicyCheckIdType =
@@ -35,5 +41,6 @@ export interface AxleGroupPolicyCheckResult {
 
 export interface AxleCalculationResult {
   results: Array<AxleGroupPolicyCheckResult>;
-  totalOverload: number;
+  overload: number;
+  totalGCVW: number;
 }

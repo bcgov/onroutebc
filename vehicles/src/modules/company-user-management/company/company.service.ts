@@ -498,7 +498,9 @@ export class CompanyService {
             clientNumber: `%${findCompanyPaginatedOptions.clientNumber}%`,
           }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
             legacyClientNumberHash: convertToHash(
-              findCompanyPaginatedOptions.clientNumber?.replace(/-/g, ''),
+              findCompanyPaginatedOptions.clientNumber
+                ?.replace(/-/g, '')
+                .replace(/^0+/, ''),
               CRYPTO_ALGORITHM_SHA256,
             ),
           });
@@ -635,7 +637,7 @@ export class CompanyService {
     legacyClientNumber: string,
   ): Promise<Company> {
     const legacyClientHash = convertToHash(
-      legacyClientNumber?.replace(/-/g, ''),
+      legacyClientNumber?.replace(/-/g, '').replace(/^0+/, ''),
       CRYPTO_ALGORITHM_SHA256,
     );
     return await this.findOneByLegacyClientHash(legacyClientHash);

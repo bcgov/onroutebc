@@ -1,25 +1,25 @@
 # Default codeowners:
-* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot @zgong-gov
+* @praju-aot @zgong-gov @acoard-aot
 
 # Frontend:
-/frontend/** @krishnan-aot @zgong-gov
+/frontend/** @zgong-gov @acoard-aot
 
 # Vehicles:
-/vehicles/**  @gchauhan-aot @praju-aot @zgong-gov
+/vehicles/**  @praju-aot @zgong-gov @acoard-aot
 
 # Public:
-/public/**  @gchauhan-aot @praju-aot @zgong-gov
+/public/**  @praju-aot @zgong-gov @acoard-aot
 # Scheduler:
-/scheduler/**  @gchauhan-aot @zgong-gov
+/scheduler/**  @praju-aot @zgong-gov @acoard-aot
 
 # Dops:
-/dops/**  @gchauhan-aot @praju-aot @zgong-gov
+/dops/**  @praju-aot @zgong-gov @acoard-aot
 
 # Policy:
-/policy/**  @gchauhan-aot @praju-aot @zgong-gov
+/policy/**  @praju-aot @zgong-gov @acoard-aot
 
 # Database:
-/database/** @gchauhan-aot @john-fletcher-aot @praju-aot @zgong-gov
+/database/** @praju-aot @zgong-gov @acoard-aot
 
 # Devops:
 Dockerfile @cberg-aot @zgong-gov

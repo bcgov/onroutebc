@@ -173,6 +173,7 @@ export const ApplicationInQueueReview = ({
             applicationData?.permitData?.conditionalLicensingFee
           }
           companyId={companyId}
+          icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
         />
       </FormProvider>
 
