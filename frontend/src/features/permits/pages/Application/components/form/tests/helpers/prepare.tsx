@@ -118,6 +118,7 @@ export const renderTestComponent = (
   );
 
   const maxAllowedFutureStartDate = getMaxAllowedPermitFutureStartDate(
+    permitType,
     currentDt,
     false,
   );
