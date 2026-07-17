@@ -476,3 +476,7 @@
 ### Version 98:
 
 - Configure HC v1 template
+
+### Version 99:
+
+- Updates to the policy configuration to modify the start-date rule for the Highway Crossing permit type
