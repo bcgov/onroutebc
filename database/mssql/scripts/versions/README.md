@@ -480,3 +480,7 @@
 ### Version 99:
 
 - Updates to the policy configuration to modify the start-date rule for the Highway Crossing permit type
+
+### Version 100:
+
+- Add STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table
