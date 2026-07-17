@@ -1784,11 +1784,8 @@ export class CreditAccountService {
     if (
       // Check if the transaction type is a REFUND and the credit account status is CLOSED
       transacationType === TransactionType.REFUND &&
-      (creditAccount?.creditAccountStatusType ===
-        CreditAccountStatus.ACCOUNT_CLOSED ||
-        // Check if eGARMS credit account details indicate the account is CLOSED
-        egarmsCreditAccountDetails?.PPABalance?.return_code ===
-          EGARMS_CREDIT_ACCOUNT_CLOSED)
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED
     ) {
       // Log an error for attempting a refund on a closed credit account
       this.logger.error('Cannot refund to a closed Credit account.');
