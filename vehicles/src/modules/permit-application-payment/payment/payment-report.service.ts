@@ -42,7 +42,7 @@ export class PaymentReportService {
   ) {
     queryBuilder
       .select(
-        `CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name )`,
+        `CASE WHEN paymentMethodType.paymentMethodTypeCode = 'ACCOUNT' THEN creditAccount.creditAccountNumber ELSE CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name) END`,
         'paymentMethod',
       )
       .addSelect('permit.permitIssueDateTime', 'issuedOn')
@@ -105,7 +105,8 @@ export class PaymentReportService {
       .innerJoin('permitTransactions.permit', 'permit')
       .leftJoin('permit.issuer', 'issuer', 'issuer.directory = :directory', {
         directory: Directory.IDIR,
-      });
+      })
+      .leftJoin('trans.creditAccount', 'creditAccount');
   }
 
   private getCondtionQueryBuilderForDetailedReports(

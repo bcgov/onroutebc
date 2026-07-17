@@ -80,6 +80,7 @@ export const RefundPage = ({
         refundAmount: "",
         refundTransactionId: "",
         chequeRefund: false,
+        egarmsReturnCode: transaction.egarmsReturnCode,
       })),
     },
     reValidateMode: "onChange",

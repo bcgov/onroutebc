@@ -3,10 +3,8 @@ import { Policy } from "onroute-policy-engine";
 import { PermitData } from "../types/PermitData";
 import { PermitHistory } from "../types/PermitHistory";
 import { TRANSACTION_TYPES, TransactionType } from "../types/payment";
-import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
-import { PERMIT_STATES, getPermitState } from "./permitState";
 import { PermitType } from "../types/PermitType";
 import { ReplaceDayjsWithString } from "../types/utility";
 import {
@@ -118,19 +116,10 @@ export const isZeroAmount = (amount: number) => {
 
 /**
  * Calculates the amount that can be refunded for voiding the permit.
- * @param permit Permit to void
  * @param permitHistory List of history objects that make up the history of a permit and its transactions
  * @returns Amount that can be refunded as a result of the void operation
  */
-export const calculateAmountForVoid = (
-  permit: Permit,
-  transactionHistory: PermitHistory[],
-) => {
-  const permitState = getPermitState(permit);
-  if (permitState === PERMIT_STATES.EXPIRED) {
-    return 0;
-  }
-
+export const calculateAmountForVoid = (transactionHistory: PermitHistory[]) => {
   const netPaid = calculateNetAmount(transactionHistory);
   if (isZeroAmount(netPaid)) return 0; // If existing net paid is $0 (eg. no-fee permits), then refund nothing
 
