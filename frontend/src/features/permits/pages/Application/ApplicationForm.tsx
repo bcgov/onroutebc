@@ -65,6 +65,8 @@ import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverr
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { AxleCalculationResult } from "../../types/AxleCalculationResult";
+import { isStowPermitNotRequired } from "../../helpers/policy/isStowPermitNotRequired";
+import { PermitNotRequiredModal } from "./components/form/PermitNotRequiredModal";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -160,6 +162,8 @@ export const ApplicationForm = ({
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
+    useState<boolean>(false);
+  const [showPermitNotRequiredModal, setShowPermitNotRequiredModal] =
     useState<boolean>(false);
 
   const { handleSubmit } = formMethods;
@@ -262,6 +266,17 @@ export const ApplicationForm = ({
   const onContinue = async (data: ApplicationFormData) => {
     const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
+
+    if (
+      isStowPermitNotRequired(
+        data.permitType,
+        updatedViolations,
+        axleCalculationResults,
+      )
+    ) {
+      setShowPermitNotRequiredModal(true);
+      return;
+    }
 
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
@@ -536,6 +551,11 @@ export const ApplicationForm = ({
         onLeaveUnsaved={handleLeaveUnsaved}
         onContinueEditing={handleStayOnApplication}
         showDialog={showLeaveApplicationDialog}
+      />
+
+      <PermitNotRequiredModal
+        isOpen={showPermitNotRequiredModal}
+        onClose={() => setShowPermitNotRequiredModal(false)}
       />
 
       {showUnavailableApplicationModal && (
