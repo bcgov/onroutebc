@@ -5,7 +5,7 @@ import {
   POLICY_CHECK_ID_TYPES,
 } from "../../types/AxleCalculationResult";
 import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
-import { isStowPermitNotRequired } from "./isStowPermitNotRequired";
+import { isStowPermitRequired } from "./isStowPermitRequired";
 
 const createAxleCalculationResults = (
   overrides: Partial<AxleCalculationResult> = {},
@@ -16,7 +16,7 @@ const createAxleCalculationResults = (
   ...overrides,
 });
 
-const nonQualifyingCases: Array<{
+const requiredPermitCases: Array<{
   name: string;
   permitType: PermitType;
   violations: Record<string, string>;
@@ -58,20 +58,20 @@ const nonQualifyingCases: Array<{
   },
 ];
 
-describe("isStowPermitNotRequired", () => {
-  it("returns true for a STOW application without violations, failures, or overload", () => {
+describe("isStowPermitRequired", () => {
+  it("returns false for a STOW application without violations, failures, or overload", () => {
     expect(
-      isStowPermitNotRequired(
+      isStowPermitRequired(
         PERMIT_TYPES.STOW,
         {},
         createAxleCalculationResults(),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("allows non-blocking axle calculation warnings", () => {
     expect(
-      isStowPermitNotRequired(
+      isStowPermitRequired(
         PERMIT_TYPES.STOW,
         {},
         createAxleCalculationResults({
@@ -86,16 +86,16 @@ describe("isStowPermitNotRequired", () => {
           ],
         }),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
-  it.each(nonQualifyingCases)("returns false when $name", (testCase) => {
+  it.each(requiredPermitCases)("returns true when $name", (testCase) => {
     expect(
-      isStowPermitNotRequired(
+      isStowPermitRequired(
         testCase.permitType,
         testCase.violations,
         testCase.axleCalculationResults,
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 });

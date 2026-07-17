@@ -37,7 +37,17 @@
     padding: 0 1.5rem 1.5rem;
   }
 
-  &__button {
+  & &__button {
+    background-color: orbcStyles.$bc-background-light-grey;
+    border: 2px solid orbcStyles.$bc-background-light-grey;
     box-shadow: none;
+    color: orbcStyles.$bc-black;
+
+    &:hover,
+    &:focus {
+      background-color: orbcStyles.$bc-background-light-grey;
+      border-color: orbcStyles.$bc-text-box-border-grey;
+      box-shadow: none;
+    }
   }
 }

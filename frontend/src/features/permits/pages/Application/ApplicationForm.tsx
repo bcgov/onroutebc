@@ -65,7 +65,7 @@ import { shouldOverridePolicyViolations } from "../../helpers/policy/shouldOverr
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { AxleCalculationResult } from "../../types/AxleCalculationResult";
-import { isStowPermitNotRequired } from "../../helpers/policy/isStowPermitNotRequired";
+import { isStowPermitRequired } from "../../helpers/policy/isStowPermitRequired";
 import { PermitNotRequiredModal } from "./components/form/PermitNotRequiredModal";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
@@ -268,7 +268,7 @@ export const ApplicationForm = ({
       await triggerPolicyValidation();
 
     if (
-      isStowPermitNotRequired(
+      !isStowPermitRequired(
         data.permitType,
         updatedViolations,
         axleCalculationResults,
