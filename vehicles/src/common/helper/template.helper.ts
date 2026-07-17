@@ -33,6 +33,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR,
       [PermitType.HIGHWAY_CROSSING]: TemplateName.PERMIT_HC,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY]:
+        TemplateName.PERMIT_STWSE,
+      [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
@@ -50,6 +53,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR_VOID,
       [PermitType.HIGHWAY_CROSSING]: TemplateName.PERMIT_HC_VOID,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY]:
+        TemplateName.PERMIT_STWSE_VOID,
+      [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
@@ -67,6 +73,9 @@ export const getPermitTemplateName = (
       [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
         TemplateName.PERMIT_QRFR_REVOKED,
       [PermitType.HIGHWAY_CROSSING]: TemplateName.PERMIT_HC_REVOKED,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY]:
+        TemplateName.PERMIT_STWSE_REVOKED,
+      [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };
