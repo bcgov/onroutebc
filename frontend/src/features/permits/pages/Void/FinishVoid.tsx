@@ -8,7 +8,7 @@ import {
   useDeleteApplicationsMutation,
   usePermitHistoryQuery,
 } from "../../hooks/hooks";
-import { calculateAmountForVoid } from "../../helpers/feeSummary";
+import { calculateAmountForVoid, isZeroAmount } from "../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidOrRevokePermit } from "./hooks/useVoidOrRevokePermit";
@@ -19,6 +19,8 @@ import {
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
+import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../settings/types/creditAccount";
 
 export const FinishVoid = () => {
   const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
@@ -43,6 +45,19 @@ export const FinishVoid = () => {
     : permitHistory.filter((history) =>
         isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
       );
+
+  const hasClosedCreditAccountRefund =
+    transactionHistory?.every(
+      (transaction) =>
+        transaction.paymentMethodTypeCode ===
+          PAYMENT_METHOD_TYPE_CODE.ACCOUNT ||
+        transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.NP,
+    ) &&
+    transactionHistory?.some(
+      (transaction) =>
+        transaction.creditAccountStatusType ===
+        CREDIT_ACCOUNT_STATUS_TYPE.CLOSED,
+    );
 
   const amountToRefund =
     !permit || transactionHistory.length === 0
@@ -80,6 +95,14 @@ export const FinishVoid = () => {
   };
 
   const handleFinish = async (refundData: RefundFormData[]) => {
+    if (!isZeroAmount(amountToRefund) && hasClosedCreditAccountRefund) {
+      setRefundErrorMessage(
+        "Refunds can't be processed for closed Credit Accounts.",
+      );
+      setShowRefundErrorModal(true);
+      return;
+    }
+
     const totalRefundAmount = refundData.reduce(
       (sum: number, transaction) => sum + Number(transaction.refundAmount),
       0,

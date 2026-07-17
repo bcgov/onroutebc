@@ -1,4 +1,4 @@
-@import "../../../../../themes/orbcStyles";
+@use "../../../../../themes/orbcStyles";
 
 .transaction-history-table {
   &#{&} {
@@ -8,13 +8,13 @@
 
   & &__container {
     width: 100%;
-    border-left: 1px solid $bc-border-grey;
-    border-right: 1px solid $bc-border-grey;
+    border-left: 1px solid orbcStyles.$bc-border-grey;
+    border-right: 1px solid orbcStyles.$bc-border-grey;
   }
 
   & &__row {
     &--selected {
-      background-color: $bc-messages-blue-background;
+      background-color: orbcStyles.$bc-messages-blue-background;
     }
   }
 
@@ -24,31 +24,47 @@
     &--disabled {
       display: none;
     }
+    &--inactive {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+
+  & &__egarms-error {
+    color: orbcStyles.$bc-red;
+    width: 70%;
   }
 
   & &__header {
-    background-color: $bc-background-light-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
   }
 
   & &__cell {
     height: 2.75rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    
-      &:nth-child(2) {
-        padding-left: 1rem;
-      }
-      &:last-child {
-        padding-right: 1rem;
-      }
+
+    &:nth-child(2) {
+      padding-left: 1rem;
+    }
+    &:last-child {
+      padding-right: 1rem;
+    }
 
     .cell__inner {
       position: absolute;
       top: 1rem;
+      display: flex;
+      align-items: flex-start;
     }
 
     .cell__value {
-      padding-top: .75rem;
+      padding-top: 0.75rem;
+    }
+
+    &--egarms-error {
+      height: 6rem;
     }
   }
 
