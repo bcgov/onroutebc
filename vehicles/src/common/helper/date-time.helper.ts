@@ -103,7 +103,10 @@ export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
  * @param daysToSubtract The number of days to subtract from the date
  * @returns The new date with the subtracted days as a Date object.
  */
-export const subtractDaysFromDate = (dateTime: string, daysToSubtract: number): Date => {
+export const subtractDaysFromDate = (
+  dateTime: string,
+  daysToSubtract: number,
+): Date => {
   const result = dayjs.utc(dateTime).subtract(daysToSubtract, 'days').toDate();
   return result;
 };
