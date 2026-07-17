@@ -9,16 +9,22 @@ import {
   addDaysToDate,
   convertUtcToPt,
   differenceBetween,
+  subtractDaysFromDate,
 } from './date-time.helper';
+
 import {
   DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+  MAX_HC_ALLOWED_FUTURE_DAYS,
+  MAX_HC_ALLOWED_PAST_DAYS,
   STOS_MAX_ALLOWED_DURATION_AMEND,
 } from '../constants/permit.constant';
+
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../constants/policy-engine.constant';
+
 export const convertToPolicyApplication = (
   application: Permit,
 ): PolicyApplication => {
@@ -42,10 +48,15 @@ export const evaluatePolicyValidationResult = (
   currentUser: IUserJWT,
   validationResults: ValidationResults,
 ): boolean => {
+  const isUserCVClient = isCVClient(currentUser.identity_provider);
+
   // Return false if the current user is a CV Client and there are validation violations
+  // where not all of the violations are related to start date
   if (
-    isCVClient(currentUser.identity_provider) &&
-    validationResults?.violations?.length
+    isUserCVClient &&
+    validationResults?.violations?.length &&
+    !validationResults?.violations?.every(violation =>
+      violation.fieldReference === PE_FIELD_REFERENCE_START_DATE)
   ) {
     return false;
   }
@@ -55,7 +66,7 @@ export const evaluatePolicyValidationResult = (
   const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
 
   // Function to check if the permit duration is within the allowed expiration limit
-  const isAllowedDuration = (expirationLimit) =>
+  const isAllowedDuration = (expirationLimit: number) =>
     differenceBetween(permitData.startDate, permitData.expiryDate) <=
     expirationLimit;
 
@@ -72,6 +83,47 @@ export const evaluatePolicyValidationResult = (
       return false;
     }
 
+    const isHighwayCrossing = permitType === PermitType.HIGHWAY_CROSSING;
+    if (!isHighwayCrossing && isUserCVClient) {
+      // If user is CV client, but permit type isn't highway crossing
+      // then the violation should not get overriden (ie. keep existing logic)
+      return false;
+    }
+
+    if (isHighwayCrossing) {
+      // For Highway Crossing permit, first check to see if the past date is within allowable range,
+      // since staff is restricted to max 60 days in the past (rather than the usual unlimited days)
+      const startDateDiffForPast = differenceBetween(
+        convertUtcToPt(
+          subtractDaysFromDate(
+            new Date().toISOString(),
+            isUserCVClient ? 0 : MAX_HC_ALLOWED_PAST_DAYS,
+          ),
+          'YYYY-MM-DD',
+        ),
+        permitData.startDate,
+      );
+
+      if (startDateDiffForPast < 0) {
+        return false;
+      }
+
+      // Then calculate the difference between the permit's start date and the allowed future start date
+      const startDateDiffForFuture = differenceBetween(
+        permitData.startDate,
+        convertUtcToPt(
+          addDaysToDate(
+            new Date().toISOString(),
+            MAX_HC_ALLOWED_FUTURE_DAYS, // 90 days for both CV client and staff (instead of default 60)
+          ),
+          'YYYY-MM-DD',
+        ),
+      );
+
+      return startDateDiffForFuture >= 0;
+    }
+
+    // All other non-Highway Crossing permit types are considered here:
     // Determine if the permit type is Quarterly Non-Resident
     const isQuarterlyNonResident =
       permitType === PermitType.NON_RESIDENT_QUARTERLY_LICENSE ||

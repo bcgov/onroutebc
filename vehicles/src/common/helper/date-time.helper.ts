@@ -97,6 +97,18 @@ export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
 };
 
 /**
+ * Subtracts a specified number of days from a given date.
+ *
+ * @param dateTime The date as a Date object
+ * @param daysToSubtract The number of days to subtract from the date
+ * @returns The new date with the subtracted days as a Date object.
+ */
+export const subtractDaysFromDate = (dateTime: string, daysToSubtract: number): Date => {
+  const result = dayjs.utc(dateTime).subtract(daysToSubtract, 'days').toDate();
+  return result;
+};
+
+/**
  * Determines if a date falls within the same calendar quarter of a reference date.
  *
  * @param dateToCheck The date to check as a string.
