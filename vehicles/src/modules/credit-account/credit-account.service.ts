@@ -1783,6 +1783,7 @@ export class CreditAccountService {
 
     if (
       // Check if the transaction type is a REFUND and the credit account status is CLOSED
+      //Ignore the status in eGarms as per the latest specs
       transacationType === TransactionType.REFUND &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED
