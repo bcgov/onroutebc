@@ -12,18 +12,38 @@ import { useContext } from "react";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { IDIR_USER_ROLE } from "../../../common/authentication/types";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
+import { AxiosError } from "axios";
 
 export const CreditAccountMetadataComponent = ({
   companyId,
 }: {
   companyId: number;
 }) => {
-  const { data: creditAccountMetadata, isPending } =
-    useGetCreditAccountMetadataQuery(companyId, true);
+  const {
+    data: creditAccountMetadata,
+    isPending,
+    isError: isCreditAccountMetadataError,
+    error: creditAccountMetadataError,
+  } = useGetCreditAccountMetadataQuery(companyId, true);
+
+  const isCreditAccountNotFound =
+    isCreditAccountMetadataError &&
+    creditAccountMetadataError instanceof AxiosError &&
+    creditAccountMetadataError.response?.status === 404;
+
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
+
+  if (
+    isCreditAccountMetadataError &&
+    creditAccountMetadataError instanceof AxiosError &&
+    creditAccountMetadataError.response?.status !== 404
+  ) {
+    throw creditAccountMetadataError;
+  }
+
   if (!isPending) {
-    if (creditAccountMetadata) {
+    if (creditAccountMetadata && !isCreditAccountNotFound) {
       return (
         <ViewCreditAccount
           companyId={companyId}
@@ -34,11 +54,10 @@ export const CreditAccountMetadataComponent = ({
     } else if (isFinanceUser) {
       return (
         <RenderIf
-          component={ <NoRecordsFound />}
+          component={<NoRecordsFound />}
           permissionMatrixKeys={{
             permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-            permissionMatrixFunctionKey:
-              "ADD_CREDIT_ACCOUNT_HOLDER",
+            permissionMatrixFunctionKey: "ADD_CREDIT_ACCOUNT_HOLDER",
           }}
         />
       );
