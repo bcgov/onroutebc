@@ -131,6 +131,7 @@ describe("AxleSpacingAndWeightsTable", () => {
         combineAxleConfigurations={() => combinedAxleConfiguration}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
       />,
     );
 
@@ -200,6 +201,7 @@ describe("AxleSpacingAndWeightsTable", () => {
         combineAxleConfigurations={() => combinedAxleConfiguration}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
       />,
     );
 
@@ -278,6 +280,7 @@ describe("AxleSpacingAndWeightsTable", () => {
         combineAxleConfigurations={() => combinedAxleConfiguration}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
       />,
     );
 
@@ -354,6 +357,7 @@ describe("AxleSpacingAndWeightsTable", () => {
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
       />,
     );
 
@@ -420,6 +424,7 @@ describe("AxleSpacingAndWeightsTable", () => {
         combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
         onUpdatePowerUnitAxleConfiguration={vi.fn()}
         onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
       />,
     );
 
