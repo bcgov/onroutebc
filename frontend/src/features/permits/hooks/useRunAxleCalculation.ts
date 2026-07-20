@@ -23,7 +23,6 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             permitType,
             vehicleConfiguration,
           );
-
           const simplifiedVehicleConfiguration =
             getSimplifiedVehicleConfiguration(
               vehicleDetails,

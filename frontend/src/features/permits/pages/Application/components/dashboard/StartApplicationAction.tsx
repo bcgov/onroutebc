@@ -38,8 +38,9 @@ export const StartApplicationAction = () => {
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   const enableHC = featureFlags?.["HC"] === "ENABLED";
+  const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
 
-  const showSingleTrip = enableSTOS || enableSTOW;
+  const showSingleTrip = enableSTOS || enableSTOW || enableSTGVWI;
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
 
@@ -74,15 +75,16 @@ export const StartApplicationAction = () => {
         ?.filter((nestedItem) => {
           if (item.value === PERMIT_CATEGORIES.TERM) {
             return (
-              (nestedItem.value === PERMIT_TYPES.TROS) ||
-              (nestedItem.value === PERMIT_TYPES.TROW) ||
+              nestedItem.value === PERMIT_TYPES.TROS ||
+              nestedItem.value === PERMIT_TYPES.TROW ||
               (nestedItem.value === PERMIT_TYPES.HC && enableHC)
             );
           }
           if (item.value === PERMIT_CATEGORIES.SINGLE_TRIP) {
             return (
               (nestedItem.value === PERMIT_TYPES.STOS && enableSTOS) ||
-              (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW)
+              (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW) ||
+              (nestedItem.value === PERMIT_TYPES.STGVWI && enableSTGVWI)
             );
           }
           if (item.value === PERMIT_CATEGORIES.NON_RESIDENT) {

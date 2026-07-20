@@ -51,6 +51,7 @@ export const serializePermitVehicleConfiguration = (
         ),
         loadedGVW: convertToNumberIfValid(vehicleConfiguration.loadedGVW, null),
         netWeight: convertToNumberIfValid(vehicleConfiguration.netWeight, null),
+        actualGVW: convertToNumberIfValid(vehicleConfiguration.actualGVW, null),
         axleConfiguration: vehicleConfiguration.axleConfiguration
           ? mergeInteraxleSpacing(
               vehicleConfiguration.axleConfiguration.map(

@@ -135,7 +135,6 @@ export const PermitReview = (props: PermitReviewProps) => {
       (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
     (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
       Number(props.calculatedFee) > 0);
-
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -183,10 +182,13 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewICBCInsuranceCertificateSection
           permitType={props.permitType}
-          haveCertificate={Boolean(props.icbcInsuranceCertificate?.haveCertificate)}
-          oldHaveCertificate={
-            Boolean(props.oldFields?.permitData?.icbcInsuranceCertificate?.haveCertificate)
-          }
+          haveCertificate={Boolean(
+            props.icbcInsuranceCertificate?.haveCertificate,
+          )}
+          oldHaveCertificate={Boolean(
+            props.oldFields?.permitData?.icbcInsuranceCertificate
+              ?.haveCertificate,
+          )}
           showChangedFields={props.showChangedFields}
         />
 

@@ -23,6 +23,7 @@ export const getPermitTemplateName = (
     [ApplicationStatus.ISSUED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS,
       [PermitType.SINGLE_TRIP_OVERWEIGHT]: TemplateName.PERMIT_STOW,
+      [PermitType.SINGLE_TRIP_GVWI]: TemplateName.PERMIT_STGVWI,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS,
@@ -38,6 +39,7 @@ export const getPermitTemplateName = (
     [ApplicationStatus.VOIDED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_VOID,
       [PermitType.SINGLE_TRIP_OVERWEIGHT]: TemplateName.PERMIT_STOW_VOID,
+      [PermitType.SINGLE_TRIP_GVWI]: TemplateName.PERMIT_STGVWI_VOID,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_VOID,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_VOID,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_VOID,
@@ -55,6 +57,7 @@ export const getPermitTemplateName = (
     [ApplicationStatus.REVOKED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_REVOKED,
       [PermitType.SINGLE_TRIP_OVERWEIGHT]: TemplateName.PERMIT_STOW_REVOKED,
+      [PermitType.SINGLE_TRIP_GVWI]: TemplateName.PERMIT_STGVWI_REVOKED,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_REVOKED,
       [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_REVOKED,
       [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_REVOKED,

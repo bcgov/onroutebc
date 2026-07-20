@@ -24,6 +24,7 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
+import { ActualGVW } from "./ActualGVW/actualgvw";
 
 export const PermitForm = () => {
   const {
@@ -90,11 +91,13 @@ export const PermitForm = () => {
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onUpdateActualGVW,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
@@ -233,6 +236,14 @@ export const PermitForm = () => {
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}
           onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <ActualGVW
+          feature={feature}
+          permitType={permitType}
+          actualGVW={vehicleConfiguration?.actualGVW}
+          licensedGVW={vehicleFormData?.licensedGVW ?? 0}
+          onUpdateActualGVW={onUpdateActualGVW}
         />
 
         <TripDetailsSection

@@ -261,7 +261,9 @@ export const getDefaultValues = (
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
       applicationNotes:
-        permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.STOW
+        permitType !== PERMIT_TYPES.STOS &&
+        permitType !== PERMIT_TYPES.STOW &&
+        permitType !== PERMIT_TYPES.STGVWI
           ? null
           : getDefaultRequiredVal(
               "",
@@ -291,21 +293,24 @@ export const getDefaultValues = (
             applicationData?.permitData?.conditionalLicensingFee,
           )
         : null,
-      icbcInsuranceCertificate: (permitType === PERMIT_TYPES.HC)
-        ? {
-            haveCertificate: getDefaultRequiredVal(
-              false,
-              applicationData?.permitData?.icbcInsuranceCertificate?.haveCertificate,
-            ),
-            certificateNumber:
-              applicationData?.permitData?.icbcInsuranceCertificate?.haveCertificate
+      icbcInsuranceCertificate:
+        permitType === PERMIT_TYPES.HC
+          ? {
+              haveCertificate: getDefaultRequiredVal(
+                false,
+                applicationData?.permitData?.icbcInsuranceCertificate
+                  ?.haveCertificate,
+              ),
+              certificateNumber: applicationData?.permitData
+                ?.icbcInsuranceCertificate?.haveCertificate
                 ? getDefaultRequiredVal(
                     "",
-                    applicationData?.permitData?.icbcInsuranceCertificate?.certificateNumber,
+                    applicationData?.permitData?.icbcInsuranceCertificate
+                      ?.certificateNumber,
                   )
                 : "",
-          }
-        : null,
+            }
+          : null,
     },
     comment: getDefaultRequiredVal("", applicationData?.comment),
   };

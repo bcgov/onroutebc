@@ -77,7 +77,9 @@ export const VehicleInformationSection = ({
   onClearVehicleConfig: (permitType: PermitType) => void;
 }) => {
   const isSingleTrip =
-    permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
+    permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STOW ||
+    permitType === PERMIT_TYPES.STGVWI;
   const infoSectionClassName =
     `vehicle-information-section__info` +
     `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;
@@ -142,7 +144,6 @@ export const VehicleInformationSection = ({
     onSetVehicle(powerUnit);
     setShowPowerUnitDialog(false);
   };
-
   return (
     <Box className="vehicle-information-section">
       <Box className="vehicle-information-section__header">
@@ -172,18 +173,27 @@ export const VehicleInformationSection = ({
                     {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.HAS_INSURANCE_INFO}
                     <br />
                     <br />
-                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_START}
+                    {
+                      BANNER_MESSAGES.CANNOT_FIND_VEHICLE
+                        .OTHER_VEHICLE_TYPE_INFO_START
+                    }
                     <span className="highlighted-value">
-                      {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_VALUE}
+                      {
+                        BANNER_MESSAGES.CANNOT_FIND_VEHICLE
+                          .OTHER_VEHICLE_TYPE_VALUE
+                      }
                     </span>
-                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_END}
+                    {
+                      BANNER_MESSAGES.CANNOT_FIND_VEHICLE
+                        .OTHER_VEHICLE_TYPE_INFO_END
+                    }
                   </>
                 ) : null}
               </div>
             }
           />
 
-          {isSingleTrip ? (
+          {isSingleTrip && permitType !== PERMIT_TYPES.STGVWI ? (
             <Controller
               name={powerUnitFieldRef}
               rules={{
@@ -236,7 +246,8 @@ export const VehicleInformationSection = ({
           )}
         </div>
 
-        {isPowerUnitSelectedForSingleTrip ? (
+        {isPowerUnitSelectedForSingleTrip &&
+        permitType !== PERMIT_TYPES.STGVWI ? (
           <PowerUnitInfo
             powerUnitInfo={vehicleFormData}
             powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
@@ -245,7 +256,8 @@ export const VehicleInformationSection = ({
           />
         ) : null}
 
-        {isPowerUnitSelectedForSingleTrip ? (
+        {isPowerUnitSelectedForSingleTrip &&
+        permitType !== PERMIT_TYPES.STGVWI ? (
           <AddTrailer
             selectedTrailers={selectedTrailers}
             trailerSubtypeOptions={nextAllowedSubtypes}
