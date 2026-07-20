@@ -171,8 +171,6 @@ export const AxleSpacingAndWeightsTable = ({
       DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
 
-  console.log(failedAxleCalculationResults);
-
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
   );
@@ -226,6 +224,7 @@ export const AxleSpacingAndWeightsTable = ({
       !validateAxleConfiguration(mergedPowerUnit) ||
       !validateAxleConfiguration(trailerAxleConfigurationData)
     ) {
+      setAxleCalculationResults(undefined);
       setShowValidationBanner(true);
       return;
     }
