@@ -537,6 +537,7 @@ export const ApplicationForm = ({
       isRejectedApplication,
       policyViolations,
       axleCalculationResultsFromValidation,
+      showASWRequiredFieldsBanner,
       clearViolation,
       triggerPolicyValidation,
       handleLeaveApplication,
