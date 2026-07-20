@@ -1,5 +1,6 @@
 import { Box, Button, Dialog } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
+import { AxiosError } from "axios";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import {
   useAddCreditAccountUserMutation,
@@ -41,8 +42,17 @@ export const AddUserModal = ({
   const isActionSuccessful = (status: number) => {
     return status === 200;
   };
-  const { data: userCreditAccount, isLoading: isUserCreditAccountLoading } =
-    useGetCreditAccountMetadataQuery(userData.companyId, true);
+  const {
+    data: userCreditAccount,
+    isLoading: isUserCreditAccountLoading,
+    isError: isUserCreditAccountError,
+    error: userCreditAccountError,
+  } = useGetCreditAccountMetadataQuery(userData.companyId, true);
+
+  const isCreditAccountNotFound =
+    isUserCreditAccountError &&
+    userCreditAccountError instanceof AxiosError &&
+    userCreditAccountError.response?.status === 404;
 
   const existingCreditAccountId = userCreditAccount?.creditAccountId;
 
@@ -61,6 +71,7 @@ export const AddUserModal = ({
 
   const existingCreditAccountHolder =
     !isUserCreditAccountLoading &&
+    !isCreditAccountNotFound &&
     Boolean(userCreditAccount?.creditAccountId) &&
     !isassociatedCreditAccountLoading &&
     associatedCreditAccount?.creditAccountStatusType !==
@@ -76,7 +87,8 @@ export const AddUserModal = ({
     !userData.isSuspended &&
     !isUserCreditAccountLoading &&
     !isassociatedCreditAccountLoading &&
-    !existingCreditAccountHolder;
+    !existingCreditAccountHolder &&
+    !(isUserCreditAccountError && !isCreditAccountNotFound);
 
   const handleAddUser = async () => {
     if (creditAccountId) {
