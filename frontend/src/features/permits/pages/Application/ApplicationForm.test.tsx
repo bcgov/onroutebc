@@ -108,6 +108,35 @@ const createAxleCalculationResults = (
   ...overrides,
 });
 
+const validAxleConfiguration = [
+  {
+    numberOfAxles: 1,
+    axleSpread: null,
+    interaxleSpacing: null,
+    axleUnitWeight: 1000,
+    numberOfTires: 4,
+    tireSize: 279,
+  },
+  { interaxleSpacing: 5 },
+  {
+    numberOfAxles: 1,
+    axleSpread: null,
+    interaxleSpacing: null,
+    axleUnitWeight: 1000,
+    numberOfTires: 4,
+    tireSize: 279,
+  },
+];
+
+const createFormData = () => {
+  const formData = getDefaultValues(PERMIT_TYPES.STOW, undefined);
+  formData.permitData.vehicleConfiguration = {
+    ...formData.permitData.vehicleConfiguration,
+    axleConfiguration: validAxleConfiguration,
+  };
+  return formData;
+};
+
 const renderApplicationForm = (isStaff = false) => {
   const contextValue = isStaff
     ? {
@@ -142,7 +171,7 @@ describe("ApplicationForm permit-not-required handling", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    const formData = getDefaultValues(PERMIT_TYPES.STOW, undefined);
+    const formData = createFormData();
     vi.mocked(useInitApplicationFormData).mockReturnValue({
       initialFormData: formData,
       currentFormData: formData,
@@ -186,6 +215,7 @@ describe("ApplicationForm permit-not-required handling", () => {
 
   it("continues through the existing save flow when an overload requires the permit", async () => {
     const user = userEvent.setup();
+
     mocks.policyValidate.mockResolvedValue({
       violations: [],
       axleCalculationResults: createAxleCalculationResults({ overload: 100 }),
