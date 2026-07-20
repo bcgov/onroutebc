@@ -1,70 +1,53 @@
 SET ANSI_NULLS ON
 GO
-
 SET QUOTED_IDENTIFIER ON
 GO
-
 SET NOCOUNT ON
 GO
 
 SET XACT_ABORT ON
 GO
-
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO
-
 BEGIN TRANSACTION
 GO
 
+/*
+The following DELETE statement is intentionally commented out.
+This is because, these permit types are a permanent part of the production db
+and there is no expectation that they will be deleted at any point.
 
-IF @@ERROR <> 0
-	SET NOEXEC ON
-GO
-DELETE [dops].[ORBC_DOCUMENT_TEMPLATE] WHERE TEMPLATE_NAME in ('PERMIT_STGVWI','PERMIT_STGVWI_VOID','PERMIT_STGVWI_REVOKED') and TEMPLATE_VERSION='1';
+If at all needed, the following query can be executed manually in prod at the team's discretion.
 
-IF @@ERROR <> 0
-	SET NOEXEC ON
+IMPORTANT: Analyze the impact from foreign key constraints in child tables
+before deleting the permit types.
+
+*/
+
+-- DELETE FROM [permit].[ORBC_PERMIT_TYPE] WHERE PERMIT_TYPE IN ('STWSE', 'STGVWI')
+-- GO
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Reverting adding STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table'
 
-SET @VersionDescription = 'Revert STGVWI v1 templates'
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (99, @VersionDescription, getutcdate())
 
-INSERT [dbo].[ORBC_SYS_VERSION] (
-	[VERSION_ID]
-	,[DESCRIPTION]
-	,[RELEASE_DATE]
-	)
-VALUES (
-	97
-	,@VersionDescription
-	,getutcdate()
-	)
-GO
-
-IF @@ERROR <> 0
-	SET NOEXEC ON
+IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 COMMIT TRANSACTION
 GO
-
-IF @@ERROR <> 0
-	SET NOEXEC ON
+IF @@ERROR <> 0 SET NOEXEC ON
 GO
-
 DECLARE @Success AS BIT
-
 SET @Success = 1
 SET NOEXEC OFF
-
-IF (@Success = 1)
-	PRINT 'The database revert succeeded'
-ELSE
-BEGIN
-	IF @@TRANCOUNT > 0
-		ROLLBACK TRANSACTION
-
-	PRINT 'The database revert failed'
+IF (@Success = 1) PRINT 'The database revert succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database revert failed'
 END
 GO

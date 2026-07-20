@@ -1,4 +1,4 @@
-import { RequiredOrNull } from "../../../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../../../common/types/common";
 import {
   PaymentCardTypeCode,
   PaymentGatewayMethod,
@@ -21,4 +21,5 @@ export interface RefundFormData {
   chequeRefund: boolean;
   creditAccountMismatch: RequiredOrNull<boolean>;
   creditAccountStatusType: RequiredOrNull<CreditAccountStatusType>;
+  egarmsReturnCode: Nullable<string>;
 }

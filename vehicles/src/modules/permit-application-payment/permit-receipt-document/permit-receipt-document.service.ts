@@ -344,16 +344,15 @@ export class PermitReceiptDocumentService {
             );
           }
 
-          const transaction =
-            fetchedPermit?.permitTransactions?.at(0)?.transaction;
+          const transaction = fetchedPermit?.permitTransactions?.find(
+            (tx) =>
+              tx?.transaction?.paymentMethodTypeCode ===
+              PaymentMethodType.ACCOUNT,
+          )?.transaction;
 
-          let creditAccountHolderEmail: string;
-          if (
-            transaction?.paymentMethodTypeCode === PaymentMethodType.ACCOUNT
-          ) {
-            creditAccountHolderEmail =
-              transaction?.creditAccount?.company?.email;
-          }
+          const creditAccountHolderEmail =
+            transaction?.creditAccount?.company?.email;
+
           try {
             const emailList = [
               permitDataForTemplate.permitData?.contactDetails?.email,

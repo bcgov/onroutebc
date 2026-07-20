@@ -11,14 +11,24 @@ import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 import { TabComponentProps } from "../../../../common/components/tabs/types/TabComponentProps";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { AddCreditAccountAction } from "../creditAccount/AddCreditAccountAction";
+import { AxiosError } from "axios";
 
 export const ManageSettingsDashboardPage = ({
   companyId,
 }: {
   companyId: number;
 }) => {
-  const { data: creditAccountMetadata, isPending } =
-    useGetCreditAccountMetadataQuery(companyId, true);
+  const {
+    data: creditAccountMetadata,
+    isPending,
+    isError: isCreditAccountMetadataError,
+    error: creditAccountMetadataError,
+  } = useGetCreditAccountMetadataQuery(companyId, true);
+
+  const isCreditAccountNotFound =
+    isCreditAccountMetadataError &&
+    creditAccountMetadataError instanceof AxiosError &&
+    creditAccountMetadataError.response?.status === 404;
 
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
@@ -27,7 +37,7 @@ export const ManageSettingsDashboardPage = ({
    * @returns The permission matrix function key.
    */
   const getPermissionMatrixFunctionKey = () => {
-    if (!isPending && !creditAccountMetadata) {
+    if ((!isPending && !creditAccountMetadata) || isCreditAccountNotFound) {
       return "VIEW_CREDIT_ACCOUNT_TAB_NON_HOLDER_OR_USER";
     } else if (isCreditAccountHolder) {
       return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER";
@@ -111,7 +121,7 @@ export const ManageSettingsDashboardPage = ({
 
     return (
       !isPending &&
-      !creditAccountMetadata &&
+      isCreditAccountNotFound &&
       selectedTabIndex === creditAccountTabIndex
     );
   };

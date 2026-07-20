@@ -4,7 +4,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-
 SET XACT_ABORT ON
 GO
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
@@ -12,95 +11,21 @@ GO
 BEGIN TRANSACTION
 GO
 
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [permit].[ORBC_PERMIT_TYPE] ([PERMIT_TYPE], [NAME]) VALUES (N'STWSE', N'Single Trip Overweight Oversize Empty - Length over 27.5m')
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
+INSERT [permit].[ORBC_PERMIT_TYPE] ([PERMIT_TYPE], [NAME]) VALUES (N'STGVWI', N'Single Trip - GVW Increase')
 
-INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
-    [TEMPLATE_NAME], 
-    [TEMPLATE_VERSION],     
-    [CONCURRENCY_CONTROL_NUMBER], 
-    [DB_CREATE_USERID], 
-    [DB_CREATE_TIMESTAMP], 
-    [DB_LAST_UPDATE_USERID], 
-    [DB_LAST_UPDATE_TIMESTAMP],
-    [IS_ACTIVE],
-    [FILE_NAME]
-) 
-VALUES (
-    N'PERMIT_STGVWI',
-    1,    
-    1,
-    N'dops',
-    GETUTCDATE(),
-    N'dops',
-    GETUTCDATE(),
-    N'Y',
-    N'stgvwi-template-v1.docx'
-)
-
-IF @@ERROR <> 0 SET NOEXEC ON
 GO
-
-
-INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
-    [TEMPLATE_NAME], 
-    [TEMPLATE_VERSION],     
-    [CONCURRENCY_CONTROL_NUMBER], 
-    [DB_CREATE_USERID], 
-    [DB_CREATE_TIMESTAMP], 
-    [DB_LAST_UPDATE_USERID], 
-    [DB_LAST_UPDATE_TIMESTAMP],
-    [IS_ACTIVE],
-    [FILE_NAME]
-) 
-VALUES (
-    N'PERMIT_STGVWI_VOID',
-    1,    
-    1,
-    N'dops',
-    GETUTCDATE(),
-    N'dops',
-    GETUTCDATE(),
-    N'Y',
-    N'stgvwi-void-template-v1.docx'
-)
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
-
-INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
-    [TEMPLATE_NAME], 
-    [TEMPLATE_VERSION],     
-    [CONCURRENCY_CONTROL_NUMBER], 
-    [DB_CREATE_USERID], 
-    [DB_CREATE_TIMESTAMP], 
-    [DB_LAST_UPDATE_USERID], 
-    [DB_LAST_UPDATE_TIMESTAMP],
-    [IS_ACTIVE],
-    [FILE_NAME]
-) 
-VALUES (
-    N'PERMIT_STGVWI_REVOKED',
-    1,    
-    1,
-    N'dops',
-    GETUTCDATE(),
-    N'dops',
-    GETUTCDATE(),
-    N'Y',
-    N'stgvwi-revoked-template-v1.docx'
-)
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Configure STGVWI templates v1'
+SET @VersionDescription = 'Add STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (100, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE])
+VALUES (100, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 

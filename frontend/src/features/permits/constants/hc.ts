@@ -11,3 +11,5 @@ export const HC_CONDITIONS: PermitCondition[] = [
 ];
 
 export const MANDATORY_HC_CONDITIONS: PermitCondition[] = [...HC_CONDITIONS];
+export const MAX_HC_ALLOWED_FUTURE_DAYS = 90;
+export const MAX_HC_ALLOWED_PAST_DAYS = 60;

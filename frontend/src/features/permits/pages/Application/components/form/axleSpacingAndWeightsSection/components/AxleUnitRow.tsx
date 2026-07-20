@@ -100,8 +100,11 @@ export const AxleUnitRow = ({
 
         const hasAxleUnitWeightFailure = Boolean(
           axleCalculationFailure[
-            POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+            POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD
           ] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+            ] ||
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
             ] ||
@@ -111,7 +114,10 @@ export const AxleUnitRow = ({
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
             ] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD],
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD] ||
+            axleCalculationFailure[
+              POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT
+            ],
         );
 
         const hasNumberOfAxlesFailure = Boolean(

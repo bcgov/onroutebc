@@ -151,11 +151,13 @@ export const AxleSpacingAndWeightsTable = ({
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
+    POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
     POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT,
     POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
     POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
     POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
     POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT,
+    POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
     POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
     POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
@@ -168,6 +170,8 @@ export const AxleSpacingAndWeightsTable = ({
       result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
       DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
+
+  console.log(failedAxleCalculationResults);
 
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
@@ -330,6 +334,11 @@ export const AxleSpacingAndWeightsTable = ({
       rowType: ASWTableRowType,
     ): PolicyCheckIdType[] => {
       switch (result.id) {
+        case POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD]
+            : [];
+
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES]
@@ -356,6 +365,11 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT]
+            : [];
+
+        case POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT]
             : [];
 
         case POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
@@ -401,7 +415,6 @@ export const AxleSpacingAndWeightsTable = ({
 
       axleCalculationFailures.push(failures);
     });
-
     return axleCalculationFailures;
   };
 

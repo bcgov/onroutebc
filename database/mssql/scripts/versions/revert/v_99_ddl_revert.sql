@@ -11,10 +11,6 @@ GO
 BEGIN TRANSACTION
 GO
 
---Remove the newly added policy type
-DELETE FROM [dbo].[ORBC_POLICY_PERMIT_TYPE]
-WHERE [PERMIT_TYPE] = 'STGVWI'
-
 -- Remove the newly added policy configuration
 DELETE FROM [dbo].[ORBC_POLICY_CONFIGURATION]
 WHERE POLICY_CONFIGURATION_ID = (SELECT MAX(POLICY_CONFIGURATION_ID) FROM [dbo].[ORBC_POLICY_CONFIGURATION])
@@ -24,7 +20,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting updates to policy config for adding STGVWI permit type'
+SET @VersionDescription = 'Reverting updates to the policy configuration to modify the start-date rule for the Highway Crossing permit type'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE])
 VALUES (98, @VersionDescription, getutcdate())

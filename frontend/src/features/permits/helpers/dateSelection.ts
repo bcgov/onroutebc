@@ -72,6 +72,11 @@ import {
   STGVWI_STAFF_DURATION_OPTIONS,
 } from "../constants/stgvwi";
 
+import {
+  MAX_HC_ALLOWED_FUTURE_DAYS,
+  MAX_HC_ALLOWED_PAST_DAYS,
+} from "../constants/hc";
+
 /**
  * Get list of selectable duration options for a given permit type.
  * @param permitType Permit type to get duration options for
@@ -208,14 +213,20 @@ export const getMinPermitExpiryDate = (
 
 /**
  * Get max allowed future start date for a permit.
+ * @param permitType Permit type
  * @param currentDate Current date
  * @param isStaff Whether or not user working with the permit is staff
  * @returns Max allowed future start date for the permit
  */
 export const getMaxAllowedPermitFutureStartDate = (
+  permitType: PermitType,
   currentDate: Dayjs,
   isStaff: boolean,
 ) => {
+  // If permit type is Highway Crossing, both CV client and staff can select up to 90 days from current date
+  if (permitType === PERMIT_TYPES.HC)
+    return dayjs(currentDate).add(MAX_HC_ALLOWED_FUTURE_DAYS, "day");
+
   // If user isn't staff, the max future date can only be 14 days from current date
   if (!isStaff)
     return dayjs(currentDate).add(MAX_ALLOWED_FUTURE_DAYS_CV, "day");
@@ -243,6 +254,10 @@ export const getMinAllowedPermitPastStartDate = (
 ) => {
   // If user is not staff, limit the min permit start date to be current date
   if (!isStaff) return currentDate;
+
+  // If permit type is Highway Crossing, then staff can select up to 60 days in the past from current date
+  if (permitType === PERMIT_TYPES.HC)
+    return dayjs(currentDate).subtract(MAX_HC_ALLOWED_PAST_DAYS, "day");
 
   // If permit isn't of a quarterly permit type, or if the permit type is quarterly
   // but it isn't being used in the amendment context, then the past start date can be

@@ -375,12 +375,6 @@ export class PaymentService {
               transacationType: TransactionType.REFUND,
               totalTransactionAmount: transaction?.transactionAmount,
             });
-          // Query the database to retrieve permits related to the application
-          await this.validateCreditAccountMismatch(
-            queryRunner,
-            existingApplication,
-            creditAccount?.creditAccountId,
-          );
         }
       }
 
