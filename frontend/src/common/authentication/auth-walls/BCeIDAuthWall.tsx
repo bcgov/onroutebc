@@ -17,7 +17,7 @@ import OnRouteBCContext from "../OnRouteBCContext";
 import { BCeIDUserRoleType } from "../types";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
-import { getUserStorage } from "../../apiManager/httpRequestHandler";
+import { getCompanyIdFromSession, getUserStorage } from "../../apiManager/httpRequestHandler";
 import {
   checkPermissionMatrix,
   PermissionMatrixKeysType,
@@ -107,12 +107,17 @@ export const BCeIDAuthWall = ({
    * provided they do have a matching role.
    */
   const isEstablishedUser = Boolean(companyId) || !isNewBCeIDUser;
+  
+  const companyIdFromSession = getCompanyIdFromSession();
 
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
-      if (companyId) {
+      console.log("IDIR user detected, redirecting to IDIR auth wall, companyId",companyId,companyIdFromSession);
+      if (companyId || companyIdFromSession) {
+        console.log("IDIR user detected, redirecting to IDIR auth wall, if",companyId,companyIdFromSession);
         return <IDIRAuthWall permissionMatrixKeys={permissionMatrixKeys} />;
       } else {
+        console.log("IDIR user detected, redirecting to IDIR auth wall, else",companyId,companyIdFromSession);
         return (
           <Navigate
             to={IDIR_ROUTES.WELCOME}

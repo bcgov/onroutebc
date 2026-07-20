@@ -34,6 +34,8 @@ import {
   IDIRUserContextType,
   UserClaimsType,
 } from "../../../common/authentication/types";
+import { useSetCompanyHandler } from "../../idir/search/helpers/useSetCompanyHandler";
+import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
 
 /**
  * Fetches company info of current user.
@@ -91,6 +93,7 @@ export const useUserContext = (
   userContextResponseBody: Nullable<BCeIDUserContextType | IDIRUserContextType>,
 ) => {
   const {
+    companyId,
     setCompanyId,
     setUserDetails,
     setCompanyLegalName,
@@ -100,8 +103,14 @@ export const useUserContext = (
     setUnclaimedClient,
     setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
-
+console.log("useUserContext called with userContextResponseBody:", userContextResponseBody);
   const { isAuthenticated, user: userFromToken } = useAuth();
+
+  const { handleSelectCompany } = useSetCompanyHandler();
+  const companyIdFromSession = getCompanyIdFromSession();
+  const parsedCompanyId = companyIdFromSession ? Number(companyIdFromSession) : 0;
+  const { data: companyInfoDetails } = useCompanyInfoDetailsQuery(parsedCompanyId);
+
 
   useEffect(() => {
     if (!userContextResponseBody) return;
@@ -123,6 +132,16 @@ export const useUserContext = (
         } as IDIRUserDetailContext;
 
         setIDIRUserDetails?.(() => userDetails);
+
+        console.log("IDIR user detected, idirUserDetails set to", companyInfoDetails, userDetails, companyId);
+        // If a companyId was stored in session (user selected a company earlier),
+        // fetch its details and call the same selection handler so the app
+        // restores the selected company on refresh.
+        if (companyInfoDetails && !companyId) {
+          handleSelectCompany(companyInfoDetails as any);
+        }
+
+
       }
     } else {
       const { user, associatedCompanies, pendingCompanies, unclaimedClient } =
@@ -197,6 +216,17 @@ export const useUserContext = (
       }
     }
   }, [userContextResponseBody, isAuthenticated, userFromToken]);
+
+  // If company details load after the user context, restore selection then.
+  useEffect(() => {
+    const isIdir =
+      isAuthenticated &&
+      userFromToken?.profile?.identity_provider === IDPS.IDIR;
+    const user = (userContextResponseBody as IDIRUserContextType)?.user;
+    if (isIdir && user?.userGUID && companyInfoDetails && !companyId) {
+      handleSelectCompany(companyInfoDetails as any);
+    }
+  }, [companyInfoDetails, userContextResponseBody, isAuthenticated, userFromToken, handleSelectCompany]);
 };
 
 /**

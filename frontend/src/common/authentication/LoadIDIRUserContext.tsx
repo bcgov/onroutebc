@@ -24,6 +24,7 @@ export const LoadIDIRUserContext = () => {
     data: userContextResponse,
   } = useUserContextQuery();
 
+  console.log("LoadIDIRUserContext called with userContextResponse:", userContextResponse);
   useEffect(() => {
     if (!isPending) {
       if (isError) {

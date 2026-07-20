@@ -57,6 +57,7 @@ export const IDIRAuthWall = ({
 
   if (isAuthenticated) {
     if (isIDIR(userIDP)) {
+      console.log("IDIR user detected, idirUserDetails",idirUserDetails);
       if (!idirUserDetails?.userRole) {
         return (
           <>
