@@ -67,6 +67,10 @@ import { PERMIT_TABS } from "../../types/PermitTabs";
 import { AxleCalculationResult } from "../../types/AxleCalculationResult";
 import { isStowPermitRequired } from "../../helpers/policy/isStowPermitRequired";
 import { PermitNotRequiredModal } from "./components/form/PermitNotRequiredModal";
+import {
+  mergeInteraxleSpacing,
+  validateAxleConfiguration,
+} from "../../helpers/axleUnitHelper";
 
 const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
@@ -178,6 +182,9 @@ export const ApplicationForm = ({
     setAxleCalculationResultsFromValidation,
   ] = useState<AxleCalculationResult | null>();
 
+  const [showASWRequiredFieldsBanner, setShowASWRequiredFieldsBanner] =
+    useState<boolean>(false);
+
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
       const otherViolations = Object.entries(policyViolations).filter(
@@ -264,6 +271,19 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
+    const axleConfiguration = getDefaultRequiredVal(
+      [],
+      currentFormData.permitData.vehicleConfiguration?.axleConfiguration,
+    );
+    // If any ASW inputs are empty, do not continue to policy validation
+    if (
+      !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
+    ) {
+      setAxleCalculationResultsFromValidation(undefined);
+      setShowASWRequiredFieldsBanner(true);
+      return;
+    }
+
     const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
 
@@ -490,6 +510,7 @@ export const ApplicationForm = ({
       isRejectedApplication,
       policyViolations,
       axleCalculationResultsFromValidation,
+      showASWRequiredFieldsBanner,
       clearViolation,
       triggerPolicyValidation,
       onLeave: handleLeaveApplication,
@@ -516,6 +537,7 @@ export const ApplicationForm = ({
       isRejectedApplication,
       policyViolations,
       axleCalculationResultsFromValidation,
+      showASWRequiredFieldsBanner,
       clearViolation,
       triggerPolicyValidation,
       handleLeaveApplication,

@@ -61,6 +61,7 @@ export const AxleSpacingAndWeightsTable = ({
   combineAxleConfigurations,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
+  showASWRequiredFieldsBanner,
 }: {
   permitType: PermitType;
   selectedCommodityType?: Nullable<string>;
@@ -97,6 +98,7 @@ export const AxleSpacingAndWeightsTable = ({
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
+  showASWRequiredFieldsBanner: boolean;
 }) => {
   const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
@@ -128,8 +130,9 @@ export const AxleSpacingAndWeightsTable = ({
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
-  const [showValidationBanner, setShowValidationBanner] =
-    useState<boolean>(false);
+  const [showValidationBanner, setShowValidationBanner] = useState<boolean>(
+    showASWRequiredFieldsBanner,
+  );
   const [GCVW, setGCVW] = useState<number>();
   const [overload, setOverload] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
@@ -148,6 +151,14 @@ export const AxleSpacingAndWeightsTable = ({
       }
     }
   }, [axleCalculationResultsFromValidation]);
+
+  useEffect(() => {
+    if (showASWRequiredFieldsBanner) {
+      // Scroll to table if required fields are missing
+      setShowValidationBanner(showASWRequiredFieldsBanner);
+      ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [showASWRequiredFieldsBanner]);
 
   // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
   const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
@@ -170,8 +181,6 @@ export const AxleSpacingAndWeightsTable = ({
       result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
       DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
   );
-
-  console.log(failedAxleCalculationResults);
 
   const hasAxleCalculationFailures = Boolean(
     failedAxleCalculationResults?.length,
@@ -226,6 +235,7 @@ export const AxleSpacingAndWeightsTable = ({
       !validateAxleConfiguration(mergedPowerUnit) ||
       !validateAxleConfiguration(trailerAxleConfigurationData)
     ) {
+      setAxleCalculationResults(undefined);
       setShowValidationBanner(true);
       return;
     }
