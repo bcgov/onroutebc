@@ -32,10 +32,12 @@ import { AxiosError } from "axios";
 export const useGetCreditAccountMetadataQuery = (
   companyId: number,
   enabled?: boolean,
+  validateCreditAccountForPayment?: boolean,
 ) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }, "metadata"],
-    queryFn: () => getCreditAccountMetadata(companyId),
+    queryFn: () =>
+      getCreditAccountMetadata(companyId, validateCreditAccountForPayment),
     enabled,
     retry: false,
     refetchOnWindowFocus: false,
@@ -168,10 +170,8 @@ export const useCreateCreditAccountMutation = () => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: (data: {
-      companyId: number;
-      creditAccountNumber: string;
-    }) => createCreditAccount(data),
+    mutationFn: (data: { companyId: number; creditAccountNumber: string }) =>
+      createCreditAccount(data),
     onSuccess: (
       response,
       variables: { companyId: number; creditAccountNumber: string },

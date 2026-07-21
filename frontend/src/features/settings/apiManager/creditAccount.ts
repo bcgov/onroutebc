@@ -37,10 +37,15 @@ export const createCreditAccount = async (data: {
  */
 export const getCreditAccountMetadata = async (
   companyId: number,
+  validateCreditAccountForPayment?: boolean,
 ): Promise<CreditAccountMetadata> => {
-  const response = await httpGETRequest(
+  const creditAccountMetadataURL = new URL(
     CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_META_DATA(companyId),
   );
+  if (validateCreditAccountForPayment) {
+    creditAccountMetadataURL?.searchParams.set("validateForPayment", "true");
+  }
+  const response = await httpGETRequest(creditAccountMetadataURL?.toString());
   return response.data;
 };
 
@@ -132,7 +137,9 @@ export const getCreditAccountDetailsEgarms = async (data: {
 }) => {
   const { creditAccountNumber } = data;
   const response = await httpGETRequest(
-    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_DETAILS_EGARMS(creditAccountNumber),
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_DETAILS_EGARMS(
+      creditAccountNumber,
+    ),
   );
   return response.data as CreditAccountDetailsEgarmsData;
 };
