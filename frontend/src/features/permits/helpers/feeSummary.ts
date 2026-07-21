@@ -26,13 +26,6 @@ export const calculatePermitFee = async (
   policyEngine?: Nullable<Policy>,
 ) => {
   const validationResults = await policyEngine?.validate(permit);
-  console.log("Policy Definition", policyEngine?.policyDefinition);
-  console.log(
-    "STGVWI",
-    policyEngine?.policyDefinition?.permitTypes?.find((p) => p.id === "STGVWI"),
-  );
-
-  console.log("Validation Results", validationResults);
   const fee = getDefaultRequiredVal([], validationResults?.cost)
     .map(({ cost }) => getDefaultRequiredVal(0, cost))
     .reduce((cost1, cost2) => cost1 + cost2, 0);
@@ -51,7 +44,6 @@ export const feeSummaryDisplayText = (feeSummary?: Nullable<string>) => {
   );
 
   const fee = getDefaultRequiredVal("0.00", feeFromSummary);
-  console.log(feeFromSummary);
   const numericFee = Number(fee);
   return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
 };
