@@ -51,6 +51,7 @@ export const PermitForm = () => {
     rejectionHistory,
     isRejectedApplication,
     axleCalculationResultsFromValidation,
+    showASWRequiredFieldsBanner,
     commodityOptions,
     highwaySequence,
     tripOrigin,
@@ -229,6 +230,7 @@ export const PermitForm = () => {
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
         />
 
         <LoadedDimensionsSection

@@ -28,6 +28,7 @@ export const AxleSpacingAndWeightsSection = ({
   combineAxleConfigurations,
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
+  showASWRequiredFieldsBanner,
 }: {
   permitType: PermitType;
   selectedCommodityType?: Nullable<string>;
@@ -64,6 +65,7 @@ export const AxleSpacingAndWeightsSection = ({
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
+  showASWRequiredFieldsBanner: boolean;
 }) => {
   return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
     <Box className="axle-spacing-and-weights-section">
@@ -102,6 +104,7 @@ export const AxleSpacingAndWeightsSection = ({
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
         />
       </Box>
     </Box>

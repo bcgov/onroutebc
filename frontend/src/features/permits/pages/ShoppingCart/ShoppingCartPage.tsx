@@ -162,33 +162,35 @@ export const ShoppingCartPage = () => {
     data: creditAccountMetadata,
     isPending: isCreditAccountMetadataPending,
     isError: isCreditAccountMetadataError,
-  } = useGetCreditAccountMetadataQuery(companyId, shouldDisplayCreditAccount);
+  } = useGetCreditAccountMetadataQuery(
+    companyId,
+    shouldDisplayCreditAccount,
+    true,
+  );
 
   const isCreditAccountNotValidPayment =
-    !shouldDisplayCreditAccount
-    || isCreditAccountMetadataPending
-    || !creditAccountMetadata?.isValidPaymentMethod
-    || isCreditAccountMetadataError;
+    !shouldDisplayCreditAccount ||
+    isCreditAccountMetadataPending ||
+    !creditAccountMetadata?.isValidPaymentMethod ||
+    isCreditAccountMetadataError;
 
   const availablePaymentMethods = useMemo(() => {
     // If the credit account is not a valid payment method,
     // filter it out from the available payment methods.
     if (isCreditAccountNotValidPayment) {
-      return isStaffActingAsCompany ?
-        AVAILABLE_STAFF_PAYMENT_METHODS.filter(
-          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
-        ) : AVAILABLE_CV_PAYMENT_METHODS.filter(
-          (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
-        );
+      return isStaffActingAsCompany
+        ? AVAILABLE_STAFF_PAYMENT_METHODS.filter(
+            (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+          )
+        : AVAILABLE_CV_PAYMENT_METHODS.filter(
+            (method) => method !== PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
+          );
     }
 
     return isStaffActingAsCompany
       ? AVAILABLE_STAFF_PAYMENT_METHODS
       : AVAILABLE_CV_PAYMENT_METHODS;
-  }, [
-    isStaffActingAsCompany,
-    isCreditAccountNotValidPayment,
-  ]);
+  }, [isStaffActingAsCompany, isCreditAccountNotValidPayment]);
 
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {

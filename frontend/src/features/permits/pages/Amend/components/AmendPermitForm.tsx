@@ -59,6 +59,10 @@ import { shouldOverridePolicyInvalidSubtype } from "../../../helpers/vehicles/su
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { shouldOverridePolicyViolations } from "../../../helpers/policy/shouldOverridePolicyViolations";
 import { AxleCalculationResult } from "../../../types/AxleCalculationResult";
+import {
+  mergeInteraxleSpacing,
+  validateAxleConfiguration,
+} from "../../../helpers/axleUnitHelper";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -144,6 +148,9 @@ export const AmendPermitForm = () => {
     setAxleCalculationResultsFromValidation,
   ] = useState<AxleCalculationResult | null>();
 
+  const [showASWRequiredFieldsBanner, setShowASWRequiredFieldsBanner] =
+    useState<boolean>(false);
+
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
       const otherViolations = Object.entries(policyViolations).filter(
@@ -213,6 +220,19 @@ export const AmendPermitForm = () => {
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
+    const axleConfiguration = getDefaultRequiredVal(
+      [],
+      formData.permitData.vehicleConfiguration?.axleConfiguration,
+    );
+    // If any ASW inputs are empty, do not continue to policy validation
+    if (
+      !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
+    ) {
+      setAxleCalculationResultsFromValidation(undefined);
+      setShowASWRequiredFieldsBanner(true);
+      return;
+    }
+
     const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
 
@@ -359,6 +379,7 @@ export const AmendPermitForm = () => {
       revisionHistory,
       policyViolations,
       axleCalculationResultsFromValidation,
+      showASWRequiredFieldsBanner,
       onLeave: undefined,
       onSave: undefined,
       onCancel: goHome,
@@ -383,6 +404,7 @@ export const AmendPermitForm = () => {
       revisionHistory,
       policyViolations,
       axleCalculationResultsFromValidation,
+      showASWRequiredFieldsBanner,
       goHome,
       onContinue,
       triggerPolicyValidation,

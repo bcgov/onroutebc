@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -31,6 +40,7 @@ import {
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 import { UpdateCreditAccountVerificationDto } from './dto/request/update-credit-account-verification.dto';
+import { GetCreditAccountMetadataQueryParamsDto } from './dto/request/queryParam/getCreditAccountMetadata.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -116,11 +126,13 @@ export class CompanyCreditAccountController {
   async getCreditAccountMetadata(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
+    @Query() { validateForPayment }: GetCreditAccountMetadataQueryParamsDto,
   ): Promise<ReadCreditAccountMetadataDto> {
     const readCreditAccounMetadataDto =
       await this.creditAccountService.getCreditAccountMetadata({
         companyId,
         currentUser: request.user as IUserJWT,
+        validateForPayment,
       });
     if (!readCreditAccounMetadataDto) {
       throw new DataNotFoundException();

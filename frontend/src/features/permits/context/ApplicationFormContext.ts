@@ -51,6 +51,7 @@ interface ApplicationFormContextType {
   isRejectedApplication?: Nullable<boolean>;
   policyViolations: Record<string, string>;
   axleCalculationResultsFromValidation?: Nullable<AxleCalculationResult>;
+  showASWRequiredFieldsBanner: boolean;
   clearViolation: (fieldReference: string) => void;
   triggerPolicyValidation: () => Promise<{
     updatedViolations: Record<string, string>;
@@ -86,6 +87,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     isRejectedApplication: false,
     policyViolations: {},
     axleCalculationResultsFromValidation: undefined,
+    showASWRequiredFieldsBanner: false,
     clearViolation: () => undefined,
     triggerPolicyValidation: async () => ({
       updatedViolations: {},

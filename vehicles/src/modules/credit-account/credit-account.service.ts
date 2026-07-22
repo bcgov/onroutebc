@@ -505,10 +505,12 @@ export class CreditAccountService {
     companyId,
     creditAccountId,
     currentUser,
+    validateForPayment,
   }: {
     companyId: number;
     creditAccountId?: Nullable<number>;
     currentUser: IUserJWT;
+    validateForPayment?: Nullable<boolean>;
   }): Promise<ReadCreditAccountMetadataDto> {
     const creditAccount = await this.findCreditAccountDetails(
       companyId,
@@ -559,7 +561,8 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ACTIVE &&
       !creditAccount?.company.isSuspended &&
-      creditAccount?.isVerified
+      creditAccount?.isVerified &&
+      validateForPayment
     ) {
       readCreditAccountMetadataDto.isValidPaymentMethod = true;
       try {
