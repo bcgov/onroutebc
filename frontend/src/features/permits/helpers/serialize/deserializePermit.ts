@@ -9,7 +9,7 @@ import { deserializePermitVehicleConfiguration } from "./deserializePermitVehicl
 export const deserializePermitResponse = (
   response: PermitResponseData,
 ): Permit => {
-  // For the moment a Permit is essentially the same shape as the PermitResponseData
+  // For the moment a Permit is essentially the same shape as the PermitResponseData, except the vehicle configuration, which must be deserialized in order to be presented correctly in the AxleSpacingsAndWeightsTable
   return {
     ...response,
     permitData: {
