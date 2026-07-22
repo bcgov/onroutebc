@@ -1,4 +1,5 @@
 import { Permit, PermitResponseData } from "../../types/permit";
+import { deserializePermitVehicleConfiguration } from "./deserializePermitVehicleConfiguration";
 
 /**
  * Deserialize a PermitResponseData object (received from backend) to a Permit object.
@@ -9,5 +10,13 @@ export const deserializePermitResponse = (
   response: PermitResponseData,
 ): Permit => {
   // For the moment a Permit is essentially the same shape as the PermitResponseData
-  return response;
+  return {
+    ...response,
+    permitData: {
+      ...response.permitData,
+      vehicleConfiguration: deserializePermitVehicleConfiguration(
+        response.permitData.vehicleConfiguration,
+      ),
+    },
+  };
 };

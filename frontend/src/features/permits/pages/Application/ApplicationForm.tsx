@@ -487,6 +487,8 @@ export const ApplicationForm = ({
     applicationContext.applicationData?.isRejectedApplication,
   );
 
+  console.log({ currentFormData });
+
   const applicationFormContextData = useMemo(
     () => ({
       initialFormData,
