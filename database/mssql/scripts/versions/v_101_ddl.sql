@@ -19,7 +19,7 @@ INSERT [dbo].[ORBC_POLICY_CONFIGURATION] (
    ORIGIN_ID, 
    POLICY_JSON) 
 VALUES (
-   CAST('2026-07-20T00:00:00' AS DATETIME), 
+   CAST('2026-07-22T00:00:00' AS DATETIME), 
    'N', 
    N'Updates to policy config to add STGVWI permit type', 
    NULL, 

@@ -25,7 +25,7 @@ import { CustomActionLink } from "../../../../../../common/components/links/Cust
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
 import { ActualGVW } from "./ActualGVW/actualgvw";
-
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 export const PermitForm = () => {
   const {
     permitType,
@@ -243,8 +243,8 @@ export const PermitForm = () => {
         <ActualGVW
           feature={feature}
           permitType={permitType}
-          actualGVW={vehicleConfiguration?.actualGVW}
-          licensedGVW={vehicleFormData?.licensedGVW ?? 0}
+          actualGVW={getDefaultRequiredVal(0, vehicleConfiguration?.actualGVW)}
+          licensedGVW={getDefaultRequiredVal(0, vehicleFormData?.licensedGVW)}
           onUpdateActualGVW={onUpdateActualGVW}
         />
 

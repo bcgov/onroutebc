@@ -23,7 +23,7 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting updates to the policy configuration to add STGVWI permit type'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE])
-VALUES (101, @VersionDescription, getutcdate())
+VALUES (100, @VersionDescription, getutcdate())
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON

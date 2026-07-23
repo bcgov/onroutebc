@@ -11,8 +11,8 @@ export const ReviewActualGVW = ({
   licensedGVW,
 }: {
   permitType?: Nullable<PermitType>;
-  actualGVW?: Nullable<number>;
-  licensedGVW?: Nullable<number>;
+  actualGVW: number;
+  licensedGVW: number;
 }) => {
   if (permitType !== PERMIT_TYPES.STGVWI) {
     return null;

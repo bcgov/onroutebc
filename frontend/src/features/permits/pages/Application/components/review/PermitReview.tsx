@@ -206,8 +206,14 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewActualGVW
           permitType={props.permitType}
-          actualGVW={props.vehicleConfiguration?.actualGVW}
-          licensedGVW={props.vehicleDetails?.licensedGVW}
+          actualGVW={getDefaultRequiredVal(
+            0,
+            props.vehicleConfiguration?.actualGVW,
+          )}
+          licensedGVW={getDefaultRequiredVal(
+            0,
+            props.vehicleDetails?.licensedGVW,
+          )}
         />
 
         <LoadedDimensions
