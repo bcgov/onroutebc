@@ -3,6 +3,7 @@
 .refund-error-modal {
   & &__container {
     width: 100%;
+    min-width: fit-content;
     display: flex;
     flex-direction: column;
   }
@@ -19,7 +20,7 @@
   &__title {
     font-weight: bold;
     font-size: 1.5rem;
-    margin: 0 0 0 0.5em;
+    margin: 0;
   }
 
   &__body {

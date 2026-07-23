@@ -1,6 +1,5 @@
 import { Button, Dialog } from "@mui/material";
 import "./RefundErrorModal.scss";
-import { Nullable } from "../../../../../common/types/common";
 
 export const RefundErrorModal = ({
   isOpen,
@@ -18,7 +17,7 @@ export const RefundErrorModal = ({
    */
   onCancel: () => void;
   onConfirm: () => void;
-  message: Nullable<string>;
+  message?: React.ReactNode;
 }) => {
   return (
     <Dialog
@@ -34,7 +33,7 @@ export const RefundErrorModal = ({
       </div>
 
       <div className="refund-error-modal__body">
-        <p className="refund-error-modal__text">{message}</p>
+        <div className="refund-error-modal__text">{message}</div>
       </div>
 
       <div className="refund-error-modal__footer">

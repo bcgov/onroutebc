@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import "./FinishVoid.scss";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 import {
@@ -20,7 +20,16 @@ import {
 } from "../../../../common/helpers/util";
 import { RefundErrorModal } from "../Refund/components/RefundErrorModal";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
-import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../settings/types/creditAccount";
+import {
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  EGARMS_ERROR_CODE,
+  EGARMS_SUCCESS_CODE,
+} from "../../../settings/types/creditAccount";
+import {
+  CVSE_REVENUE_EMAIL,
+  CVSE_REVENUE_PHONE,
+} from "../../../../common/constants/constants";
+import { getEGARMSErrorMessage } from "../../../settings/helpers/creditAccount";
 
 export const FinishVoid = () => {
   const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
@@ -46,18 +55,27 @@ export const FinishVoid = () => {
         isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
       );
 
+  const isCreditAccountOnlyEligiblePaymentMethod = transactionHistory?.every(
+    (transaction) =>
+      transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.ACCOUNT ||
+      transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.NP,
+  );
+
   const hasClosedCreditAccountRefund =
-    transactionHistory?.every(
-      (transaction) =>
-        transaction.paymentMethodTypeCode ===
-          PAYMENT_METHOD_TYPE_CODE.ACCOUNT ||
-        transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.NP,
-    ) &&
+    isCreditAccountOnlyEligiblePaymentMethod &&
     transactionHistory?.some(
       (transaction) =>
         transaction.creditAccountStatusType ===
         CREDIT_ACCOUNT_STATUS_TYPE.CLOSED,
     );
+
+  const creditAccountEgarmsError = isCreditAccountOnlyEligiblePaymentMethod
+    ? transactionHistory?.find(
+        (transaction) =>
+          transaction.egarmsReturnCode !== EGARMS_SUCCESS_CODE.I0001 &&
+          transaction.egarmsReturnCode !== EGARMS_ERROR_CODE.E0004,
+      )?.egarmsReturnCode
+    : undefined;
 
   const amountToRefund =
     !permit || transactionHistory.length === 0
@@ -87,7 +105,9 @@ export const FinishVoid = () => {
 
   const [showRefundErrorModal, setShowRefundErrorModal] =
     useState<boolean>(false);
-  const [refundErrorMessage, setRefundErrorMessage] = useState<string>();
+
+  const [refundErrorMessage, setRefundErrorMessage] =
+    useState<React.ReactNode>(null);
 
   const handleCloseRefundErrorModal = () => {
     setRefundErrorMessage(undefined);
@@ -99,6 +119,31 @@ export const FinishVoid = () => {
       setRefundErrorMessage(
         "Refunds can't be processed for closed Credit Accounts.",
       );
+      setShowRefundErrorModal(true);
+      return;
+    }
+
+    if (!isZeroAmount(amountToRefund) && creditAccountEgarmsError) {
+      const message = (
+        <div className="finish-void__refund-error-msg">
+          Refunds can’t be processed for Credit Accounts with{" "}
+          <span className="finish-void__refund-error-msg--egarms-error-code">
+            eGARMS Return Code {creditAccountEgarmsError}:{" "}
+            {getEGARMSErrorMessage(creditAccountEgarmsError)}
+          </span>
+          <br />
+          <br />
+          Please contact CVSE Revenue.{" "}
+          <span className="finish-void__refund-error-msg--contact">
+            Phone: {CVSE_REVENUE_PHONE}
+          </span>{" "}
+          or{" "}
+          <span className="finish-void__refund-error-msg--contact">
+            Email: {CVSE_REVENUE_EMAIL}
+          </span>
+        </div>
+      );
+      setRefundErrorMessage(message);
       setShowRefundErrorModal(true);
       return;
     }

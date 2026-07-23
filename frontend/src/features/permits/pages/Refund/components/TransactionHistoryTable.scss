@@ -34,6 +34,10 @@
   & &__egarms-error {
     color: orbcStyles.$bc-red;
     width: 70%;
+    &--info {
+      color: orbcStyles.$bc-primary-blue;
+      width: 70%;
+    }
   }
 
   & &__header {

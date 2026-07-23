@@ -91,8 +91,7 @@ export const AddCreditAccountModal = ({
       } else if (
         eGARMSReturnCode === EGARMS_SUCCESS_CODE.I0001 ||
         eGARMSReturnCode === EGARMS_ERROR_CODE.E0003 ||
-        eGARMSReturnCode === EGARMS_ERROR_CODE.E0004 ||
-        eGARMSReturnCode === EGARMS_ERROR_CODE.E1739
+        eGARMSReturnCode === EGARMS_ERROR_CODE.E0004
       ) {
         setShowCreditAccountDetails(true);
       } else if (eGARMSReturnCode) {

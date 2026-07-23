@@ -76,8 +76,7 @@ export const AccountDetails = ({
     !isCreditAccountLimitPending &&
     (creditAccountLimitData?.egarmsReturnCode === EGARMS_SUCCESS_CODE.I0001 ||
       creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E0003 ||
-      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E0004 ||
-      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E1739);
+      creditAccountLimitData?.egarmsReturnCode === EGARMS_ERROR_CODE.E0004);
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
