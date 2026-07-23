@@ -23,7 +23,7 @@ import {
   Nullable,
   ORBC_FORM_FEATURES,
 } from "../../../../common/types/common";
-import { PermitType } from "../../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
@@ -277,6 +277,7 @@ export const ApplicationForm = ({
     );
     // If any ASW inputs are empty, do not continue to policy validation
     if (
+      data.permitType === PERMIT_TYPES.STOW &&
       !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
     ) {
       setAxleCalculationResultsFromValidation(undefined);
