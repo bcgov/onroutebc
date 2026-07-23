@@ -29,7 +29,6 @@ export const calculatePermitFee = async (
   const fee = getDefaultRequiredVal([], validationResults?.cost)
     .map(({ cost }) => getDefaultRequiredVal(0, cost))
     .reduce((cost1, cost2) => cost1 + cost2, 0);
-  
   return fee;
 };
 
@@ -43,7 +42,7 @@ export const feeSummaryDisplayText = (feeSummary?: Nullable<string>) => {
     (numericStr) => Number(numericStr).toFixed(2),
     feeSummary,
   );
-    
+
   const fee = getDefaultRequiredVal("0.00", feeFromSummary);
   const numericFee = Number(fee);
   return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
@@ -97,10 +96,7 @@ export const calculateAmountToRefund = async (
   const netPaid = calculateNetAmount(permitHistory);
   if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
 
-  const updatedFee = await calculatePermitFee(
-    permit,
-    policyEngine,
-  );
+  const updatedFee = await calculatePermitFee(permit, policyEngine);
 
   return netPaid - updatedFee;
 };

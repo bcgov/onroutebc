@@ -24,7 +24,8 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
-
+import { ActualGVW } from "./ActualGVW/actualgvw";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 export const PermitForm = () => {
   const {
     permitType,
@@ -91,11 +92,13 @@ export const PermitForm = () => {
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onUpdateActualGVW,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
@@ -235,6 +238,14 @@ export const PermitForm = () => {
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}
           onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <ActualGVW
+          feature={feature}
+          permitType={permitType}
+          actualGVW={getDefaultRequiredVal(0, vehicleConfiguration?.actualGVW)}
+          licensedGVW={getDefaultRequiredVal(0, vehicleFormData?.licensedGVW)}
+          onUpdateActualGVW={onUpdateActualGVW}
         />
 
         <TripDetailsSection

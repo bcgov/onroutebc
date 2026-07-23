@@ -484,3 +484,7 @@
 ### Version 100:
 
 - Add STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table
+
+### Version 101:
+
+- Updates to policy config to add STGVWI permit type.

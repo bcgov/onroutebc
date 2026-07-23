@@ -118,7 +118,10 @@ export const useApplicationFormUpdateMethods = () => {
 
   const onSetVehicleDescription = useCallback(
     (vehicleDescription: Nullable<string>) => {
-      setValue("permitData.vehicleDetails.vehicleDescription", vehicleDescription);
+      setValue(
+        "permitData.vehicleDetails.vehicleDescription",
+        vehicleDescription,
+      );
     },
     [setValue],
   );
@@ -279,6 +282,13 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateActualGVW = useCallback(
+    (updatedActualGVW: Nullable<number>) => {
+      setValue("permitData.vehicleConfiguration.actualGVW", updatedActualGVW);
+    },
+    [setValue],
+  );
+
   const onUpdateNetWeight = useCallback(
     (updatedNetWeight: Nullable<number>) => {
       setValue("permitData.vehicleConfiguration.netWeight", updatedNetWeight);
@@ -306,19 +316,25 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
-  const onUpdateHaveCertificate = useCallback((updatedHaveCertificate: boolean) => {
-    setValue(
-      "permitData.icbcInsuranceCertificate.haveCertificate",
-      updatedHaveCertificate,
-    );
-  }, [setValue]);
+  const onUpdateHaveCertificate = useCallback(
+    (updatedHaveCertificate: boolean) => {
+      setValue(
+        "permitData.icbcInsuranceCertificate.haveCertificate",
+        updatedHaveCertificate,
+      );
+    },
+    [setValue],
+  );
 
-  const onUpdateICBCCertificateNumber = useCallback((updatedCertificateNumber?: Nullable<string>) => {
-    setValue(
-      "permitData.icbcInsuranceCertificate.certificateNumber",
-      updatedCertificateNumber,
-    );
-  }, [setValue]);
+  const onUpdateICBCCertificateNumber = useCallback(
+    (updatedCertificateNumber?: Nullable<string>) => {
+      setValue(
+        "permitData.icbcInsuranceCertificate.certificateNumber",
+        updatedCertificateNumber,
+      );
+    },
+    [setValue],
+  );
 
   return {
     onSetDuration,
@@ -352,6 +368,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+    onUpdateActualGVW,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     onUpdateHaveCertificate,

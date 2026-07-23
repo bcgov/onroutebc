@@ -48,21 +48,22 @@ export const ReviewVehicleInfo = ({
     vehicleDetails?.vehicleType,
   );
 
-  const vehicleSubtype = (
-    !vehicleDetails?.vehicleSubType
-    || vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
-  ) ? "" : getSubtypeNameByCode(
-    powerUnitSubtypeNamesMap,
-    trailerSubtypeNamesMap,
-    vehicleType,
-    getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
-  );
+  const vehicleSubtype =
+    !vehicleDetails?.vehicleSubType ||
+    vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
+      ? ""
+      : getSubtypeNameByCode(
+          powerUnitSubtypeNamesMap,
+          trailerSubtypeNamesMap,
+          vehicleType,
+          getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+        );
 
   const showLicensedGVW =
     Boolean(permitType) &&
-    ([PERMIT_TYPES.STOS, PERMIT_TYPES.MFP] as PermitType[]).includes(
-      permitType as PermitType,
-    ) &&
+    (
+      [PERMIT_TYPES.STOS, PERMIT_TYPES.STGVWI, PERMIT_TYPES.MFP] as PermitType[]
+    ).includes(permitType as PermitType) &&
     vehicleType === VEHICLE_TYPES.POWER_UNIT;
 
   const changedFields = showChangedFields

@@ -13,6 +13,7 @@ export const getDefaultVehicleConfiguration = (
       [
         PERMIT_TYPES.STOS,
         PERMIT_TYPES.STOW,
+        PERMIT_TYPES.STGVWI,
         PERMIT_TYPES.NRQCV,
         PERMIT_TYPES.NRSCV,
       ] as PermitType[]
@@ -58,6 +59,14 @@ export const getDefaultVehicleConfiguration = (
         vehicleConfiguration?.axleConfiguration,
       ),
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
+    };
+  }
+  if (permitType === PERMIT_TYPES.STGVWI) {
+    return {
+      trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers), //Setting trailers to empty array by default (Only Power Unit is allowed for STGVWI permits)
+      loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
+      netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),
+      actualGVW: getDefaultRequiredVal(null, vehicleConfiguration?.actualGVW),
     };
   }
   return {
