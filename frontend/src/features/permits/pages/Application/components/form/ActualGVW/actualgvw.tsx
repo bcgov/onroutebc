@@ -3,7 +3,6 @@ import { Controller } from "react-hook-form";
 import "./actualgvw.scss";
 import { getLicensedGVWIncrease } from "../../../../../helpers/vehicleWeightHelper";
 import {
-  Nullable,
   ORBCFormFeatureType,
   RequiredOrNull,
 } from "../../../../../../../common/types/common";
@@ -21,7 +20,7 @@ export const ActualGVW = ({
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
-  actualGVW?: Nullable<number>;
+  actualGVW: number;
   licensedGVW: number;
   onUpdateActualGVW: (updatedActualGVW?: RequiredOrNull<number>) => void;
 }) => {
