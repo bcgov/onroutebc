@@ -484,3 +484,11 @@
 ### Version 100:
 
 - Add STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table
+
+### Version 101:
+
+- Add TRCKPME and TRACPME to ORBC_POWER_UNIT_TYPE table
+
+### Version 102:
+
+- Updates to the policy configuration to add TRCKPME and TRACPME.
