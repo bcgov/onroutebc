@@ -196,6 +196,11 @@ export const FinishVoid = () => {
           isOpen={showRefundErrorModal}
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
+          title={
+            hasClosedCreditAccountRefund || creditAccountEgarmsError
+              ? "Refund can't be processed"
+              : "Refund Error"
+          }
           message={refundErrorMessage}
         />
       )}

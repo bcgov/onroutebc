@@ -120,7 +120,6 @@ export const AmendPermitFinish = () => {
     transaction: paymentTransaction,
   } = useStartTransaction();
 
-
   const handleFinish = (refundData: RefundFormData[]) => {
     if (!isZeroAmount(amountToRefund) && hasClosedCreditAccountRefund) {
       setRefundErrorMessage(
@@ -149,7 +148,7 @@ export const AmendPermitFinish = () => {
             Email: {CVSE_REVENUE_EMAIL}
           </span>
         </div>
-      );      
+      );
       setRefundErrorMessage(message);
       setShowRefundErrorModal(true);
       return;
@@ -257,6 +256,11 @@ export const AmendPermitFinish = () => {
           isOpen={showRefundErrorModal}
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
+          title={
+            hasClosedCreditAccountRefund || creditAccountEgarmsError
+              ? "Refund can't be processed"
+              : "Refund Error"
+          }
           message={refundErrorMessage}
         />
       )}
