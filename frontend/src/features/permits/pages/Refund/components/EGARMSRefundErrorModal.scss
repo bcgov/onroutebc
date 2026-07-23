@@ -1,8 +1,9 @@
 @import "../../../../../themes/orbcStyles.scss";
 
-.refund-error-modal {
+.egarms-refund-error-modal {
   & &__container {
     width: 100%;
+    min-width: fit-content;
     display: flex;
     flex-direction: column;
   }
@@ -28,6 +29,12 @@
 
   &__text {
     font-size: 1rem;
+    &--contact {
+      font-weight: bold;
+    }
+    &--egarms-error-code {
+      font-weight: bold;
+    }
   }
 
   &__footer {

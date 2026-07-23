@@ -7,7 +7,7 @@ export const RefundErrorModal = ({
   onCancel,
   onConfirm,
   title = "Refund Error",
-  message,  
+  message,
 }: {
   /**
    * Boolean to control the open and close state of Dialog box.
@@ -20,7 +20,7 @@ export const RefundErrorModal = ({
   onCancel: () => void;
   onConfirm: () => void;
   title: Nullable<string>;
-  message?: React.ReactNode;
+  message: Nullable<string>;
 }) => {
   return (
     <Dialog

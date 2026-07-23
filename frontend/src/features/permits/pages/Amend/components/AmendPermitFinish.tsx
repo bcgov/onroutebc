@@ -35,11 +35,8 @@ import {
   EGARMS_ERROR_CODE,
   EGARMS_SUCCESS_CODE,
 } from "../../../../settings/types/creditAccount";
-import { getEGARMSErrorMessage } from "../../../../settings/helpers/creditAccount";
-import {
-  CVSE_REVENUE_EMAIL,
-  CVSE_REVENUE_PHONE,
-} from "../../../../../common/constants/constants";
+import { EGARMSRefundErrorModal } from "../../Refund/components/EGARMSRefundErrorModal";
+import { Nullable } from "../../../../../common/types/common";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -83,9 +80,12 @@ export const AmendPermitFinish = () => {
 
   const amountToRefund = -1 * Number(calculatedRefundAmount.toFixed(2));
 
-  const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
+  const [showRefundErrorModal, setShowRefundErrorModal] =
+    useState<boolean>(false);
+  const [showEGARMSRefundErrorModal, setShowEGARMSRefundErrorModal] =
+    useState<boolean>(false);
   const [refundErrorMessage, setRefundErrorMessage] =
-    useState<React.ReactNode>(null);
+    useState<Nullable<string>>();
 
   const isCreditAccountOnlyEligiblePaymentMethod =
     validTransactionHistory?.every(
@@ -130,27 +130,7 @@ export const AmendPermitFinish = () => {
     }
 
     if (!isZeroAmount(amountToRefund) && creditAccountEgarmsError) {
-      const message = (
-        <div className="amend-permit-finish__refund-error-msg">
-          Refunds can’t be processed for Credit Accounts with{" "}
-          <span className="amend-permit-finish__refund-error-msg--egarms-error-code">
-            eGARMS Return Code {creditAccountEgarmsError}:{" "}
-            {getEGARMSErrorMessage(creditAccountEgarmsError)}
-          </span>
-          <br />
-          <br />
-          Please contact CVSE Revenue.{" "}
-          <span className="amend-permit-finish__refund-error-msg--contact">
-            Phone: {CVSE_REVENUE_PHONE}
-          </span>{" "}
-          or{" "}
-          <span className="amend-permit-finish__refund-error-msg--contact">
-            Email: {CVSE_REVENUE_EMAIL}
-          </span>
-        </div>
-      );
-      setRefundErrorMessage(message);
-      setShowRefundErrorModal(true);
+      setShowEGARMSRefundErrorModal(true);
       return;
     }
 
@@ -183,6 +163,7 @@ export const AmendPermitFinish = () => {
   const handleCloseRefundErrorModal = () => {
     setRefundErrorMessage(undefined);
     setShowRefundErrorModal(false);
+    setShowEGARMSRefundErrorModal(false);
   };
 
   // Permit issuance mutation
@@ -257,11 +238,19 @@ export const AmendPermitFinish = () => {
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
           title={
-            hasClosedCreditAccountRefund || creditAccountEgarmsError
+            hasClosedCreditAccountRefund
               ? "Refund can't be processed"
               : "Refund Error"
           }
           message={refundErrorMessage}
+        />
+      )}
+      {showEGARMSRefundErrorModal && (
+        <EGARMSRefundErrorModal
+          isOpen={showEGARMSRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+          creditAccountEgarmsError={creditAccountEgarmsError}
         />
       )}
     </div>

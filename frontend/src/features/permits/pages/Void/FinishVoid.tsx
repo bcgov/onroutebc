@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./FinishVoid.scss";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 import {
@@ -25,11 +24,8 @@ import {
   EGARMS_ERROR_CODE,
   EGARMS_SUCCESS_CODE,
 } from "../../../settings/types/creditAccount";
-import {
-  CVSE_REVENUE_EMAIL,
-  CVSE_REVENUE_PHONE,
-} from "../../../../common/constants/constants";
-import { getEGARMSErrorMessage } from "../../../settings/helpers/creditAccount";
+import { Nullable } from "../../../../common/types/common";
+import { EGARMSRefundErrorModal } from "../Refund/components/EGARMSRefundErrorModal";
 
 export const FinishVoid = () => {
   const { voidPermitData, permit, handleFail, goHomeSuccess, goHome } =
@@ -105,13 +101,16 @@ export const FinishVoid = () => {
 
   const [showRefundErrorModal, setShowRefundErrorModal] =
     useState<boolean>(false);
+  const [showEGARMSRefundErrorModal, setShowEGARMSRefundErrorModal] =
+    useState<boolean>(false);
 
   const [refundErrorMessage, setRefundErrorMessage] =
-    useState<React.ReactNode>(null);
+    useState<Nullable<string>>();
 
   const handleCloseRefundErrorModal = () => {
     setRefundErrorMessage(undefined);
     setShowRefundErrorModal(false);
+    setShowEGARMSRefundErrorModal(false);
   };
 
   const handleFinish = async (refundData: RefundFormData[]) => {
@@ -124,26 +123,7 @@ export const FinishVoid = () => {
     }
 
     if (!isZeroAmount(amountToRefund) && creditAccountEgarmsError) {
-      const message = (
-        <div className="finish-void__refund-error-msg">
-          Refunds can’t be processed for Credit Accounts with{" "}
-          <span className="finish-void__refund-error-msg--egarms-error-code">
-            eGARMS Return Code {creditAccountEgarmsError}:{" "}
-            {getEGARMSErrorMessage(creditAccountEgarmsError)}
-          </span>
-          <br />
-          <br />
-          Please contact CVSE Revenue.{" "}
-          <span className="finish-void__refund-error-msg--contact">
-            Phone: {CVSE_REVENUE_PHONE}
-          </span>{" "}
-          or{" "}
-          <span className="finish-void__refund-error-msg--contact">
-            Email: {CVSE_REVENUE_EMAIL}
-          </span>
-        </div>
-      );
-      setRefundErrorMessage(message);
+      setShowEGARMSRefundErrorModal(true);
       setShowRefundErrorModal(true);
       return;
     }
@@ -197,11 +177,19 @@ export const FinishVoid = () => {
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
           title={
-            hasClosedCreditAccountRefund || creditAccountEgarmsError
+            hasClosedCreditAccountRefund
               ? "Refund can't be processed"
               : "Refund Error"
           }
           message={refundErrorMessage}
+        />
+      )}
+      {showEGARMSRefundErrorModal && (
+        <EGARMSRefundErrorModal
+          isOpen={showEGARMSRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+          creditAccountEgarmsError={creditAccountEgarmsError}
         />
       )}
     </>
