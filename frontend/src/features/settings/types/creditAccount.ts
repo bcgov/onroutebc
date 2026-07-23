@@ -253,7 +253,6 @@ export const EGARMS_ERROR_CODE = {
   E0002: "E0002",
   E0003: "E0003",
   E0004: "E0004",
-  E1739: "E1739",
   E9999: "E9999",
 } as const;
 
@@ -268,7 +267,6 @@ export const EGARMS_CODE_ERROR_MESSAGES = {
   E0002: "Credit Account is inactive.",
   E0003: "Credit Account on hold.",
   E0004: "Credit Account has exceeded negative allowed amount.",
-  E1739: "Credit Account has exceeded negative allowed amount.",
   E9999: "Serious error.",
   DEFAULT: "Credit Account is unavailable.",
 } as const;

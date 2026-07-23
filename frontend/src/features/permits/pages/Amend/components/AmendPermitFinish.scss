@@ -1,11 +1,11 @@
 @use "../../../../../common/components/dashboard/Dashboard";
-@import "../../../../../themes/orbcStyles";
+@use "../../../../../themes/orbcStyles";
 
 @include Dashboard.layout-box-style(".amend-permit-finish .breadcrumb");
 @include Dashboard.layout-box-style(".amend-permit-finish .refund-page");
 
 .amend-permit-finish {
-  background-color: $bc-white;
+  background-color: orbcStyles.$bc-white;
   padding-bottom: 3rem;
 
   .refund-page {

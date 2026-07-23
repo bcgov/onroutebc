@@ -6,6 +6,7 @@ export const RefundErrorModal = ({
   isOpen,
   onCancel,
   onConfirm,
+  title = "Refund Error",
   message,
 }: {
   /**
@@ -18,6 +19,7 @@ export const RefundErrorModal = ({
    */
   onCancel: () => void;
   onConfirm: () => void;
+  title: Nullable<string>;
   message: Nullable<string>;
 }) => {
   return (
@@ -30,11 +32,11 @@ export const RefundErrorModal = ({
       }}
     >
       <div className="refund-error-modal__header">
-        <h2 className="refund-error-modal__title">Refund Error</h2>
+        <h2 className="refund-error-modal__title">{title}</h2>
       </div>
 
       <div className="refund-error-modal__body">
-        <p className="refund-error-modal__text">{message}</p>
+        <div className="refund-error-modal__text">{message}</div>
       </div>
 
       <div className="refund-error-modal__footer">
