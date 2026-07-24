@@ -82,6 +82,7 @@ import { ApplicationRejectedNotification } from '../../../common/interface/appli
 import {
   convertUtcToPt,
   differenceBetween,
+  getCurrentPacificDateTime,
 } from '../../../common/helper/date-time.helper';
 import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
@@ -628,7 +629,17 @@ export class ApplicationService {
     companyId: number,
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findOne(applicationId, companyId);
+console.log('Heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
 
+      const currentDatedayjs = dayjs()?.format();
+      console.log('currentDatedayjs`',currentDatedayjs);
+      const currentDatedayjsYYYYMMDD = dayjs()?.format('YYYY-MM-DD');
+      console.log('currentDatedayjs`',currentDatedayjsYYYYMMDD);
+      const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      console.log('new Date()',new Date());
+      console.log('new Date().toISOString()',new Date().toISOString());
+      console.log('currentDate',currentDate);
+      console.log('getCurrentPacificDateTime',getCurrentPacificDateTime())
     // Enforce that the application is editable only if it is currently IN_PROGRESS or if the user has an appropriate IDIR role and the application is IN_QUEUE
     if (
       existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS &&
@@ -658,7 +669,12 @@ export class ApplicationService {
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
+
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      console.log('new Date()',new Date());
+      console.log('new Date().toISOString()',new Date().toISOString());
+      console.log('currentDate',currentDate);
+      console.log('getCurrentPacificDateTime',getCurrentPacificDateTime())
       if (
         !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
         differenceBetween(permitData?.startDate, currentDate, 'days') > 0
