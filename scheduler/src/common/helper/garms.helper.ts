@@ -31,6 +31,7 @@ import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto
 import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
 import { PermitApprovalSource } from '../enum/permit-approval-source.enum';
 import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
+import { PermitIssuedBy } from '../enum/permit-issued-by.enum';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -307,8 +308,8 @@ export const createGarmsCreditFileDetails = (
   gcd.serviceQuantity = formatNumber(1, 5);
   gcd.plateNumber = formatString(permitTransaction.permit.permitData.plate, 25);
   const approvalSource =
-    permitTransaction.permit.permitApprovalSource === PermitApprovalSource.PPC
-      ? PermitApprovalSource.PPC
+    permitTransaction.permit.permitIssuedBy === PermitIssuedBy.PPC
+      ? PermitIssuedBy.PPC
       : 'WEB';
 
   const revisionStatus =
@@ -332,12 +333,9 @@ export const createGarmsCreditFileDetails = (
   );
   gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
   gcd.serNoTo = SER_NO_TO;
-  //remove condition as permitTransaction.permit.company.creditAccount.creditAccountNumber is not nullable
-  //and should always be present once we set up credit account on onRoute
-  gcd.wsAccount =
-    permitTransaction?.permit?.company?.creditAccount?.creditAccountNumber;
+  gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
   gcd.voidInd = VOID_IND;
-  gcd.permitNumber = formatNumber(permitTransaction.permit.permitId, 9);
+  gcd.permitNumber = formatString(permitTransaction.permit.permitId, 9);
   const detail = Object.values(gcd).join('');
   return detail + '\n';
 };
