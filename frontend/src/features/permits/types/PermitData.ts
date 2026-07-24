@@ -12,6 +12,7 @@ import { PermitLOA } from "./PermitLOA";
 import { ThirdPartyLiability } from "./ThirdPartyLiability";
 import { ConditionalLicensingFeeType } from "./ConditionalLicensingFee";
 import { ICBCInsuranceCertificate } from "./ICBCInsuranceCertificate";
+import { ExtraordinaryLoadRequest } from "./ExtraordinaryLoadRequest";
 
 export interface PermitData {
   startDate: Dayjs;
@@ -33,4 +34,5 @@ export interface PermitData {
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
+  extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
 }
