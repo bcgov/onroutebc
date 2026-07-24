@@ -29,7 +29,6 @@ import { PermitTransaction } from 'src/modules/common/entities/permit-transactio
 import * as fs from 'fs';
 import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto';
 import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
-import { PermitApprovalSource } from '../enum/permit-approval-source.enum';
 import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
 import { PermitIssuedBy } from '../enum/permit-issued-by.enum';
 /**
