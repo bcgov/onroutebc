@@ -1,6 +1,16 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
+import { Nullable } from '../../../common/types/common';
+import { Transaction } from './transaction.entity';
+import { Company } from './company.entity';
 
 @Entity({ name: 'ORBC_CREDIT_ACCOUNT', schema: 'permit' })
 export class CreditAccount {
@@ -12,14 +22,13 @@ export class CreditAccount {
   @PrimaryGeneratedColumn({ name: 'CREDIT_ACCOUNT_ID' })
   creditAccountId: number;
 
-  @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description:
-      'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
-  })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  companyId: number;
+  /**
+   * The unique identifier of the company (Account Holder).
+   */
+  @AutoMap(() => Company)
+  @OneToOne(() => Company, { nullable: false, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  company: Company;
 
   @Column({
     name: 'CREDIT_ACCOUNT_STATUS_TYPE',
@@ -65,4 +74,23 @@ export class CreditAccount {
     nullable: true,
   })
   totalTransactionAmount?: number;
+
+  @AutoMap()
+  @Column({
+    type: 'decimal',
+    precision: 9,
+    scale: 2,
+    name: 'EXTERNAL_ADJUSTMENT_AMT',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  externalAdjustmentAmount: number;
+
+  @AutoMap()
+  @OneToMany(() => Transaction, (transaction) => transaction.creditAccount, {
+    cascade: false,
+    eager: false,
+  })
+  public transactions?: Nullable<Transaction[]>;
 }
