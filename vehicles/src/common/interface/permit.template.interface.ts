@@ -51,9 +51,13 @@ export interface PermitData {
   thirdPartyLiability?: ThirdPartyLiability;
   conditionalLicensingFee?: Nullable<ConditionalLicensingFee>;
   /**
-   * ICBC Insurance Certificate into for HC permit types
+   * ICBC Insurance Certificate info for HC permit types
    */
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
+  /**
+   * Extraordinary Load Request info for STOW permit types
+   */
+  extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
 }
 
 interface ICBCInsuranceCertificate {
@@ -61,6 +65,10 @@ interface ICBCInsuranceCertificate {
   certificateNumber?: Nullable<string>;
 }
 
+interface ExtraordinaryLoadRequest {
+  isExtraordinaryLoadRequest: boolean;
+  approvalNumber?: Nullable<string>;
+}
 interface AxleConfiguration {
   axleUnit: number;
   numberOfAxles: number;
