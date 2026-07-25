@@ -330,11 +330,17 @@ export const createGarmsCreditFileDetails = (
     getPaymentAmount(permitTransaction, transaction),
     9,
   );
-  gcd.serNoFrom = formatString(permitTransaction.permit.permitId, 15);
+  gcd.serNoFrom = formatString(
+    formatPermitNumber(permitTransaction.permit.permitNumber),
+    15,
+  );
   gcd.serNoTo = SER_NO_TO;
   gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
   gcd.voidInd = VOID_IND;
-  gcd.permitNumber = formatString(permitTransaction.permit.permitId, 9);
+  gcd.permitNumber = formatString(
+    formatPermitNumber(permitTransaction.permit.permitId),
+    9,
+  );
   const detail = Object.values(gcd).join('');
   return detail + '\n';
 };
