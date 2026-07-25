@@ -338,7 +338,7 @@ export const createGarmsCreditFileDetails = (
   gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatString(
-    formatPermitNumber(permitTransaction.permit.permitId),
+    formatPermitNumber(permitTransaction.permit.permitNumber),
     9,
   );
   const detail = Object.values(gcd).join('');
