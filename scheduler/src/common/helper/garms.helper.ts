@@ -555,6 +555,11 @@ export const formatString = (value: string | number, length: number) => {
   return value.toString().padEnd(length, ' ');
 };
 
+export const formatPermitNumber = (permitNumber: string): string => {
+  const parts = permitNumber?.split('-');
+  return parts?.at(1);
+};
+
 /**
  * Retrieves the value associated with a specific key from a map.
  * If the key exists in the map, the corresponding value is returned.
