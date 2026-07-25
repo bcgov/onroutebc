@@ -31,6 +31,7 @@ import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto
 import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
 import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
 import { PermitIssuedBy } from '../enum/permit-issued-by.enum';
+import { Nullable } from '../types/common';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -305,7 +306,13 @@ export const createGarmsCreditFileDetails = (
     4,
   );
   gcd.serviceQuantity = formatNumber(1, 5);
-  gcd.plateNumber = formatString(permitTransaction.permit.permitData.plate, 25);
+  const isRefundTransaction =
+    transaction?.transactionTypeId === TransactionType.REFUND;
+  const plateNumber = isRefundTransaction
+    ? ''
+    : permitTransaction.permit.permitData.plate;
+
+  gcd.plateNumber = formatString(plateNumber, 25);
   const approvalSource =
     permitTransaction.permit.permitIssuedBy === PermitIssuedBy.PPC
       ? PermitIssuedBy.PPC
@@ -317,10 +324,12 @@ export const createGarmsCreditFileDetails = (
         ? formatString('VOID', 8)
         : formatString('CHANGE', 8)
       : 'ORIGINAL';
-  gcd.permitApplicationSource = formatString(
-    `${approvalSource}-${revisionStatus}`,
-    25,
-  );
+
+  const permitApplicationSource = isRefundTransaction
+    ? convertUtcToPt(extractDate, GARMS_DATE_FORMAT)
+    : `${approvalSource}-${revisionStatus}`;
+
+  gcd.permitApplicationSource = formatString(permitApplicationSource, 25);
   gcd.permitDate = formatString(
     convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYYYMMDD'),
     35,
@@ -330,17 +339,19 @@ export const createGarmsCreditFileDetails = (
     getPaymentAmount(permitTransaction, transaction),
     9,
   );
-  gcd.serNoFrom = formatString(
-    formatPermitNumber(permitTransaction.permit.permitNumber),
-    15,
+
+  const formattedPermitNumber = formatPermitNumber(
+    permitTransaction?.permit?.permitNumber,
   );
+  const permitNumber = isRefundTransaction ? '' : formattedPermitNumber;
+
+  gcd.serNoFrom = formatString(permitNumber, 15);
   gcd.serNoTo = SER_NO_TO;
   gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
-  gcd.voidInd = VOID_IND;
-  gcd.permitNumber = formatString(
-    formatPermitNumber(permitTransaction.permit.permitNumber),
-    9,
-  );
+  if (!isRefundTransaction) {
+    gcd.voidInd = VOID_IND;
+    gcd.permitNumber = formatString(permitNumber, 9);
+  }
   const detail = Object.values(gcd).join('');
   return detail + '\n';
 };
@@ -555,7 +566,7 @@ export const formatString = (value: string | number, length: number) => {
   return value.toString().padEnd(length, ' ');
 };
 
-export const formatPermitNumber = (permitNumber: string): string => {
+export const formatPermitNumber = (permitNumber: Nullable<string>): string => {
   const parts = permitNumber?.split('-');
   return parts?.at(1);
 };
