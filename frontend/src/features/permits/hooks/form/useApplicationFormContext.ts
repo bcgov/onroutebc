@@ -86,6 +86,7 @@ export const useApplicationFormContext = () => {
     onUpdateTrailerAxleConfiguration,
     onUpdateHaveCertificate,
     onUpdateICBCCertificateNumber,
+    onUpdateIsExtraordinaryLoadRequest,
   } = useApplicationFormUpdateMethods();
 
   const { permitType, applicationNumber, permitNumber } = formData;
@@ -96,6 +97,7 @@ export const useApplicationFormContext = () => {
     permitDuration,
     startDate: permitStartDate,
     icbcInsuranceCertificate,
+    extraordinaryLoadRequest,
     commodities,
     vehicleDetails: vehicleFormData,
     permittedRoute,
@@ -400,5 +402,9 @@ export const useApplicationFormContext = () => {
     maxNumDaysAllowedInFuture,
     haveCertificate: Boolean(icbcInsuranceCertificate?.haveCertificate),
     onUpdateHaveCertificate,
+    isExtraordinaryLoadRequest: Boolean(
+      extraordinaryLoadRequest?.isExtraordinaryLoadRequest,
+    ),
+    onUpdateIsExtraordinaryLoadRequest,
   };
 };

@@ -336,6 +336,16 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateIsExtraordinaryLoadRequest = useCallback(
+    (updatedIsExtraordinaryLoadRequest: boolean) => {
+      setValue(
+        "permitData.extraordinaryLoadRequest.isExtraordinaryLoadRequest",
+        updatedIsExtraordinaryLoadRequest,
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -373,5 +383,6 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateTrailerAxleConfiguration,
     onUpdateHaveCertificate,
     onUpdateICBCCertificateNumber,
+    onUpdateIsExtraordinaryLoadRequest,
   };
 };

@@ -311,6 +311,21 @@ export const getDefaultValues = (
                 : "",
             }
           : null,
+      extraordinaryLoadRequest:
+        permitType === PERMIT_TYPES.STOW
+          ? {
+              isExtraordinaryLoadRequest: getDefaultRequiredVal(
+                false,
+                applicationData?.permitData?.extraordinaryLoadRequest
+                  ?.isExtraordinaryLoadRequest,
+              ),
+              approvalNumber: getDefaultRequiredVal(
+                "",
+                applicationData?.permitData?.extraordinaryLoadRequest
+                  ?.approvalNumber,
+              ),
+            }
+          : null,
     },
     comment: getDefaultRequiredVal("", applicationData?.comment),
   };

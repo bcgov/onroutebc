@@ -26,6 +26,8 @@ import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/Axl
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
 import { ActualGVW } from "./ActualGVW/actualgvw";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
+
 export const PermitForm = () => {
   const {
     permitType,
@@ -103,6 +105,8 @@ export const PermitForm = () => {
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
     onUpdateHaveCertificate,
+    isExtraordinaryLoadRequest,
+    onUpdateIsExtraordinaryLoadRequest,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -231,6 +235,13 @@ export const PermitForm = () => {
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
           showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
+        />
+
+        <ExtraordinaryLoadRequestSection
+          feature={feature}
+          permitType={permitType}
+          isExtraordinaryLoadRequest={isExtraordinaryLoadRequest}
+          onSetIsExtraordinaryLoadRequest={onUpdateIsExtraordinaryLoadRequest}
         />
 
         <LoadedDimensionsSection
