@@ -63,6 +63,7 @@ import { EGARMSCreditAccountService } from '../common/egarms.credit-account.serv
 import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
   EGARMS_CREDIT_ACCOUNT_CLOSED,
+  EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
   EGARMS_CREDIT_ACCOUNT_HOLD,
   EGARMS_CREDIT_ACCOUNT_NOT_FOUND,
 } from '../../common/constants/api.constant';
@@ -1785,14 +1786,18 @@ export class CreditAccountService {
     }
 
     if (
-      // Check if the transaction type is a REFUND and the credit account status is CLOSED
-      //Ignore the status in eGarms as per the latest specs
+      // Check if the transaction type is a REFUND and the credit account status is either closed in ORBC or invalid in egarms
       transacationType === TransactionType.REFUND &&
-      creditAccount?.creditAccountStatusType ===
-        CreditAccountStatus.ACCOUNT_CLOSED
+      (creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED ||
+        ![
+          EGARMS_CREDIT_ACCOUNT_ACTIVE,
+          EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
+        ]?.includes(egarmsCreditAccountDetails?.PPABalance?.return_code))
     ) {
-      // Log an error for attempting a refund on a closed credit account
-      this.logger.error('Cannot refund to a closed Credit account.');
+      this.logger.error(
+        `Cannot refund to a closed credit account or when account is invalid egarms.`,
+      );
       // Throw an exception indicating the credit account is unavailable for refund
       throwUnprocessableEntityException(
         'Credit account is unavailable',

@@ -29,9 +29,14 @@ import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useCalculateRefundAmount } from "../../../hooks/useCalculateRefundAmount";
 import { serializePermitData } from "../../../helpers/serialize/serializePermitData";
 import { isZeroAmount } from "../../../helpers/feeSummary";
-import { Nullable } from "../../../../../common/types/common";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
-import { CREDIT_ACCOUNT_STATUS_TYPE } from "../../../../settings/types/creditAccount";
+import {
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  EGARMS_ERROR_CODE,
+  EGARMS_SUCCESS_CODE,
+} from "../../../../settings/types/creditAccount";
+import { EGARMSRefundErrorModal } from "../../Refund/components/EGARMSRefundErrorModal";
+import { Nullable } from "../../../../../common/types/common";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -75,22 +80,36 @@ export const AmendPermitFinish = () => {
 
   const amountToRefund = -1 * Number(calculatedRefundAmount.toFixed(2));
 
-  const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
+  const [showRefundErrorModal, setShowRefundErrorModal] =
+    useState<boolean>(false);
+  const [showEGARMSRefundErrorModal, setShowEGARMSRefundErrorModal] =
+    useState<boolean>(false);
   const [refundErrorMessage, setRefundErrorMessage] =
     useState<Nullable<string>>();
 
-  const hasClosedCreditAccountRefund =
+  const isCreditAccountOnlyEligiblePaymentMethod =
     validTransactionHistory?.every(
       (transaction) =>
         transaction.paymentMethodTypeCode ===
           PAYMENT_METHOD_TYPE_CODE.ACCOUNT ||
         transaction.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.NP,
-    ) &&
+    );
+
+  const hasClosedCreditAccountRefund =
+    isCreditAccountOnlyEligiblePaymentMethod &&
     validTransactionHistory?.some(
       (transaction) =>
         transaction.creditAccountStatusType ===
         CREDIT_ACCOUNT_STATUS_TYPE.CLOSED,
     );
+
+  const creditAccountEgarmsError = isCreditAccountOnlyEligiblePaymentMethod
+    ? validTransactionHistory?.find(
+        (transaction) =>
+          transaction.egarmsReturnCode !== EGARMS_SUCCESS_CODE.I0001 &&
+          transaction.egarmsReturnCode !== EGARMS_ERROR_CODE.E0004,
+      )?.egarmsReturnCode
+    : undefined;
 
   // Refund mutation
   const { mutation: refundPermitMutation, transaction: refundTransaction } =
@@ -107,6 +126,11 @@ export const AmendPermitFinish = () => {
         "Refunds can't be processed for closed Credit Accounts.",
       );
       setShowRefundErrorModal(true);
+      return;
+    }
+
+    if (!isZeroAmount(amountToRefund) && creditAccountEgarmsError) {
+      setShowEGARMSRefundErrorModal(true);
       return;
     }
 
@@ -139,6 +163,7 @@ export const AmendPermitFinish = () => {
   const handleCloseRefundErrorModal = () => {
     setRefundErrorMessage(undefined);
     setShowRefundErrorModal(false);
+    setShowEGARMSRefundErrorModal(false);
   };
 
   // Permit issuance mutation
@@ -212,7 +237,20 @@ export const AmendPermitFinish = () => {
           isOpen={showRefundErrorModal}
           onCancel={handleCloseRefundErrorModal}
           onConfirm={handleCloseRefundErrorModal}
+          title={
+            hasClosedCreditAccountRefund
+              ? "Refund can't be processed"
+              : "Refund Error"
+          }
           message={refundErrorMessage}
+        />
+      )}
+      {showEGARMSRefundErrorModal && (
+        <EGARMSRefundErrorModal
+          isOpen={showEGARMSRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+          creditAccountEgarmsError={creditAccountEgarmsError}
         />
       )}
     </div>

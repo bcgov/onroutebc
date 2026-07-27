@@ -3,7 +3,6 @@ import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
   EGARMS_CREDIT_ACCOUNT_CLOSED,
   EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
-  EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT_2,
   EGARMS_CREDIT_ACCOUNT_HOLD,
 } from '../constants/api.constant';
 import { CreditAccountActivityType } from '../enum/credit-account-activity-type.enum';
@@ -81,9 +80,7 @@ export const validEgarmsReturnCodesToDisplayCreditDetails = (
     egarmsCreditAccountDetails?.PPABalance?.return_code ===
       EGARMS_CREDIT_ACCOUNT_HOLD ||
     egarmsCreditAccountDetails?.PPABalance?.return_code ===
-      EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT ||
-    egarmsCreditAccountDetails?.PPABalance?.return_code ===
-      EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT_2
+      EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT
   );
 };
 

@@ -40,6 +40,7 @@ import { StatusChip } from "../../../../settings/components/creditAccount/Status
 import {
   CREDIT_ACCOUNT_STATUS_TYPE,
   CreditAccountStatusType,
+  EGARMS_ERROR_CODE,
   EGARMS_SUCCESS_CODE,
 } from "../../../../settings/types/creditAccount";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -80,6 +81,28 @@ export const TransactionHistoryTable = ({
     return (
       isCreditAccount(row) &&
       row.original.creditAccountStatusType === CREDIT_ACCOUNT_STATUS_TYPE.CLOSED
+    );
+  };
+
+  const isCreditAccountExceedNegativeLimit = (
+    row: MRT_Row<RefundFormData>,
+  ): boolean => {
+    return (
+      isCreditAccount(row) &&
+      row.original.egarmsReturnCode === EGARMS_ERROR_CODE.E0004
+    );
+  };
+
+  const isCreditAccountIneligibleForRefund = (
+    row: MRT_Row<RefundFormData>,
+  ): boolean => {
+    const code = row.original.egarmsReturnCode;
+
+    return (
+      isCreditAccount(row) &&
+      (isCreditAccountClosed(row) ||
+        (code !== EGARMS_SUCCESS_CODE.I0001 &&
+          !isCreditAccountExceedNegativeLimit(row)))
     );
   };
 
@@ -137,7 +160,13 @@ export const TransactionHistoryTable = ({
                 />
               )}
               {isCreditAccountEgarmsError(row) && (
-                <div className="transaction-history-table__egarms-error">
+                <div
+                  className={
+                    isCreditAccountExceedNegativeLimit(row)
+                      ? "transaction-history-table__egarms-error--info"
+                      : "transaction-history-table__egarms-error"
+                  }
+                >
                   <span>
                     eGARMS return code {row.original.egarmsReturnCode}
                     <Tooltip
@@ -275,7 +304,7 @@ export const TransactionHistoryTable = ({
     muiSelectCheckboxProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
       className:
         "transaction-history-table__checkbox " +
-        `${isCreditAccountClosed(row) ? "transaction-history-table__checkbox--inactive " : ""}` +
+        `${isCreditAccountIneligibleForRefund(row) ? "transaction-history-table__checkbox--inactive " : ""}` +
         `${!isRowSelectable(row) ? "transaction-history-table__checkbox--disabled" : ""}`,
     }),
     muiTablePaperProps: {

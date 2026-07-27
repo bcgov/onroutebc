@@ -226,6 +226,7 @@ export const AmendPermitForm = () => {
     );
     // If any ASW inputs are empty, do not continue to policy validation
     if (
+      data.permitType === PERMIT_TYPES.STOW &&
       !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
     ) {
       setAxleCalculationResultsFromValidation(undefined);

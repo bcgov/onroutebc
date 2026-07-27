@@ -16,7 +16,7 @@ import {
   POLICY_CHECK_ID_TYPES,
   AxleCalculationResult,
 } from "../../types/AxleCalculationResult";
-import { PERMIT_TYPES } from "../../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 import { ApplicationForm } from "./ApplicationForm";
 
 const mocks = vi.hoisted(() => ({
@@ -128,8 +128,8 @@ const validAxleConfiguration = [
   },
 ];
 
-const createFormData = () => {
-  const formData = getDefaultValues(PERMIT_TYPES.STOW, undefined);
+const createFormData = (permitType: PermitType = PERMIT_TYPES.STOW) => {
+  const formData = getDefaultValues(permitType, undefined);
   formData.permitData.vehicleConfiguration = {
     ...formData.permitData.vehicleConfiguration,
     axleConfiguration: validAxleConfiguration,
@@ -137,7 +137,21 @@ const createFormData = () => {
   return formData;
 };
 
-const renderApplicationForm = (isStaff = false) => {
+const mockFormData = (formData: ReturnType<typeof createFormData>) => {
+  vi.mocked(useInitApplicationFormData).mockReturnValue({
+    initialFormData: formData,
+    currentFormData: formData,
+    formMethods: {
+      handleSubmit: (handler: (data: typeof formData) => Promise<void>) => () =>
+        handler(formData),
+    },
+  } as ReturnType<typeof useInitApplicationFormData>);
+};
+
+const renderApplicationForm = (
+  isStaff = false,
+  permitType: PermitType = PERMIT_TYPES.STOW,
+) => {
   const contextValue = isStaff
     ? {
         idirUserDetails: {
@@ -158,7 +172,7 @@ const renderApplicationForm = (isStaff = false) => {
 
   return render(
     <ApplicationForm
-      permitType={PERMIT_TYPES.STOW}
+      permitType={permitType}
       companyId={1}
       applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
       isCopiedApplication={false}
@@ -172,15 +186,7 @@ describe("ApplicationForm permit-not-required handling", () => {
     vi.clearAllMocks();
 
     const formData = createFormData();
-    vi.mocked(useInitApplicationFormData).mockReturnValue({
-      initialFormData: formData,
-      currentFormData: formData,
-      formMethods: {
-        handleSubmit:
-          (handler: (data: typeof formData) => Promise<void>) => () =>
-            handler(formData),
-      },
-    } as ReturnType<typeof useInitApplicationFormData>);
+    mockFormData(formData);
 
     mocks.handleSaveVehicle.mockResolvedValue({});
     mocks.saveApplication.mockResolvedValue(undefined);
@@ -265,5 +271,35 @@ describe("ApplicationForm permit-not-required handling", () => {
       }),
     ).not.toBeInTheDocument();
     consoleError.mockRestore();
+  });
+
+  it("continues STOS applications without requiring hidden ASW fields", async () => {
+    const user = userEvent.setup();
+    const formData = createFormData(PERMIT_TYPES.STOS);
+    formData.permitData.vehicleConfiguration = {
+      ...formData.permitData.vehicleConfiguration,
+      axleConfiguration: [
+        {
+          numberOfAxles: 1,
+          numberOfTires: null,
+          tireSize: 279,
+          axleSpread: null,
+          axleUnitWeight: null,
+          interaxleSpacing: null,
+        },
+      ],
+    };
+    mockFormData(formData);
+    mocks.policyValidate.mockResolvedValue({
+      violations: [],
+      axleCalculationResults: createAxleCalculationResults(),
+    });
+
+    renderApplicationForm(false, PERMIT_TYPES.STOS);
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(mocks.policyValidate).toHaveBeenCalledOnce();
+    expect(mocks.handleSaveVehicle).toHaveBeenCalledOnce();
+    expect(mocks.saveApplication).toHaveBeenCalledOnce();
   });
 });

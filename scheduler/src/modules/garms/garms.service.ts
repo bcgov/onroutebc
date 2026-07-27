@@ -320,7 +320,7 @@ export class GarmsService {
     if (garmsExtractType === GarmsExtractType.CREDIT) {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
       qb = qb.leftJoinAndSelect('permit.company', 'company');
-      qb = qb.leftJoinAndSelect('company.creditAccount', 'creditaccount');
+      qb = qb.leftJoinAndSelect('transaction.creditAccount', 'creditaccount');
     }
     const result = await qb
       .andWhere('transaction.transactionApprovedDate >= :fromTimestamp', {

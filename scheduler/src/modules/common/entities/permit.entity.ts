@@ -16,6 +16,7 @@ import { PermitType } from '../enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
 import { Company } from './company.entity';
+import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -148,6 +149,21 @@ export class Permit extends Base {
     nullable: true,
   })
   permitApprovalSource: PermitApprovalSource;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: PermitIssuedBy,
+    example: PermitIssuedBy.PPC,
+    description: 'Permit issued by indicator',
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PermitIssuedBy,
+    length: 15,
+    name: 'PERMIT_ISSUED_BY_TYPE',
+    nullable: true,
+  })
+  permitIssuedBy: PermitIssuedBy;
 
   @AutoMap()
   @ApiProperty({
