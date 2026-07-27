@@ -74,7 +74,6 @@ interface PermitReviewProps {
   vehicleWasSaved?: Nullable<boolean>;
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   route?: Nullable<PermittedRoute>;
-  licensedGVW?: Nullable<number>;
   applicationNotes?: Nullable<string>;
   onEdit: () => void;
   onContinue?: () => Promise<void>;
