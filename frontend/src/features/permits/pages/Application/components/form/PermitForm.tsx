@@ -24,6 +24,7 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
+import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
 
 export const PermitForm = () => {
   const {
@@ -100,6 +101,8 @@ export const PermitForm = () => {
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
     onUpdateHaveCertificate,
+    isExtraordinaryLoadRequest,
+    onUpdateIsExtraordinaryLoadRequest,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -228,6 +231,13 @@ export const PermitForm = () => {
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
           showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
+        />
+
+        <ExtraordinaryLoadRequestSection
+          feature={feature}
+          permitType={permitType}
+          isExtraordinaryLoadRequest={isExtraordinaryLoadRequest}
+          onSetIsExtraordinaryLoadRequest={onUpdateIsExtraordinaryLoadRequest}
         />
 
         <LoadedDimensionsSection
