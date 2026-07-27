@@ -317,14 +317,11 @@ export const getDefaultValues = (
                 applicationData?.permitData?.extraordinaryLoadRequest
                   ?.isExtraordinaryLoadRequest,
               ),
-              approvalNumber: applicationData?.permitData
-                ?.extraordinaryLoadRequest?.approvalNumber
-                ? getDefaultRequiredVal(
-                    "",
-                    applicationData?.permitData?.extraordinaryLoadRequest
-                      .approvalNumber,
-                  )
-                : "",
+              approvalNumber: getDefaultRequiredVal(
+                "",
+                applicationData?.permitData?.extraordinaryLoadRequest
+                  ?.approvalNumber,
+              ),
             }
           : null,
     },
