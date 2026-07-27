@@ -87,6 +87,7 @@ interface VehicleConfiguration {
   rearProjection?: Nullable<number>;
   trailers?: VehicleDetails[];
   loadedGVW?: Nullable<number>;
+  actualGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleConfiguration[]>;
   vehicleDisplayCode?: Nullable<string>;
