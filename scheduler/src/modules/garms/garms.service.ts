@@ -211,7 +211,7 @@ export class GarmsService {
     toTimestamp: Date,
   ) {
     const oldFile = await this.findUnsubmittedOldFile(garmsExtractType);
-
+console.log('getOldFile',oldFile);
     if (oldFile) {
       return this.updateOldFileRecord(oldFile, toTimestamp);
     } else {
