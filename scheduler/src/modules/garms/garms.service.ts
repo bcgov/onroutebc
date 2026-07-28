@@ -274,6 +274,7 @@ console.log('getOldFile',oldFile);
     toTimestamp: Date,
   ): Promise<GarmsExtractFile> {
     const latestFile = await this.getLatestFile(garmsExtractType);
+    console.log('latestFile',latestFile)
     if (latestFile) {
       const newFile = new GarmsExtractFile();
       newFile.fromTimestamp = latestFile.toTimestamp;
@@ -281,6 +282,7 @@ console.log('getOldFile',oldFile);
       newFile.fileSubmitTimestamp = null;
       newFile.garmsExtractType = garmsExtractType;
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
+      console.log('savedFile',savedFile);
       return savedFile;
     }
   }
