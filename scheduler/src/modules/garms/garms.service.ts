@@ -121,6 +121,7 @@ export class GarmsService {
     const garmsExtractType = GarmsExtractType.CREDIT;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
+    console.log('oldFile', oldFile)
     if (oldFile) {
       const { fileId, fromTimestamp } = oldFile;
       oldFile.toTimestamp = toTimestamp;
