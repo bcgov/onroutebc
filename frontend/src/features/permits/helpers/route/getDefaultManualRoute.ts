@@ -19,7 +19,11 @@ export const getDefaultManualRoute = (
         ? getDefaultRequiredVal(null, manualRoute?.exitPoint)
         : null,
     totalDistance:
-      permitType === PERMIT_TYPES.MFP || permitType === PERMIT_TYPES.STOW
+      (
+        permitType === PERMIT_TYPES.MFP ||
+        permitType === PERMIT_TYPES.STOW ||
+        permitType === PERMIT_TYPES.STWSE
+      )
         ? getDefaultRequiredVal(null, manualRoute?.totalDistance)
         : null,
   };

@@ -42,6 +42,7 @@ import {
 import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
 import { ICBCInsuranceCertificate } from "../../../../types/ICBCInsuranceCertificate";
 import { ReviewICBCInsuranceCertificateSection } from "./ReviewICBCInsuranceCertificateSection";
+import { OverloadWeights } from "./OverloadWeights";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -202,6 +203,16 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <LoadedDimensions
+          permitType={props.permitType}
+          vehicleConfiguration={props.vehicleConfiguration}
+          oldVehicleConfiguration={
+            props.oldFields?.permitData?.vehicleConfiguration
+          }
+          showChangedFields={props.showChangedFields}
+        />
+
+        <OverloadWeights
+          permitType={props.permitType}
           vehicleConfiguration={props.vehicleConfiguration}
           oldVehicleConfiguration={
             props.oldFields?.permitData?.vehicleConfiguration

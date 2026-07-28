@@ -38,8 +38,9 @@ export const StartApplicationAction = () => {
   const enableNRSCV = featureFlags?.["NRSCV"] === "ENABLED";
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   const enableHC = featureFlags?.["HC"] === "ENABLED";
+  const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
 
-  const showSingleTrip = enableSTOS || enableSTOW;
+  const showSingleTrip = enableSTOS || enableSTOW || enableSTWSE;
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
 
@@ -82,7 +83,8 @@ export const StartApplicationAction = () => {
           if (item.value === PERMIT_CATEGORIES.SINGLE_TRIP) {
             return (
               (nestedItem.value === PERMIT_TYPES.STOS && enableSTOS) ||
-              (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW)
+              (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW) ||
+              (nestedItem.value === PERMIT_TYPES.STWSE && enableSTWSE)
             );
           }
           if (item.value === PERMIT_CATEGORIES.NON_RESIDENT) {

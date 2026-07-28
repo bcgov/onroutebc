@@ -195,6 +195,9 @@ export const areVehicleConfigurationsEqual = (
     vehicleConfig1?.trailers,
     vehicleConfig2?.trailers,
     (trailer1, trailer2) => trailer1.vehicleSubType === trailer2.vehicleSubType,
+  ) && (
+    getDefaultRequiredVal(0, vehicleConfig1?.overloadWeight)
+      === getDefaultRequiredVal(0, vehicleConfig2?.overloadWeight)
   );
 };
 

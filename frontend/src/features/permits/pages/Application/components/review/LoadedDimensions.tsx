@@ -6,16 +6,23 @@ import { Nullable } from "../../../../../../common/types/common";
 import { DiffChip } from "./DiffChip";
 import { PermitVehicleConfiguration } from "../../../../types/PermitVehicleConfiguration";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 
 export const LoadedDimensions = ({
+  permitType,
   vehicleConfiguration,
   oldVehicleConfiguration,
   showChangedFields = false,
 }: {
+  permitType?: Nullable<PermitType>,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   oldVehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   showChangedFields?: boolean;
 }) => {
+  const headerTitle = permitType === PERMIT_TYPES.STWSE
+    ? "Dimensions (Metres)"
+    : "Loaded Dimensions (Metres)";
+  
   const changedFields = showChangedFields
     ? {
         overallWidth: areValuesDifferent(
@@ -57,7 +64,7 @@ export const LoadedDimensions = ({
     <Box className="review-loaded-dimensions">
       <Box className="review-loaded-dimensions__header">
         <Typography variant={"h3"} className="review-loaded-dimensions__title">
-          Loaded Dimensions (Metres)
+          {headerTitle}
         </Typography>
       </Box>
 

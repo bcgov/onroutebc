@@ -5,7 +5,14 @@ import { isNull, isUndefined, Nullable, Optional } from "../../../../../common/t
 export const gvwLimit = (permitType: PermitType) => {
   if (
     (
-      [PERMIT_TYPES.STOS, PERMIT_TYPES.STOW, PERMIT_TYPES.MFP, PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+      [
+        PERMIT_TYPES.STOS,
+        PERMIT_TYPES.STOW,
+        PERMIT_TYPES.MFP,
+        PERMIT_TYPES.STFR,
+        PERMIT_TYPES.QRFR,
+        PERMIT_TYPES.STWSE,
+      ] as PermitType[]
     ).includes(permitType)
   ) {
     return 63500;

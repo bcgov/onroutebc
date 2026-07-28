@@ -24,6 +24,7 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
+import { OverloadWeightSection } from "./OverloadWeightSection/OverloadWeightSection";
 
 export const PermitForm = () => {
   const {
@@ -231,6 +232,13 @@ export const PermitForm = () => {
         />
 
         <LoadedDimensionsSection
+          permitType={permitType}
+          feature={feature}
+          vehicleConfiguration={vehicleConfiguration}
+          onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <OverloadWeightSection
           permitType={permitType}
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}

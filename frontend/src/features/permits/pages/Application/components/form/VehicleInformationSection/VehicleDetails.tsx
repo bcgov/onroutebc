@@ -110,6 +110,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.NRQCV,
       PERMIT_TYPES.STOS,
       PERMIT_TYPES.STOW,
+      PERMIT_TYPES.STWSE,
     ] as PermitType[]
   ).includes(permitType);
 

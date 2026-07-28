@@ -16,4 +16,5 @@ export interface PermitVehicleConfiguration {
   loadedGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleUnit[]>;
+  overloadWeight?: Nullable<number>;
 }
