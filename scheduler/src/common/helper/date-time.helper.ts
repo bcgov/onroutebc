@@ -7,7 +7,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
 
-export const LOCAL_TIMEZONE_ID = 'Canada/Pacific';
+export const LOCAL_TIMEZONE_ID = 'America/Vancouver';
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   const formattedDate = dayjs
@@ -42,6 +42,11 @@ export const getToDateForGarms = () => {
     ? scheduledDtOneDayBeforeLocal
     : scheduledDtLocal;
 
+    console.log('nowDtLocal',nowDtLocal);
+    console.log('scheduledDtOneDayBeforeLocal',scheduledDtOneDayBeforeLocal);
+console.log('scheduledDtLocal',scheduledDtLocal);
+console.log('lastRunDate',lastRunDate);
+console.log('lastRunDate.utc().toDate()',lastRunDate.utc().toDate());
   return lastRunDate.utc().toDate(); // Convert to UTC before returning
 };
 

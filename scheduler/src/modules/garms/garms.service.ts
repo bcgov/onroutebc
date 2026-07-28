@@ -100,12 +100,14 @@ export class GarmsService {
     }
   }
 
-  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
+  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */2 * * * *'}`)
   async processCreditTransactions() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'GARMS credit file processing')) {
       return false;
     }
+
+    this.logger.log('Running GARMS_CREDIT_CRON_JOB*******');
 
     const garmsCashFeatureFlag = (await getFromCache(
       this.cacheManager,
@@ -122,6 +124,8 @@ export class GarmsService {
     if (oldFile) {
       const { fileId, fromTimestamp } = oldFile;
       oldFile.toTimestamp = toTimestamp;
+      console.log('fromTimestamp',fromTimestamp)
+      console.log('toTimestamp',toTimestamp)
       // Fetch transactions based on the provided timestamps
       const transactions = await this.getTransactionWithPermitDetails(
         fromTimestamp,

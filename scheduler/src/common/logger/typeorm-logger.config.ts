@@ -22,7 +22,7 @@ export class TypeormCustomLogger extends AbstractLogger {
   protected writeLog(level: LogLevel, logMessage: LogMessage | LogMessage[]) {
     const messages = this.prepareLogMessages(logMessage, {
       highlightSql: true,
-      appendParameterAsComment: false,
+      appendParameterAsComment: true,
       addColonToPrefix: false,
     });
 
