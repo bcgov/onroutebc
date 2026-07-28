@@ -488,3 +488,7 @@
 ### Version 101:
 
 - Add extraordinary load request conditions for STOW to policy config
+
+### Version 102:
+
+- Updates to the policy configuration to add STGVWI permit type.
