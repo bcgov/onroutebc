@@ -100,7 +100,7 @@ export class GarmsService {
     }
   }
 
-  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */2 * * * *'}`)
+  @Cron('0 */2 * * * *')
   async processCreditTransactions() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'GARMS credit file processing')) {
