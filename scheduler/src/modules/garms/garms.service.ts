@@ -124,8 +124,8 @@ export class GarmsService {
     if (oldFile) {
       const { fileId, fromTimestamp } = oldFile;
       oldFile.toTimestamp = toTimestamp;
-      console.log('fromTimestamp', fromTimestamp);
-      console.log('toTimestamp', toTimestamp);
+      console.log('fromTimestamp garms', fromTimestamp);
+      console.log('toTimestamp garms', toTimestamp);
       // Fetch transactions based on the provided timestamps
       const transactions = await this.getTransactionWithPermitDetails(
         fromTimestamp,
