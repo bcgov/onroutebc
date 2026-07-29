@@ -487,4 +487,8 @@
 
 ### Version 101:
 
-- Updates to policy config to add STGVWI permit type.
+- Add extraordinary load request conditions for STOW to policy config
+
+### Version 102:
+
+- Updates to the policy configuration to add STGVWI permit type.
