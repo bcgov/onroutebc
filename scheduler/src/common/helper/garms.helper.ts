@@ -326,7 +326,7 @@ export const createGarmsCreditFileDetails = (
 
   gcd.permitApplicationSource = formatString(permitApplicationSource, 25);
   gcd.permitDate = formatString(
-    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYYYMMDD'),
+    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYMMDD'),
     35,
   );
   gcd.invUnits = INV_QTY;
