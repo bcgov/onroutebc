@@ -24,13 +24,9 @@ export const ActualGVW = ({
   actualGVW: number;
   licensedGVW: number;
 }) => {
-  if (permitType !== PERMIT_TYPES.STGVWI) {
-    return null;
-  }
-
   const licensedGVWIncrease = getLicensedGVWIncrease(actualGVW, licensedGVW);
 
-  return (
+  return permitType === PERMIT_TYPES.STGVWI ? (
     <div className="actual-gvw-section">
       <div className="actual-gvw-section__header">
         <h3>Actual GVW (kg)</h3>
@@ -82,5 +78,5 @@ export const ActualGVW = ({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
