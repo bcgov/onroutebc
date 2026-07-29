@@ -247,16 +247,16 @@ export const ApplicationReview = ({
 
           refetchCartCount();
 
-          if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+          if (!isCopiedApplication)
+            return navigate(APPLICATIONS_ROUTES.BASE);
 
           return navigate(APPLICATIONS_ROUTES.BASE, {
             state: {
-              selectedTab:
-                copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-                  ? PERMIT_TABS.ACTIVE_PERMITS
-                  : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-                    ? PERMIT_TABS.EXPIRED_PERMITS
-                    : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+              selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+                ? PERMIT_TABS.ACTIVE_PERMITS
+                : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+                ? PERMIT_TABS.EXPIRED_PERMITS
+                : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
             },
           });
         });
@@ -281,17 +281,17 @@ export const ApplicationReview = ({
           message: `Application ${applicationNumber} submitted for review`,
           alertType: "success",
         });
-
-        if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+        
+        if (!isCopiedApplication)
+          return navigate(APPLICATIONS_ROUTES.BASE);
 
         return navigate(APPLICATIONS_ROUTES.BASE, {
           state: {
-            selectedTab:
-              copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-                ? PERMIT_TABS.ACTIVE_PERMITS
-                : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-                  ? PERMIT_TABS.EXPIRED_PERMITS
-                  : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+            selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+              ? PERMIT_TABS.ACTIVE_PERMITS
+              : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+              ? PERMIT_TABS.EXPIRED_PERMITS
+              : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
           },
         });
       },
@@ -349,6 +349,7 @@ export const ApplicationReview = ({
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   return (
     <div className="application-review">
       {isQueueContext ? (
@@ -430,9 +431,7 @@ export const ApplicationReview = ({
             applicationData?.permitData?.conditionalLicensingFee
           }
           companyId={companyId}
-          icbcInsuranceCertificate={
-            applicationData?.permitData?.icbcInsuranceCertificate
-          }
+          icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
         />
       </FormProvider>
 

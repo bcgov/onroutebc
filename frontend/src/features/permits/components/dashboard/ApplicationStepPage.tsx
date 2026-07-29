@@ -142,15 +142,24 @@ export const ApplicationStepPage = ({
   // d) Permit status can be ignored only if the application is being copied from another permit
   const isValidApplicationStatus = () => {
     return (
-      !isInvalidApplication &&
-      ((applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
-        (typeof applicationData === "undefined" ||
-          applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
-          applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS)) ||
-        (applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
-          (!applicationData?.permitStatus ||
+      !isInvalidApplication && (
+        (
+          applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            typeof applicationData === "undefined" ||
+            applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+          )
+        ) ||
+        (
+          applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            !applicationData?.permitStatus ||
             applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)))
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
+          )
+        )
+      )
     );
   };
 

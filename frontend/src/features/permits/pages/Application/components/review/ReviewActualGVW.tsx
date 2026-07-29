@@ -14,11 +14,8 @@ export const ReviewActualGVW = ({
   actualGVW: number;
   licensedGVW: number;
 }) => {
-  if (permitType !== PERMIT_TYPES.STGVWI) {
-    return null;
-  }
   const licensedGVWIncrease = getLicensedGVWIncrease(actualGVW, licensedGVW);
-  return (
+  return permitType === PERMIT_TYPES.STGVWI ? (
     <Box className="review-actual-gvw">
       <Box className="review-actual-gvw__header">
         <Typography variant="h3">Actual GVW</Typography>
@@ -54,5 +51,5 @@ export const ReviewActualGVW = ({
         </Box>
       </Box>
     </Box>
-  );
+  ) : null;
 };

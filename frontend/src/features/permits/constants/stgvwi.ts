@@ -17,6 +17,7 @@ export const MANDATORY_STGVWI_CONDITIONS: PermitCondition[] = [
 export const MIN_STGVWI_DURATION = 1;
 export const MAX_STGVWI_CV_DURATION = 7;
 export const MAX_STGVWI_STAFF_DURATION = 30;
+export const STGVWI_DURATION_INTERVAL_DAYS = 1;
 
 export const STGVWI_CV_DURATION_OPTIONS = [
   { value: MIN_STGVWI_DURATION, label: "1 Day" },

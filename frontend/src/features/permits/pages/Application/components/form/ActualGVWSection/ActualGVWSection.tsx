@@ -1,6 +1,6 @@
 import { Controller } from "react-hook-form";
 
-import "./actualgvw.scss";
+import "./ActualGVWSection.scss";
 import { getLicensedGVWIncrease } from "../../../../../helpers/vehicleWeightHelper";
 import {
   ORBCFormFeatureType,

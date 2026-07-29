@@ -69,6 +69,7 @@ import {
   MAX_STGVWI_STAFF_DURATION,
   MIN_STGVWI_DURATION,
   STGVWI_CV_DURATION_OPTIONS,
+  STGVWI_DURATION_INTERVAL_DAYS,
   STGVWI_STAFF_DURATION_OPTIONS,
 } from "../constants/stgvwi";
 
@@ -192,6 +193,8 @@ export const getDurationIntervalDays = (permitType: PermitType) => {
       return TROW_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.TROS:
       return TROS_DURATION_INTERVAL_DAYS;
+    case PERMIT_TYPES.STGVWI:
+      return STGVWI_DURATION_INTERVAL_DAYS;
     default:
       return TERM_DURATION_INTERVAL_DAYS; // This needs to be updated once more permit types are added
   }
