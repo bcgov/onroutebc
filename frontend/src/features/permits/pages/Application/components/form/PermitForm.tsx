@@ -24,7 +24,7 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
-import { ActualGVW } from "./ActualGVW/actualgvw";
+import { ActualGVW } from "./ActualGVWSection/ActualGVWSection";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
 
