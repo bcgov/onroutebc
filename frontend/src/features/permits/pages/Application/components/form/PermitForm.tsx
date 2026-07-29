@@ -94,7 +94,6 @@ export const PermitForm = () => {
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
-    onUpdateActualGVW,
     onClearVehicleConfig,
     onUpdateThirdPartyLiability,
     onUpdateConditionalLicensingFee,
@@ -256,7 +255,6 @@ export const PermitForm = () => {
           permitType={permitType}
           actualGVW={getDefaultRequiredVal(0, vehicleConfiguration?.actualGVW)}
           licensedGVW={getDefaultRequiredVal(0, vehicleFormData?.licensedGVW)}
-          onUpdateActualGVW={onUpdateActualGVW}
         />
 
         <TripDetailsSection
