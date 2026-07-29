@@ -11,14 +11,28 @@ import { getCurrentPacificDateTime } from './date-time.helper';
  * @returns {Date} The UTC last run date based on Pacific timezone context at 9:00 PM.
  */
 export const getToDateForGarms = () => {
-  const today = getCurrentPacificDateTime();
-  const currentHour = today.hour();
-  // Set the base date to today, but at 9:00 PM PST
-  let lastRunDate = today.set('hour', 21).set('minute', 0).set('second', 0);
+  // Current timestamp in the target timezone
+  const currentTimeInTargetTimezone = getCurrentPacificDateTime();
+
+  // Today at 9:00 PM in the target timezone
+  const todayAt9PmInTargetTimezone = currentTimeInTargetTimezone
+    .hour(21)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+
+  // Tomorrow at 9:00 PM in the target timezone
+  const tomorrowAt9PmInTargetTimezone = todayAt9PmInTargetTimezone.add(
+    1,
+    'day',
+  );
 
   // If the current time is after 9:00 PM PST, set it to the next day at 9:00 PM
-  if (currentHour > 21) {
-    lastRunDate = lastRunDate.add(1, 'day');
-  }
-  return lastRunDate.utc().toDate(); // Convert to UTC before returning
+  const lastRunTimestampInTargetTimezone = currentTimeInTargetTimezone.isAfter(
+    todayAt9PmInTargetTimezone,
+  )
+    ? tomorrowAt9PmInTargetTimezone
+    : todayAt9PmInTargetTimezone;
+
+  return lastRunTimestampInTargetTimezone.utc().toDate();
 };

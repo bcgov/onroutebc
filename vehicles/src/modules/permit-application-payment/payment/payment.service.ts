@@ -74,6 +74,7 @@ import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-v
 import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
 import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
+import { getCurrentPacificDateTime } from '../../../common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {
@@ -219,17 +220,12 @@ export class PaymentService {
    */
   @LogAsyncMethodExecution()
   async generateReceiptNumber(): Promise<string> {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const dateString = `${year}${month}${day}`;
-    const source = dateString;
+    const currentDate = getCurrentPacificDateTime()?.format('YYYYMMDD');
     const seq = await callDatabaseSequence(
       'permit.ORBC_RECEIPT_NUMBER_SEQ',
       this.dataSource,
     );
-    const receiptNumber = String(String(source) + '-' + String(seq));
+    const receiptNumber = String(String(currentDate) + '-' + String(seq));
 
     return receiptNumber;
   }
