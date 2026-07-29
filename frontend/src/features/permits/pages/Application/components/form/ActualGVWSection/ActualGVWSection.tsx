@@ -1,43 +1,35 @@
-import { Controller } from "react-hook-form";
-
 import "./ActualGVWSection.scss";
-import { getLicensedGVWIncrease } from "../../../../../helpers/vehicleWeightHelper";
+
+import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import {
-  ORBCFormFeatureType,
-  RequiredOrNull,
-} from "../../../../../../../common/types/common";
+  invalidInput,
+  invalidNumber,
+  licensedGVWExceeded,
+  mustBeGreaterThan,
+  requiredMessage,
+} from "../../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
+import { getLicensedGVWIncrease } from "../../../../../helpers/vehicleWeightHelper";
+import { gvwLimit } from "../../../../../helpers/vehicles/rules/gvw";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { NumberInput } from "../../../../../../../common/components/form/subFormComponents/NumberInput";
-import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { convertToNumberIfValid } from "../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 
 export const ActualGVW = ({
   feature,
   permitType,
   actualGVW,
   licensedGVW,
-  onUpdateActualGVW,
 }: {
   feature: ORBCFormFeatureType;
   permitType: PermitType;
   actualGVW: number;
   licensedGVW: number;
-  onUpdateActualGVW: (updatedActualGVW?: RequiredOrNull<number>) => void;
 }) => {
-  const handleUpdateActualGVW = (numericStr: string) => {
-    const updatedActualGVW = getDefaultRequiredVal(
-      null,
-      convertToNumberIfValid(numericStr, null),
-    );
-
-    onUpdateActualGVW(updatedActualGVW);
-  };
-
-  const licensedGVWIncrease = getLicensedGVWIncrease(actualGVW, licensedGVW);
-
   if (permitType !== PERMIT_TYPES.STGVWI) {
     return null;
   }
+
+  const licensedGVWIncrease = getLicensedGVWIncrease(actualGVW, licensedGVW);
+
   return (
     <div className="actual-gvw-section">
       <div className="actual-gvw-section__header">
@@ -45,41 +37,42 @@ export const ActualGVW = ({
       </div>
 
       <div className="actual-gvw-section__body">
-        <Controller
-          name="permitData.vehicleConfiguration.actualGVW"
-          rules={{
-            required: {
-              value: true,
-              message: "This is a required field",
-            },
-            validate: {
-              greaterThanLicensed: (value) =>
-                value > licensedGVW || "Must be greater than Licensed GVW.",
-              maxAllowed: (value) => value <= 63500 || "Cannot exceed 63,500kg",
+        <CustomFormComponent
+          className="actual-gvw-section__input"
+          type="input"
+          feature={feature}
+          options={{
+            name: "permitData.vehicleConfiguration.actualGVW",
+            inputType: "number",
+            label: "Actual GVW (kg)",
+            rules: {
+              required: {
+                value: true,
+                message: requiredMessage(),
+              },
+              min: {
+                value: 0,
+                message: invalidInput(),
+              },
+              validate: {
+                isNumber: (v) => !isNaN(v) || invalidNumber(),
+                greaterThanLicensed: (v) =>
+                  Number(v) > licensedGVW ||
+                  "Must be greater than Licensed GVW.",
+                greaterThanZero: (v) => Number(v) > 0 || mustBeGreaterThan(0),
+                exceededGvw: (v) => {
+                  const maxAllowedGvw = gvwLimit(permitType);
+                  if (maxAllowedGvw === undefined) {
+                    return true;
+                  }
+                  return (
+                    Number(v) <= maxAllowedGvw ||
+                    licensedGVWExceeded(maxAllowedGvw, true)
+                  );
+                },
+              },
             },
           }}
-          render={({ fieldState: { error } }) => (
-            <NumberInput
-              label={{
-                id: `${feature}-actual-gvw-label`,
-                component: "Actual GVW (kg)",
-              }}
-              classes={{
-                root: "actual-gvw-section__input",
-              }}
-              inputProps={{
-                value: getDefaultRequiredVal(null, actualGVW),
-                onBlur: (e) => handleUpdateActualGVW(e.target.value),
-              }}
-              helperText={
-                error?.message
-                  ? {
-                      errors: [error.message],
-                    }
-                  : undefined
-              }
-            />
-          )}
         />
 
         <hr className="actual-gvw-section__divider" />
