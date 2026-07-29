@@ -261,7 +261,9 @@ export const getDefaultValues = (
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
       applicationNotes:
-        permitType !== PERMIT_TYPES.STOS && permitType !== PERMIT_TYPES.STOW
+        permitType !== PERMIT_TYPES.STOS &&
+        permitType !== PERMIT_TYPES.STOW &&
+        permitType !== PERMIT_TYPES.STGVWI
           ? null
           : getDefaultRequiredVal(
               "",

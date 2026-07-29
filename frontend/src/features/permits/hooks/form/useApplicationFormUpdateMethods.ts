@@ -282,6 +282,13 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateActualGVW = useCallback(
+    (updatedActualGVW: Nullable<number>) => {
+      setValue("permitData.vehicleConfiguration.actualGVW", updatedActualGVW);
+    },
+    [setValue],
+  );
+
   const onUpdateNetWeight = useCallback(
     (updatedNetWeight: Nullable<number>) => {
       setValue("permitData.vehicleConfiguration.netWeight", updatedNetWeight);
@@ -371,6 +378,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+    onUpdateActualGVW,
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     onUpdateHaveCertificate,
