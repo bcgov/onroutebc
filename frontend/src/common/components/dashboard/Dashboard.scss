@@ -1,4 +1,7 @@
 @use "../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".dashboard-page__breadcrumb");
+@include orbcStyles.layout-box-style(".dashboard-page__info-banner");
+@include orbcStyles.layout-box-style(".dashboard-page__form");
 
 .dashboard-page {
   & &__banner {
@@ -36,14 +39,14 @@
   }
 
   & &__form {
-    display: flex;
     padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
     background-color: orbcStyles.$white;
 
     h2 {
       padding-top: 0;
       margin-top: 0;
-      margin-right: 12.5rem;
+      border-bottom: none;
     }
   }
 }

@@ -1,8 +1,5 @@
 @use "../../../../../../../themes/orbcStyles";
-
 @include orbcStyles.permit-main-box-style(".icbc-insurance-certificate-section");
-@include orbcStyles.permit-left-box-style(".icbc-insurance-certificate-section__header");
-@include orbcStyles.permit-right-box-style(".icbc-insurance-certificate-section__body");
 
 .icbc-insurance-certificate-section {
   &__info-banner {
