@@ -1,0 +1,16 @@
+@use "../../../../../themes/orbcStyles";
+
+.edit-user-form {
+  .section {
+    &__assign-user {
+      display: flex;
+      gap: 1rem;
+    }
+
+    &__actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+}

@@ -29,13 +29,14 @@
   }
 
   & &__info-banner {
-    display: flex;
-    align-items: center;
     background-color: orbcStyles.$white;
 
-    .bc-gov-alertbanner {
+    .bc-gov-alertbanner--info {
+      max-width: 67.5rem;
+      box-sizing: border-box;
       width: 100%;
     }
+
   }
 
   & &__form {
