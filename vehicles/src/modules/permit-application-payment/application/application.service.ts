@@ -82,6 +82,7 @@ import { ApplicationRejectedNotification } from '../../../common/interface/appli
 import {
   convertUtcToPt,
   differenceBetween,
+  getCurrentPacificDateTime,
 } from '../../../common/helper/date-time.helper';
 import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
@@ -93,7 +94,6 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
-import * as dayjs from 'dayjs';
 import { Case } from 'src/modules/case-management/entities/case.entity';
 
 @Injectable()
@@ -658,7 +658,7 @@ export class ApplicationService {
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
-      const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      const currentDate = getCurrentPacificDateTime()?.format('YYYY-MM-DD');
       if (
         !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
         differenceBetween(permitData?.startDate, currentDate, 'days') > 0
