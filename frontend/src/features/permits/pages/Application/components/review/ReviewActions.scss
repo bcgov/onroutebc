@@ -1,12 +1,15 @@
-@import "../../../../../../themes/orbcStyles";
+@use "../../../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".review-actions");
 
 .review-actions {
-  background-color: $bc-white;
+  background-color: orbcStyles.$bc-white;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 2.5rem;
-
+  border-top: 1px solid orbcStyles.$bc-border-grey;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
   & &__btn {
     box-shadow: none;
     &:hover {
@@ -23,18 +26,18 @@
 
     &--reject {
       &:hover {
-        background-color: $bc-messages-red-text;
+        background-color: orbcStyles.$bc-messages-red-text;
       }
       &:disabled {
-        background-color: $bc-red-disabled;
-        color: $white;
+        background-color: orbcStyles.$bc-red-disabled;
+        color: orbcStyles.$white;
       }
     }
 
     &--approve {
       &:disabled {
-        background-color: $disabled-colour;
-        color: $white;
+        background-color: orbcStyles.$disabled-colour;
+        color: orbcStyles.$white;
       }
     }
 
@@ -43,13 +46,13 @@
       padding-right: 2rem;
      
       font-weight: bold;
-      border-color: $bc-primary-blue;
-      color: $bc-primary-blue;
-      background-color: $white;
+      border-color: orbcStyles.$bc-primary-blue;
+      color: orbcStyles.$bc-primary-blue;
+      background-color: orbcStyles.$white;
 
       &:hover {
-        background-color: $bc-text-links-blue;
-        color: $white;
+        background-color: orbcStyles.$bc-text-links-blue;
+        color: orbcStyles.$white;
       }
     }
 

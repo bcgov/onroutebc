@@ -1,3 +1,6 @@
+@use "../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".application-details");
+
 .application-details {
   & &__title {
     margin-top: 0;

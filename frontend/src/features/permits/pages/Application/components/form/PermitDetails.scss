@@ -1,8 +1,5 @@
 @use "../../../../../../themes/orbcStyles";
-
 @include orbcStyles.permit-main-box-style(".permit-details");
-@include orbcStyles.permit-left-box-style(".permit-details__header");
-@include orbcStyles.permit-right-box-style(".permit-details__body");
 
 .permit-details {
   & &__info-banner {

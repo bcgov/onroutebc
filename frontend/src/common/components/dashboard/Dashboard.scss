@@ -1,8 +1,4 @@
-@import "../../../themes/orbcStyles";
-
-.layout-box {
-  padding: 0 8.551vw;
-}
+@use "../../../themes/orbcStyles";
 
 .dashboard-page {
   & &__banner {
@@ -13,11 +9,11 @@
     display: flex;
     height: 3.75rem;
     align-items: center;
-    background-color: $white;
+    background-color: orbcStyles.$white;
 
     .breadcrumb-link {
       &--parent {
-        color: $bc-text-links-blue;
+        color: orbcStyles.$bc-text-links-blue;
         cursor: pointer;
         margin-right: 0.5rem;
         text-decoration: underline;
@@ -32,7 +28,7 @@
   & &__info-banner {
     display: flex;
     align-items: center;
-    background-color: $white;
+    background-color: orbcStyles.$white;
 
     .bc-gov-alertbanner {
       width: 100%;
@@ -42,7 +38,7 @@
   & &__form {
     display: flex;
     padding-top: 1.5rem;
-    background-color: $white;
+    background-color: orbcStyles.$white;
 
     h2 {
       padding-top: 0;
@@ -82,27 +78,6 @@
   @media (width < 420px) {
     #{$page-tabpanel-container} {
       padding: 0 1rem;
-    }
-  }
-}
-
-@mixin layout-box-style($layout-box) {
-  #{$layout-box} {
-    padding-left: 8.551vw;
-    padding-right: 8.551vw;
-  }
-
-  @media screen and (max-width: 768px) {
-    #{$layout-box} {
-      padding-left: 5.5rem;
-      padding-right: 5.5rem;
-    }
-  }
-
-  @media (width < 420px) {
-    #{$layout-box} {
-      padding-left: 1rem;
-      padding-right: 1rem;
     }
   }
 }
