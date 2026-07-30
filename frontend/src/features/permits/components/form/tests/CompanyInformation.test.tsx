@@ -10,7 +10,6 @@ import {
 } from "./helpers/CompanyInformation/prepare";
 
 import {
-  headerDescription,
   headerTitle,
   mailAddrCityPostal,
   mailAddrCountry,
