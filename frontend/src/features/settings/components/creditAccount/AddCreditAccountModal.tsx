@@ -203,6 +203,7 @@ export const AddCreditAccountModal = ({
                         value: true,
                         message: requiredMessage(),
                       },
+                      maxLength: 6,
                     },
                     label: "Enter WS No.",
                   }}

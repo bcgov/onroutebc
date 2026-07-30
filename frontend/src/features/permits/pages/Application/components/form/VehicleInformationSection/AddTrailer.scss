@@ -1,8 +1,9 @@
-@import "../../../../../../../themes/orbcStyles";
+@use "../../../../../../../themes/orbcStyles";
 
 .add-trailer {
   padding: 1.5rem 0 0 0;
-  border-top: 1px solid $bc-text-box-border-grey;
+  border-top: 1px solid orbcStyles.$bc-border-grey;
+  max-width: 67.5rem;
 
   & &__trailer-list {
     margin-top: 1rem;
@@ -15,23 +16,23 @@
 
     .form-control {
       &__label {
-        color: $bc-black;
+        color: orbcStyles.$bc-black;
         font-weight: bold;
         margin-bottom: 0.5rem;
   
         &--focused {
-          color: $bc-black;
+          color: orbcStyles.$bc-black;
         }
       }
   
       &__select {
         fieldset {
-          border: 2px solid $bc-text-box-border-grey;
+          border: 2px solid orbcStyles.$bc-text-box-border-grey;
         }
 
         &:focus-within {
           fieldset {
-            border: 2px solid $focus-blue;
+            border: 2px solid orbcStyles.$focus-blue;
           }
         }
       }
@@ -44,7 +45,7 @@
 
   & &__reset-btn {
     margin-top: 1.5rem;
-    background-color: $bc-background-light-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
     padding: 0.875rem 1rem;
     box-shadow: none;
     line-height: normal;
@@ -52,14 +53,14 @@
     border: none;
 
     &:hover {
-      background-color: $bc-background-light-grey;
-      border: 2px solid $bc-text-box-border-grey;
+      background-color: orbcStyles.$bc-background-light-grey;
+      border: 2px solid orbcStyles.$bc-text-box-border-grey;
       box-shadow: none;
     }
   }
 
   & &__error {
-    color: $bc-red;
+    color: orbcStyles.$bc-red;
     margin: 0.5rem 0 0 0;
   }
 }
