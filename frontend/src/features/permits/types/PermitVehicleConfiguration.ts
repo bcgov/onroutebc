@@ -15,5 +15,6 @@ export interface PermitVehicleConfiguration {
   trailers?: Nullable<VehicleInConfiguration[]>;
   loadedGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
+  actualGVW?: Nullable<number>;
   axleConfiguration?: Nullable<AxleUnit[]>;
 }

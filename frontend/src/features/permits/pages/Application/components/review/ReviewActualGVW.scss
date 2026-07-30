@@ -1,0 +1,22 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-actual-gvw");
+@include orbcStyles.permit-left-box-style(".review-actual-gvw__header");
+@include orbcStyles.permit-right-box-style(".review-actual-gvw__body");
+
+.review-actual-gvw {
+  .info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    &__label {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    &__data {
+      font-size: 1rem;
+    }
+  }
+}

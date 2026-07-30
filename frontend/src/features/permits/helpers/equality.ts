@@ -186,6 +186,8 @@ export const areVehicleConfigurationsEqual = (
       getDefaultRequiredVal(0, vehicleConfig2?.rearProjection) &&
     getDefaultRequiredVal(0, vehicleConfig1?.loadedGVW) ===
       getDefaultRequiredVal(0, vehicleConfig2?.loadedGVW) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.actualGVW) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.actualGVW) &&
     getDefaultRequiredVal(0, vehicleConfig1?.netWeight) ===
       getDefaultRequiredVal(0, vehicleConfig2?.netWeight) &&
     areOrderedSequencesEqual(
