@@ -109,10 +109,12 @@ export const ApplicationDetails = ({
         )}
       </div>
 
-      <CompanyBanner
-        companyName={companyInfo?.legalName}
-        clientNumber={companyInfo?.clientNumber}
-      />
+      <div className="application-details__company-banner">
+        <CompanyBanner
+          companyName={companyInfo?.legalName}
+          clientNumber={companyInfo?.clientNumber}
+        />
+      </div>
 
       <CompanyInformation
         companyInfo={companyInfo}

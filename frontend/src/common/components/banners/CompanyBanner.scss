@@ -1,4 +1,5 @@
 @use "../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".company-banner__container");
 
 .company-banner {
   background-color: orbcStyles.$banner-grey;

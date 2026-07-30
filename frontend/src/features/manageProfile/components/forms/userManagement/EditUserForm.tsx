@@ -1,5 +1,5 @@
 import { memo, useContext, useState } from "react";
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -9,12 +9,11 @@ import { CustomActionLink } from "../../../../../common/components/links/CustomA
 import { SnackBarContext } from "../../../../../App";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../../routes/constants";
-import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCeID_USER_ROLE } from "../../../../../common/authentication/types";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
-import "../myInfo/MyInfoForm.scss";
+import "./EditUserForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
@@ -118,104 +117,65 @@ export const EditUserForm = memo(
 
     return (
       <FormProvider {...formMethods}>
-        <Box
-          className="layout-box"
-          sx={{
-            paddingTop: "24px",
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
-          <Stack spacing={4} divider={<Divider />}>
-            <Stack direction="row" spacing={10}>
-              <Typography
-                variant={"h2"}
-                sx={{
-                  marginRight: "200px",
-                  marginTop: "0px",
-                  paddingTop: "0px",
-                  borderBottom: "0px",
-                }}
-              >
-                User Details
-              </Typography>
+        <div className="edit-user-form">
+          <div className="edit-user-form__section">
+            <ReusableUserInfoForm feature={FEATURE} />
 
-              <ReusableUserInfoForm feature={FEATURE} />
-            </Stack>
-
-            <Stack direction="row">
-              <Stack>
-                <Typography
-                  variant={"h2"}
-                  sx={{
-                    marginRight: "200px",
-                    marginTop: "0px",
-                    paddingTop: "0px",
-                    borderBottom: "0px",
-                  }}
-                >
-                  Assign User Group
-                </Typography>
-
-                <Typography
-                  variant={"h2"}
-                  sx={{
-                    marginRight: "200px",
-                    marginTop: "0px",
-                    paddingTop: "0px",
-                    borderBottom: "0px",
-                  }}
-                >
+            <div className="edit-user-form__section">
+              <div className="section__assign-user">
+                <Typography variant={"h2"}>Assign User Group</Typography>
+                <Typography variant={"h2"}>
                   <CustomActionLink
                     onClick={() => setIsUserGroupsModalOpen(() => true)}
                   >
                     User Groups and Permissions
                   </CustomActionLink>
                 </Typography>
-              </Stack>
+              </div>
+            </div>
 
-              <Stack spacing={2}>
-                <Controller
-                  name="userRole"
-                  rules={{
-                    required: { value: true, message: requiredMessage() },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <UserAuthRadioGroup field={field} fieldState={fieldState} />
-                  )}
-                ></Controller>
+            <div>
+              <Controller
+                name="userRole"
+                rules={{
+                  required: { value: true, message: requiredMessage() },
+                }}
+                render={({ field, fieldState }) => (
+                  <UserAuthRadioGroup field={field} fieldState={fieldState} />
+                )}
+              ></Controller>
 
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    key="update-my-info-cancel-button"
-                    aria-label="Cancel Update"
-                    variant="contained"
-                    color="tertiary"
-                    onClick={onClickBreadcrumb}
-                  >
-                    Cancel
-                  </Button>
+              <div className="section__actions">
+                <Button
+                  key="update-my-info-cancel-button"
+                  aria-label="Cancel Update"
+                  variant="contained"
+                  color="tertiary"
+                  onClick={onClickBreadcrumb}
+                >
+                  Cancel
+                </Button>
 
-                  <Button
-                    key="update-my-info-button"
-                    aria-label="Update My Info"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit(onUpdateUserInfo)}
-                  >
-                    Save
-                  </Button>
-                </Stack>
-              </Stack>
-            </Stack>
-          </Stack>
+                <Button
+                  key="update-my-info-button"
+                  aria-label="Update My Info"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit(onUpdateUserInfo)}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
 
-          <br />
+            <br />
 
-          <UserGroupsAndPermissionsModal
-            isOpen={isUserGroupsModalOpen}
-            onClickClose={() => setIsUserGroupsModalOpen(() => false)}
-          />
-        </Box>
+            <UserGroupsAndPermissionsModal
+              isOpen={isUserGroupsModalOpen}
+              onClickClose={() => setIsUserGroupsModalOpen(() => false)}
+            />
+          </div>
+        </div>
       </FormProvider>
     );
   },

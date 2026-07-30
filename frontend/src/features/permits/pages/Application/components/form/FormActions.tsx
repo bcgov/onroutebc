@@ -33,51 +33,48 @@ export const FormActions = ({
           Leave
         </Button>
       ) : null}
-
-      <Box className="application-form-actions__section application-form-actions__section--main">
-        {onSave ? (
-          <Button
-            key="save-application-button"
-            className="application-form-actions__btn application-form-actions__btn--save"
-            aria-label="save"
-            variant="contained"
-            color="tertiary"
-            onClick={() => onSave()}
-            data-testid="save-application-button"
-          >
-            <FontAwesomeIcon icon={faSave} />
-            Save Application
-          </Button>
-        ) : null}
-
-        {onCancel ? (
-          <Button
-            key="cancel-application-button"
-            className="application-form-actions__btn application-form-actions__btn--cancel"
-            aria-label="cancel"
-            variant="contained"
-            color="tertiary"
-            onClick={() => onCancel()}
-            data-testid="cancel-application-button"
-          >
-            Cancel
-          </Button>
-        ) : null}
-
+      {onSave ? (
         <Button
-          key="submit-application-button"
-          className="application-form-actions__btn application-form-actions__btn--continue"
-          aria-label="Submit"
+          key="save-application-button"
+          className="application-form-actions__btn application-form-actions__btn--save"
+          aria-label="save"
           variant="contained"
-          color="primary"
-          onClick={onContinue}
-          data-testid="continue-application-button"
+          color="tertiary"
+          onClick={() => onSave()}
+          data-testid="save-application-button"
         >
-          Continue
+          <FontAwesomeIcon icon={faSave} />
+          Save Application
         </Button>
+      ) : null}
 
-        {enableScroll ? <ScrollButton /> : null}
-      </Box>
+      {onCancel ? (
+        <Button
+          key="cancel-application-button"
+          className="application-form-actions__btn application-form-actions__btn--cancel"
+          aria-label="cancel"
+          variant="contained"
+          color="tertiary"
+          onClick={() => onCancel()}
+          data-testid="cancel-application-button"
+        >
+          Cancel
+        </Button>
+      ) : null}
+
+      <Button
+        key="submit-application-button"
+        className="application-form-actions__btn application-form-actions__btn--continue"
+        aria-label="Submit"
+        variant="contained"
+        color="primary"
+        onClick={onContinue}
+        data-testid="continue-application-button"
+      >
+        Continue
+      </Button>
+
+      {enableScroll ? <ScrollButton /> : null}
     </Box>
   );
 };

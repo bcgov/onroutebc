@@ -1,8 +1,5 @@
 @use "../../../../../../themes/orbcStyles";
-
 @include orbcStyles.permit-main-box-style(".application-notes-section");
-@include orbcStyles.permit-left-box-style(".application-notes-section__header");
-@include orbcStyles.permit-right-box-style(".application-notes-section__body");
 
 .application-notes-section {
   & &__input {

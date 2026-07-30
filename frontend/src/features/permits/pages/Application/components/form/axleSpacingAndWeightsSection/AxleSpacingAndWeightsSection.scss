@@ -11,6 +11,7 @@
   & &__info {
     color: orbcStyles.$bc-black;
     margin-bottom: 1.5rem;
+    max-width: fit-content;
 
     .axle-spacing-and-weights-info {
       &__details {
