@@ -132,7 +132,7 @@ export const ApplicationStepPage = ({
       .concat(enableNRSCV ? [PERMIT_TYPES.NRSCV] : [])
       .concat(enableNRQCV ? [PERMIT_TYPES.NRQCV] : [])
       .concat(enableHC ? [PERMIT_TYPES.HC] : [])
-      .concat(enableSTWSE ? [PERMIT_TYPES.STWSE] : []);
+      .concat(enableSTWSE ? [PERMIT_TYPES.STWSE] : [])
       .concat(enableSTGVWI ? [PERMIT_TYPES.STGVWI] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
