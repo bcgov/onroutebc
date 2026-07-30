@@ -81,7 +81,8 @@ export const ApplicationStepPage = ({
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   const enableHC = featureFlags?.["HC"] === "ENABLED";
   const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
-
+  const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
+  
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
@@ -132,6 +133,7 @@ export const ApplicationStepPage = ({
       .concat(enableNRQCV ? [PERMIT_TYPES.NRQCV] : [])
       .concat(enableHC ? [PERMIT_TYPES.HC] : [])
       .concat(enableSTWSE ? [PERMIT_TYPES.STWSE] : []);
+      .concat(enableSTGVWI ? [PERMIT_TYPES.STGVWI] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };

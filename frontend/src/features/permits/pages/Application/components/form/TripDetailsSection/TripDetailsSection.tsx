@@ -40,7 +40,8 @@ export const TripDetailsSection = ({
     permitType === PERMIT_TYPES.STOS ||
     permitType === PERMIT_TYPES.STOW ||
     permitType === PERMIT_TYPES.MFP ||
-    permitType === PERMIT_TYPES.STWSE
+    permitType === PERMIT_TYPES.STWSE ||
+    permitType === PERMIT_TYPES.STGVWI
   ) ? (
     <Box className="trip-details-section">
       <Box className="trip-details-section__header">
@@ -62,7 +63,8 @@ export const TripDetailsSection = ({
         {(
           permitType === PERMIT_TYPES.STOS ||
           permitType === PERMIT_TYPES.STOW ||
-          permitType === PERMIT_TYPES.STWSE
+          permitType === PERMIT_TYPES.STWSE ||
+          permitType === PERMIT_TYPES.STGVWI
         ) ? (
           <HighwaySequences
             permitType={permitType}

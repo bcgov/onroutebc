@@ -23,26 +23,31 @@ export const convertUtcToPt = (dateTime: Date | string, format: string) => {
 };
 
 export const getToDateForGarms = () => {
-  // Current datetime in local time (including Daylight Savings if applicable)
-  const nowDtLocal = dayjs().tz(LOCAL_TIMEZONE_ID);
+  // Current timestamp in the target timezone
+  const currentTimeInTargetTimezone = dayjs().tz(LOCAL_TIMEZONE_ID);
 
-  // Scheduled time for processing, which is at 9:00pm local time on the same day
-  const scheduledDtLocal = dayjs(
-    `${nowDtLocal.format('YYYY-MM-DD')} 21:00:00`,
-  ).tz(LOCAL_TIMEZONE_ID);
+  // Today at 9:00 PM in the target timezone
+  const todayAt9PmInTargetTimezone = currentTimeInTargetTimezone
+    .hour(21)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
 
-  // Scheduled time for processing at 9:00pm local time on the previous day
-  const scheduledDtOneDayBeforeLocal = dayjs(
-    `${dayjs(scheduledDtLocal).subtract(1, 'day').format('YYYY-MM-DD')} 21:00:00`,
-  ).tz(LOCAL_TIMEZONE_ID);
+  // Yesterday at 9:00 PM in the target timezone
+  const yesterdayAt9PmInTargetTimezone = todayAt9PmInTargetTimezone.subtract(
+    1,
+    'day',
+  );
 
-  // If current datetime is before the scheduled time for today, use the previous day's scheduled time
-  // Otherwise (already past the scheduled time for today), use today's scheduled time
-  const lastRunDate = nowDtLocal.isBefore(scheduledDtLocal)
-    ? scheduledDtOneDayBeforeLocal
-    : scheduledDtLocal;
+  // If it's before 9:00 PM today, use yesterday's 9:00 PM.
+  // Otherwise, use today's 9:00 PM.
+  const lastRunTimestampInTargetTimezone = currentTimeInTargetTimezone.isBefore(
+    todayAt9PmInTargetTimezone,
+  )
+    ? yesterdayAt9PmInTargetTimezone
+    : todayAt9PmInTargetTimezone;
 
-  return lastRunDate.utc().toDate(); // Convert to UTC before returning
+  return lastRunTimestampInTargetTimezone.utc().toDate();
 };
 
 export const dateFormat = (dateTime: string, format: string) => {

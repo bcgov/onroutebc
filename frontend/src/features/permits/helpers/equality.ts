@@ -6,12 +6,16 @@ import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitData } from "../types/PermitData";
 import { PermitCondition } from "../types/PermitCondition";
 import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
-import { areOrderedSequencesEqual, doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
+import {
+  areOrderedSequencesEqual,
+  doUniqueArraysHaveSameObjects,
+} from "../../../common/helpers/equality";
 import { ReplaceDayjsWithString } from "../types/utility";
 import { PermittedCommodity } from "../types/PermittedCommodity";
 import { ManualRoute, PermittedRoute } from "../types/PermittedRoute";
 import { PermitVehicleConfiguration } from "../types/PermitVehicleConfiguration";
 import { ICBCInsuranceCertificate } from "../types/ICBCInsuranceCertificate";
+import { ExtraordinaryLoadRequest } from "../types/ExtraordinaryLoadRequest";
 
 /**
  * Compare whether or not two mailing addresses are equal.
@@ -152,11 +156,10 @@ export const arePermittedCommoditiesEqual = (
   permittedCommodity2?: Nullable<PermittedCommodity>,
 ) => {
   return (
-    getDefaultRequiredVal("", permittedCommodity1?.commodityType)
-      === getDefaultRequiredVal("", permittedCommodity2?.commodityType)
-  ) && (
-    getDefaultRequiredVal("", permittedCommodity1?.loadDescription)
-      === getDefaultRequiredVal("", permittedCommodity2?.loadDescription)
+    getDefaultRequiredVal("", permittedCommodity1?.commodityType) ===
+      getDefaultRequiredVal("", permittedCommodity2?.commodityType) &&
+    getDefaultRequiredVal("", permittedCommodity1?.loadDescription) ===
+      getDefaultRequiredVal("", permittedCommodity2?.loadDescription)
   );
 };
 
@@ -171,33 +174,30 @@ export const areVehicleConfigurationsEqual = (
   vehicleConfig2?: Nullable<PermitVehicleConfiguration>,
 ) => {
   return (
-    getDefaultRequiredVal(0, vehicleConfig1?.overallWidth)
-      === getDefaultRequiredVal(0, vehicleConfig2?.overallWidth)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.overallHeight)
-      === getDefaultRequiredVal(0, vehicleConfig2?.overallHeight)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.overallLength)
-      === getDefaultRequiredVal(0, vehicleConfig2?.overallLength)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.frontProjection)
-      === getDefaultRequiredVal(0, vehicleConfig2?.frontProjection)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.rearProjection)
-      === getDefaultRequiredVal(0, vehicleConfig2?.rearProjection)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.loadedGVW)
-      === getDefaultRequiredVal(0, vehicleConfig2?.loadedGVW)
-  ) && (
-    getDefaultRequiredVal(0, vehicleConfig1?.netWeight)
-      === getDefaultRequiredVal(0, vehicleConfig2?.netWeight)
-  ) && areOrderedSequencesEqual(
-    vehicleConfig1?.trailers,
-    vehicleConfig2?.trailers,
-    (trailer1, trailer2) => trailer1.vehicleSubType === trailer2.vehicleSubType,
-  ) && (
+    getDefaultRequiredVal(0, vehicleConfig1?.overallWidth) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.overallWidth) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.overallHeight) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.overallHeight) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.overallLength) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.overallLength) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.frontProjection) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.frontProjection) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.rearProjection) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.rearProjection) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.loadedGVW) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.loadedGVW) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.actualGVW) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.actualGVW) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.netWeight) ===
+      getDefaultRequiredVal(0, vehicleConfig2?.netWeight) &&
     getDefaultRequiredVal(0, vehicleConfig1?.overloadWeight)
-      === getDefaultRequiredVal(0, vehicleConfig2?.overloadWeight)
+      === getDefaultRequiredVal(0, vehicleConfig2?.overloadWeight) &&
+    areOrderedSequencesEqual(
+      vehicleConfig1?.trailers,
+      vehicleConfig2?.trailers,
+      (trailer1, trailer2) =>
+        trailer1.vehicleSubType === trailer2.vehicleSubType,
+    )
   );
 };
 
@@ -212,21 +212,19 @@ export const areManualRoutesEqual = (
   manualRoute2?: Nullable<ManualRoute>,
 ) => {
   return (
-    getDefaultRequiredVal("", manualRoute1?.origin)
-      === getDefaultRequiredVal("", manualRoute2?.origin)
-  ) && (
-    getDefaultRequiredVal("", manualRoute1?.destination)
-      === getDefaultRequiredVal("", manualRoute2?.destination)
-  ) && (
-    getDefaultRequiredVal("", manualRoute1?.exitPoint)
-      === getDefaultRequiredVal("", manualRoute2?.exitPoint)
-  ) && (
-    getDefaultRequiredVal(0, manualRoute1?.totalDistance)
-      === getDefaultRequiredVal(0, manualRoute2?.totalDistance)
-  ) && areOrderedSequencesEqual(
-    manualRoute1?.highwaySequence,
-    manualRoute2?.highwaySequence,
-    (seqNumber1, seqNumber2) => seqNumber1 === seqNumber2,
+    getDefaultRequiredVal("", manualRoute1?.origin) ===
+      getDefaultRequiredVal("", manualRoute2?.origin) &&
+    getDefaultRequiredVal("", manualRoute1?.destination) ===
+      getDefaultRequiredVal("", manualRoute2?.destination) &&
+    getDefaultRequiredVal("", manualRoute1?.exitPoint) ===
+      getDefaultRequiredVal("", manualRoute2?.exitPoint) &&
+    getDefaultRequiredVal(0, manualRoute1?.totalDistance) ===
+      getDefaultRequiredVal(0, manualRoute2?.totalDistance) &&
+    areOrderedSequencesEqual(
+      manualRoute1?.highwaySequence,
+      manualRoute2?.highwaySequence,
+      (seqNumber1, seqNumber2) => seqNumber1 === seqNumber2,
+    )
   );
 };
 
@@ -240,12 +238,13 @@ export const arePermittedRoutesEqual = (
   permittedRoute1?: Nullable<PermittedRoute>,
   permittedRoute2?: Nullable<PermittedRoute>,
 ) => {
-  return areManualRoutesEqual(
-    permittedRoute1?.manualRoute,
-    permittedRoute2?.manualRoute,
-  ) && (
-    getDefaultRequiredVal("", permittedRoute1?.routeDetails)
-      === getDefaultRequiredVal("", permittedRoute2?.routeDetails)
+  return (
+    areManualRoutesEqual(
+      permittedRoute1?.manualRoute,
+      permittedRoute2?.manualRoute,
+    ) &&
+    getDefaultRequiredVal("", permittedRoute1?.routeDetails) ===
+      getDefaultRequiredVal("", permittedRoute2?.routeDetails)
   );
 };
 
@@ -260,11 +259,28 @@ export const areICBCInsuranceCertificatesEqual = (
   certData2?: Nullable<ICBCInsuranceCertificate>,
 ) => {
   return (
-    getDefaultRequiredVal(false, certData1?.haveCertificate)
-      === getDefaultRequiredVal(false, certData2?.haveCertificate)
-  ) && (
-    getDefaultRequiredVal("", certData1?.certificateNumber)
-      === getDefaultRequiredVal("", certData2?.certificateNumber)
+    getDefaultRequiredVal(false, certData1?.haveCertificate) ===
+      getDefaultRequiredVal(false, certData2?.haveCertificate) &&
+    getDefaultRequiredVal("", certData1?.certificateNumber) ===
+      getDefaultRequiredVal("", certData2?.certificateNumber)
+  );
+};
+
+/**
+ * Compare whether or not the selected ICBC insurance certificate for two permits are equal.
+ * @param certData1 ICBC insurance certificate data for the first permit
+ * @param certData2 ICBC insurance certificate data for the second permit
+ * @returns true when the ICBC insurance certificate data are considered equivalent, false otherwise
+ */
+export const areExtraordinaryLoadRequestsEqual = (
+  certData1?: Nullable<ExtraordinaryLoadRequest>,
+  certData2?: Nullable<ExtraordinaryLoadRequest>,
+) => {
+  return (
+    getDefaultRequiredVal(false, certData1?.isExtraordinaryLoadRequest) ===
+      getDefaultRequiredVal(false, certData2?.isExtraordinaryLoadRequest) &&
+    getDefaultRequiredVal("", certData1?.approvalNumber) ===
+      getDefaultRequiredVal("", certData2?.approvalNumber)
   );
 };
 
@@ -287,19 +303,29 @@ export const areApplicationPermitDataEqual = (
     areConditionsEqual(data1.commodities, data2.commodities) &&
     areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
     arePermitLOAsEqual(data1.loas, data2.loas) &&
-    arePermittedCommoditiesEqual(data1.permittedCommodity, data2.permittedCommodity) &&
-    areVehicleConfigurationsEqual(data1.vehicleConfiguration, data2.vehicleConfiguration) &&
+    arePermittedCommoditiesEqual(
+      data1.permittedCommodity,
+      data2.permittedCommodity,
+    ) &&
+    areVehicleConfigurationsEqual(
+      data1.vehicleConfiguration,
+      data2.vehicleConfiguration,
+    ) &&
     arePermittedRoutesEqual(data1.permittedRoute, data2.permittedRoute) &&
     areICBCInsuranceCertificatesEqual(
       data1.icbcInsuranceCertificate,
       data2.icbcInsuranceCertificate,
     ) &&
-    (getDefaultRequiredVal("", data1.applicationNotes)
-      === getDefaultRequiredVal("", data2.applicationNotes)) &&
-    (getDefaultRequiredVal("", data1.thirdPartyLiability)
-      === getDefaultRequiredVal("", data2.thirdPartyLiability)) &&
-    (getDefaultRequiredVal("", data1.conditionalLicensingFee)
-      === getDefaultRequiredVal("", data2.conditionalLicensingFee)) &&
+    areExtraordinaryLoadRequestsEqual(
+      data1.extraordinaryLoadRequest,
+      data2.extraordinaryLoadRequest,
+    ) &&
+    getDefaultRequiredVal("", data1.applicationNotes) ===
+      getDefaultRequiredVal("", data2.applicationNotes) &&
+    getDefaultRequiredVal("", data1.thirdPartyLiability) ===
+      getDefaultRequiredVal("", data2.thirdPartyLiability) &&
+    getDefaultRequiredVal("", data1.conditionalLicensingFee) ===
+      getDefaultRequiredVal("", data2.conditionalLicensingFee) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&
     ((!data1.doingBusinessAs && !data2.doingBusinessAs) ||

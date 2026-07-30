@@ -111,6 +111,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.STOS,
       PERMIT_TYPES.STOW,
       PERMIT_TYPES.STWSE,
+      PERMIT_TYPES.STGVWI,
     ] as PermitType[]
   ).includes(permitType);
 
@@ -121,6 +122,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.MFP,
       PERMIT_TYPES.STFR,
       PERMIT_TYPES.QRFR,
+      PERMIT_TYPES.STGVWI,
     ] as PermitType[]
   ).includes(permitType);
 

@@ -1,6 +1,15 @@
-import { VEHICLE_TYPES, VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
-import { isNull, isUndefined, Nullable, Optional } from "../../../../../common/types/common";
+import {
+  VEHICLE_TYPES,
+  VehicleType,
+} from "../../../../manageVehicles/types/Vehicle";
+
+import {
+  isNull,
+  isUndefined,
+  Nullable,
+  Optional,
+} from "../../../../../common/types/common";
 
 export const gvwLimit = (permitType: PermitType) => {
   if (
@@ -12,6 +21,7 @@ export const gvwLimit = (permitType: PermitType) => {
         PERMIT_TYPES.STFR,
         PERMIT_TYPES.QRFR,
         PERMIT_TYPES.STWSE,
+        PERMIT_TYPES.STGVWI,
       ] as PermitType[]
     ).includes(permitType)
   ) {
@@ -23,7 +33,10 @@ export const gvwLimit = (permitType: PermitType) => {
   return undefined;
 };
 
-export const isWithinGvwLimit = (gvw?: Nullable<number>, limit?: Optional<number>) => {
+export const isWithinGvwLimit = (
+  gvw?: Nullable<number>,
+  limit?: Optional<number>,
+) => {
   if (isUndefined(gvw) || isNull(gvw) || isUndefined(limit)) return true;
   return gvw <= limit;
 };

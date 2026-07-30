@@ -39,8 +39,9 @@ export const StartApplicationAction = () => {
   const enableNRQCV = featureFlags?.["NRQCV"] === "ENABLED";
   const enableHC = featureFlags?.["HC"] === "ENABLED";
   const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
+  const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
 
-  const showSingleTrip = enableSTOS || enableSTOW || enableSTWSE;
+  const showSingleTrip = enableSTOS || enableSTOW || enableSTWSE || enableSTGVWI;
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
 
@@ -75,8 +76,8 @@ export const StartApplicationAction = () => {
         ?.filter((nestedItem) => {
           if (item.value === PERMIT_CATEGORIES.TERM) {
             return (
-              (nestedItem.value === PERMIT_TYPES.TROS) ||
-              (nestedItem.value === PERMIT_TYPES.TROW) ||
+              nestedItem.value === PERMIT_TYPES.TROS ||
+              nestedItem.value === PERMIT_TYPES.TROW ||
               (nestedItem.value === PERMIT_TYPES.HC && enableHC)
             );
           }
@@ -84,7 +85,8 @@ export const StartApplicationAction = () => {
             return (
               (nestedItem.value === PERMIT_TYPES.STOS && enableSTOS) ||
               (nestedItem.value === PERMIT_TYPES.STOW && enableSTOW) ||
-              (nestedItem.value === PERMIT_TYPES.STWSE && enableSTWSE)
+              (nestedItem.value === PERMIT_TYPES.STWSE && enableSTWSE) ||
+              (nestedItem.value === PERMIT_TYPES.STGVWI && enableSTGVWI)
             );
           }
           if (item.value === PERMIT_CATEGORIES.NON_RESIDENT) {

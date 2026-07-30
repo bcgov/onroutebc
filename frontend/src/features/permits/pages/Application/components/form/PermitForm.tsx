@@ -25,6 +25,9 @@ import { CustomActionLink } from "../../../../../../common/components/links/Cust
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
 import { OverloadWeightSection } from "./OverloadWeightSection/OverloadWeightSection";
+import { ActualGVW } from "./ActualGVWSection/ActualGVWSection";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
 
 export const PermitForm = () => {
   const {
@@ -101,6 +104,8 @@ export const PermitForm = () => {
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
     onUpdateHaveCertificate,
+    isExtraordinaryLoadRequest,
+    onUpdateIsExtraordinaryLoadRequest,
   } = useApplicationFormContext();
 
   const reviewApplicationRejectionHistoryRef = useRef<HTMLDivElement>(null);
@@ -231,6 +236,13 @@ export const PermitForm = () => {
           showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
         />
 
+        <ExtraordinaryLoadRequestSection
+          feature={feature}
+          permitType={permitType}
+          isExtraordinaryLoadRequest={isExtraordinaryLoadRequest}
+          onSetIsExtraordinaryLoadRequest={onUpdateIsExtraordinaryLoadRequest}
+        />
+
         <LoadedDimensionsSection
           permitType={permitType}
           feature={feature}
@@ -243,6 +255,13 @@ export const PermitForm = () => {
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}
           onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <ActualGVW
+          feature={feature}
+          permitType={permitType}
+          actualGVW={getDefaultRequiredVal(0, vehicleConfiguration?.actualGVW)}
+          licensedGVW={getDefaultRequiredVal(0, vehicleFormData?.licensedGVW)}
         />
 
         <TripDetailsSection

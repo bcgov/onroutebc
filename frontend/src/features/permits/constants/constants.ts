@@ -51,6 +51,10 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
         value: PERMIT_TYPES.STWSE,
         label: getPermitTypeShortName(PERMIT_TYPES.STWSE),
       },
+      {
+        value: PERMIT_TYPES.STGVWI,
+        label: getPermitTypeShortName(PERMIT_TYPES.STGVWI),
+      },
     ],
     // items: SINGLE_TRIP_PERMIT_LIST.map((permitType: PermitType) => ({
     //   value: permitType,

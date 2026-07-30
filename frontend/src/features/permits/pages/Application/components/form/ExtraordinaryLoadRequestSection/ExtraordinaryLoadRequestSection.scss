@@ -1,0 +1,26 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".extraordinary-load-request-section");
+@include orbcStyles.permit-left-box-style(".extraordinary-load-request-section__header");
+@include orbcStyles.permit-right-box-style(".extraordinary-load-request-section__body");
+
+.extraordinary-load-request-section {
+  &__header h3 {
+    margin: 0;
+  }
+
+  & &__subheader {
+    margin: 0;
+    padding: 1.5rem 0 1rem;
+  }
+
+  & &__input {
+    max-width: 30.625rem;
+    
+  }
+  & &__radio-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}

@@ -35,14 +35,15 @@ import { ThirdPartyLiability } from "../../../../types/ThirdPartyLiability";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 import { ReviewConditionalLicensingFeesSection } from "./ReviewConditionalLicensingFeesSection";
 import { ReviewVehicleWeightSection } from "./ReviewVehicleWeightSection";
-import {
-  PERMIT_REVIEW_CONTEXTS,
-  PermitReviewContext,
-} from "../../../../types/PermitReviewContext";
 import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
 import { ICBCInsuranceCertificate } from "../../../../types/ICBCInsuranceCertificate";
 import { ReviewICBCInsuranceCertificateSection } from "./ReviewICBCInsuranceCertificateSection";
 import { OverloadWeights } from "./OverloadWeights";
+import { ReviewActualGVW } from "./ReviewActualGVW";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -93,7 +94,6 @@ interface PermitReviewProps {
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
 }
-
 export const PermitReview = (props: PermitReviewProps) => {
   const { powerUnitSubTypes, trailerSubTypes } = props;
   const powerUnitSubtypeNamesMap = useMemo(
@@ -136,7 +136,7 @@ export const PermitReview = (props: PermitReviewProps) => {
       (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
     (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
       Number(props.calculatedFee) > 0);
-
+  
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -184,10 +184,13 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewICBCInsuranceCertificateSection
           permitType={props.permitType}
-          haveCertificate={Boolean(props.icbcInsuranceCertificate?.haveCertificate)}
-          oldHaveCertificate={
-            Boolean(props.oldFields?.permitData?.icbcInsuranceCertificate?.haveCertificate)
-          }
+          haveCertificate={Boolean(
+            props.icbcInsuranceCertificate?.haveCertificate,
+          )}
+          oldHaveCertificate={Boolean(
+            props.oldFields?.permitData?.icbcInsuranceCertificate
+              ?.haveCertificate,
+          )}
           showChangedFields={props.showChangedFields}
         />
 
@@ -200,6 +203,18 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
           selectedTrailers={props.vehicleConfiguration?.trailers}
+        />
+
+        <ReviewActualGVW
+          permitType={props.permitType}
+          actualGVW={getDefaultRequiredVal(
+            0,
+            props.vehicleConfiguration?.actualGVW,
+          )}
+          licensedGVW={getDefaultRequiredVal(
+            0,
+            props.vehicleDetails?.licensedGVW,
+          )}
         />
 
         <LoadedDimensions

@@ -2,22 +2,23 @@ import { Controller } from "react-hook-form";
 
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import {
-  invalidInput,
-  requiredMessage,
-} from "../../../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import {
-  Nullable,
-  ORBCFormFeatureType,
-  RequiredOrNull,
-} from "../../../../../../../common/types/common";
 import { NumberInput } from "../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { GeocoderInput } from "../../../../../../../common/components/form/GeocoderInput";
+import {
+  invalidInput,
+  requiredMessage,
+} from "../../../../../../../common/helpers/validationMessages";
+
+import {
+  Nullable,
+  ORBCFormFeatureType,
+  RequiredOrNull,
+} from "../../../../../../../common/types/common";
 
 export const TripOriginDestination = ({
   feature,
@@ -44,7 +45,8 @@ export const TripOriginDestination = ({
   const showTotalDistance = (
     permitType === PERMIT_TYPES.MFP ||
     permitType === PERMIT_TYPES.STOW ||
-    permitType === PERMIT_TYPES.STWSE
+    permitType === PERMIT_TYPES.STWSE ||
+    permitType === PERMIT_TYPES.STGVWI
   );
   
   const origin = getDefaultRequiredVal("", tripOrigin);
