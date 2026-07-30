@@ -1,3 +1,4 @@
+import { screen } from "@testing-library/react";
 import {
   companyInfoDescription,
   companyInfoTitle,
@@ -25,7 +26,7 @@ describe("CompanyInformation display", () => {
 
     // Assert
     expect(await headerTitle()).toHaveTextContent(companyInfoTitle);
-    expect(await headerDescription()).toHaveTextContent(companyInfoDescription);
+    expect(await screen.getByText(companyInfoDescription)).toBeInTheDocument();
     expect(async () => await mailAddrTitle()).rejects.toThrow();
   });
 
