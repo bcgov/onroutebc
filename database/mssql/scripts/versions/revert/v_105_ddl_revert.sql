@@ -36,7 +36,7 @@ INSERT [dbo].[ORBC_SYS_VERSION] (
 	,[RELEASE_DATE]
 	)
 VALUES (
-	97
+	104
 	,@VersionDescription
 	,getutcdate()
 	)
