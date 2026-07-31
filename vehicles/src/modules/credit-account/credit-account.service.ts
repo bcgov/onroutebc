@@ -2059,6 +2059,20 @@ export class CreditAccountService {
   }
 
   /**
+   * Get most recent garms file id from OnRouteBC database.
+   * @param garmsExtractType
+   * @returns
+   */
+  private async getLatestGarmsFile(garmsExtractType: GarmsExtractType) {
+    const [latestFile] = await this.garmsExtractFileRepository.find({
+      where: { garmsExtractType: garmsExtractType },
+      order: { toTimestamp: 'DESC' },
+      take: 1,
+    });
+    return latestFile;
+  }
+
+  /**
    * Calculates the total adjustment amount for a credit account by summing up transactions
    * between certain time ranges, based on transaction type.
    *
@@ -2071,10 +2085,20 @@ export class CreditAccountService {
   ): Promise<number> {
     // Get the current timestamp for comparison purposes
     const toTimestamp = getToDateForGarms();
+
     // Find an unsubmitted GARMS file for CREDIT transaction type, if exists
-    const unsubmittedGarmsFile = await this.findUnsubmittedGarmsFile(
+    const unsubmittedFile = await this.findUnsubmittedGarmsFile(
       GarmsExtractType.CREDIT,
     );
+
+    let fromTimestamp: Nullable<Date> = null;
+
+    if (unsubmittedFile) {
+      fromTimestamp = unsubmittedFile.fromTimestamp ?? null;
+    } else {
+      const latestFile = await this.getLatestGarmsFile(GarmsExtractType.CREDIT);
+      fromTimestamp = latestFile?.toTimestamp ?? null;
+    }
 
     const queryBuilder = this.creditAccountRepository
       .createQueryBuilder('creditAccount')
@@ -2088,11 +2112,11 @@ export class CreditAccountService {
         creditAccountId: creditAccountId,
       });
 
-    // If there's a fromTimestamp in unsubmitted GARMS file, include it in the filter
-    if (unsubmittedGarmsFile?.fromTimestamp) {
+    // If there's a fromTimestamp in unsubmitted GARMS file or latest Garms file, include it in the filter
+    if (fromTimestamp) {
       queryBuilder.andWhere(
         'transactions.transactionApprovedDate >= :fromTimestamp',
-        { fromTimestamp: unsubmittedGarmsFile?.fromTimestamp },
+        { fromTimestamp: fromTimestamp },
       );
     }
 
