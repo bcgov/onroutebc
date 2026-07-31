@@ -1,10 +1,11 @@
-@import "../../../../../../themes/orbcStyles";
+@use "../../../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".permit-form__rejection-banner");
 
 .permit-form {
   &#{&} {
     padding-top: 1.5rem;
     padding-bottom: 10rem;
-    background-color: $bc-white;
+    background-color: orbcStyles.$bc-white;
   }
 
   &__rejection-banner, .rejection-banner {
@@ -15,7 +16,7 @@
     }
 
     &__link {
-      color: $bc-text-links-blue
+      color: orbcStyles.$bc-text-links-blue
     }
   }
 }

@@ -125,20 +125,21 @@ export const PermitForm = () => {
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
         {shouldShowRejectionBanner && (
-          <ErrorAltBcGovBanner
-            className="permit-form__rejection-banner"
-            msg={
-              <div className="rejection-banner__message">
-                <span>This application was rejected. </span>
-                <CustomActionLink
-                  className="rejection-banner__link"
-                  onClick={scrollToReviewApplicationRejectionHistorySection}
-                >
-                  See the reason(s) for rejection.
-                </CustomActionLink>
-              </div>
-            }
-          />
+          <div className="permit-form__rejection-banner">
+            <ErrorAltBcGovBanner
+              msg={
+                <div className="rejection-banner__message">
+                  <span>This application was rejected. </span>
+                  <CustomActionLink
+                    className="rejection-banner__link"
+                    onClick={scrollToReviewApplicationRejectionHistorySection}
+                  >
+                    See the reason(s) for rejection.
+                  </CustomActionLink>
+                </div>
+              }
+            />
+          </div>
         )}
         <ApplicationDetails
           permitType={permitType}
