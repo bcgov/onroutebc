@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { ValidationResult } from "onroute-policy-engine";
 
 import "./LoadedDimensions.scss";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
@@ -7,21 +8,27 @@ import { DiffChip } from "./DiffChip";
 import { PermitVehicleConfiguration } from "../../../../types/PermitVehicleConfiguration";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
+import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
 
 export const LoadedDimensions = ({
   permitType,
   vehicleConfiguration,
   oldVehicleConfiguration,
   showChangedFields = false,
+  policyWarnings,
 }: {
   permitType?: Nullable<PermitType>,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   oldVehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   showChangedFields?: boolean;
+  policyWarnings?: Nullable<ValidationResult[]>;
 }) => {
   const headerTitle = permitType === PERMIT_TYPES.STWSE
     ? "Dimensions (Metres)"
     : "Loaded Dimensions (Metres)";
+  
+  const warnings = getDefaultRequiredVal([], policyWarnings);
+  const showWarningBanner = permitType === PERMIT_TYPES.STWSE && warnings.length > 0;
   
   const changedFields = showChangedFields
     ? {
@@ -144,6 +151,23 @@ export const LoadedDimensions = ({
           </Typography>
         </div>
       </Box>
+
+      {showWarningBanner ? (
+        <Box className="review-loaded-dimensions__warning">
+          <div className="warning-banner">
+            <WarningBcGovBanner
+              msg="Application requires review"
+              className="warning-banner__header"
+            />
+
+            <div className="warning-banner__body">
+              <p className="warning-banner__text">
+                {warnings[0].message}
+              </p>
+            </div>
+          </div>
+        </Box>
+      ) : null}
     </Box>
   ) : null;
 };

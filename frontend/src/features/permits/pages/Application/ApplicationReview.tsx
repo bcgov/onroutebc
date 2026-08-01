@@ -48,6 +48,7 @@ import {
 } from "../../../queue/hooks/hooks";
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
+import { usePolicyWarnings } from "../../hooks/usePolicyWarnings";
 
 export const ApplicationReview = ({
   applicationStepContext,
@@ -80,18 +81,22 @@ export const ApplicationReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
+  const serializedPermit = {
+    permitType,
+    permitData: applicationData?.permitData
+      ? serializePermitData(applicationData.permitData)
+      : {},
+  };
+
   const {
     totalCost,
     costs,
   } = useCalculatePermitFee(
-    {
-      permitType,
-      permitData: applicationData?.permitData
-        ? serializePermitData(applicationData.permitData)
-        : {},
-    },
+    serializedPermit,
     policyEngine,
   );
+
+  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -267,13 +272,16 @@ export const ApplicationReview = ({
     );
   };
 
-  const continueBtnText =
+  const shouldSubmitForReview = (
     permitType === PERMIT_TYPES.STOS && !isStaffUser
-      ? "Submit for Review"
-      : undefined;
+  ) || (
+    permitType === PERMIT_TYPES.STWSE && !isStaffUser && policyWarnings.length > 0
+  );
+
+  const continueBtnText = shouldSubmitForReview ? "Submit for Review" : undefined;
 
   const handleSubmitForReview = async () => {
-    if (permitType !== PERMIT_TYPES.STOS || isStaffUser) return;
+    if (!shouldSubmitForReview) return;
 
     await handleSaveApplication(
       async (companyId, permitId, applicationNumber) => {
@@ -436,6 +444,7 @@ export const ApplicationReview = ({
           }
           companyId={companyId}
           icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
+          policyWarnings={policyWarnings}
         />
       </FormProvider>
 

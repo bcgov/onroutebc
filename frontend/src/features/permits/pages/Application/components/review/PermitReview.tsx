@@ -95,6 +95,7 @@ interface PermitReviewProps {
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
+  policyWarnings: ValidationResult[];
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -134,11 +135,30 @@ export const PermitReview = (props: PermitReviewProps) => {
         )
       : false;
 
-  const hasToCartButton =
-    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
-      (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
-    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
-      Number(props.calculatedFee) > 0);
+  // The "Add to Cart" button should only show up if:
+  // 1. Applying for permit, and permit type is not STOS nor STWSE
+  // 2. Applying for permit, and user is staff
+  // 3. Applying for permit, and user isn't staff and permit type is STWSE,
+  // but there are no dimension oversize warnings
+  // 4. Amending a permit and the total amount due is a positive amount
+  // (ie. Additional amount needs to be paid for amendment)
+  const hasToCartButton = (
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY
+      && (
+        (
+          props.permitType !== PERMIT_TYPES.STOS
+            && props.permitType !== PERMIT_TYPES.STWSE
+        ) || (
+          props.isStaffUser
+        ) || (
+          props.permitType === PERMIT_TYPES.STWSE
+            && props.policyWarnings.length <= 0
+        )
+      )
+  ) || (
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND
+      && Number(props.calculatedFee) > 0
+  );
   
   return (
     <Box className="permit-review layout-box">
@@ -229,6 +249,7 @@ export const PermitReview = (props: PermitReviewProps) => {
             props.oldFields?.permitData?.vehicleConfiguration
           }
           showChangedFields={props.showChangedFields}
+          policyWarnings={props.policyWarnings}
         />
 
         <OverloadWeights

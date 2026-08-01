@@ -16,6 +16,26 @@
       }
     }
   }
+
+  .warning-banner {
+    border: 1px solid orbcStyles.$bc-messages-gold-text;
+    border-radius: 0.25rem;
+    max-width: 757px;
+
+    &__header {
+      box-sizing: border-box;
+      width: 100%;
+    }
+    
+    &__body {
+      padding: 1.5rem;
+    }
+    
+    &__text {
+      color: orbcStyles.$bc-black;
+      margin: 0;
+    }
+  }
 }
 
 @media (width < 370px) {

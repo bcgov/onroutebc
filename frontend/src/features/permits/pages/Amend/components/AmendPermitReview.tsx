@@ -39,6 +39,7 @@ import { PERMIT_ACTION_ORIGINS } from "../../../types/PermitActionOrigin";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
 import { isZeroAmount } from "../../../helpers/feeSummary";
+import { usePolicyWarnings } from "../../../hooks/usePolicyWarnings";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -151,16 +152,20 @@ export const AmendPermitReview = () => {
 
   const oldFields = getDefaultFormDataFromPermit(companyInfo, permit);
 
+  const serializedPermit = {
+    permitType,
+    permitData: amendmentApplication?.permitData
+      ? serializePermitData(amendmentApplication.permitData)
+      : {},
+  };
+  
   const amountToRefund = useCalculateRefundAmount(
     validTransactionHistory,
-    {
-      permitType,
-      permitData: amendmentApplication?.permitData
-        ? serializePermitData(amendmentApplication.permitData)
-        : {},
-    },
+    serializedPermit,
     policyEngine,
   );
+
+  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
 
   const { setSnackBar } = useContext(SnackBarContext);
   const addToCartMutation = useAddToCart();
@@ -338,6 +343,7 @@ export const AmendPermitReview = () => {
         icbcInsuranceCertificate={
           amendmentApplication?.permitData?.icbcInsuranceCertificate
         }
+        policyWarnings={policyWarnings}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />

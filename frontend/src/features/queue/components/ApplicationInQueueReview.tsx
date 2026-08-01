@@ -26,6 +26,7 @@ import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
 import { useCommodityOptions } from "../../permits/hooks/useCommodityOptions";
 import { useCalculatePermitFee } from "../../permits/hooks/useCalculatePermitFee";
 import { serializePermitData } from "../../permits/helpers/serialize/serializePermitData";
+import { usePolicyWarnings } from "../../permits/hooks/usePolicyWarnings";
 
 export const ApplicationInQueueReview = ({
   applicationData,
@@ -46,18 +47,22 @@ export const ApplicationInQueueReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
+  const serializedPermit = {
+    permitType,
+    permitData: applicationData?.permitData
+      ? serializePermitData(applicationData.permitData)
+      : {},
+  };
+
   const {
     totalCost,
     costs,
   } = useCalculatePermitFee(
-    {
-      permitType,
-      permitData: applicationData?.permitData
-        ? serializePermitData(applicationData.permitData)
-        : {},
-    },
+    serializedPermit,
     policyEngine,
   );
+
+  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
 
   const navigate = useNavigate();
 
@@ -178,6 +183,7 @@ export const ApplicationInQueueReview = ({
           }
           companyId={companyId}
           icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
+          policyWarnings={policyWarnings}
         />
       </FormProvider>
 
