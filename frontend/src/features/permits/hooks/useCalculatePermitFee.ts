@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Policy } from "onroute-policy-engine";
+import { Policy, ValidationResult } from "onroute-policy-engine";
 
 import { PermitType } from "../types/PermitType";
 import { ReplaceDayjsWithString } from "../types/utility";
@@ -8,13 +8,13 @@ import { Nullable } from "../../../common/types/common";
 import { calculatePermitFee } from "../helpers/feeSummary";
 
 /**
- * Hook that calculates the fee for a permit.
+ * Hook that calculates the total cost and intermediary costs for a permit.
  * (The policy engine calculates the fee in an async manner, hence this hook acts as a utility hook
  * to get the fee in a synchronous manner.)
  * 
  * @param permit Object containing permit information (must have permitType and parts of permitData)
  * @param policyEngine Instance of policy engine, if it exists
- * @returns Fee to be paid for the permit
+ * @returns Total cost to be paid for the permit, as well as intermediary costs
  */
 export const useCalculatePermitFee = (
   permit: {
@@ -23,16 +23,25 @@ export const useCalculatePermitFee = (
   },
   policyEngine?: Nullable<Policy>,
 ) => {
-  const [fee, setFee] = useState<number>(0);
+  const [totalCost, setTotalCost] = useState<number>(0);
+  const [costs, setCosts] = useState<ValidationResult[]>([]);
 
   useEffect(() => {
-    const updateFee = async () => {
-      const updatedFee = await calculatePermitFee(permit, policyEngine);
-      setFee(updatedFee);
+    const updateCosts = async () => {
+      const {
+        totalCost: updatedTotalCost,
+        costs: updatedCosts,
+      } = await calculatePermitFee(permit, policyEngine);
+      
+      setTotalCost(updatedTotalCost);
+      setCosts(updatedCosts);
     };
 
-    updateFee();
+    updateCosts();
   }, [permit, policyEngine]);
 
-  return fee;
+  return {
+    totalCost,
+    costs,
+  };
 };

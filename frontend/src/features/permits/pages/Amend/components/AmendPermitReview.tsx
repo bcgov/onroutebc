@@ -324,6 +324,7 @@ export const AmendPermitReview = () => {
           },
         }}
         calculatedFee={`${-1 * amountToRefund}`}
+        permitIntermediaryCosts={[]}
         doingBusinessAs={doingBusinessAs}
         loas={amendmentApplication?.permitData?.loas}
         isStaffUser={true}

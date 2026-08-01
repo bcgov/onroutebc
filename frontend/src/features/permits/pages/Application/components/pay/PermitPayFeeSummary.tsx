@@ -50,6 +50,7 @@ export const PermitPayFeeSummary = ({
           permitType={permitType}
           feeSummary={`${calculatedFee}`}
           hideDescriptions={true}
+          intermediaryCosts={[]}
         />
 
         <div className="permit-pay-fee-summary__pay-btn">

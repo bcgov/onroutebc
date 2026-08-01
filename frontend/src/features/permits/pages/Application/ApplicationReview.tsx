@@ -80,7 +80,10 @@ export const ApplicationReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
-  const fee = useCalculatePermitFee(
+  const {
+    totalCost,
+    costs,
+  } = useCalculatePermitFee(
     {
       permitType,
       permitData: applicationData?.permitData
@@ -422,7 +425,8 @@ export const ApplicationReview = ({
           route={applicationData?.permitData?.permittedRoute}
           applicationNotes={applicationData?.permitData?.applicationNotes}
           doingBusinessAs={doingBusinessAs}
-          calculatedFee={`${fee}`}
+          calculatedFee={`${totalCost}`}
+          permitIntermediaryCosts={costs}
           loas={applicationData?.permitData?.loas}
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={isStaffUser}

@@ -46,7 +46,10 @@ export const ApplicationInQueueReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
-  const fee = useCalculatePermitFee(
+  const {
+    totalCost,
+    costs,
+  } = useCalculatePermitFee(
     {
       permitType,
       permitData: applicationData?.permitData
@@ -165,7 +168,8 @@ export const ApplicationInQueueReview = ({
           route={applicationData?.permitData?.permittedRoute}
           applicationNotes={applicationData?.permitData?.applicationNotes}
           doingBusinessAs={doingBusinessAs}
-          calculatedFee={`${fee}`}
+          calculatedFee={`${totalCost}`}
+          permitIntermediaryCosts={costs}
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={true}
           thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}

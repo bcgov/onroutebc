@@ -1,18 +1,24 @@
 import "./FeeSummary.scss";
 import { Nullable } from "../../../../common/types/common";
 import { feeSummaryDisplayText } from "../../helpers/feeSummary";
-import { getPermitTypeName, PermitType } from "../../types/PermitType";
+import { getPermitTypeName, PERMIT_TYPES, PermitType } from "../../types/PermitType";
 
 export const FeeSummary = ({
   permitType,
   feeSummary,
   hideDescriptions,
+  intermediaryCosts,
 }: {
   permitType?: Nullable<PermitType>;
   feeSummary?: Nullable<string>;
   hideDescriptions?: boolean;
+  intermediaryCosts: {
+    costDescription: string;
+    cost: number;
+  }[];
 }) => {
   const feeDisplayText = feeSummaryDisplayText(feeSummary);
+  const shouldShowIntermediaryCosts = permitType === PERMIT_TYPES.STWSE;
 
   return (
     <div className="fee-summary">
@@ -25,18 +31,48 @@ export const FeeSummary = ({
               <div className="table-row__th">Amount</div>
             </div>
 
-            <div className="table-row">
-              <div
-                className="table-row__td"
-                data-testid="fee-summary-permit-type"
-              >
-                {getPermitTypeName(permitType)}
-              </div>
+            {!shouldShowIntermediaryCosts ? (
+              <div className="table-row">
+                <div
+                  className="table-row__td"
+                  data-testid="fee-summary-permit-type"
+                >
+                  {getPermitTypeName(permitType)}
+                </div>
 
-              <div className="table-row__td" data-testid="fee-summary-price">
-                {feeDisplayText}
+                <div className="table-row__td" data-testid="fee-summary-price">
+                  {feeDisplayText}
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="table-row">
+                  <div
+                    className="table-row__td"
+                    data-testid="fee-summary-permit-type"
+                  >
+                    {getPermitTypeName(permitType)}
+                  </div>
+
+                  <div className="table-row__td"></div>
+                </div>
+
+                {intermediaryCosts.map((intermediaryCost, index) => (
+                  <div
+                    key={`${intermediaryCost.costDescription}-${index}`}
+                    className="table-row"
+                  >
+                    <div className="table-row__td">
+                      {intermediaryCost.costDescription}
+                    </div>
+
+                    <div className="table-row__td">
+                      {feeSummaryDisplayText(`${intermediaryCost.cost}`)}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
 

@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useMemo } from "react";
+import { ValidationResult } from "onroute-policy-engine";
 
 import "./PermitReview.scss";
 import { ReviewActions } from "./ReviewActions";
@@ -85,6 +86,7 @@ interface PermitReviewProps {
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
+  permitIntermediaryCosts: ValidationResult[];
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
   applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
@@ -94,6 +96,7 @@ interface PermitReviewProps {
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
 }
+
 export const PermitReview = (props: PermitReviewProps) => {
   const { powerUnitSubTypes, trailerSubTypes } = props;
   const powerUnitSubtypeNamesMap = useMemo(
@@ -283,6 +286,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
           fee={props.calculatedFee}
+          permitIntermediaryCosts={props.permitIntermediaryCosts}
           reviewContext={props.reviewContext}
           companyId={props.companyId}
         />
