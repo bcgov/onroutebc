@@ -52,7 +52,7 @@ export const formatTemplateData = (
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-  template.permitData.overload =
+  template.permitData.vehicleConfiguration.licensedGVWIncrease =
     (template.permitData.vehicleConfiguration?.actualGVW ?? 0) -
     (template.permitData.vehicleDetails?.licensedGVW ?? 0);
   // Format Permit information

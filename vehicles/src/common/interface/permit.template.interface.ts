@@ -42,7 +42,6 @@ export interface PermitData {
   companyName: string;
   clientNumber: string;
   vehicleConfiguration?: VehicleConfiguration;
-  overload?: number;
   applicationNotes?: string;
   permittedCommodity?: PermittedCommodity;
   permittedRoute?: PermittedRoute;
@@ -89,7 +88,7 @@ interface VehicleConfiguration {
   trailers?: VehicleDetails[];
   loadedGVW?: Nullable<number>;
   actualGVW?: Nullable<number>;
-  a?: Nullable<number>;
+  licensedGVWIncrease?: Nullable<number>;
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleConfiguration[]>;
   vehicleDisplayCode?: Nullable<string>;
