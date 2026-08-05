@@ -19,7 +19,6 @@ export const ApplicationNotesSection = ({
       PERMIT_TYPES.STOS,
       PERMIT_TYPES.STOW,
       PERMIT_TYPES.STWSE,
-      PERMIT_TYPES.STGVWI,
     ] as PermitType[]
   ).includes(permitType);
 
