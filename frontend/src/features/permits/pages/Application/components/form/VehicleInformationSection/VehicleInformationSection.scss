@@ -7,17 +7,11 @@
 
   & &__info {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction:column;
+    align-items: flex-start;
     margin-top: 1.5rem;
 
-    &--single-trip {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
     .add-power-unit {
-      margin-top: 1.5rem;
-
       .add-power-unit-btn {
         display: flex;
         align-items: center;
@@ -46,13 +40,9 @@
   }
 
   & &__info-banner {
-    margin-left: 2.5rem;
     height: fit-content;
     height: -moz-fit-content; /* For Firefox, Firefox Android */
-
-    &--single-trip {
-      margin: 0;
-    }
+    margin-bottom: 1.5rem;
 
     .vehicle-inventory-info {
       font-weight: normal;
