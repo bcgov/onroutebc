@@ -34,7 +34,7 @@ export const FeeSummary = ({
             {!shouldShowIntermediaryCosts ? (
               <div className="table-row">
                 <div
-                  className="table-row__td"
+                  className="table-row__td table-row--first-data-row"
                   data-testid="fee-summary-permit-type"
                 >
                   {getPermitTypeName(permitType)}
@@ -46,7 +46,7 @@ export const FeeSummary = ({
               </div>
             ) : (
               <>
-                <div className="table-row">
+                <div className="table-row table-row--first-data-row">
                   <div
                     className="table-row__td"
                     data-testid="fee-summary-permit-type"
