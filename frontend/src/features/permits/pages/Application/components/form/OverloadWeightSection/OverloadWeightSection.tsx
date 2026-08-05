@@ -27,7 +27,7 @@ export const OverloadWeightSection = ({
     <Box className="overload-weight-section">
       <Box className="overload-weight-section__header">
         <h3 className="overload-weight-section__title">
-          Overweight (kg)
+          Overload (kg)
         </h3>
       </Box>
 
@@ -40,7 +40,7 @@ export const OverloadWeightSection = ({
               component: "Weight Over 27.5m",
             }}
             className="overload-weight-section__input overload-weight-section__input--first"
-            value={vehicleConfiguration?.overallWidth}
+            value={vehicleConfiguration?.overloadWeight}
             onUpdateValue={(updatedValue) =>
               onUpdateVehicleConfiguration({
                 ...vehicleConfiguration,
