@@ -500,3 +500,7 @@
 ### Version 104:
 
 - Updates to the policy configuration to add TRCKPME and TRACPME.
+
+### Version 105:
+
+- Configure STGVWI v1 template
