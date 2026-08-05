@@ -503,4 +503,8 @@
 
 ### Version 105:
 
+- Configure STGVWI v1 template
+
+### Version 106:
+
 - Updates to the policy configuration to add STWSE permit type.

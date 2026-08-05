@@ -1,44 +1,70 @@
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 SET NOCOUNT ON
 GO
+
 SET XACT_ABORT ON
 GO
+
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 GO
+
 BEGIN TRANSACTION
 GO
 
--- Remove the newly added policy configuration
-DELETE FROM [dbo].[ORBC_POLICY_CONFIGURATION]
-WHERE POLICY_CONFIGURATION_ID = (SELECT MAX(POLICY_CONFIGURATION_ID) FROM [dbo].[ORBC_POLICY_CONFIGURATION])
-GO
 
-IF @@ERROR <> 0 SET NOEXEC ON
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE] WHERE TEMPLATE_NAME in ('PERMIT_STGVWI','PERMIT_STGVWI_VOID','PERMIT_STGVWI_REVOKED') and TEMPLATE_VERSION='1';
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting updates to the policy configuration to add STWSE permit type'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE])
-VALUES (104, @VersionDescription, getutcdate())
+SET @VersionDescription = 'Revert STGVWI v1 templates'
+
+INSERT [dbo].[ORBC_SYS_VERSION] (
+	[VERSION_ID]
+	,[DESCRIPTION]
+	,[RELEASE_DATE]
+	)
+VALUES (
+	104
+	,@VersionDescription
+	,getutcdate()
+	)
 GO
 
-IF @@ERROR <> 0 SET NOEXEC ON
+IF @@ERROR <> 0
+	SET NOEXEC ON
 GO
 
 COMMIT TRANSACTION
 GO
-IF @@ERROR <> 0 SET NOEXEC ON
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
 GO
+
 DECLARE @Success AS BIT
+
 SET @Success = 1
 SET NOEXEC OFF
-IF (@Success = 1) PRINT 'The database revert succeeded'
-ELSE BEGIN
-   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
-   PRINT 'The database revert failed'
+
+IF (@Success = 1)
+	PRINT 'The database revert succeeded'
+ELSE
+BEGIN
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION
+
+	PRINT 'The database revert failed'
 END
 GO
