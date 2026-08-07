@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./EditUserDashboard.scss";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
-import { EditUserForm } from "../components/forms/userManagement/EditUser";
+import { EditUserForm } from "../components/forms/userManagement/EditUserForm";
 import { PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { PROFILE_ROUTES } from "../../../routes/constants";
@@ -99,7 +99,12 @@ export const EditUserDashboard = React.memo(() => {
         <Typography>Edit User</Typography>
       </Box>
 
-      {!isPending && <EditUserForm userInfo={userInfo} />}
+      {!isPending && (
+        <Box className="dashboard-page__form">
+          <Typography variant={"h2"}>User Details</Typography>
+          <EditUserForm userInfo={userInfo} />
+        </Box>
+      )}
     </div>
   );
 });

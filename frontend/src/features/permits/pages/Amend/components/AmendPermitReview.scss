@@ -1,3 +1,2 @@
-@use "../../../../../common/components/dashboard/Dashboard";
-
-@include Dashboard.layout-box-style(".amend-permit-review .breadcrumb");
+@use "../../../../../themes/orbcStyles.scss";
+@include orbcStyles.layout-box-style(".amend-permit-review .breadcrumb");

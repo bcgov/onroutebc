@@ -1,25 +1,17 @@
 @use "../../../../../../../themes/orbcStyles";
-
 @include orbcStyles.permit-main-box-style(".vehicle-information-section");
-@include orbcStyles.permit-left-box-style(".vehicle-information-section__header");
-@include orbcStyles.permit-right-box-style(".vehicle-information-section__body");
+
 
 .vehicle-information-section {
   border-bottom: none;
 
   & &__info {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction:column;
+    align-items: flex-start;
     margin-top: 1.5rem;
 
-    &--single-trip {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
     .add-power-unit {
-      margin-top: 1.5rem;
-
       .add-power-unit-btn {
         display: flex;
         align-items: center;
@@ -48,13 +40,9 @@
   }
 
   & &__info-banner {
-    margin-left: 2.5rem;
     height: fit-content;
     height: -moz-fit-content; /* For Firefox, Firefox Android */
-
-    &--single-trip {
-      margin: 0;
-    }
+    margin-bottom: 1.5rem;
 
     .vehicle-inventory-info {
       font-weight: normal;
@@ -63,22 +51,6 @@
         font-weight: bold;
         margin: 0 0.25rem;
       }
-    }
-  }
-
-  .power-unit-info {
-    margin-top: 1.5rem;
-  }
-}
-
-@media (width < 1370px) {
-  .vehicle-information-section {
-    & &__info {
-      flex-direction: column;
-    }
-
-    & &__info-banner {
-      margin-left: 0;
     }
   }
 }

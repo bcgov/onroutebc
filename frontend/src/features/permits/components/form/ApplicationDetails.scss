@@ -1,3 +1,7 @@
+@use "../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".application-details");
+@include orbcStyles.layout-box-style(".application-details__company-banner");
+
 .application-details {
   & &__title {
     margin-top: 0;

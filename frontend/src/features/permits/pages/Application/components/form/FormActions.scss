@@ -1,19 +1,20 @@
-@import "../../../../../../themes/orbcStyles";
+@use "../../../../../../themes/orbcStyles";
 
 .application-form-actions {
   position: fixed;
   bottom: 46px;
   left: 0;
   right: 0;
-  background-color: $bc-white;
+  background-color: orbcStyles.$bc-white;
   display: flex;
   align-items: center;
-  padding: 2rem 8.551vw;
-  justify-content: space-between;
-  border-top: 1px solid $bc-text-box-border-grey;
+  padding: 1.5rem 8.551vw;
+  justify-content: flex-end;
+  gap: 2.5rem;
+  border-top: 1px solid orbcStyles.$bc-border-grey;
   z-index: 2;
 
-  & &__section {
+
     display: flex;
     align-items: center;
 
@@ -22,32 +23,30 @@
       bottom: 12.5rem;
       right: 1.25rem;
     }
-  }
+
 
   & &__btn {
-    position: relative;
 
     &--leave {
-      background-color: $bc-background-light-grey;
+      background-color: orbcStyles.$bc-background-light-grey;
       padding: 0.875rem 1rem;
       box-shadow: none;
-      margin-left: 25rem;
 
       &:hover {
-        background-color: $bc-background-light-grey;
-        border: 2px solid $bc-text-box-border-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
         box-shadow: none;
       }
     }
 
     &--cancel {
-      background-color: $bc-background-light-grey;
+      background-color: orbcStyles.$bc-background-light-grey;
       padding: 0.875rem 1rem;
       box-shadow: none;
 
       &:hover {
-        background-color: $bc-background-light-grey;
-        border: 2px solid $bc-text-box-border-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
         box-shadow: none;
       }
     }
@@ -60,11 +59,10 @@
     }
 
     &--continue {
-      margin-left: 1.5em;
       margin-top: 0;
       padding: 0.875rem 2rem;
       font-weight: bold;
-      background-color: $bc-primary-blue;
+      background-color: orbcStyles.$bc-primary-blue;
     }
   }
 }

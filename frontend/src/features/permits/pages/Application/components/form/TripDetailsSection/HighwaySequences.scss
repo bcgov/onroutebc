@@ -27,6 +27,7 @@
   & &__inputs {
     .highway-sequence-rows {
       &__row {
+        max-width: 67.5rem;
         width: 100%;
         display: flex;
         justify-content: space-between;

@@ -484,3 +484,23 @@
 ### Version 100:
 
 - Add STWSE and STGVWI permit types to ORBC_PERMIT_TYPE table
+
+### Version 101:
+
+- Add extraordinary load request conditions for STOW to policy config
+
+### Version 102:
+
+- Updates to the policy configuration to add STGVWI permit type.
+
+### Version 103:
+
+- Add TRCKPME and TRACPME to ORBC_POWER_UNIT_TYPE table
+
+### Version 104:
+
+- Updates to the policy configuration to add TRCKPME and TRACPME.
+
+### Version 105:
+
+- Configure STGVWI v1 template

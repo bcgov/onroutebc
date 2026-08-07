@@ -24,6 +24,8 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
+import { ActualGVW } from "./ActualGVWSection/ActualGVWSection";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
 
 export const PermitForm = () => {
@@ -97,6 +99,7 @@ export const PermitForm = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
+
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
@@ -122,20 +125,21 @@ export const PermitForm = () => {
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
         {shouldShowRejectionBanner && (
-          <ErrorAltBcGovBanner
-            className="permit-form__rejection-banner"
-            msg={
-              <div className="rejection-banner__message">
-                <span>This application was rejected. </span>
-                <CustomActionLink
-                  className="rejection-banner__link"
-                  onClick={scrollToReviewApplicationRejectionHistorySection}
-                >
-                  See the reason(s) for rejection.
-                </CustomActionLink>
-              </div>
-            }
-          />
+          <div className="permit-form__rejection-banner">
+            <ErrorAltBcGovBanner
+              msg={
+                <div className="rejection-banner__message">
+                  <span>This application was rejected. </span>
+                  <CustomActionLink
+                    className="rejection-banner__link"
+                    onClick={scrollToReviewApplicationRejectionHistorySection}
+                  >
+                    See the reason(s) for rejection.
+                  </CustomActionLink>
+                </div>
+              }
+            />
+          </div>
         )}
         <ApplicationDetails
           permitType={permitType}
@@ -245,6 +249,13 @@ export const PermitForm = () => {
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}
           onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <ActualGVW
+          feature={feature}
+          permitType={permitType}
+          actualGVW={getDefaultRequiredVal(0, vehicleConfiguration?.actualGVW)}
+          licensedGVW={getDefaultRequiredVal(0, vehicleFormData?.licensedGVW)}
         />
 
         <TripDetailsSection

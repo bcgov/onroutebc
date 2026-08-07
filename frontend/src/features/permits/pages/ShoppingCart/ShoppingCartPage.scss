@@ -1,12 +1,11 @@
-@use "../../../../common/components/dashboard/Dashboard";
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
-@include Dashboard.layout-box-style(".shopping-cart-page");
+@include orbcStyles.layout-box-style(".shopping-cart-page");
 
 .shopping-cart-page {
   display: flex;
   flex-direction: row;
-  background-color: $white;
+  background-color: orbcStyles.$white;
   padding-bottom: 9rem;
 
   & &__left-container {
@@ -25,7 +24,7 @@
 
   & &__right-container {
     width: 33.3%;
-    background-color: $bc-white;
+    background-color: orbcStyles.$bc-white;
     display: flex;
     flex-direction: column;
     
@@ -42,7 +41,7 @@
   }
 
   & &__contact {
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
     margin-top: 2.5rem;
     margin-bottom: 10.75rem;
 

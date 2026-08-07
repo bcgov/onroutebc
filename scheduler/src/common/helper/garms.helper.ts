@@ -306,11 +306,8 @@ export const createGarmsCreditFileDetails = (
     4,
   );
   gcd.serviceQuantity = formatNumber(1, 5);
-  const isRefundTransaction =
-    transaction?.transactionTypeId === TransactionType.REFUND;
-  const plateNumber = isRefundTransaction
-    ? ''
-    : permitTransaction.permit.permitData.plate;
+
+  const plateNumber = permitTransaction?.permit?.permitData?.plate;
 
   gcd.plateNumber = formatString(plateNumber, 25);
   const approvalSource =
@@ -325,13 +322,11 @@ export const createGarmsCreditFileDetails = (
         : formatString('CHANGE', 8)
       : 'ORIGINAL';
 
-  const permitApplicationSource = isRefundTransaction
-    ? convertUtcToPt(extractDate, GARMS_DATE_FORMAT)
-    : `${approvalSource}-${revisionStatus}`;
+  const permitApplicationSource = `${approvalSource}-${revisionStatus}`;
 
   gcd.permitApplicationSource = formatString(permitApplicationSource, 25);
   gcd.permitDate = formatString(
-    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYYYMMDD'),
+    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYMMDD'),
     35,
   );
   gcd.invUnits = INV_QTY;
@@ -340,18 +335,17 @@ export const createGarmsCreditFileDetails = (
     9,
   );
 
-  const formattedPermitNumber = formatPermitNumber(
+  const permitNumber = formatPermitNumber(
     permitTransaction?.permit?.permitNumber,
   );
-  const permitNumber = isRefundTransaction ? '' : formattedPermitNumber;
 
   gcd.serNoFrom = formatString(permitNumber, 15);
   gcd.serNoTo = SER_NO_TO;
   gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
-  if (!isRefundTransaction) {
-    gcd.voidInd = VOID_IND;
-    gcd.permitNumber = formatString(permitNumber, 9);
-  }
+
+  gcd.voidInd = VOID_IND;
+  gcd.permitNumber = formatString(permitNumber, 9);
+
   const detail = Object.values(gcd).join('');
   return detail + '\n';
 };

@@ -1,17 +1,17 @@
-@use "../../../../common/components/dashboard/Dashboard";
-@import "../../../../themes/orbcStyles";
 
-@include Dashboard.layout-box-style(".void-permit .breadcrumb");
-@include Dashboard.layout-box-style(".void-permit .layout-banner");
-@include Dashboard.layout-box-style(".void-permit__header");
-@include Dashboard.layout-box-style(".void-permit__form");
+@use "../../../../themes/orbcStyles";
+
+@include orbcStyles.layout-box-style(".void-permit .breadcrumb");
+@include orbcStyles.layout-box-style(".void-permit .layout-banner");
+@include orbcStyles.layout-box-style(".void-permit__header");
+@include orbcStyles.layout-box-style(".void-permit__form");
 
 .void-permit {
   display: flex;
   flex-direction: column;
-  background-color: $white;
+  background-color: orbcStyles.$white;
 
   .layout-banner {
-    background-color: $bc-background-light-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
   }
 }

@@ -1,6 +1,6 @@
-@use "../../../../../common/components/dashboard/Dashboard";
+@use "../../../../../themes/orbcStyles";
 
-@include Dashboard.layout-box-style(".amend-permit-form .breadcrumb");
+@include orbcStyles.layout-box-style(".amend-permit-form .breadcrumb");
 
 .amend-permit-form {
   .application-form-actions {

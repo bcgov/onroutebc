@@ -5,6 +5,7 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
 import { getProvinceFullName } from "../../../../common/helpers/countries/getProvinceFullName";
 import { getCountryFullName } from "../../../../common/helpers/countries/getCountryFullName";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 
 export const CompanyInformation = ({
   companyInfo,
@@ -25,15 +26,14 @@ export const CompanyInformation = ({
     <Box className="company-info">
       <Box className="company-info__header">
         <h3 data-testid="company-info-header-title">Client Information</h3>
-
-        <Typography
-          className="company-info__info-msg"
-          data-testid="company-info-header-desc"
-        >
-          If the Client Mailing Address is incorrect, please contact your
-          onRouteBC Administrator.
-        </Typography>
       </Box>
+
+      <InfoBcGovBanner
+        className="company-info__banner"
+        msg={
+          "If the Client Mailing Address is incorrect, please contact your onRouteBC Administrator."
+        }
+      />
 
       <Box className="company-info__body">
         {doingBusinessAs ? (
@@ -41,9 +41,7 @@ export const CompanyInformation = ({
             <h4 data-testid="doing-business-as-title">Doing Business As</h4>
 
             <Box>
-              <Typography data-testid="doing-business-as">
-                {doingBusinessAs}
-              </Typography>
+              <Typography data-testid="doing-business-as">test</Typography>
             </Box>
           </Box>
         ) : null}

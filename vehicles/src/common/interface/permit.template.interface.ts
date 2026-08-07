@@ -22,6 +22,7 @@ export interface PermitTemplateData {
   revisionIssueDateTime?: string;
   thirdPartyLiability?: string;
   conditionalLicensingFee?: string;
+  overloadVW?: Nullable<number>;
 }
 
 interface Revision {
@@ -87,6 +88,7 @@ interface VehicleConfiguration {
   rearProjection?: Nullable<number>;
   trailers?: VehicleDetails[];
   loadedGVW?: Nullable<number>;
+  actualGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleConfiguration[]>;
   vehicleDisplayCode?: Nullable<string>;

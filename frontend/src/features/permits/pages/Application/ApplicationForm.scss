@@ -1,3 +1,2 @@
-@use "../../../../common/components/dashboard/Dashboard";
-
-@include Dashboard.layout-box-style(".application-form .breadcrumb");
+@use "../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".application-form .breadcrumb");

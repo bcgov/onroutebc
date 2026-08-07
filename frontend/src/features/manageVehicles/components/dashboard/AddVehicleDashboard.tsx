@@ -18,9 +18,13 @@ import { getCompanyIdFromSession } from "../../../../common/apiManager/httpReque
 export const AddVehicleDashboard = React.memo(
   ({ vehicleType }: { vehicleType: VehicleType }) => {
     const navigate = useNavigate();
-    const companyId: number = applyWhenNotNullable(id => Number(id), getCompanyIdFromSession(), 0);
+    const companyId: number = applyWhenNotNullable(
+      (id) => Number(id),
+      getCompanyIdFromSession(),
+      0,
+    );
     const isTrailer = vehicleType === VEHICLE_TYPES.TRAILER;
-    
+
     const backToVehicleInventory = () => {
       if (isTrailer) {
         navigate(VEHICLES_ROUTES.TRAILER_TAB);
@@ -29,12 +33,9 @@ export const AddVehicleDashboard = React.memo(
       }
     };
 
-    const addText = isTrailer
-      ? "Add Trailer" : "Add Power Unit";
-    const backText = isTrailer
-      ? "Trailer" : "Power Unit";
-    const detailsText = isTrailer
-      ? "Trailer Details" : "Power Unit Details";
+    const addText = isTrailer ? "Add Trailer" : "Add Power Unit";
+    const backText = isTrailer ? "Trailer" : "Power Unit";
+    const detailsText = isTrailer ? "Trailer Details" : "Power Unit Details";
 
     return (
       <div className="dashboard-page">
@@ -61,9 +62,7 @@ export const AddVehicleDashboard = React.memo(
 
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
-          <Typography>
-            {addText}
-          </Typography>
+          <Typography>{addText}</Typography>
         </Box>
 
         <Box className="dashboard-page__info-banner layout-box">
@@ -71,9 +70,7 @@ export const AddVehicleDashboard = React.memo(
         </Box>
 
         <Box className="dashboard-page__form layout-box">
-          <Typography variant={"h2"}>
-            {detailsText}
-          </Typography>
+          <Typography variant={"h2"}>{detailsText}</Typography>
 
           {isTrailer ? (
             <TrailerForm companyId={companyId} />

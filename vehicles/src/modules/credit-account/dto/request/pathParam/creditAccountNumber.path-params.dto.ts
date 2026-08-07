@@ -8,6 +8,6 @@ export class CreditAccountNumberPathParamDto {
     required: true,
   })
   @IsString()
-  @Length(1, 12)
+  @Length(1, 6)
   creditAccountNumber: string;
 }
