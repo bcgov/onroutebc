@@ -271,13 +271,14 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
+    const permitType = data.permitType;
     const axleConfiguration = getDefaultRequiredVal(
       [],
       currentFormData.permitData.vehicleConfiguration?.axleConfiguration,
     );
     // If any ASW inputs are empty, do not continue to policy validation
     if (
-      data.permitType === PERMIT_TYPES.STOW &&
+      permitType === PERMIT_TYPES.STOW &&
       !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
     ) {
       setAxleCalculationResultsFromValidation(undefined);
@@ -290,7 +291,7 @@ export const ApplicationForm = ({
 
     if (
       !isStowPermitRequired(
-        data.permitType,
+        permitType,
         updatedViolations,
         axleCalculationResults,
       )
@@ -299,6 +300,11 @@ export const ApplicationForm = ({
       return;
     }
 
+    const isExtraordinaryLoadRequest = getDefaultRequiredVal(
+      false,
+      data.permitData.extraordinaryLoadRequest?.isExtraordinaryLoadRequest,
+    );
+
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
     if (
@@ -306,7 +312,8 @@ export const ApplicationForm = ({
         updatedViolations,
         axleCalculationResults,
         isStaffUser,
-        data.permitType,
+        permitType,
+        isExtraordinaryLoadRequest,
       )
     ) {
       console.error(updatedViolations);
