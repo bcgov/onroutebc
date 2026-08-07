@@ -299,6 +299,11 @@ export const ApplicationForm = ({
       return;
     }
 
+    const isExtraordinaryLoadRequest = getDefaultRequiredVal(
+      false,
+      data.permitData.extraordinaryLoadRequest?.isExtraordinaryLoadRequest,
+    );
+
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
     if (
@@ -307,6 +312,7 @@ export const ApplicationForm = ({
         axleCalculationResults,
         isStaffUser,
         data.permitType,
+        isExtraordinaryLoadRequest,
       )
     ) {
       console.error(updatedViolations);
