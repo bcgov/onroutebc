@@ -71,7 +71,7 @@ export class ApplicationController {
       searchColumn,
       searchString,
       applicationQueueStatus,
-      extraordinaryLoad,
+      extraordinaryLoads,
     }: GetApplicationQueryParamsDto,
   ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
@@ -85,7 +85,7 @@ export class ApplicationController {
       applicationQueueStatus: convertApplicationQueueStatus(
         (applicationQueueStatus?.split(',') as ApplicationQueueStatus[]) || [],
       ),
-      extraordinaryLoad,
+      extraordinaryLoads,
     });
   }
 

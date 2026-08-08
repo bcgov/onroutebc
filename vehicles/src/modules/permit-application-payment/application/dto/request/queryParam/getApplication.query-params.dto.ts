@@ -86,7 +86,7 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
     return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
   })
   @IsBoolean()
-  extraordinaryLoad?: Nullable<boolean>;
+  extraordinaryLoads?: Nullable<boolean>;
 
   @ApiProperty({
     description:

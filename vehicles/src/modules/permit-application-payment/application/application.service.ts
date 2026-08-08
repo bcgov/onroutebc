@@ -354,7 +354,7 @@ export class ApplicationService {
    * - applicationQueueStatus: Status filter for applications that are in the queue.
    * - searchColumn: The specific column to search within (e.g., plate, application number).
    * - searchString: The input keyword to use for searching.
-   * - extraordinaryLoad: Filter for extraordinary load applications.
+   * - extraordinaryLoads: Filter for extraordinary load applications.
    * @returns A paginated result containing filtered and sorted ReadApplicationMetadataDto objects.
    */
   @LogAsyncMethodExecution()
@@ -369,7 +369,7 @@ export class ApplicationService {
     applicationQueueStatus?: Nullable<CaseStatusType[]>;
     searchColumn?: Nullable<ApplicationSearch>;
     searchString?: Nullable<string>;
-    extraordinaryLoad?: Nullable<boolean>;
+    extraordinaryLoads?: Nullable<boolean>;
   }): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery({
@@ -380,7 +380,7 @@ export class ApplicationService {
       searchColumn: findAllApplicationsOptions.searchColumn,
       searchString: findAllApplicationsOptions.searchString,
       applicationQueueStatus: findAllApplicationsOptions.applicationQueueStatus,
-      extraordinaryLoad: findAllApplicationsOptions.extraordinaryLoad,
+      extraordinaryLoads: findAllApplicationsOptions.extraordinaryLoads,
     });
     // total number of items
     const totalItems = await applicationsQB.getCount();
@@ -454,7 +454,7 @@ export class ApplicationService {
     searchColumn?: Nullable<ApplicationSearch>;
     searchString?: Nullable<string>;
     applicationQueueStatus?: Nullable<CaseStatusType[]>;
-    extraordinaryLoad?: Nullable<boolean>;
+    extraordinaryLoads?: Nullable<boolean>;
   }): SelectQueryBuilder<Permit> {
     // Ensure that pendingPermits and applicationQueueStatus are not set at the same time
     if (
@@ -523,11 +523,11 @@ export class ApplicationService {
     }
 
     // Filter by extraordinary load status based on elApprovalNumber presence
-    if (buildApplicationQueryOptions?.extraordinaryLoad) {
+    if (buildApplicationQueryOptions?.extraordinaryLoads) {
       permitsQuery = permitsQuery.andWhere(
         'permitData.elApprovalNumber IS NOT NULL',
       );
-    } else if (buildApplicationQueryOptions?.extraordinaryLoad === false) {
+    } else if (buildApplicationQueryOptions?.extraordinaryLoads === false) {
       permitsQuery = permitsQuery.andWhere(
         'permitData.elApprovalNumber IS NULL',
       );
