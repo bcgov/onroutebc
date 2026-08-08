@@ -160,4 +160,12 @@ export class ReadApplicationMetadataDto {
     required: false,
   })
   claimedBy?: Nullable<string>;
+
+  @AutoMap()
+  @ApiProperty({
+    description: `The extraordinary load approval number associated with the application.`,
+    example: '487598',
+    required: false,
+  })
+  elApprovalNumber?: Nullable<string>;
 }

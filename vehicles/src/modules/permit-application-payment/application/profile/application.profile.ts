@@ -281,6 +281,10 @@ export class ApplicationProfile extends AutomapperProfile {
           mapFrom((s) => s.permitData?.plate),
         ),
         forMember(
+          (d) => d.elApprovalNumber,
+          mapFrom((s) => s.permitData?.elApprovalNumber),
+        ),
+        forMember(
           (d) => d.applicant,
           mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
