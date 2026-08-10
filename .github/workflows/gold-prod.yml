@@ -44,7 +44,7 @@ jobs:
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
         --set-string global.env.cluster='GOLD' \
-        --set-string vehicles.pvc.size='200Mi' \
+        --set-string scheduler.pvc.size='200Mi' \
         ${{ inputs.params }} \
   
   deploys-prod-golddr:
@@ -64,5 +64,5 @@ jobs:
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
         --set-string global.env.cluster='GOLDDR' \
-        --set-string vehicles.pvc.size='200Mi' \
+        --set-string scheduler.pvc.size='200Mi' \
         ${{ inputs.params }} \
