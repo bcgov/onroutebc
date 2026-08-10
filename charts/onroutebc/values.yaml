@@ -259,6 +259,9 @@ vehicles:
         requests:
           cpu: 200m
           memory: 300Mi
+      volumeMounts:
+        - name: rbc
+          mountPath: "/mnt/rbc/"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -334,6 +337,15 @@ vehicles:
       - "service-accounts-{{tpl $.Values.vault.zone $}}"
       - "egarms-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
+  pvc:
+    enabled: true
+    accessModes: ReadWriteMany
+    size: 5Mi
+    storageClassName: netapp-file-standard
+  volumes:
+    - name: rbc
+      persistentVolumeClaim:
+        claimName: "{{ .Release.Name }}-vehicles"
 
 public:
   enabled: true
