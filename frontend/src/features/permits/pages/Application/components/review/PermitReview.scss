@@ -1,19 +1,15 @@
 @use "../../../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".permit-review__banner--confirm");
 
 .permit-review {
   padding-top: 1.5rem;
   background-color: orbcStyles.$bc-white;
 
   &__container {
-    padding-bottom: 5rem;
 
     .bc-gov-alertbanner {
       margin-bottom: 1.5rem;
     }
   }
 
-  .review-actions {
-    border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
-    padding-top: 2.5rem;
-  }
 }

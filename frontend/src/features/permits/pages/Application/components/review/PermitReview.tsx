@@ -138,7 +138,9 @@ export const PermitReview = (props: PermitReviewProps) => {
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
-        <WarningBcGovBanner msg="Please review and confirm that the information below is correct." />
+        <Box className="permit-review__banner--confirm">
+          <WarningBcGovBanner msg="Please review and confirm that the information below is correct." />
+        </Box>
 
         <ApplicationDetails
           permitType={props.permitType}

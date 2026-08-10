@@ -1,4 +1,6 @@
-@import "../../../../../themes/orbcStyles";
+@use "../../../../../themes/orbcStyles";
+
+@include orbcStyles.layout-box-style(".layout-banner");
 
 .layout-banner {
   display: flex;
@@ -25,13 +27,13 @@
     margin-block-start: 0;
     margin-block-end: 0;
     font-size: 1.5rem;
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
 
   & &__subtext {
     margin-top: 1rem;
     font-size: 1rem;
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
 }
 

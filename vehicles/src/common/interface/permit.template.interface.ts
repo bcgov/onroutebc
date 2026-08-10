@@ -22,6 +22,7 @@ export interface PermitTemplateData {
   revisionIssueDateTime?: string;
   thirdPartyLiability?: string;
   conditionalLicensingFee?: string;
+  overloadVW?: Nullable<number>;
 }
 
 interface Revision {

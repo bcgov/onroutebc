@@ -1,8 +1,5 @@
 @use "../../../../../../../themes/orbcStyles";
-
 @include orbcStyles.permit-main-box-style(".commodity-details-section");
-@include orbcStyles.permit-left-box-style(".commodity-details-section__header");
-@include orbcStyles.permit-right-box-style(".commodity-details-section__body");
 
 .commodity-details-section {
   &__listbox.custom-listbox {
@@ -11,15 +8,7 @@
   }
 
   & &__input {
-    max-width: 55.625rem;
-
-    .custom-form-control {
-      margin: 1.5rem 0 0 0;
-    }
-
-    &--commodity-type {
-      margin: 1rem 0 0 0;
-      width: 100%;
-    }
+    max-width: 30.625rem;
+    width: 100%;
   }
 }

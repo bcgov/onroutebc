@@ -1,4 +1,4 @@
-@import "../../../../../../themes/orbcStyles";
+@use "../../../../../../themes/orbcStyles";
 
 .conditions-table {
   &#{&} {
@@ -6,7 +6,7 @@
   }
 
   & &__table {
-    min-width: 36rem;
+    max-width: 67.5rem;
     table-layout: fixed;
   }
 
@@ -35,11 +35,11 @@
 
   & &__form-control#{&}__form-control--disabled {
     .condition-checkbox {
-      color: $disabled-colour;
+      color: orbcStyles.$disabled-colour;
     }
 
     .condition-description {
-      color: $bc-black;
+      color: orbcStyles.$bc-black;
     }
   }
 }

@@ -1,6 +1,5 @@
-@use "../../../../common/components/dashboard/Dashboard";
-
-@include Dashboard.layout-box-style(".application-review .breadcrumb");
+@use "../../../../themes/orbcStyles";
+@include orbcStyles.layout-box-style(".application-review .breadcrumb");
 
 .application-review {
   display: flex;

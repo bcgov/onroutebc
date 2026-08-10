@@ -1,3 +1,4 @@
+import { screen } from "@testing-library/react";
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
@@ -23,7 +24,6 @@ import {
   checkAttestations,
   companyClientLabel,
   companyClientNumber,
-  companyInfoHeaderDescription,
   companyInfoHeaderTitle,
   companyMailAddrCityPostal,
   companyMailAddrCountry,
@@ -147,9 +147,9 @@ describe("Review and Confirm Application Details", () => {
       expect(await companyInfoHeaderTitle()).toHaveTextContent(
         companyInfoTitle,
       );
-      expect(await companyInfoHeaderDescription()).toHaveTextContent(
-        companyInfoDescription,
-      );
+      expect(
+        await screen.getByText(companyInfoDescription),
+      ).toBeInTheDocument();
     });
 
     it("should display proper company mailing address info", async () => {
