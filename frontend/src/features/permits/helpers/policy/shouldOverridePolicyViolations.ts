@@ -19,6 +19,7 @@ export const shouldOverridePolicyViolations = (
   axleCalculationResults: AxleCalculationResult,
   isStaffUser: boolean,
   permitType: PermitType,
+  isExtraordinaryLoadRequest: boolean,
 ) => {
   const violationFieldReferences = Object.keys(violations);
 
@@ -31,9 +32,11 @@ export const shouldOverridePolicyViolations = (
       ),
     );
     if (
-      violationFieldReferences.length === 0 &&
-      failedAxleCalculationResults.length === 0 &&
-      axleCalculationResults.overload > 0
+      (violationFieldReferences.length === 0 &&
+        failedAxleCalculationResults.length === 0 &&
+        axleCalculationResults.overload > 0) ||
+      // if the STOW permit has an extraordinary load request, then failed axle calculation results should be ignored and the user can proceed
+      (violationFieldReferences.length === 0 && isExtraordinaryLoadRequest)
     ) {
       return true;
     }

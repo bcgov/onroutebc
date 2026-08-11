@@ -504,3 +504,7 @@
 ### Version 105:
 
 - Configure STGVWI v1 template
+
+### Version 106:
+
+- Add EL_APPROVAL_NUMBER column to ORBC_PERMIT_DATA

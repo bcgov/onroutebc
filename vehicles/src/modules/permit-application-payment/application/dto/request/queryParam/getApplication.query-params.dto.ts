@@ -74,6 +74,22 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
 
   @ApiProperty({
     description:
+      `Setting this property to true limits the search to extraordinary load applications. ` +
+      `Conversely, setting it to false confines the search results to non-extraordinary load applications. ` +
+      `If this property is left unspecified, the search will fetch both extraordinary and non-extraordinary load applications`,
+    example: true,
+    required: false,
+    type: 'boolean',
+  })
+  @IsOptional()
+  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
+    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+  })
+  @IsBoolean()
+  extraordinaryLoads?: Nullable<boolean>;
+
+  @ApiProperty({
+    description:
       `Setting this property to true limits the search to applications that have already received payment but are still awaiting issuance. ` +
       ` Conversely, setting it to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). ` +
       `If this property is left unspecified, the search will fetch all applications that are in any of the following statuses: ${Object.values(ALL_APPLICATION_STATUS).join(', ')}, which includes those that are awaiting issuance. ` +
