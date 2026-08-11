@@ -127,6 +127,7 @@ export class CompanyApplicationController {
       ),
       searchColumn: getApplicationQueryParamsDto.searchColumn,
       searchString: getApplicationQueryParamsDto.searchString,
+      extraordinaryLoads: getApplicationQueryParamsDto.extraordinaryLoads,
     });
   }
   /**

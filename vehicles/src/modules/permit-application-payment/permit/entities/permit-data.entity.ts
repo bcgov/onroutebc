@@ -62,4 +62,8 @@ export class PermitData extends Base {
   @AutoMap()
   @Column({ name: 'VIN', insert: false, update: false })
   vin: string;
+
+  @AutoMap()
+  @Column({ name: 'EL_APPROVAL_NUMBER', insert: false, update: false })
+  elApprovalNumber: string;
 }
