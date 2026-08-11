@@ -13,6 +13,8 @@ import {
   SearchEntity,
   SearchFields,
 } from "../types/types";
+import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { IDIR_ROUTES } from "../../../../routes/constants";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -54,7 +56,22 @@ export const IDIRSearchResultsDashboard = memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText={getBannerText(searchFields)} />
+        <Banner
+          bannerText={getBannerText(searchFields)}
+          rightContent={
+            <div className="idir-search-results-dashboard-banner">
+              <p className="idir-search-results-dashboard-banner__text">
+                Can&apos;t find a client?
+              </p>
+              <CustomNavLink
+                className="idir-search-results-dashboard-banner__button"
+                to={IDIR_ROUTES.CREATE_COMPANY}
+              >
+                Create Client Profile
+              </CustomNavLink>
+            </div>
+          }
+        />
       </Box>
       <div
         className="idir-search-results-dashboard"

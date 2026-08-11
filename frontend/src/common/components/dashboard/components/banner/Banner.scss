@@ -35,6 +35,35 @@
     font-size: 1rem;
     color: orbcStyles.$bc-black;
   }
+
+  & &__right {
+    .idir-search-results-dashboard-banner {
+      &__text {
+        font-weight: bold;
+        color: orbcStyles.$bc-black;
+        margin: 0;
+        padding-bottom: 1.5rem
+      }
+      &__button  {
+        padding: .75rem 2rem;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        background-color: orbcStyles.$bc-primary-blue;
+        color: orbcStyles.$white;
+        cursor: pointer;
+  
+        &:hover {
+          background-color: orbcStyles.$button-hover;
+          span {
+            color: orbcStyles.$white; 
+          }
+        }
+
+    }
+    }
+  }
 }
 
 @media (width < 1100px) {
