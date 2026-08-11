@@ -22,6 +22,7 @@ jobs:
       environment: gold-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
+      remove_pvc: ${{ github.event.repository.name }}-${{ github.event.number }}-scheduler-pbi
   
   cleanup-golddr:
     name: Cleanup OpenShift and/or Promote Images
@@ -34,3 +35,4 @@ jobs:
       environment: golddr-dev
       cleanup: helm
       packages: dops frontend scheduler vehicles policy public
+      remove_pvc: ${{ github.event.repository.name }}-${{ github.event.number }}-scheduler-pbi
