@@ -23,7 +23,7 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting updates to the policy configuration to add STWSE permit type'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE])
-VALUES (105, @VersionDescription, getutcdate())
+VALUES (106, @VersionDescription, getutcdate())
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
