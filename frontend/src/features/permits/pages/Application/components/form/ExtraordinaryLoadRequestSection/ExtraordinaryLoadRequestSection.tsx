@@ -67,6 +67,9 @@ export const ExtraordinaryLoadRequestSection = ({
                 required: { value: true, message: requiredMessage() },
               },
               label: "Approval No.",
+              inputProps: {
+                maxLength: 100,
+              },
             }}
           />
         ) : null}

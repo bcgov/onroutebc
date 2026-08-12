@@ -63,6 +63,8 @@ import {
   mergeInteraxleSpacing,
   validateAxleConfiguration,
 } from "../../../helpers/axleUnitHelper";
+import { isStowPermitRequired } from "../../../helpers/policy/isStowPermitRequired";
+import { PermitNotRequiredModal } from "../../Application/components/form/PermitNotRequiredModal";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -137,6 +139,9 @@ export const AmendPermitForm = () => {
   const { mutateAsync: createAmendment } = useAmendPermit(companyId);
   const { mutateAsync: modifyAmendment } = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
+
+  const [showPermitNotRequiredModal, setShowPermitNotRequiredModal] =
+    useState<boolean>(false);
 
   const { handleSubmit } = formMethods;
 
@@ -220,13 +225,14 @@ export const AmendPermitForm = () => {
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
+    const permitType = data.permitType;
     const axleConfiguration = getDefaultRequiredVal(
       [],
       formData.permitData.vehicleConfiguration?.axleConfiguration,
     );
     // If any ASW inputs are empty, do not continue to policy validation
     if (
-      data.permitType === PERMIT_TYPES.STOW &&
+      permitType === PERMIT_TYPES.STOW &&
       !validateAxleConfiguration(mergeInteraxleSpacing(axleConfiguration, 1))
     ) {
       setAxleCalculationResultsFromValidation(undefined);
@@ -237,6 +243,22 @@ export const AmendPermitForm = () => {
     const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
 
+    if (
+      !isStowPermitRequired(
+        permitType,
+        updatedViolations,
+        axleCalculationResults,
+      )
+    ) {
+      setShowPermitNotRequiredModal(true);
+      return;
+    }
+
+    const isExtraordinaryLoadRequest = getDefaultRequiredVal(
+      false,
+      data.permitData.extraordinaryLoadRequest?.isExtraordinaryLoadRequest,
+    );
+
     // If there are policy engine validation errors, form validation fails unless those violations
     // can be overriden
     if (
@@ -244,7 +266,8 @@ export const AmendPermitForm = () => {
         updatedViolations,
         axleCalculationResults,
         isStaffUser,
-        data.permitType,
+        permitType,
+        isExtraordinaryLoadRequest,
       )
     ) {
       console.error(updatedViolations);
@@ -425,6 +448,10 @@ export const AmendPermitForm = () => {
           <PermitForm />
         </ApplicationFormContext.Provider>
       </FormProvider>
+      <PermitNotRequiredModal
+        isOpen={showPermitNotRequiredModal}
+        onClose={() => setShowPermitNotRequiredModal(false)}
+      />
     </div>
   );
 };

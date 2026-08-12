@@ -505,6 +505,10 @@
 
 - Configure STGVWI v1 template
 
+### Version 106:
+
+- Add EL_APPROVAL_NUMBER column to ORBC_PERMIT_DATA
+
 ### Version 107:
 
 - Updates to the policy configuration to add STWSE permit type.

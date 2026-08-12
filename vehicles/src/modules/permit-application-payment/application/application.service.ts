@@ -354,6 +354,7 @@ export class ApplicationService {
    * - applicationQueueStatus: Status filter for applications that are in the queue.
    * - searchColumn: The specific column to search within (e.g., plate, application number).
    * - searchString: The input keyword to use for searching.
+   * - extraordinaryLoads: Filter for extraordinary load applications.
    * @returns A paginated result containing filtered and sorted ReadApplicationMetadataDto objects.
    */
   @LogAsyncMethodExecution()
@@ -368,17 +369,19 @@ export class ApplicationService {
     applicationQueueStatus?: Nullable<CaseStatusType[]>;
     searchColumn?: Nullable<ApplicationSearch>;
     searchString?: Nullable<string>;
+    extraordinaryLoads?: Nullable<boolean>;
   }): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     // Construct the base query to find applications
-    const applicationsQB = this.buildApplicationQuery(
-      findAllApplicationsOptions.currentUser,
-      findAllApplicationsOptions.companyId,
-      findAllApplicationsOptions.pendingPermits,
-      findAllApplicationsOptions.userGUID,
-      findAllApplicationsOptions.searchColumn,
-      findAllApplicationsOptions.searchString,
-      findAllApplicationsOptions.applicationQueueStatus,
-    );
+    const applicationsQB = this.buildApplicationQuery({
+      currentUser: findAllApplicationsOptions.currentUser,
+      companyId: findAllApplicationsOptions.companyId,
+      pendingPermits: findAllApplicationsOptions.pendingPermits,
+      userGUID: findAllApplicationsOptions.userGUID,
+      searchColumn: findAllApplicationsOptions.searchColumn,
+      searchString: findAllApplicationsOptions.searchString,
+      applicationQueueStatus: findAllApplicationsOptions.applicationQueueStatus,
+      extraordinaryLoads: findAllApplicationsOptions.extraordinaryLoads,
+    });
     // total number of items
     const totalItems = await applicationsQB.getCount();
 
@@ -443,17 +446,21 @@ export class ApplicationService {
     return new PaginationDto(readApplicationMetadataDto, pageMetaDto);
   }
 
-  private buildApplicationQuery(
-    currentUser: IUserJWT,
-    companyId?: number,
-    pendingPermits?: boolean,
-    userGUID?: string,
-    searchColumn?: Nullable<ApplicationSearch>,
-    searchString?: Nullable<string>,
-    applicationQueueStatus?: Nullable<CaseStatusType[]>,
-  ): SelectQueryBuilder<Permit> {
+  private buildApplicationQuery(buildApplicationQueryOptions: {
+    currentUser: IUserJWT;
+    companyId?: number;
+    pendingPermits?: boolean;
+    userGUID?: string;
+    searchColumn?: Nullable<ApplicationSearch>;
+    searchString?: Nullable<string>;
+    applicationQueueStatus?: Nullable<CaseStatusType[]>;
+    extraordinaryLoads?: Nullable<boolean>;
+  }): SelectQueryBuilder<Permit> {
     // Ensure that pendingPermits and applicationQueueStatus are not set at the same time
-    if (pendingPermits !== undefined && applicationQueueStatus?.length) {
+    if (
+      buildApplicationQueryOptions?.pendingPermits !== undefined &&
+      buildApplicationQueryOptions?.applicationQueueStatus?.length
+    ) {
       throw new InternalServerErrorException(
         'Both pendingPermits and applicationQueueStatus cannot be set at the same time.',
       );
@@ -471,7 +478,7 @@ export class ApplicationService {
       );
 
     // Include cases and the assigned case user only if applications are in queue
-    if (applicationQueueStatus?.length) {
+    if (buildApplicationQueryOptions?.applicationQueueStatus?.length) {
       permitsQuery = permitsQuery.innerJoinAndSelect('permit.cases', 'cases');
       permitsQuery = permitsQuery.leftJoinAndSelect(
         'cases.assignedUser',
@@ -504,19 +511,30 @@ export class ApplicationService {
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
     // Remove amend applications from the list
-    permitsQuery = permitsQuery.where('permit.revision = :revision', {
+    permitsQuery = permitsQuery.andWhere('permit.revision = :revision', {
       revision: 0,
     });
 
     // Filter by companyId if provided
-    if (companyId) {
+    if (buildApplicationQueryOptions?.companyId) {
       permitsQuery = permitsQuery.andWhere('company.companyId = :companyId', {
-        companyId: companyId,
+        companyId: buildApplicationQueryOptions?.companyId,
       });
     }
 
+    // Filter by extraordinary load status based on elApprovalNumber presence
+    if (buildApplicationQueryOptions?.extraordinaryLoads) {
+      permitsQuery = permitsQuery.andWhere(
+        'permitData.elApprovalNumber IS NOT NULL',
+      );
+    } else if (buildApplicationQueryOptions?.extraordinaryLoads === false) {
+      permitsQuery = permitsQuery.andWhere(
+        'permitData.elApprovalNumber IS NULL',
+      );
+    }
+
     // Handle various status filters depending on the provided flags
-    if (applicationQueueStatus?.length) {
+    if (buildApplicationQueryOptions?.applicationQueueStatus?.length) {
       // If retrieving applications in queue, we filter those with "IN_QUEUE" status and open/in-progress cases
       permitsQuery = permitsQuery.andWhere(
         'permit.permitStatus = :permitStatus',
@@ -527,10 +545,10 @@ export class ApplicationService {
       permitsQuery = permitsQuery.andWhere(
         'cases.caseStatusType IN (:...caseStatuses)',
         {
-          caseStatuses: applicationQueueStatus,
+          caseStatuses: buildApplicationQueryOptions?.applicationQueueStatus,
         },
       );
-    } else if (pendingPermits) {
+    } else if (buildApplicationQueryOptions?.pendingPermits) {
       // Filter applications based on pending permit statuses (e.g., awaiting payment completion)
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
@@ -539,7 +557,7 @@ export class ApplicationService {
           });
         }),
       );
-    } else if (pendingPermits === false) {
+    } else if (buildApplicationQueryOptions?.pendingPermits === false) {
       // Filter active applications based on ACTIVE_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
@@ -549,8 +567,8 @@ export class ApplicationService {
         }),
       );
     } else if (
-      pendingPermits === undefined ||
-      !applicationQueueStatus?.length
+      buildApplicationQueryOptions?.pendingPermits === undefined ||
+      !buildApplicationQueryOptions?.applicationQueueStatus?.length
     ) {
       // Filter all applications based on ALL_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
@@ -563,24 +581,24 @@ export class ApplicationService {
     }
 
     // Filter by userGUID if provided, targeting the application owner
-    if (userGUID) {
+    if (buildApplicationQueryOptions?.userGUID) {
       permitsQuery = permitsQuery.andWhere(
         'applicationOwner.userGUID = :userGUID',
         {
-          userGUID: userGUID,
+          userGUID: buildApplicationQueryOptions?.userGUID,
         },
       );
     }
 
     // Handle search conditions based on specified search column and search string
-    if (searchColumn) {
+    if (buildApplicationQueryOptions?.searchColumn) {
       // Apply column-specific search filters
-      switch (searchColumn) {
+      switch (buildApplicationQueryOptions?.searchColumn) {
         case ApplicationSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
             'permitData.plate like :searchString',
             {
-              searchString: `%${searchString}%`,
+              searchString: `%${buildApplicationQueryOptions?.searchString}%`,
             },
           );
           break;
@@ -588,7 +606,7 @@ export class ApplicationService {
           permitsQuery = permitsQuery.andWhere(
             'permit.applicationNumber like :searchString',
             {
-              searchString: `%${searchString}%`,
+              searchString: `%${buildApplicationQueryOptions?.searchString}%`,
             },
           );
           break;
@@ -596,15 +614,18 @@ export class ApplicationService {
     }
 
     // If only searchString is provided without a specific search column, search across plate and unit number
-    if (!searchColumn && searchString) {
+    if (
+      !buildApplicationQueryOptions?.searchColumn &&
+      buildApplicationQueryOptions?.searchString
+    ) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
             .where('permitData.plate like :searchString', {
-              searchString: `%${searchString}%`,
+              searchString: `%${buildApplicationQueryOptions?.searchString}%`,
             })
             .orWhere('permitData.unitNumber like :searchString', {
-              searchString: `%${searchString}%`,
+              searchString: `%${buildApplicationQueryOptions?.searchString}%`,
             });
         }),
       );
