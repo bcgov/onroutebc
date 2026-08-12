@@ -7,13 +7,12 @@
 
 .actual-gvw-section {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   border-bottom: 1px solid orbcStyles.$bc-text-box-border-grey;
 
   &__header {
     h3 {
       margin: 0;
-      font-weight: 700;
       color: orbcStyles.$bc-black;
     }
   }

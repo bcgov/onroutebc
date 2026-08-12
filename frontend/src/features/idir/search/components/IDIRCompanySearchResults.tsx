@@ -12,19 +12,16 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import * as routes from "../../../../routes/constants";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { getCompanyDataBySearch } from "../api/idirSearch";
 import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
 import { SearchFields } from "../types/types";
 import "./IDIRCompanySearchResults.scss";
-import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { Box, CardMedia, Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
 import { useSetCompanyHandler } from "../helpers/useSetCompanyHandler";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export const IDIRCompanySearchResults = memo(
   ({ searchParams }: { searchParams: SearchFields }) => {
@@ -132,13 +129,6 @@ export const IDIRCompanySearchResults = memo(
         className: "idir-company-search-results__cell",
       },
     });
-    
-    const canCreateCompany = usePermissionMatrix({
-      permissionMatrixKeys: {
-        permissionMatrixFeatureKey: "GLOBAL_SEARCH",
-        permissionMatrixFunctionKey: "CREATE_COMPANY",
-      },
-    });
 
     return (
       <div className="table-container idir-company-search-results">
@@ -147,26 +137,6 @@ export const IDIRCompanySearchResults = memo(
           <>
             <Stack display="flex" justifyContent="center" alignItems="center">
               <NoRecordsFound />
-              {canCreateCompany && (
-                <Box className="create-company-btn">
-                  <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
-                    <div className="button-outline">
-                      <CardMedia
-                        className="create-company-img"
-                        component="img"
-                        src="/Create_Company_Graphic.png"
-                        alt="Create Company"
-                        title="Create Company"
-                      />
-                      <Typography variant={"h3"}>
-                        Create
-                        <br />
-                        Company
-                      </Typography>
-                    </div>
-                  </CustomNavLink>
-                </Box>
-              )}
             </Stack>
           </>
         )}
