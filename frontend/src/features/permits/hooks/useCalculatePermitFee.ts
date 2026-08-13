@@ -6,6 +6,8 @@ import { ReplaceDayjsWithString } from "../types/utility";
 import { PermitData } from "../types/PermitData";
 import { Nullable } from "../../../common/types/common";
 import { calculatePermitFee } from "../helpers/feeSummary";
+import { areOrderedSequencesEqual } from "../../../common/helpers/equality";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * Hook that calculates the total cost and intermediary costs for a permit.
@@ -34,7 +36,22 @@ export const useCalculatePermitFee = (
       } = await calculatePermitFee(permit, policyEngine);
       
       setTotalCost(updatedTotalCost);
-      setCosts(updatedCosts);
+
+      // IMPORTANT: Since 'costs' is an array of ValidationResult objects that will be returned and used
+      // in other components, it's important to memoize it to avoid potential infinite render loops.
+      // Cost objects are assumed to be ordered, and they're considered to be the same if they have
+      // the same type ('cost'), code, message (cost description), and cost value
+      if (!areOrderedSequencesEqual(
+        costs,
+        updatedCosts,
+        (costItem1, costItem2) =>
+          costItem1.code === costItem2.code
+          && costItem1.type === costItem2.type
+          && costItem1.message === costItem2.message
+          && getDefaultRequiredVal(0, costItem1.cost) === getDefaultRequiredVal(0, costItem2.cost)
+      )) {
+        setCosts(updatedCosts);
+      }
     };
 
     updateCosts();

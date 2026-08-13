@@ -22,6 +22,11 @@ export const usePolicyWarnings = (
       if (policyEngine) {
         const { warnings } = await policyEngine.validate(permit);
         
+        // IMPORTANT: Since 'warnings' is an array of ValidationResult objects that will be returned and used
+        // in other components, it's important to memoize it to avoid potential infinite render loops.
+        // Warning arrays are assumed to contain unique objects (since there shouldn't be cases where
+        // the same warning appears multiple times), and warning objects are considered to be the same
+        // if they have the same type ('warning'), code, field reference, and message
         if (!doUniqueArraysHaveSameObjects(
           policyWarnings,
           warnings,
