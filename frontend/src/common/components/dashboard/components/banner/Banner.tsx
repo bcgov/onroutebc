@@ -12,25 +12,28 @@ import "./Banner.scss";
 export const Banner = ({
   bannerText,
   bannerSubtext,
+  rightContent,
 }: {
   bannerText: string;
   bannerSubtext?: string | ReactNode;
+  rightContent?: ReactNode;
 }) => {
   return (
     <div className="layout-banner">
       <div className="layout-banner__left">
         <div className="layout-banner__text-section">
-          <h2 className="layout-banner__text">
-            {bannerText}
-          </h2>
+          <h2 className="layout-banner__text">{bannerText}</h2>
 
           {bannerSubtext ? (
             <div className="layout-banner__subtext">
               <div>{bannerSubtext}</div>
             </div>
-          ): null}
+          ) : null}
         </div>
       </div>
+      {rightContent && (
+        <div className="layout-banner__right">{rightContent}</div>
+      )}
     </div>
   );
 };
