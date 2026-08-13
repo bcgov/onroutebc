@@ -16,7 +16,7 @@ import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
 import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
 import { Application } from "../../permits/types/application";
 import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
-import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
+import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../permits/types/PermitType";
 import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
 import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
 import { QueueBreadcrumb } from "./QueueBreadcrumb";
@@ -27,6 +27,7 @@ import { useCommodityOptions } from "../../permits/hooks/useCommodityOptions";
 import { useCalculatePermitFee } from "../../permits/hooks/useCalculatePermitFee";
 import { serializePermitData } from "../../permits/helpers/serialize/serializePermitData";
 import { usePolicyWarnings } from "../../permits/hooks/usePolicyWarnings";
+import { PermitReviewConfirmWarningDialog } from "../../permits/components/dialog/PermitReviewConfirmWarningDialog";
 
 export const ApplicationInQueueReview = ({
   applicationData,
@@ -90,6 +91,9 @@ export const ApplicationInQueueReview = ({
     isPending: updateApplicationMutationPending,
   } = useUpdateApplicationInQueueStatus();
 
+  const [showConfirmWarningModal, setShowConfirmWarningModal] =
+    useState<boolean>(false);
+
   const handleApprove = async (): Promise<void> => {
     setHasAttemptedSubmission(true);
 
@@ -98,6 +102,18 @@ export const ApplicationInQueueReview = ({
       companyId,
       caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
     });
+  };
+
+  const handleClickApprove = async () => {
+    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+      setShowConfirmWarningModal(true);
+    } else {
+      await handleApprove();
+    }
+  };
+
+  const handleCloseConfirmWarningModal = () => {
+    setShowConfirmWarningModal(false);
   };
 
   const [showRejectApplicationModal, setShowRejectApplicationModal] =
@@ -155,7 +171,7 @@ export const ApplicationInQueueReview = ({
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={handleEdit}
-          handleApproveButton={handleApprove}
+          handleApproveButton={handleClickApprove}
           updateApplicationMutationPending={updateApplicationMutationPending}
           handleRejectButton={handleRejectButton}
           allConfirmed={allConfirmed}
@@ -193,6 +209,17 @@ export const ApplicationInQueueReview = ({
           onCancel={() => setShowRejectApplicationModal(false)}
           onConfirm={handleReject}
           isPending={updateApplicationMutationPending}
+        />
+      ) : null}
+
+      {showConfirmWarningModal ? (
+        <PermitReviewConfirmWarningDialog
+          showModal={showConfirmWarningModal}
+          isAmend={false}
+          actionText="approve"
+          confirmButtonText="Approve"
+          onCancel={handleCloseConfirmWarningModal}
+          onConfirm={handleApprove}
         />
       ) : null}
     </div>
