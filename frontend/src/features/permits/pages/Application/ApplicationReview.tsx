@@ -49,6 +49,7 @@ import {
 import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { usePolicyWarnings } from "../../hooks/usePolicyWarnings";
+import { PermitReviewConfirmWarningDialog } from "../../components/dialog/PermitReviewConfirmWarningDialog";
 
 export const ApplicationReview = ({
   applicationStepContext,
@@ -133,6 +134,9 @@ export const ApplicationReview = ({
   const [assignedUser, setAssignedUser] = useState<string>("");
 
   const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
+
+  const [showConfirmWarningModal, setShowConfirmWarningModal] =
     useState<boolean>(false);
 
   const validateCurrentUser = async (onSuccess: () => void) => {
@@ -272,6 +276,18 @@ export const ApplicationReview = ({
     );
   };
 
+  const handleClickAddToCart = async () => {
+    if (permitType === PERMIT_TYPES.STWSE && isStaffUser && policyWarnings.length > 0) {
+      setShowConfirmWarningModal(true);
+    } else {
+      await handleAddToCart();
+    }
+  };
+
+  const handleCloseConfirmWarningModal = () => {
+    setShowConfirmWarningModal(false);
+  };
+
   const shouldSubmitForReview = (
     permitType === PERMIT_TYPES.STOS && !isStaffUser
   ) || (
@@ -319,6 +335,14 @@ export const ApplicationReview = ({
         caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
       });
     });
+  };
+
+  const handleClickApprove = async () => {
+    if (isQueueContext && permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+      setShowConfirmWarningModal(true);
+    } else {
+      await handleApprove();
+    }
   };
 
   const [showRejectApplicationModal, setShowRejectApplicationModal] =
@@ -410,10 +434,10 @@ export const ApplicationReview = ({
           }
           onAddToCart={
             applicationStepContext === APPLICATION_STEP_CONTEXTS.APPLY
-              ? handleAddToCart
+              ? handleClickAddToCart
               : undefined
           }
-          handleApproveButton={isQueueContext ? handleApprove : undefined}
+          handleApproveButton={isQueueContext ? handleClickApprove : undefined}
           handleRejectButton={isQueueContext ? handleRejectButton : undefined}
           updateApplicationMutationPending={
             isQueueContext ? updateApplicationMutationPending : undefined
@@ -465,6 +489,17 @@ export const ApplicationReview = ({
           assignedUser={assignedUser}
         />
       )}
+
+      {showConfirmWarningModal ? (
+        <PermitReviewConfirmWarningDialog
+          showModal={showConfirmWarningModal}
+          isAmend={false}
+          actionText={isQueueContext ? "approve" : "add it to the cart"}
+          confirmButtonText={isQueueContext ? "Approve" : "Add to Cart"}
+          onCancel={handleCloseConfirmWarningModal}
+          onConfirm={isQueueContext ? handleApprove : handleAddToCart}
+        />
+      ) : null}
     </div>
   );
 };
