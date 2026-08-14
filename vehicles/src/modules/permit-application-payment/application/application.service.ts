@@ -1062,6 +1062,8 @@ export class ApplicationService {
       throwUnprocessableEntityException(
         'Invalid permit type. Ineligible for queue.',
       );
+    } else if (application.permitStatus !== ApplicationStatus.IN_PROGRESS) {
+      throwUnprocessableEntityException('Invalid status.');
     } else if (
       application.permitType ===
       PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
@@ -1076,9 +1078,8 @@ export class ApplicationService {
           `Invalid ${application.permitType} application. Ineligible for queue.`,
         );
       }
-    } else if (application.permitStatus !== ApplicationStatus.IN_PROGRESS) {
-      throwUnprocessableEntityException('Invalid status.');
     }
+
     const { queryRunner } = await getQueryRunner({
       dataSource: this.dataSource,
     });
