@@ -1,4 +1,5 @@
 import validationMessages from "../constants/validation_messages.json";
+import { getDefaultRequiredVal } from "./util";
 
 
 const replacePlaceholders = (
@@ -20,9 +21,11 @@ export const invalidNumber = () => validationMessages.NaN.defaultMessage;
 
 export const invalidInput = () => validationMessages.invalid.defaultMessage;
 
-export const mustBeGreaterThan = (val: number) => {
+export const mustBeGreaterThan = (val: number, decimalPlaces?: number, unit?: string) => {
   const { messageTemplate, placeholders } = validationMessages.greaterThan;
-  return replacePlaceholders(messageTemplate, placeholders, val);
+  const roundedValue = val.toFixed(getDefaultRequiredVal(0, decimalPlaces));
+  const unitStr = getDefaultRequiredVal("", unit);
+  return replacePlaceholders(messageTemplate, placeholders, roundedValue, unitStr);
 };
 
 export const mustBeLessThan = (val: number) => {

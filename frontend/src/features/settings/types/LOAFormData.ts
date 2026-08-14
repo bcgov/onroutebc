@@ -26,7 +26,7 @@ export interface LOAFormData {
     [PERMIT_TYPES.TROS]: boolean;
     [PERMIT_TYPES.STOW]: boolean;
     [PERMIT_TYPES.TROW]: boolean;
-    [PERMIT_TYPES.STOL]: boolean;
+    [PERMIT_TYPES.STWSE]: boolean;
     [PERMIT_TYPES.STWS]: boolean;
   };
   startDate: Dayjs;
@@ -54,7 +54,7 @@ export const loaDetailToFormData = (
     [PERMIT_TYPES.TROS]: loaDetailPermitTypes.includes(PERMIT_TYPES.TROS),
     [PERMIT_TYPES.STOW]: loaDetailPermitTypes.includes(PERMIT_TYPES.STOW),
     [PERMIT_TYPES.TROW]: loaDetailPermitTypes.includes(PERMIT_TYPES.TROW),
-    [PERMIT_TYPES.STOL]: loaDetailPermitTypes.includes(PERMIT_TYPES.STOL),
+    [PERMIT_TYPES.STWSE]: loaDetailPermitTypes.includes(PERMIT_TYPES.STWSE),
     [PERMIT_TYPES.STWS]: loaDetailPermitTypes.includes(PERMIT_TYPES.STWS),
   };
 

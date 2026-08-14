@@ -8,17 +8,20 @@ import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
 import { MANDATORY_TROW_CONDITIONS, TROW_CONDITIONS } from "../constants/trow";
 import { PermitCondition } from "../types/PermitCondition";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { Nullable } from "../../../common/types/common";
+import { MANDATORY_STOW_CONDITIONS, STOW_CONDITIONS } from "../constants/stow";
+import { HC_CONDITIONS, MANDATORY_HC_CONDITIONS } from "../constants/hc";
+import { MANDATORY_STWSE_CONDITIONS, STWSE_CONDITIONS } from "../constants/stwse";
 import {
   MANDATORY_NRSCV_CONDITIONS,
   NRSCV_CONDITIONS,
 } from "../constants/nrscv";
+
 import {
   MANDATORY_NRQCV_CONDITIONS,
   NRQCV_CONDITIONS,
 } from "../constants/nrqcv";
-import { Nullable } from "../../../common/types/common";
-import { MANDATORY_STOW_CONDITIONS, STOW_CONDITIONS } from "../constants/stow";
-import { HC_CONDITIONS, MANDATORY_HC_CONDITIONS } from "../constants/hc";
+
 import {
   STGVWI_CONDITIONS,
   MANDATORY_STGVWI_CONDITIONS,
@@ -74,6 +77,8 @@ export const getMandatoryConditions = (
       return MANDATORY_TROS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.HC:
       return MANDATORY_HC_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.STWSE:
+      return MANDATORY_STWSE_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STGVWI:
       return MANDATORY_STGVWI_CONDITIONS.concat(additionalConditions);
     default:
@@ -111,6 +116,8 @@ const getConditionsByPermitType = (
       return TROS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.HC:
       return HC_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.STWSE:
+      return STWSE_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STGVWI:
       return STGVWI_CONDITIONS.concat(additionalConditions);
     default:

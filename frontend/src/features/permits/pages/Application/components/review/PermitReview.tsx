@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useMemo } from "react";
+import { ValidationResult } from "onroute-policy-engine";
 
 import "./PermitReview.scss";
 import { ReviewActions } from "./ReviewActions";
@@ -35,14 +36,15 @@ import { ThirdPartyLiability } from "../../../../types/ThirdPartyLiability";
 import { ThirdPartyLiabilitySection } from "./ThirdPartyLiabilitySection";
 import { ReviewConditionalLicensingFeesSection } from "./ReviewConditionalLicensingFeesSection";
 import { ReviewVehicleWeightSection } from "./ReviewVehicleWeightSection";
+import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
+import { ICBCInsuranceCertificate } from "../../../../types/ICBCInsuranceCertificate";
+import { ReviewICBCInsuranceCertificateSection } from "./ReviewICBCInsuranceCertificateSection";
+import { OverloadWeights } from "./OverloadWeights";
+import { ReviewActualGVW } from "./ReviewActualGVW";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
-import { ConditionalLicensingFeeType } from "../../../../types/ConditionalLicensingFee";
-import { ICBCInsuranceCertificate } from "../../../../types/ICBCInsuranceCertificate";
-import { ReviewICBCInsuranceCertificateSection } from "./ReviewICBCInsuranceCertificateSection";
-import { ReviewActualGVW } from "./ReviewActualGVW";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -84,6 +86,7 @@ interface PermitReviewProps {
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
+  permitIntermediaryCosts: ValidationResult[];
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
   applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
@@ -92,7 +95,9 @@ interface PermitReviewProps {
   conditionalLicensingFee?: Nullable<ConditionalLicensingFeeType>;
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
+  policyWarnings: ValidationResult[];
 }
+
 export const PermitReview = (props: PermitReviewProps) => {
   const { powerUnitSubTypes, trailerSubTypes } = props;
   const powerUnitSubtypeNamesMap = useMemo(
@@ -130,11 +135,31 @@ export const PermitReview = (props: PermitReviewProps) => {
         )
       : false;
 
-  const hasToCartButton =
-    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
-      (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser)) ||
-    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
-      Number(props.calculatedFee) > 0);
+  // The "Add to Cart" button should only show up if:
+  // 1. Applying for permit, and permit type is not STOS nor STWSE
+  // 2. Applying for permit, and user is staff
+  // 3. Applying for permit, and user isn't staff and permit type is STWSE,
+  // but there are no dimension oversize warnings
+  // 4. Amending a permit and the total amount due is a positive amount
+  // (ie. Additional amount needs to be paid for amendment)
+  const hasToCartButton = (
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY
+      && (
+        (
+          props.permitType !== PERMIT_TYPES.STOS
+            && props.permitType !== PERMIT_TYPES.STWSE
+        ) || (
+          props.isStaffUser
+        ) || (
+          props.permitType === PERMIT_TYPES.STWSE
+            && props.policyWarnings.length <= 0
+        )
+      )
+  ) || (
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND
+      && Number(props.calculatedFee) > 0
+  );
+  
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -218,6 +243,17 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <LoadedDimensions
+          permitType={props.permitType}
+          vehicleConfiguration={props.vehicleConfiguration}
+          oldVehicleConfiguration={
+            props.oldFields?.permitData?.vehicleConfiguration
+          }
+          showChangedFields={props.showChangedFields}
+          policyWarnings={props.policyWarnings}
+        />
+
+        <OverloadWeights
+          permitType={props.permitType}
           vehicleConfiguration={props.vehicleConfiguration}
           oldVehicleConfiguration={
             props.oldFields?.permitData?.vehicleConfiguration
@@ -271,6 +307,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
           fee={props.calculatedFee}
+          permitIntermediaryCosts={props.permitIntermediaryCosts}
           reviewContext={props.reviewContext}
           companyId={props.companyId}
         />

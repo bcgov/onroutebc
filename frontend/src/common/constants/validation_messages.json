@@ -14,8 +14,8 @@
     "defaultMessage": "Invalid input"
   },
   "greaterThan": {
-    "messageTemplate": "Must be greater than :val.",
-    "placeholders": [":val"]
+    "messageTemplate": "Must be greater than :val:unit.",
+    "placeholders": [":val", ":unit"]
   },
   "lessThan": {
     "messageTemplate": "Must be less than :val.",

@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { ValidationResult } from "onroute-policy-engine";
 
 import "./ReviewFeeSummary.scss";
 import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
@@ -26,6 +27,7 @@ export const ReviewFeeSummary = ({
   setAreAllConfirmed,
   permitType,
   fee,
+  permitIntermediaryCosts,
   reviewContext,
   companyId,
 }: {
@@ -34,6 +36,7 @@ export const ReviewFeeSummary = ({
   setAreAllConfirmed: (allConfirmed: boolean) => void;
   permitType?: Nullable<PermitType>;
   fee: string;
+  permitIntermediaryCosts: ValidationResult[];
   reviewContext: PermitReviewContext;
   companyId: number;
 }) => {
@@ -75,6 +78,11 @@ export const ReviewFeeSummary = ({
   // amountToRefund is a negative number so we add here rather than subtract
   const newPermitValue = currentPermitValue + amountToRefund;
 
+  const intermediaryCosts = permitIntermediaryCosts.map(intermediaryCost => ({
+    costDescription: intermediaryCost.message,
+    cost: getDefaultRequiredVal(0, intermediaryCost.cost),
+  }));
+
   return (
     <Box className="review-fee-summary">
       <Box className="review-fee-summary__body">
@@ -86,7 +94,11 @@ export const ReviewFeeSummary = ({
               amountToRefund={`${amountToRefund}`}
             />
           ) : (
-            <FeeSummary permitType={permitType} feeSummary={fee} />
+            <FeeSummary
+              permitType={permitType}
+              feeSummary={fee}
+              intermediaryCosts={intermediaryCosts}
+            />
           )}
 
           <ConfirmationCheckboxes

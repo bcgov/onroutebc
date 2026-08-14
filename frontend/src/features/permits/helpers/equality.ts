@@ -190,6 +190,8 @@ export const areVehicleConfigurationsEqual = (
       getDefaultRequiredVal(0, vehicleConfig2?.actualGVW) &&
     getDefaultRequiredVal(0, vehicleConfig1?.netWeight) ===
       getDefaultRequiredVal(0, vehicleConfig2?.netWeight) &&
+    getDefaultRequiredVal(0, vehicleConfig1?.overloadWeight)
+      === getDefaultRequiredVal(0, vehicleConfig2?.overloadWeight) &&
     areOrderedSequencesEqual(
       vehicleConfig1?.trailers,
       vehicleConfig2?.trailers,

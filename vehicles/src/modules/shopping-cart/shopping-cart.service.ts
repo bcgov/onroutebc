@@ -20,6 +20,7 @@ import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { isPermitTypeEligibleForQueue } from '../../common/helper/permit-application.helper';
 import { PolicyService } from '../policy/policy.service';
+import { PermitType } from '../../common/enum/permit-type.enum';
 
 @Injectable()
 export class ShoppingCartService {
@@ -50,11 +51,37 @@ export class ShoppingCartService {
       where: {
         permitId: In(applicationIds),
       },
+      relations: {
+        permitData: true,
+      },
     });
 
-    const applicationsForQueue = applications
-      ?.filter(({ permitType }) => isPermitTypeEligibleForQueue(permitType))
-      ?.map(({ permitId }) => permitId);
+    const applicationsForQueue: string[] = [];
+    if (applications?.length) {
+      const permitIds = await Promise.all(
+        applications.map(async (application) => {
+          if (
+            application.permitType ===
+            PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+          ) {
+            const validationResults =
+              await this.policyService.validateApplicationAndCalculateCost({
+                application,
+                companyId,
+              });
+            return validationResults?.warnings?.length > 0
+              ? application.permitId
+              : null;
+          } else if (isPermitTypeEligibleForQueue(application.permitType)) {
+            return application.permitId;
+          }
+          return null;
+        }),
+      );
+      applicationsForQueue.push(
+        ...permitIds.filter((id): id is string => !!id),
+      );
+    }
 
     let shouldConcatResult = false;
     if (

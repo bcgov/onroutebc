@@ -15,6 +15,7 @@ import { CaseManagementModule } from '../../case-management/case-management.modu
 import { CompanyApplicationQueueController } from './company-application-queue.controller';
 import { PermitLoa } from './entities/permit-loa.entity';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import { PolicyModule } from '../../policy/policy.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
     PaymentModule,
     PermitReceiptDocumentModule,
     CaseManagementModule,
+    PolicyModule,
   ],
   controllers: [
     CompanyApplicationQueueController,

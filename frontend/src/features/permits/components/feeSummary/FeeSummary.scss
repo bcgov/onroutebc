@@ -24,10 +24,16 @@
       justify-content: space-between;
       font-size: 1rem;
       padding: 1rem 0;
+      border-top: 1px solid $bc-fee-summary-line-separator;
+
+      &--first-data-row {
+        border-top: none;
+      }
 
       &--header {
         font-weight: bold;
         padding: 0 0 1rem 0;
+        border-top: none;
         border-bottom: 1px solid $bc-fee-summary-line-separator;
       }
 

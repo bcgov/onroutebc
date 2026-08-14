@@ -13,6 +13,9 @@ import {
   SearchEntity,
   SearchFields,
 } from "../types/types";
+import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { IDIR_ROUTES } from "../../../../routes/constants";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -39,6 +42,12 @@ const getBannerText = (searchFields: SearchFields): string => {
  */
 export const IDIRSearchResultsDashboard = memo(() => {
   const [searchParams] = useSearchParams();
+  const canCreateCompany = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+      permissionMatrixFunctionKey: "CREATE_COMPANY",
+    },
+  });
   const searchFields: SearchFields = {
     searchByFilter: searchParams.get("searchByFilter") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
@@ -54,7 +63,24 @@ export const IDIRSearchResultsDashboard = memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText={getBannerText(searchFields)} />
+        <Banner
+          bannerText={getBannerText(searchFields)}
+          rightContent={
+            canCreateCompany && (
+              <div className="idir-search-results-dashboard-banner">
+                <p className="idir-search-results-dashboard-banner__text">
+                  Can&apos;t find a client?
+                </p>
+                <CustomNavLink
+                  className="idir-search-results-dashboard-banner__button"
+                  to={IDIR_ROUTES.CREATE_COMPANY}
+                >
+                  Create Client Profile
+                </CustomNavLink>
+              </div>
+            )
+          }
+        />
       </Box>
       <div
         className="idir-search-results-dashboard"
