@@ -3,10 +3,10 @@ services:
     container_name: sftp
     image: atmoz/sftp
     volumes:
-        - ${LOCAL_SHARE_FOLDER}:${SFTP_SHARE_FOLDER}
-        - ${LOCAL_PUBLIC_KEY_LOCATION}:${SFTP_PUBLIC_KEY_LOCATION}
+      - ${LOCAL_SHARE_FOLDER}:${SFTP_SHARE_FOLDER}
+      - ${LOCAL_PUBLIC_KEY_LOCATION}:${SFTP_PUBLIC_KEY_LOCATION}
     ports:
-        - "22:22"
+      - "22:22"
     command: ${CFS_SFTP_USERNAME}::1001
   sql-server-db:
     container_name: sql-server-db
@@ -46,7 +46,7 @@ services:
       - "1433:1433"
     volumes:
       # use a named volume mounted at the server data directory
-      - sql_data:/var/opt/mssql            
+      - sql_data:/var/opt/mssql
 
   vehicles-api:
     container_name: vehicles-api
@@ -178,7 +178,7 @@ services:
       CHES_TOKEN_URL: ${CHES_TOKEN_URL}
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
-      CHES_URL: ${CHES_URL}      
+      CHES_URL: ${CHES_URL}
       CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
       CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
       CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
@@ -224,9 +224,9 @@ services:
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
-      KEYCLOAK_IGNORE_EXP: ${KEYCLOAK_IGNORE_EXP}      
+      KEYCLOAK_IGNORE_EXP: ${KEYCLOAK_IGNORE_EXP}
       ORBC_SERVICE_ACCOUNT_CLIENT_ID: ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
-      ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}      
+      ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}
     healthcheck:
       test: "curl --silent --fail http://localhost:5002/ > /dev/null || exit 1"
       interval: 1m30s
@@ -238,7 +238,7 @@ services:
         condition: service_healthy
     hostname: policy-api
     links:
-      - sql-server-db      
+      - sql-server-db
     ports:
       - "5002:5002"
 
@@ -342,6 +342,10 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
+    volumes:
+      # use a named volume mounted at the server data directory
+      - pbi:/mnt/pbi/
 
 volumes:
   sql_data:
+  pbi:
