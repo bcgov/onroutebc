@@ -13,10 +13,10 @@ import {
 } from "../../../common/helpers/util";
 
 /**
- * Calculates the fee for a permit.
+ * Calculates the fee, and intermediary costs, for a permit.
  * @param permit Object containing permit information (must have permitType and parts of permitData)
  * @param policyEngine Instance of policy engine, if it exists
- * @returns Fee to be paid for the permit
+ * @returns Total fee to be paid for the permit, as well as intermediary costs
  */
 export const calculatePermitFee = async (
   permit: {
@@ -26,11 +26,15 @@ export const calculatePermitFee = async (
   policyEngine?: Nullable<Policy>,
 ) => {
   const validationResults = await policyEngine?.validate(permit);
-  const fee = getDefaultRequiredVal([], validationResults?.cost)
+  const costs = getDefaultRequiredVal([], validationResults?.cost);
+  const totalCost = costs
     .map(({ cost }) => getDefaultRequiredVal(0, cost))
     .reduce((cost1, cost2) => cost1 + cost2, 0);
   
-  return fee;
+  return {
+    costs,
+    totalCost,
+  };
 };
 
 /**
@@ -97,7 +101,9 @@ export const calculateAmountToRefund = async (
   const netPaid = calculateNetAmount(permitHistory);
   if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
 
-  const updatedFee = await calculatePermitFee(
+  const {
+    totalCost: updatedFee,
+  } = await calculatePermitFee(
     permit,
     policyEngine,
   );

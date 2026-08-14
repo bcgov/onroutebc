@@ -1,14 +1,15 @@
 import dayjs, { Dayjs } from "dayjs";
 
+import { getExpiryDate } from "./permitState";
+import { getMostRecentExpiryFromLOAs } from "./permitLOA";
+import { PermitLOA } from "../types/PermitLOA";
+import { getStartOfQuarter } from "../../../common/helpers/formatDate";
 import {
   isQuarterlyPermit,
   PERMIT_TYPES,
   PermitType,
 } from "../types/PermitType";
-import { getExpiryDate } from "./permitState";
-import { getMostRecentExpiryFromLOAs } from "./permitLOA";
-import { PermitLOA } from "../types/PermitLOA";
-import { getStartOfQuarter } from "../../../common/helpers/formatDate";
+
 import {
   MAX_TROS_DURATION,
   MIN_TROS_DURATION,
@@ -59,11 +60,13 @@ import {
   NRSCV_DURATION_INTERVAL_DAYS,
   NRSCV_DURATION_OPTIONS,
 } from "../constants/nrscv";
+
 import {
   MIN_STOW_DURATION,
   STOW_CV_DURATION_OPTIONS,
   STOW_STAFF_DURATION_OPTIONS,
 } from "../constants/stow";
+
 import {
   MAX_STGVWI_CV_DURATION,
   MAX_STGVWI_STAFF_DURATION,
@@ -77,6 +80,15 @@ import {
   MAX_HC_ALLOWED_FUTURE_DAYS,
   MAX_HC_ALLOWED_PAST_DAYS,
 } from "../constants/hc";
+
+import {
+  MAX_STWSE_CV_DURATION,
+  MAX_STWSE_STAFF_DURATION,
+  MIN_STWSE_DURATION,
+  STWSE_CV_DURATION_OPTIONS,
+  STWSE_DURATION_INTERVAL_DAYS,
+  STWSE_STAFF_DURATION_OPTIONS,
+} from "../constants/stwse";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -99,6 +111,8 @@ export const durationOptionsForPermitType = (
       return isStaff ? STOS_STAFF_DURATION_OPTIONS : STOS_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.STOW:
       return isStaff ? STOW_STAFF_DURATION_OPTIONS : STOW_CV_DURATION_OPTIONS;
+    case PERMIT_TYPES.STWSE:
+      return isStaff ? STWSE_STAFF_DURATION_OPTIONS : STWSE_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.STGVWI:
       return isStaff ? STGVWI_STAFF_DURATION_OPTIONS : STGVWI_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
@@ -130,6 +144,8 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_STOS_DURATION;
     case PERMIT_TYPES.STOW:
       return MIN_STOW_DURATION;
+    case PERMIT_TYPES.STWSE:
+      return MIN_STWSE_DURATION;
     case PERMIT_TYPES.STGVWI:
       return MIN_STGVWI_DURATION;
     case PERMIT_TYPES.TROW:
@@ -163,6 +179,8 @@ export const maxDurationForPermitType = (
       return MAX_MFP_DURATION;
     case PERMIT_TYPES.STOS:
       return isStaff ? MAX_STOS_STAFF_DURATION : MAX_STOS_CV_DURATION;
+    case PERMIT_TYPES.STWSE:
+      return isStaff ? MAX_STWSE_STAFF_DURATION : MAX_STWSE_CV_DURATION;
     case PERMIT_TYPES.STGVWI:
       return isStaff ? MAX_STGVWI_STAFF_DURATION : MAX_STGVWI_CV_DURATION;
     case PERMIT_TYPES.TROW:
@@ -189,6 +207,8 @@ export const getDurationIntervalDays = (permitType: PermitType) => {
       return MFP_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.STOS:
       return STOS_DURATION_INTERVAL_DAYS;
+    case PERMIT_TYPES.STWSE:
+      return STWSE_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.TROS:

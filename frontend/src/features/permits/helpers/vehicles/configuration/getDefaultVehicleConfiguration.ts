@@ -16,6 +16,7 @@ export const getDefaultVehicleConfiguration = (
         PERMIT_TYPES.STGVWI,
         PERMIT_TYPES.NRQCV,
         PERMIT_TYPES.NRSCV,
+        PERMIT_TYPES.STWSE,
       ] as PermitType[]
     ).includes(permitType)
   )
@@ -61,14 +62,47 @@ export const getDefaultVehicleConfiguration = (
       trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
     };
   }
+
+  if (permitType === PERMIT_TYPES.STWSE) {
+    return {
+      frontProjection: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.frontProjection,
+      ),
+      rearProjection: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.rearProjection,
+      ),
+      overallWidth: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallWidth,
+      ),
+      overallHeight: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallHeight,
+      ),
+      overallLength: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overallLength,
+      ),
+      overloadWeight: getDefaultRequiredVal(
+        null,
+        vehicleConfiguration?.overloadWeight,
+      ),
+    };
+  }
+
   if (permitType === PERMIT_TYPES.STGVWI) {
     return {
-      trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers), //Setting trailers to empty array by default (Only Power Unit is allowed for STGVWI permits)
+      //Setting trailers to empty array by default (Only Power Unit is allowed for STGVWI permits)
+      trailers: getDefaultRequiredVal([], vehicleConfiguration?.trailers),
       loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
       netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),
       actualGVW: getDefaultRequiredVal(null, vehicleConfiguration?.actualGVW),
     };
   }
+
+  // NRQCV and NRSCV
   return {
     loadedGVW: getDefaultRequiredVal(null, vehicleConfiguration?.loadedGVW),
     netWeight: getDefaultRequiredVal(null, vehicleConfiguration?.netWeight),

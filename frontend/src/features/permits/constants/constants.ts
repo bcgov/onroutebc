@@ -48,6 +48,10 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
         label: getPermitTypeShortName(PERMIT_TYPES.STOW),
       },
       {
+        value: PERMIT_TYPES.STWSE,
+        label: getPermitTypeShortName(PERMIT_TYPES.STWSE),
+      },
+      {
         value: PERMIT_TYPES.STGVWI,
         label: getPermitTypeShortName(PERMIT_TYPES.STGVWI),
       },
