@@ -1,10 +1,10 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 import "./TrailerForm.scss";
-import { Trailer, VehicleSubType } from "../../types/Vehicle";
+import { Trailer, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
@@ -13,6 +13,7 @@ import { now } from "../../../../common/helpers/formatDate";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { disableMouseWheelInputOnNumberField } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
+import { sortVehicleSubtypes } from "../../../permits/helpers/vehicles/subtypes/sortVehicleSubtypes";
 
 import {
   useTrailerSubTypesQuery,
@@ -63,6 +64,14 @@ export const TrailerForm = ({
   const { handleSubmit } = formMethods;
 
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
+  const sortedTrailerSubtypes = useMemo(
+    () =>
+      sortVehicleSubtypes(
+        VEHICLE_TYPES.TRAILER,
+        trailerSubTypesQuery.data ?? [],
+      ),
+    [trailerSubTypesQuery.data],
+  );
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
   const snackBar = useContext(SnackBarContext);
@@ -238,13 +247,11 @@ export const TrailerForm = ({
               },
               label: "Vehicle Sub-type",
             }}
-            menuOptions={trailerSubTypesQuery?.data?.map(
-              (data: VehicleSubType) => (
-                <MenuItem key={data.typeCode} value={data.typeCode}>
-                  {data.type}
-                </MenuItem>
-              ),
-            )}
+            menuOptions={sortedTrailerSubtypes.map((data: VehicleSubType) => (
+              <MenuItem key={data.typeCode} value={data.typeCode}>
+                {data.type}
+              </MenuItem>
+            ))}
             className="trailer-form__field"
           />
 

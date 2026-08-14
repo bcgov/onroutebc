@@ -1,6 +1,10 @@
+import { screen } from "@testing-library/react";
 import { vi } from "vitest";
 
-import { assertSuccessfulSubmit } from "./helpers/assert";
+import {
+  assertSuccessfulSubmit,
+  assertVehicleSubtypesSorted,
+} from "./helpers/assert";
 import { VEHICLE_TYPES } from "../../../types/Vehicle";
 import {
   actionButtons,
@@ -34,7 +38,7 @@ import {
 } from "./helpers/prepare";
 
 beforeAll(() => {
-  sessionStorage.setItem('onRouteBC.user.companyId', "74");
+  sessionStorage.setItem("onRouteBC.user.companyId", "74");
   listenToMockServer();
 });
 
@@ -135,6 +139,19 @@ describe("Power Unit Form: Test VIN field validation", () => {
 });
 
 describe("Power Unit Form Submission", () => {
+  it("should sort power unit subtypes alphabetically", async () => {
+    // Arrange
+    const { user } = renderTestPowerUnitForm();
+
+    // Act
+    const subtypeSelect = await powerUnitTypeCodeSelect();
+    await user.click(subtypeSelect);
+    const subtypeOptions = await screen.findAllByRole("option");
+
+    // Assert
+    assertVehicleSubtypesSorted(subtypeOptions, defaultPowerUnitSubtypes);
+  });
+
   it("should return a list of power unit types", async () => {
     // Arrange
     const { user } = renderTestPowerUnitForm();
