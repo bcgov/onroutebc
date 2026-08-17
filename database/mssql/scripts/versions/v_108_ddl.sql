@@ -1,0 +1,673 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+
+BEGIN TRY
+
+    BEGIN TRANSACTION;
+
+
+    -------------------------------------------------------------------------
+    -- Deactivate previous versions
+    -------------------------------------------------------------------------
+
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE
+        (TEMPLATE_NAME IN ('PERMIT_NRSCV', 'PERMIT_NRSCV_VOID', 'PERMIT_NRSCV_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_NRSCL', 'PERMIT_NRSCL_VOID', 'PERMIT_NRSCL_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_NRQCV', 'PERMIT_NRQCV_VOID', 'PERMIT_NRQCV_REVOKED')
+            AND TEMPLATE_VERSION = 1)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_NRQCL', 'PERMIT_NRQCL_VOID', 'PERMIT_NRQCL_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_STOW', 'PERMIT_STOW_VOID', 'PERMIT_STOW_REVOKED')
+            AND TEMPLATE_VERSION = 1)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_STOS', 'PERMIT_STOS_VOID', 'PERMIT_STOS_REVOKED')
+            AND TEMPLATE_VERSION = 4)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_TROW', 'PERMIT_TROW_VOID', 'PERMIT_TROW_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_TROS', 'PERMIT_TROS_VOID', 'PERMIT_TROS_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_MFP', 'PERMIT_MFP_VOID', 'PERMIT_MFP_REVOKED')
+            AND TEMPLATE_VERSION = 4)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_STFR', 'PERMIT_STFR_VOID', 'PERMIT_STFR_REVOKED')
+            AND TEMPLATE_VERSION = 2)
+        OR
+        (TEMPLATE_NAME IN ('PERMIT_QRFR', 'PERMIT_QRFR_VOID', 'PERMIT_QRFR_REVOKED')
+            AND TEMPLATE_VERSION = 2);
+
+
+    -------------------------------------------------------------------------
+    -- NRSCV v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_NRSCV',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscv-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRSCV_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscv-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRSCV_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscv-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- NRSCL v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_NRSCL',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscl-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRSCL_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscl-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRSCL_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrscl-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- NRQCV v2
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_NRQCV',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcv-template-v2.docx'
+    ),
+    (
+        'PERMIT_NRQCV_VOID',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcv-void-template-v2.docx'
+    ),
+    (
+        'PERMIT_NRQCV_REVOKED',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcv-revoke-template-v2.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- NRQCL v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_NRQCL',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcl-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRQCL_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcl-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_NRQCL_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'nrqcl-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- STOW v2
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_STOW',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stow-template-v2.docx'
+    ),
+    (
+        'PERMIT_STOW_VOID',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stow-void-template-v2.docx'
+    ),
+    (
+        'PERMIT_STOW_REVOKED',
+        2,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stow-revoke-template-v2.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- STOS v5
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_STOS',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stos-template-v5.docx'
+    ),
+    (
+        'PERMIT_STOS_VOID',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stos-void-template-v5.docx'
+    ),
+    (
+        'PERMIT_STOS_REVOKED',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stos-revoke-template-v5.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- TROW v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_TROW',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'trow-template-v3.docx'
+    ),
+    (
+        'PERMIT_TROW_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'trow-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_TROW_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'trow-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- TROS v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_TROS',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'tros-template-v3.docx'
+    ),
+    (
+        'PERMIT_TROS_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'tros-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_TROS_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'tros-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- MFP v5
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_MFP',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'mfp-template-v5.docx'
+    ),
+    (
+        'PERMIT_MFP_VOID',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'mfp-void-template-v5.docx'
+    ),
+    (
+        'PERMIT_MFP_REVOKED',
+        5,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'mfp-revoke-template-v5.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- STFR v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_STFR',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stfr-template-v3.docx'
+    ),
+    (
+        'PERMIT_STFR_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stfr-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_STFR_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'stfr-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- QRFR v3
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PERMIT_QRFR',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'qrfr-template-v3.docx'
+    ),
+    (
+        'PERMIT_QRFR_VOID',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'qrfr-void-template-v3.docx'
+    ),
+    (
+        'PERMIT_QRFR_REVOKED',
+        3,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'qrfr-revoke-template-v3.docx'
+    );
+
+
+    -------------------------------------------------------------------------
+    -- System version
+    -------------------------------------------------------------------------
+
+    DECLARE @VersionDescription VARCHAR(255);
+
+    SET @VersionDescription = 'Configure permit templates with common footer changes';
+
+
+    INSERT INTO dbo.ORBC_SYS_VERSION
+    (
+        VERSION_ID,
+        DESCRIPTION,
+        UPDATE_SCRIPT,
+        REVERT_SCRIPT,
+        RELEASE_DATE
+    )
+    VALUES
+    (
+        77,
+        @VersionDescription,
+        '$(UPDATE_SCRIPT)',
+        '$(REVERT_SCRIPT)',
+        GETUTCDATE()
+    );
+
+
+    COMMIT TRANSACTION;
+
+    PRINT 'The database update succeeded';
+
+END TRY
+BEGIN CATCH
+
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+
+    PRINT 'The database update failed';
+
+    THROW;
+
+END CATCH
+GO
