@@ -1,11 +1,16 @@
 import { screen } from "@testing-library/react";
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
-import type { ValidationResult } from "onroute-policy-engine";
+import type { ValidationResult, ValidationResults } from "onroute-policy-engine";
+import {
+  PolicyCheckId,
+  PolicyCheckResultType,
+} from "onroute-policy-engine/enum";
 
 const policyWarningMocks = vi.hoisted(() => ({
   hasPolicyIssues: false,
   policyWarnings: [] as ValidationResult[],
+  axleCalculationResults: undefined as ValidationResults["axleCalculationResults"],
 }));
 
 vi.mock("../../../hooks/usePolicyWarnings", () => ({
@@ -15,6 +20,10 @@ vi.mock("../../../hooks/usePolicyWarnings", () => ({
 vi.mock("../../../../policy/hooks/usePolicyEngine", () => ({
   usePolicyEngine: () => ({
     getCommodities: () => new Map(),
+    getStandardTireSizes: () => [
+      { name: "355", size: 355 },
+      { name: "330", size: 330 },
+    ],
     validate: vi.fn().mockResolvedValue({
       cost: [],
       information: [],
@@ -111,6 +120,7 @@ beforeAll(() => {
 beforeEach(() => {
   policyWarningMocks.hasPolicyIssues = false;
   policyWarningMocks.policyWarnings = [];
+  policyWarningMocks.axleCalculationResults = undefined;
   resetMockServer();
 });
 
@@ -522,6 +532,73 @@ describe("Review and Confirm Application Details", () => {
         screen.queryByText("Application has violation(s) and/or warning(s)"),
       ).not.toBeInTheDocument();
       await waitFor(() => expect(applicationSaveRequestCount).toBe(1));
+    });
+  });
+
+  describe("STOW Axle Spacing and Weights review", () => {
+    const stowApplication = {
+      ...defaultApplicationData,
+      permitType: PERMIT_TYPES.STOW,
+      permitData: {
+        ...defaultApplicationData.permitData,
+        vehicleConfiguration: {
+          axleConfiguration: [
+            {
+              numberOfAxles: 1,
+              axleUnitWeight: 6700,
+              numberOfTires: 2,
+              tireSize: 355,
+            },
+            { interaxleSpacing: 3.5 },
+            {
+              numberOfAxles: 2,
+              axleSpread: 1.6,
+              axleUnitWeight: 12000,
+              numberOfTires: 4,
+              tireSize: 330,
+            },
+          ],
+          trailers: [],
+        },
+      },
+    } as Application;
+
+    it.each([
+      ["CV user", false],
+      ["staff", true],
+    ])("shows a read-only ASW table for %s", async (_, isStaff) => {
+      policyWarningMocks.axleCalculationResults = {
+        results: [
+          {
+            id: PolicyCheckId.MinSteerAxleWeight,
+            result: PolicyCheckResultType.Warning,
+            message: "Review the steer axle weight.",
+            startAxleUnit: 1,
+            endAxleUnit: 2,
+          },
+        ],
+        totalGCVW: 18700,
+        overload: 100,
+      };
+
+      renderTestComponent(stowApplication, isStaff);
+
+      const vehicleHeading = await screen.findByRole("heading", {
+        name: "Vehicle Information",
+      });
+      const aswHeading = screen.getByRole("heading", {
+        name: "Axle Spacing and Weights",
+      });
+
+      expect(
+        vehicleHeading.compareDocumentPosition(aswHeading) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      expect(screen.getByDisplayValue("6700")).toBeDisabled();
+      expect(screen.queryByRole("button", { name: "Calculate" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Reset" })).not.toBeInTheDocument();
+      expect(screen.getByText("Total GCVW (kg):")).toBeVisible();
+      expect(screen.getByText("Review the steer axle weight.")).toBeVisible();
     });
   });
 });

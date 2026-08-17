@@ -2,6 +2,8 @@ import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useMemo } from "react";
 import { ValidationResult } from "onroute-policy-engine";
+import type { ValidationResults } from "onroute-policy-engine";
+import type { StandardTireSize } from "onroute-policy-engine/types";
 
 import "./PermitReview.scss";
 import { ReviewActions } from "./ReviewActions";
@@ -45,6 +47,7 @@ import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
+import { AxleSpacingAndWeightsSection } from "../form/axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -96,6 +99,8 @@ interface PermitReviewProps {
   icbcInsuranceCertificate?: Nullable<ICBCInsuranceCertificate>;
   companyId: number;
   policyWarnings: ValidationResult[];
+  axleCalculationResults?: ValidationResults["axleCalculationResults"];
+  tireSizeOptions?: StandardTireSize[];
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -229,6 +234,25 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldFields={props.oldFields?.permitData?.vehicleDetails}
           selectedTrailers={props.vehicleConfiguration?.trailers}
         />
+
+        {props.permitType === PERMIT_TYPES.STOW &&
+        props.vehicleDetails &&
+        props.axleCalculationResults ? (
+          <AxleSpacingAndWeightsSection
+            permitType={props.permitType}
+            selectedCommodityType={props.permittedCommodity?.commodityType}
+            powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+            trailerSubtypeNamesMap={trailerSubtypeNamesMap}
+            vehicleFormData={props.vehicleDetails}
+            vehicleConfiguration={props.vehicleConfiguration}
+            axleCalculationResultsFromValidation={
+              props.axleCalculationResults
+            }
+            tireSizeOptions={props.tireSizeOptions}
+            showASWRequiredFieldsBanner={false}
+            readOnly={true}
+          />
+        ) : null}
 
         <ReviewActualGVW
           permitType={props.permitType}
