@@ -747,7 +747,8 @@ scheduler:
     - name: pbi
       persistentVolumeClaim:
         claimName: "{{ .Release.Name }}-scheduler-pbi"
-  deploymentStrategy: Recreate
+  deploymentStrategy: 
+    type: Recreate
 
 policy:
   enabled: true
