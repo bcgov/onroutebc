@@ -68,7 +68,7 @@ export const TrailerForm = ({
     () =>
       sortVehicleSubtypes(
         VEHICLE_TYPES.TRAILER,
-        trailerSubTypesQuery.data ?? [],
+        getDefaultRequiredVal([], trailerSubTypesQuery.data),
       ),
     [trailerSubTypesQuery.data],
   );

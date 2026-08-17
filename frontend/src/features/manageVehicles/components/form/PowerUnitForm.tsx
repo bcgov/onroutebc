@@ -75,7 +75,7 @@ export const PowerUnitForm = ({
     () =>
       sortVehicleSubtypes(
         VEHICLE_TYPES.POWER_UNIT,
-        powerUnitSubTypesQuery.data ?? [],
+        getDefaultRequiredVal([], powerUnitSubTypesQuery.data),
       ),
     [powerUnitSubTypesQuery.data],
   );

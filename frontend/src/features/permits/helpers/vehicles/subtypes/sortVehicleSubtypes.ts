@@ -1,5 +1,5 @@
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
-import type { VehicleSubType } from "../../../../manageVehicles/types/Vehicle";
+import { VehicleSubType } from "../../../../manageVehicles/types/Vehicle";
 
 /**
  * Sort vehicle subtypes alphabetically.
