@@ -512,3 +512,7 @@
 ### Version 107:
 
 - Updates to the policy configuration to add STWSE permit type.
+
+### Version 108
+
+- Updates to Permit template documents

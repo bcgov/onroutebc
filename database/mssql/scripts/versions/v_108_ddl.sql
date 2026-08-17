@@ -634,7 +634,7 @@ BEGIN TRY
 
     DECLARE @VersionDescription VARCHAR(255);
 
-    SET @VersionDescription = 'Configure permit templates with common footer changes';
+    SET @VersionDescription = 'Configure permit templates updates';
 
 
     INSERT INTO dbo.ORBC_SYS_VERSION
@@ -647,7 +647,7 @@ BEGIN TRY
     )
     VALUES
     (
-        77,
+        108,
         @VersionDescription,
         '$(UPDATE_SCRIPT)',
         '$(REVERT_SCRIPT)',
