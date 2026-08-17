@@ -38,13 +38,18 @@ import {
   getDefaultTrailerSubTypes,
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 import { APPLICATION_STEP_CONTEXTS } from "../../../../../../../routes/constants";
+import OnRouteBCContext from "../../../../../../../common/authentication/OnRouteBCContext";
+import { IDIR_USER_ROLE } from "../../../../../../../common/authentication/types";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
 export const newPermitId = "1";
+export let cartAddRequestCount = 0;
+export let applicationSaveRequestCount = 0;
 const { permitData, ...otherDetails } = getDefaultApplication();
 export const vehicleDetails = permitData.vehicleDetails;
 export const defaultApplicationData = {
   ...otherDetails,
+  permitId: newPermitId,
   applicationNumber: newApplicationNumber,
   createdDateTime: now(),
   updatedDateTime: now(),
@@ -105,6 +110,7 @@ const server = setupServer(
   http.put(
     APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString(), ":id"),
     async ({ request, params }) => {
+      applicationSaveRequestCount += 1;
       const { id } = params;
       const reqBody = await request.json();
       const application = reqBody?.valueOf();
@@ -152,7 +158,8 @@ const server = setupServer(
         return HttpResponse.json(null, { status: 400 });
       }
 
-      const applicationIds = (addCartItemRequest as any).appliactionIds;
+      cartAddRequestCount += 1;
+      const applicationIds = (addCartItemRequest as any).applicationIds;
       return HttpResponse.json({
         success: [...applicationIds],
         failure: [],
@@ -182,6 +189,8 @@ export const listenToMockServer = () => {
 };
 
 export const resetMockServer = () => {
+  cartAddRequestCount = 0;
+  applicationSaveRequestCount = 0;
   server.resetHandlers();
 };
 
@@ -191,36 +200,60 @@ export const closeMockServer = () => {
 
 const ComponentWithWrapper = ({
   applicationData,
+  isStaff,
 }: {
   applicationData: Application;
+  isStaff: boolean;
 }) => {
   const [testApplicationData, setTestApplicationData] =
     useState<Nullable<Application>>(applicationData);
 
   return (
-    <ThemeProvider theme={bcGovTheme}>
-      <ApplicationContext.Provider
-        value={useMemo(
-          () => ({
-            applicationData: testApplicationData,
-            setApplicationData: setTestApplicationData,
-          }),
-          [testApplicationData],
-        )}
-      >
-        <ApplicationReview
-          applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
-          isCopiedApplication={false}
-        />
-      </ApplicationContext.Provider>
-    </ThemeProvider>
+    <OnRouteBCContext.Provider
+      value={
+        isStaff
+          ? {
+              idirUserDetails: {
+                firstName: "Permit",
+                lastName: "Clerk",
+                userName: "pclerk",
+                email: "pclerk@example.com",
+                userRole: IDIR_USER_ROLE.PPC_CLERK,
+              },
+            }
+          : {}
+      }
+    >
+      <ThemeProvider theme={bcGovTheme}>
+        <ApplicationContext.Provider
+          value={useMemo(
+            () => ({
+              applicationData: testApplicationData,
+              setApplicationData: setTestApplicationData,
+            }),
+            [testApplicationData],
+          )}
+        >
+          <ApplicationReview
+            applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
+            isCopiedApplication={false}
+          />
+        </ApplicationContext.Provider>
+      </ThemeProvider>
+    </OnRouteBCContext.Provider>
   );
 };
 
-export const renderTestComponent = (applicationData: Application) => {
+export const renderTestComponent = (
+  applicationData: Application,
+  isStaff = false,
+) => {
   const user = userEvent.setup();
   const component = renderForTests(
-    <ComponentWithWrapper applicationData={applicationData} />,
+    <ComponentWithWrapper
+      applicationData={applicationData}
+      isStaff={isStaff}
+    />,
   );
 
   return { user, component };

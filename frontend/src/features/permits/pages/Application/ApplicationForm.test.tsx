@@ -93,8 +93,17 @@ vi.mock("./components/form/PermitForm", async () => {
 
   return {
     PermitForm: () => {
-      const { onContinue } = useContext(ApplicationFormContext);
-      return <button onClick={() => void onContinue()}>Continue</button>;
+      const { axleCalculationResultsFromValidation, onContinue } = useContext(
+        ApplicationFormContext,
+      );
+      return (
+        <>
+          <button onClick={() => void onContinue()}>Continue</button>
+          <output data-testid="validated-gcvw">
+            {axleCalculationResultsFromValidation?.totalGCVW}
+          </output>
+        </>
+      );
     },
   };
 });
@@ -237,6 +246,105 @@ describe("ApplicationForm permit-not-required handling", () => {
         name: "This permit type is not required",
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("asks staff to confirm STOW policy issues before continuing", async () => {
+    const user = userEvent.setup();
+    mocks.policyValidate.mockResolvedValue({
+      violations: [],
+      warnings: [
+        {
+          type: "warning",
+          code: "general-validation-warning",
+          message: "Review the axle configuration.",
+        },
+      ],
+      axleCalculationResults: createAxleCalculationResults({ overload: 100 }),
+    });
+    renderApplicationForm(true);
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(
+      await screen.findByText("Application has violation(s) and/or warning(s)"),
+    ).toBeVisible();
+    expect(screen.getByTestId("validated-gcvw")).toHaveTextContent("4500");
+    expect(mocks.handleSaveVehicle).not.toHaveBeenCalled();
+    expect(mocks.saveApplication).not.toHaveBeenCalled();
+
+    await user.click(screen.getByTestId("cancel-review-button"));
+
+    expect(
+      screen.queryByText("Application has violation(s) and/or warning(s)"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("validated-gcvw")).toHaveTextContent("4500");
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it("continues the original save flow when staff confirm STOW policy issues", async () => {
+    const user = userEvent.setup();
+    mocks.policyValidate.mockResolvedValue({
+      violations: [],
+      warnings: [],
+      axleCalculationResults: createAxleCalculationResults({
+        overload: 100,
+        results: [
+          {
+            id: POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
+            result: "warning",
+            message: "Review bridge spacing.",
+            startAxleUnit: 1,
+            endAxleUnit: 2,
+          },
+        ],
+      }),
+    });
+    renderApplicationForm(true);
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByTestId("confirm-review-button"));
+
+    expect(mocks.policyValidate).toHaveBeenCalledOnce();
+    expect(mocks.handleSaveVehicle).toHaveBeenCalledOnce();
+    expect(mocks.saveApplication).toHaveBeenCalledOnce();
+  });
+
+  it("does not show the staff warning modal when STOW has no policy issues", async () => {
+    const user = userEvent.setup();
+    mocks.policyValidate.mockResolvedValue({
+      violations: [],
+      warnings: [],
+      axleCalculationResults: createAxleCalculationResults({ overload: 100 }),
+    });
+    renderApplicationForm(true);
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(
+      screen.queryByText("Application has violation(s) and/or warning(s)"),
+    ).not.toBeInTheDocument();
+    expect(mocks.handleSaveVehicle).toHaveBeenCalledOnce();
+    expect(mocks.saveApplication).toHaveBeenCalledOnce();
+  });
+
+  it("blocks incomplete STOW axle data before policy confirmation", async () => {
+    const user = userEvent.setup();
+    const formData = createFormData();
+    formData.permitData.vehicleConfiguration = {
+      ...formData.permitData.vehicleConfiguration,
+      axleConfiguration: validAxleConfiguration.map((axleUnit, index) =>
+        index === 0 ? { ...axleUnit, axleUnitWeight: null } : axleUnit,
+      ),
+    };
+    mockFormData(formData);
+    renderApplicationForm(true);
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(
+      screen.queryByText("Application has violation(s) and/or warning(s)"),
+    ).not.toBeInTheDocument();
+    expect(mocks.saveApplication).not.toHaveBeenCalled();
   });
 
   it("retains the existing validation stop when an axle calculation fails", async () => {
