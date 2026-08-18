@@ -24,6 +24,7 @@ import { ErrorAltBcGovBanner } from "../../../../../../common/components/banners
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 import { AxleSpacingAndWeightsSection } from "./axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ICBCInsuranceCertificateSection } from "./ICBCInsuranceCertificateSection/ICBCInsuranceCertificateSection";
+import { OverloadWeightSection } from "./OverloadWeightSection/OverloadWeightSection";
 import { ActualGVW } from "./ActualGVWSection/ActualGVWSection";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { ExtraordinaryLoadRequestSection } from "./ExtraordinaryLoadRequestSection/ExtraordinaryLoadRequestSection";
@@ -99,7 +100,6 @@ export const PermitForm = () => {
     onUpdateConditionalLicensingFee,
     onUpdateLoadedGVW,
     onUpdateNetWeight,
-
     onUpdatePowerUnitAxleConfiguration,
     onUpdateTrailerAxleConfiguration,
     haveCertificate,
@@ -245,6 +245,13 @@ export const PermitForm = () => {
         />
 
         <LoadedDimensionsSection
+          permitType={permitType}
+          feature={feature}
+          vehicleConfiguration={vehicleConfiguration}
+          onUpdateVehicleConfiguration={onUpdateVehicleConfig}
+        />
+
+        <OverloadWeightSection
           permitType={permitType}
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}

@@ -1,8 +1,9 @@
+import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
 import {
   VEHICLE_TYPES,
   VehicleType,
 } from "../../../../manageVehicles/types/Vehicle";
-import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
+
 import {
   isNull,
   isUndefined,
@@ -16,10 +17,11 @@ export const gvwLimit = (permitType: PermitType) => {
       [
         PERMIT_TYPES.STOS,
         PERMIT_TYPES.STOW,
-        PERMIT_TYPES.STGVWI,
         PERMIT_TYPES.MFP,
         PERMIT_TYPES.STFR,
         PERMIT_TYPES.QRFR,
+        PERMIT_TYPES.STWSE,
+        PERMIT_TYPES.STGVWI,
       ] as PermitType[]
     ).includes(permitType)
   ) {

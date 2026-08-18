@@ -12,7 +12,6 @@ export const POLICY_CHECK_ID_TYPES = {
     "axle-group-maximum-legal-weight-threshold",
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
-  PERMITTABLE_WEIGHT: "permittable-weight",
   DRIVE_JEEP_LOAD_EQUALIZATION: "drive-jeep-load-equalization",
   LEGAL_INTERAXLE_SPACING: "legal-interaxle-spacing",
   LEGAL_WEIGHT: "legal-weight",
@@ -22,6 +21,7 @@ export const POLICY_CHECK_ID_TYPES = {
   MINIMUM_TANDEM_STEER_AXLE_WEIGHT: "minimum-tandem-steer-axle-weight",
   NUMBER_OF_AXLES: "number-of-axles",
   NUMBER_OF_WHEELS_PER_AXLE: "number-of-wheels",
+  PERMITTABLE_WEIGHT: "permittable-weight",
   PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS:
     "picker-truck-tractor-weight-restrictions",
   WHEELBASE_LEGAL_LIMITS: "wheelbase-legal-limits",

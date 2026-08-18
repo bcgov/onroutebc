@@ -57,7 +57,7 @@ const permitTypeRules = {
         TROS: boolean;
         STOW: boolean;
         TROW: boolean;
-        STOL: boolean;
+        STWSE: boolean;
         STWS: boolean;
       }>,
     ) => {
@@ -66,7 +66,7 @@ const permitTypeRules = {
         value?.TROS ||
         value?.STOW ||
         value?.TROW ||
-        value?.STOL ||
+        value?.STWSE ||
         value?.STWS ||
         selectionRequired()
       );
@@ -364,13 +364,13 @@ export const LOABasicInfo = ({
               <div className="permit-type-selection__option">
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
-                  checked={permitTypes.STOL}
+                  checked={permitTypes.STWSE}
                   onChange={(_, selected) =>
-                    selectPermitType(PERMIT_TYPES.STOL, selected)
+                    selectPermitType(PERMIT_TYPES.STWSE, selected)
                   }
                 />
                 <div className="permit-type-selection__label">
-                  {`${PERMIT_TYPES.STOL} (Length 27.5 - Empty)`}
+                  {`${PERMIT_TYPES.STWSE} (Length 27.5 - Empty)`}
                 </div>
               </div>
 

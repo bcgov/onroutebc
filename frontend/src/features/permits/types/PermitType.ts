@@ -21,7 +21,7 @@ export const PERMIT_TYPES = {
   // Single Trip Oversize Overweight
   STWS: "STWS",
   // Empty - Single Trip Over Length 27.5
-  STOL: "STOL",
+  STWSE: "STWSE",
   // Single Trip GVW Increase
   STGVWI: "STGVWI",
   // Rig Move
@@ -55,7 +55,7 @@ export const TERM_PERMIT_LIST: PermitType[] = [
 ];
 
 export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
-  PERMIT_TYPES.STOL,
+  PERMIT_TYPES.STWSE,
   PERMIT_TYPES.EPTOP,
   PERMIT_TYPES.IGVW,
   PERMIT_TYPES.STOS,
@@ -98,8 +98,8 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Single Trip GVW Increase";
     case PERMIT_TYPES.EPTOP:
       return "Extra-Provincial Temporary Operating";
-    case PERMIT_TYPES.STOL:
-      return "Single Trip Over Length";
+    case PERMIT_TYPES.STWSE:
+      return "Single Trip Overweight Oversize Empty - Length over 27.5m";
     case PERMIT_TYPES.RIG:
       return "Rig Move";
     case PERMIT_TYPES.IGVW:
@@ -148,8 +148,8 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Oversize";
     case PERMIT_TYPES.STWS:
       return "Oversized Overweight";
-    case PERMIT_TYPES.STOL:
-      return "Empty - Length Over 27.5 m";
+    case PERMIT_TYPES.STWSE:
+      return "Overweight Oversize Empty - Length over 27.5 m";
     case PERMIT_TYPES.RIG:
       return "Rig Move";
     case PERMIT_TYPES.STGVWI:

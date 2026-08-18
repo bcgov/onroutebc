@@ -3,6 +3,7 @@ import { PermitType } from '../enum/permit-type.enum';
 export const PERMIT_TYPES_FOR_QUEUE: readonly PermitType[] = [
   PermitType.SINGLE_TRIP_OVERSIZE,
   PermitType.SINGLE_TRIP_OVERWEIGHT,
+  PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY,
 ];
 
 export const STOS_MAX_ALLOWED_DURATION_AMEND = 30;
