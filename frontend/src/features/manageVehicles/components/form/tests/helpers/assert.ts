@@ -3,6 +3,7 @@ import {
   VehicleSubType,
   VehicleType,
 } from "../../../../types/Vehicle";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import {
   PowerUnitDetail,
   VehicleFormDetail,
@@ -28,8 +29,8 @@ export const assertVehicleSubtypesSorted = (
   const sortedLabels = [...sourceLabels].sort((label1, label2) =>
     label1.localeCompare(label2),
   );
-  const renderedLabels = subtypeOptions.map(
-    ({ textContent }) => textContent ?? "",
+  const renderedLabels = subtypeOptions.map(({ textContent }) =>
+    getDefaultRequiredVal("", textContent),
   );
 
   // Ensure the fixture would expose the absence of sorting in the form.
