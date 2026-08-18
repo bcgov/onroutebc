@@ -17,6 +17,18 @@ export const defaultPowerUnitSubtypes = [
     description:
       "Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.",
   },
+  {
+    typeCode: "BUSCRUM",
+    type: "Buses",
+    description:
+      "A motor vehicle used to transport persons, when such transportation is not undertaken for compensation or gain.",
+  },
+  {
+    typeCode: "TRKTRAC",
+    type: "Truck Tractors",
+    description:
+      "Truck Tractor is a motor vehicle, having a net weight of more than 4,000 kg, that is equipped with a fifth-wheel coupler or a centre rotatable log bunk mounted on a bolster affixed to the vehicles chassis, and includes an auto carrier with an underslung fifth wheel coupler and a truck tractor with a load box.",
+  },
 ];
 
 export const defaultTrailerSubtypes = [
@@ -25,6 +37,18 @@ export const defaultTrailerSubtypes = [
     type: "Boosters",
     description:
       "A Booster is similar to a jeep, but it is used behind a load.",
+  },
+  {
+    typeCode: "SEMITRL",
+    type: "Semi-Trailers",
+    description:
+      "See Commercial Transport Procedures Manual chapter 5.3 for details.",
+  },
+  {
+    typeCode: "FULLLTL",
+    type: "Full Trailers",
+    description:
+      "See Commercial Transport Procedures Manual chapter 5.3 for details.",
   },
 ];
 
@@ -126,10 +150,7 @@ export const closeMockServer = () => {
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
   const component = renderForTests(
-    <PowerUnitForm
-      companyId={companyId}
-      powerUnit={powerUnit}
-    />
+    <PowerUnitForm companyId={companyId} powerUnit={powerUnit} />,
   );
 
   return { user, component };
@@ -138,10 +159,7 @@ export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
   const component = renderForTests(
-    <TrailerForm
-      companyId={companyId}
-      trailer={trailer}
-    />
+    <TrailerForm companyId={companyId} trailer={trailer} />,
   );
 
   return { user, component };
