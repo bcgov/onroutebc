@@ -104,7 +104,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'nrscv-revoke-template-v3.docx'
+        'nrscv-revoked-template-v3.docx'
     );
 
 
@@ -156,7 +156,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'nrscl-revoke-template-v3.docx'
+        'nrscl-revoked-template-v3.docx'
     );
 
 
@@ -208,7 +208,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'nrqcv-revoke-template-v2.docx'
+        'nrqcv-revoked-template-v2.docx'
     );
 
 
@@ -260,7 +260,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'nrqcl-revoke-template-v3.docx'
+        'nrqcl-revoked-template-v3.docx'
     );
 
 
@@ -312,7 +312,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'stow-revoke-template-v2.docx'
+        'stow-revoked-template-v2.docx'
     );
 
 
@@ -364,7 +364,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'stos-revoke-template-v5.docx'
+        'stos-revoked-template-v5.docx'
     );
 
 
@@ -416,7 +416,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'trow-revoke-template-v3.docx'
+        'trow-revoked-template-v3.docx'
     );
 
 
@@ -468,7 +468,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'tros-revoke-template-v3.docx'
+        'tros-revoked-template-v3.docx'
     );
 
 
@@ -520,7 +520,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'mfp-revoke-template-v5.docx'
+        'mfp-revoked-template-v5.docx'
     );
 
 
@@ -572,7 +572,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'stfr-revoke-template-v3.docx'
+        'stfr-revoked-template-v3.docx'
     );
 
 
@@ -624,7 +624,7 @@ BEGIN TRY
         'dops',
         GETUTCDATE(),
         'Y',
-        'qrfr-revoke-template-v3.docx'
+        'qrfr-revoked-template-v3.docx'
     );
 
 
