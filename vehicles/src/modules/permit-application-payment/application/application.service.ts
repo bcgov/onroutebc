@@ -95,6 +95,8 @@ import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
 import { Case } from 'src/modules/case-management/entities/case.entity';
+import { PermitType } from '../../../common/enum/permit-type.enum';
+import { PolicyService } from '../../policy/policy.service';
 
 @Injectable()
 export class ApplicationService {
@@ -117,6 +119,7 @@ export class ApplicationService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly caseManagementService: CaseManagementService,
+    private readonly policyService: PolicyService,
   ) {}
 
   /**
@@ -1061,7 +1064,22 @@ export class ApplicationService {
       );
     } else if (application.permitStatus !== ApplicationStatus.IN_PROGRESS) {
       throwUnprocessableEntityException('Invalid status.');
+    } else if (
+      application.permitType ===
+      PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+    ) {
+      const validationResults =
+        await this.policyService.validateApplicationAndCalculateCost({
+          application,
+          companyId,
+        });
+      if (!validationResults?.warnings?.length) {
+        throwUnprocessableEntityException(
+          `Invalid ${application.permitType} application. Ineligible for queue.`,
+        );
+      }
     }
+
     const { queryRunner } = await getQueryRunner({
       dataSource: this.dataSource,
     });

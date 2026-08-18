@@ -14,8 +14,9 @@ import {
   useModifyAmendmentApplication,
   useSaveApplicationMutation,
 } from "../../../hooks/hooks";
+
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
 import { PERMIT_REVIEW_CONTEXTS } from "../../../types/PermitReviewContext";
@@ -28,6 +29,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+
 import { useAddToCart } from "../../../hooks/cart";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { CartContext } from "../../../context/CartContext";
@@ -39,6 +41,8 @@ import { PERMIT_ACTION_ORIGINS } from "../../../types/PermitActionOrigin";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
 import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
 import { isZeroAmount } from "../../../helpers/feeSummary";
+import { usePolicyWarnings } from "../../../hooks/usePolicyWarnings";
+import { PermitReviewConfirmWarningDialog } from "../../../components/dialog/PermitReviewConfirmWarningDialog";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -107,6 +111,9 @@ export const AmendPermitReview = () => {
     goHome();
   };
 
+  const [showConfirmWarningModal, setShowConfirmWarningModal] =
+    useState<boolean>(false);
+
   const onSubmit = async () => {
     setHasAttemptedSubmission(true);
     if (!allConfirmed) return;
@@ -145,22 +152,34 @@ export const AmendPermitReview = () => {
     }
   };
 
+  const handleClickContinue = async () => {
+    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+      setShowConfirmWarningModal(true);
+    } else {
+      await onSubmit();
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const oldFields = getDefaultFormDataFromPermit(companyInfo, permit);
 
+  const serializedPermit = {
+    permitType,
+    permitData: amendmentApplication?.permitData
+      ? serializePermitData(amendmentApplication.permitData)
+      : {},
+  };
+  
   const amountToRefund = useCalculateRefundAmount(
     validTransactionHistory,
-    {
-      permitType,
-      permitData: amendmentApplication?.permitData
-        ? serializePermitData(amendmentApplication.permitData)
-        : {},
-    },
+    serializedPermit,
     policyEngine,
   );
+
+  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
 
   const { setSnackBar } = useContext(SnackBarContext);
   const addToCartMutation = useAddToCart();
@@ -265,7 +284,20 @@ export const AmendPermitReview = () => {
     );
   };
 
-  const continueBtnText = amountToRefund >= 0 ? "Continue" : undefined;
+  const handleClickAddToCart = async () => {
+    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+      setShowConfirmWarningModal(true);
+    } else {
+      await handleAddToCart();
+    }
+  };
+
+  const handleCloseConfirmWarningModal = () => {
+    setShowConfirmWarningModal(false);
+  };
+
+  const isFollowUpActionContinue = amountToRefund >= 0;
+  const continueBtnText = isFollowUpActionContinue ? "Continue" : undefined;
 
   return (
     <div className="amend-permit-review">
@@ -291,8 +323,8 @@ export const AmendPermitReview = () => {
         contactDetails={amendmentApplication?.permitData?.contactDetails}
         continueBtnText={continueBtnText}
         onEdit={back}
-        onContinue={onSubmit}
-        onAddToCart={handleAddToCart}
+        onContinue={handleClickContinue}
+        onAddToCart={handleClickAddToCart}
         allConfirmed={allConfirmed}
         setAllConfirmed={setAllConfirmed}
         hasAttemptedCheckboxes={hasAttemptedSubmission}
@@ -324,6 +356,7 @@ export const AmendPermitReview = () => {
           },
         }}
         calculatedFee={`${-1 * amountToRefund}`}
+        permitIntermediaryCosts={[]}
         doingBusinessAs={doingBusinessAs}
         loas={amendmentApplication?.permitData?.loas}
         isStaffUser={true}
@@ -337,6 +370,7 @@ export const AmendPermitReview = () => {
         icbcInsuranceCertificate={
           amendmentApplication?.permitData?.icbcInsuranceCertificate
         }
+        policyWarnings={policyWarnings}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
@@ -349,6 +383,17 @@ export const AmendPermitReview = () => {
         onConfirm={handleCloseAuthorizationRequiredModal}
         permitNumber={permit?.permitNumber}
       />
+
+      {showConfirmWarningModal ? (
+        <PermitReviewConfirmWarningDialog
+          showModal={showConfirmWarningModal}
+          isAmend={true}
+          actionText={isFollowUpActionContinue ? "continue" : "add it to the cart"}
+          confirmButtonText={isFollowUpActionContinue ? "Continue" : "Add to Cart"}
+          onCancel={handleCloseConfirmWarningModal}
+          onConfirm={isFollowUpActionContinue ? onSubmit : handleAddToCart}
+        />
+      ) : null}
     </div>
   );
 };

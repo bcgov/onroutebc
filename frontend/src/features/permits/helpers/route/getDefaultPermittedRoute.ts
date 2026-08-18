@@ -11,8 +11,9 @@ export const getDefaultPermittedRoute = (
   if (
     permitType !== PERMIT_TYPES.STOS &&
     permitType !== PERMIT_TYPES.STOW &&
-    permitType !== PERMIT_TYPES.STGVWI &&
-    permitType !== PERMIT_TYPES.MFP
+    permitType !== PERMIT_TYPES.MFP &&
+    permitType !== PERMIT_TYPES.STWSE &&
+    permitType !== PERMIT_TYPES.STGVWI
   )
     return null;
 

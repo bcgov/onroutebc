@@ -13,7 +13,7 @@ import {
   requiredMessage,
 } from "../../../../../../../../common/helpers/validationMessages";
 
-export const LoadedDimensionInput = ({
+export const OverloadWeightInput = ({
   name,
   label,
   className,
@@ -41,7 +41,7 @@ export const LoadedDimensionInput = ({
         validate: {
           greaterThan: (v) =>
             Number(v) > minValue ||
-            mustBeGreaterThan(minValue, validationMsgValueDecimalPlaces, "m"),
+            mustBeGreaterThan(minValue, validationMsgValueDecimalPlaces, "kg"),
         },
       }}
       render={({ fieldState: { error } }) => (
@@ -52,7 +52,7 @@ export const LoadedDimensionInput = ({
           }}
           inputProps={{
             value: getDefaultRequiredVal(null, value),
-            maskFn: (numericVal) => numericVal.toFixed(2),
+            maskFn: (numericVal) => numericVal.toFixed(0),
             onBlur: (e) => {
               onUpdateValue(
                 getDefaultRequiredVal(
@@ -64,7 +64,7 @@ export const LoadedDimensionInput = ({
             slotProps: {
               input: {
                 min: 0,
-                step: 0.01,
+                step: 1,
               },
             },
           }}

@@ -334,7 +334,6 @@ vehicles:
       - "service-accounts-{{tpl $.Values.vault.zone $}}"
       - "egarms-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
-
 public:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -687,6 +686,9 @@ scheduler:
         requests:
           cpu: 25m
           memory: 50Mi
+      volumeMounts:
+        - name: pbi
+          mountPath: "/mnt/pbi/"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: false 
@@ -734,6 +736,19 @@ scheduler:
       - "garms-{{tpl $.Values.vault.zone $}}"
       - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
+  pvc:
+    enabled: true
+    persist: true #Do not remove pvc on uninstall
+    nameOverride: "{{ .Release.Name }}-scheduler-pbi"
+    accessModes: ReadWriteOnce
+    size: 5Mi
+    storageClassName: netapp-file-standard
+  volumes:
+    - name: pbi
+      persistentVolumeClaim:
+        claimName: "{{ .Release.Name }}-scheduler-pbi"
+  deploymentStrategy: 
+    type: Recreate
 
 policy:
   enabled: true

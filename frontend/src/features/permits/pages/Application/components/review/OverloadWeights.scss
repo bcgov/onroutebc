@@ -1,0 +1,28 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".review-overload-weights");
+@include orbcStyles.permit-left-box-style(".review-overload-weights__header");
+@include orbcStyles.permit-right-box-style(".review-overload-weights__body");
+
+.review-overload-weights {
+  &__body {
+    display: grid;
+    grid-template-columns: repeat(3, [col] 1fr);
+    row-gap: 1rem;
+    
+    .overload {
+      &__label {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@media (width < 370px) {
+  .review-overload-weights {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+    }
+  }
+}

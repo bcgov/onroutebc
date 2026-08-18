@@ -1,0 +1,69 @@
+@use "../../../../themes/orbcStyles";
+
+.permit-review-confirm-warning-dialog {
+  & &__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: orbcStyles.$bc-background-light-grey;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: orbcStyles.$bc-black;
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+
+  }
+
+  & &__button {
+    &--confirm {
+      color: orbcStyles.$white;
+      background-color: orbcStyles.$bc-primary-blue;
+      font-weight: bold;
+      cursor: pointer;
+
+      &:hover, &:focus {
+        background-color: orbcStyles.$button-hover;
+      }
+
+      &:disabled {
+        background-color: orbcStyles.$disabled-colour;
+        color: orbcStyles.$white;
+      }
+    }
+
+    &--cancel {
+      color: orbcStyles.$bc-black;
+      background-color: orbcStyles.$bc-background-light-grey;
+      margin-right: 1.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+
+      &:hover, &:focus {
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
+      }
+    }
+  }
+}

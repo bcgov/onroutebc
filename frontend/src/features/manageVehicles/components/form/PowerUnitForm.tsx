@@ -1,10 +1,10 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 import "./PowerUnitForm.scss";
-import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
+import { PowerUnit, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
@@ -13,6 +13,7 @@ import { now } from "../../../../common/helpers/formatDate";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { disableMouseWheelInputOnNumberField } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
+import { sortVehicleSubtypes } from "../../../permits/helpers/vehicles/subtypes/sortVehicleSubtypes";
 
 import {
   usePowerUnitSubTypesQuery,
@@ -70,6 +71,14 @@ export const PowerUnitForm = ({
   const { handleSubmit } = formMethods;
 
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+  const sortedPowerUnitSubtypes = useMemo(
+    () =>
+      sortVehicleSubtypes(
+        VEHICLE_TYPES.POWER_UNIT,
+        getDefaultRequiredVal([], powerUnitSubTypesQuery.data),
+      ),
+    [powerUnitSubTypesQuery.data],
+  );
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const snackBar = useContext(SnackBarContext);
@@ -233,13 +242,11 @@ export const PowerUnitForm = ({
               },
               label: "Vehicle Sub-type",
             }}
-            menuOptions={powerUnitSubTypesQuery?.data?.map(
-              (data: VehicleSubType) => (
-                <MenuItem key={data.typeCode} value={data.typeCode}>
-                  {data.type}
-                </MenuItem>
-              ),
-            )}
+            menuOptions={sortedPowerUnitSubtypes.map((data: VehicleSubType) => (
+              <MenuItem key={data.typeCode} value={data.typeCode}>
+                {data.type}
+              </MenuItem>
+            ))}
             className="power-unit-form__field"
           />
 

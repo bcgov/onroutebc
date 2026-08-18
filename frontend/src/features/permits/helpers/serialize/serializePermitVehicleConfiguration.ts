@@ -60,6 +60,10 @@ export const serializePermitVehicleConfiguration = (
               1,
             )
           : null,
+        overloadWeight: convertToNumberIfValid(
+          vehicleConfiguration?.overloadWeight,
+          null,
+        ),
       }
     : null;
 };

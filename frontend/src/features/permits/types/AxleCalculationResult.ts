@@ -12,6 +12,7 @@ export const POLICY_CHECK_ID_TYPES = {
     "axle-group-maximum-legal-weight-threshold",
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
+  CHECK_LEGAL_WEIGHT: "check-legal-weight",
   CHECK_PERMITTABLE_WEIGHT: "check-permittable-weight",
   DRIVE_JEEP_LOAD_EQUALIZATION: "drive-jeep-load-equalization",
   MAX_TIRE_LOAD: "max-tire-load",

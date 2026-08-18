@@ -23,11 +23,18 @@ export const LoadedDimensionsSection = ({
     updatedVehicleConfig: RequiredOrNull<PermitVehicleConfiguration>,
   ) => void;
 }) => {
-  return permitType === PERMIT_TYPES.STOS ? (
+  return (
+    permitType === PERMIT_TYPES.STOS ||
+    permitType === PERMIT_TYPES.STWSE
+  ) ? (
     <Box className="loaded-dimensions-section">
       <Box className="loaded-dimensions-section__header">
         <h3 className="loaded-dimensions-section__title">
-          Loaded Dimensions (Metres)
+          {permitType === PERMIT_TYPES.STOS ? (
+            "Loaded Dimensions (Metres)"
+          ) : (
+            "Dimensions (Metres)"
+          )}
         </h3>
       </Box>
 
@@ -47,7 +54,7 @@ export const LoadedDimensionsSection = ({
                 overallWidth: updatedValue,
               })
             }
-            minValue={0.01}
+            minValue={0}
           />
 
           <LoadedDimensionInput
@@ -64,7 +71,7 @@ export const LoadedDimensionsSection = ({
                 overallHeight: updatedValue,
               })
             }
-            minValue={0.01}
+            minValue={0}
           />
 
           <LoadedDimensionInput
@@ -81,7 +88,8 @@ export const LoadedDimensionsSection = ({
                 overallLength: updatedValue,
               })
             }
-            minValue={0.01}
+            minValue={permitType === PERMIT_TYPES.STWSE ? 27.50 : 0}
+            validationMsgValueDecimalPlaces={permitType === PERMIT_TYPES.STWSE ? 1 : 0}
           />
         </div>
 
