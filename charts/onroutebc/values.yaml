@@ -738,6 +738,7 @@ scheduler:
     zone: "{{.Values.global.vault.zone}}"
   pvc:
     enabled: true
+    persist: true #Do not remove pvc on uninstall
     nameOverride: "{{ .Release.Name }}-scheduler-pbi"
     accessModes: ReadWriteOnce
     size: 5Mi
@@ -746,6 +747,8 @@ scheduler:
     - name: pbi
       persistentVolumeClaim:
         claimName: "{{ .Release.Name }}-scheduler-pbi"
+  deploymentStrategy: 
+    type: Recreate
 
 policy:
   enabled: true
