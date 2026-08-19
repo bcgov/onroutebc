@@ -61,6 +61,10 @@ export const getPermitRowActionOptions = ({
 
   return getPermitActionOptions([
     {
+      action: PERMIT_ACTION_TYPES.AMEND,
+      isAuthorized: isEligibleForAmendOrRevoke && canAmendPermit,
+    },
+    {
       action: PERMIT_ACTION_TYPES.COPY,
       isAuthorized: canCopyPermit,
     },
@@ -73,10 +77,6 @@ export const getPermitRowActionOptions = ({
       isAuthorized:
         (!isPermitInactiveOrExpired && canViewPermitReceipt) ||
         (isPermitInactiveOrExpired && canViewExpiredPermitReceipt),
-    },
-    {
-      action: PERMIT_ACTION_TYPES.AMEND,
-      isAuthorized: isEligibleForAmendOrRevoke && canAmendPermit,
     },
     {
       action: PERMIT_ACTION_TYPES.VOID_REVOKE,
