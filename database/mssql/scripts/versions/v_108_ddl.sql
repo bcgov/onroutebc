@@ -1,12 +1,15 @@
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 SET NOCOUNT ON
 GO
 
 SET XACT_ABORT ON
 GO
+
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 GO
 
@@ -19,41 +22,101 @@ BEGIN TRY
     -- Deactivate previous versions
     -------------------------------------------------------------------------
 
+    -- NRSCV v2
     UPDATE dops.ORBC_DOCUMENT_TEMPLATE
     SET IS_ACTIVE = 'N'
-    WHERE
-        (TEMPLATE_NAME IN ('PERMIT_NRSCV', 'PERMIT_NRSCV_VOID', 'PERMIT_NRSCV_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_NRSCL', 'PERMIT_NRSCL_VOID', 'PERMIT_NRSCL_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_NRQCV', 'PERMIT_NRQCV_VOID', 'PERMIT_NRQCV_REVOKED')
-            AND TEMPLATE_VERSION = 1)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_NRQCL', 'PERMIT_NRQCL_VOID', 'PERMIT_NRQCL_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_STOW', 'PERMIT_STOW_VOID', 'PERMIT_STOW_REVOKED')
-            AND TEMPLATE_VERSION = 1)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_STOS', 'PERMIT_STOS_VOID', 'PERMIT_STOS_REVOKED')
-            AND TEMPLATE_VERSION = 4)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_TROW', 'PERMIT_TROW_VOID', 'PERMIT_TROW_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_TROS', 'PERMIT_TROS_VOID', 'PERMIT_TROS_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_MFP', 'PERMIT_MFP_VOID', 'PERMIT_MFP_REVOKED')
-            AND TEMPLATE_VERSION = 4)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_STFR', 'PERMIT_STFR_VOID', 'PERMIT_STFR_REVOKED')
-            AND TEMPLATE_VERSION = 2)
-        OR
-        (TEMPLATE_NAME IN ('PERMIT_QRFR', 'PERMIT_QRFR_VOID', 'PERMIT_QRFR_REVOKED')
-            AND TEMPLATE_VERSION = 2);
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_NRSCV',
+        'PERMIT_NRSCV_VOID',
+        'PERMIT_NRSCV_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 2;
+
+
+    -- NRQCV v1
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_NRQCV',
+        'PERMIT_NRQCV_VOID',
+        'PERMIT_NRQCV_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 1;
+
+
+    -- STOS v4
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_STOS',
+        'PERMIT_STOS_VOID',
+        'PERMIT_STOS_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 4;
+
+
+    -- TROW v2
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_TROW',
+        'PERMIT_TROW_VOID',
+        'PERMIT_TROW_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 2;
+
+
+    -- TROS v2
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_TROS',
+        'PERMIT_TROS_VOID',
+        'PERMIT_TROS_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 2;
+
+
+    -- MFP v4
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_MFP',
+        'PERMIT_MFP_VOID',
+        'PERMIT_MFP_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 4;
+
+
+    -- STFR v2
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_STFR',
+        'PERMIT_STFR_VOID',
+        'PERMIT_STFR_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 2;
+
+
+    -- QRFR v2
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PERMIT_QRFR',
+        'PERMIT_QRFR_VOID',
+        'PERMIT_QRFR_REVOKED'
+    )
+    AND TEMPLATE_VERSION = 2;
+
+
+    -- Payment Receipt v4
+    UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+    SET IS_ACTIVE = 'N'
+    WHERE TEMPLATE_NAME IN (
+        'PAYMENT_RECEIPT'
+    )
+    AND TEMPLATE_VERSION = 3;
 
 
     -------------------------------------------------------------------------
@@ -109,58 +172,6 @@ BEGIN TRY
 
 
     -------------------------------------------------------------------------
-    -- NRSCL v3
-    -------------------------------------------------------------------------
-
-    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
-    (
-        TEMPLATE_NAME,
-        TEMPLATE_VERSION,
-        CONCURRENCY_CONTROL_NUMBER,
-        DB_CREATE_USERID,
-        DB_CREATE_TIMESTAMP,
-        DB_LAST_UPDATE_USERID,
-        DB_LAST_UPDATE_TIMESTAMP,
-        IS_ACTIVE,
-        FILE_NAME
-    )
-    VALUES
-    (
-        'PERMIT_NRSCL',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrscl-template-v3.docx'
-    ),
-    (
-        'PERMIT_NRSCL_VOID',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrscl-void-template-v3.docx'
-    ),
-    (
-        'PERMIT_NRSCL_REVOKED',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrscl-revoked-template-v3.docx'
-    );
-
-
-    -------------------------------------------------------------------------
     -- NRQCV v2
     -------------------------------------------------------------------------
 
@@ -209,110 +220,6 @@ BEGIN TRY
         GETUTCDATE(),
         'Y',
         'nrqcv-revoked-template-v2.docx'
-    );
-
-
-    -------------------------------------------------------------------------
-    -- NRQCL v3
-    -------------------------------------------------------------------------
-
-    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
-    (
-        TEMPLATE_NAME,
-        TEMPLATE_VERSION,
-        CONCURRENCY_CONTROL_NUMBER,
-        DB_CREATE_USERID,
-        DB_CREATE_TIMESTAMP,
-        DB_LAST_UPDATE_USERID,
-        DB_LAST_UPDATE_TIMESTAMP,
-        IS_ACTIVE,
-        FILE_NAME
-    )
-    VALUES
-    (
-        'PERMIT_NRQCL',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrqcl-template-v3.docx'
-    ),
-    (
-        'PERMIT_NRQCL_VOID',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrqcl-void-template-v3.docx'
-    ),
-    (
-        'PERMIT_NRQCL_REVOKED',
-        3,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'nrqcl-revoked-template-v3.docx'
-    );
-
-
-    -------------------------------------------------------------------------
-    -- STOW v2
-    -------------------------------------------------------------------------
-
-    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
-    (
-        TEMPLATE_NAME,
-        TEMPLATE_VERSION,
-        CONCURRENCY_CONTROL_NUMBER,
-        DB_CREATE_USERID,
-        DB_CREATE_TIMESTAMP,
-        DB_LAST_UPDATE_USERID,
-        DB_LAST_UPDATE_TIMESTAMP,
-        IS_ACTIVE,
-        FILE_NAME
-    )
-    VALUES
-    (
-        'PERMIT_STOW',
-        2,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'stow-template-v2.docx'
-    ),
-    (
-        'PERMIT_STOW_VOID',
-        2,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'stow-void-template-v2.docx'
-    ),
-    (
-        'PERMIT_STOW_REVOKED',
-        2,
-        1,
-        'dops',
-        GETUTCDATE(),
-        'dops',
-        GETUTCDATE(),
-        'Y',
-        'stow-revoked-template-v2.docx'
     );
 
 
@@ -625,6 +532,35 @@ BEGIN TRY
         GETUTCDATE(),
         'Y',
         'qrfr-revoked-template-v3.docx'
+    );
+
+    -------------------------------------------------------------------------
+    -- Payment Receipt v4
+    -------------------------------------------------------------------------
+
+    INSERT INTO dops.ORBC_DOCUMENT_TEMPLATE
+    (
+        TEMPLATE_NAME,
+        TEMPLATE_VERSION,
+        CONCURRENCY_CONTROL_NUMBER,
+        DB_CREATE_USERID,
+        DB_CREATE_TIMESTAMP,
+        DB_LAST_UPDATE_USERID,
+        DB_LAST_UPDATE_TIMESTAMP,
+        IS_ACTIVE,
+        FILE_NAME
+    )
+    VALUES
+    (
+        'PAYMENT_RECEIPT',
+        4,
+        1,
+        'dops',
+        GETUTCDATE(),
+        'dops',
+        GETUTCDATE(),
+        'Y',
+        'payment-receipt-template-v4.docx'
     );
 
 

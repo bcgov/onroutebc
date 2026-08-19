@@ -22,7 +22,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- NRSCV v3 -> v2
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_NRSCV',
@@ -52,37 +55,10 @@ IF @@ERROR <> 0
 GO
 
 
--- NRSCL v3 -> v2
-DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_NRSCL',
-    'PERMIT_NRSCL_VOID',
-    'PERMIT_NRSCL_REVOKED'
-)
-AND TEMPLATE_VERSION = '3';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
-UPDATE dops.ORBC_DOCUMENT_TEMPLATE
-SET IS_ACTIVE = 'Y'
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_NRSCL',
-    'PERMIT_NRSCL_VOID',
-    'PERMIT_NRSCL_REVOKED'
-)
-AND TEMPLATE_VERSION = '2';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
+-------------------------------------------------------------------------
 -- NRQCV v2 -> v1
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_NRQCV',
@@ -112,67 +88,10 @@ IF @@ERROR <> 0
 GO
 
 
--- NRQCL v3 -> v2
-DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_NRQCL',
-    'PERMIT_NRQCL_VOID',
-    'PERMIT_NRQCL_REVOKED'
-)
-AND TEMPLATE_VERSION = '3';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
-UPDATE dops.ORBC_DOCUMENT_TEMPLATE
-SET IS_ACTIVE = 'Y'
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_NRQCL',
-    'PERMIT_NRQCL_VOID',
-    'PERMIT_NRQCL_REVOKED'
-)
-AND TEMPLATE_VERSION = '2';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
--- STOW v2 -> v1
-DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_STOW',
-    'PERMIT_STOW_VOID',
-    'PERMIT_STOW_REVOKED'
-)
-AND TEMPLATE_VERSION = '2';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
-UPDATE dops.ORBC_DOCUMENT_TEMPLATE
-SET IS_ACTIVE = 'Y'
-WHERE TEMPLATE_NAME IN (
-    'PERMIT_STOW',
-    'PERMIT_STOW_VOID',
-    'PERMIT_STOW_REVOKED'
-)
-AND TEMPLATE_VERSION = '1';
-
-
-IF @@ERROR <> 0
-    SET NOEXEC ON
-GO
-
-
+-------------------------------------------------------------------------
 -- STOS v5 -> v4
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_STOS',
@@ -202,7 +121,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- TROW v3 -> v2
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_TROW',
@@ -232,7 +154,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- TROS v3 -> v2
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_TROS',
@@ -262,7 +187,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- MFP v5 -> v4
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_MFP',
@@ -292,7 +220,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- STFR v3 -> v2
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_STFR',
@@ -322,7 +253,10 @@ IF @@ERROR <> 0
 GO
 
 
+-------------------------------------------------------------------------
 -- QRFR v3 -> v2
+-------------------------------------------------------------------------
+
 DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
 WHERE TEMPLATE_NAME IN (
     'PERMIT_QRFR',
@@ -351,6 +285,38 @@ IF @@ERROR <> 0
     SET NOEXEC ON
 GO
 
+
+-------------------------------------------------------------------------
+-- Payment Receipt v4 -> v3
+-------------------------------------------------------------------------
+
+DELETE [dops].[ORBC_DOCUMENT_TEMPLATE]
+WHERE TEMPLATE_NAME IN (
+    'PAYMENT_RECEIPT'
+)
+AND TEMPLATE_VERSION = '4';
+
+
+IF @@ERROR <> 0
+    SET NOEXEC ON
+GO
+
+
+UPDATE dops.ORBC_DOCUMENT_TEMPLATE
+SET IS_ACTIVE = 'Y'
+WHERE TEMPLATE_NAME IN (
+    'PAYMENT_RECEIPT'
+)
+AND TEMPLATE_VERSION = '3';
+
+
+IF @@ERROR <> 0
+    SET NOEXEC ON
+GO
+
+-------------------------------------------------------------------------
+-- System version
+-------------------------------------------------------------------------
 
 DECLARE @VersionDescription VARCHAR(255)
 
@@ -365,7 +331,7 @@ INSERT [dbo].[ORBC_SYS_VERSION] (
 VALUES (
     107,
     @VersionDescription,
-    getutcdate()
+    GETUTCDATE()
 )
 GO
 
@@ -378,9 +344,11 @@ GO
 COMMIT TRANSACTION
 GO
 
+
 IF @@ERROR <> 0
     SET NOEXEC ON
 GO
+
 
 DECLARE @Success AS BIT
 
