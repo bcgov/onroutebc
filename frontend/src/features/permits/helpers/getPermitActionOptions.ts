@@ -20,7 +20,7 @@ export interface PermitActionPermissions {
  * Returns options for the row actions.
  * @returns Action options that can be performed for the permit.
  */
-export const getPermitActionOptions = (
+const getPermitActionOptions = (
   permitActions: {
     action: PermitActionType;
     isAuthorized: boolean;
@@ -31,7 +31,8 @@ export const getPermitActionOptions = (
     .map(({ action }) => ({
       label: getPermitActionLabel(action),
       value: action,
-    }));
+    }))
+    .toSorted((action1, action2) => action1.label.localeCompare(action2.label));
 };
 
 export const getPermitRowActionOptions = ({
