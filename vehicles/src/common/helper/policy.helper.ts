@@ -16,6 +16,7 @@ import {
   DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
   MAX_HC_ALLOWED_PAST_DAYS,
   STOS_MAX_ALLOWED_DURATION_AMEND,
+  STOW_MAX_ALLOWED_DURATION_AMEND,
 } from '../constants/permit.constant';
 
 import {
@@ -59,6 +60,8 @@ export const evaluatePolicyValidationResult = (
   const { permitType, permitData } = application;
 
   const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
+
+  const isSTOW = permitType === PermitType.SINGLE_TRIP_OVERWEIGHT;
 
   // Function to check if the permit duration is within the allowed expiration limit
   const isAllowedDuration = (expirationLimit: number) =>
@@ -137,13 +140,20 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STOS_MAX_ALLOWED_DURATION_AMEND);
 
-  // Return true only if all violations are either STOS duration or start date violations
+  // Function to check if there is an STOW duration violation which can be excluded
+  const isSTOWDurationViolationAllowed = (violation: ValidationResult) =>
+    isSTOW &&
+    isDurationViolation(violation) &&
+    isAllowedDuration(STOW_MAX_ALLOWED_DURATION_AMEND);
+
+  // Return true only if all violations are either STOS & STOW duration or start date violations
   return !validationResults?.violations?.some(
     (violation) =>
       !(
         //Add violations that need to be skipped
         (
           isSTOSDurationViolationAllowed(violation) ||
+          isSTOWDurationViolationAllowed(violation) ||
           isStartDateViolationAllowed(violation, permitType)
         )
       ),

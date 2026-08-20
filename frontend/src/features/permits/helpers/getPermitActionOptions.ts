@@ -20,7 +20,7 @@ export interface PermitActionPermissions {
  * Returns options for the row actions.
  * @returns Action options that can be performed for the permit.
  */
-export const getPermitActionOptions = (
+const getPermitActionOptions = (
   permitActions: {
     action: PermitActionType;
     isAuthorized: boolean;
@@ -31,7 +31,8 @@ export const getPermitActionOptions = (
     .map(({ action }) => ({
       label: getPermitActionLabel(action),
       value: action,
-    }));
+    }))
+    .toSorted((action1, action2) => action1.label.localeCompare(action2.label));
 };
 
 export const getPermitRowActionOptions = ({
@@ -61,6 +62,10 @@ export const getPermitRowActionOptions = ({
 
   return getPermitActionOptions([
     {
+      action: PERMIT_ACTION_TYPES.AMEND,
+      isAuthorized: isEligibleForAmendOrRevoke && canAmendPermit,
+    },
+    {
       action: PERMIT_ACTION_TYPES.COPY,
       isAuthorized: canCopyPermit,
     },
@@ -73,10 +78,6 @@ export const getPermitRowActionOptions = ({
       isAuthorized:
         (!isPermitInactiveOrExpired && canViewPermitReceipt) ||
         (isPermitInactiveOrExpired && canViewExpiredPermitReceipt),
-    },
-    {
-      action: PERMIT_ACTION_TYPES.AMEND,
-      isAuthorized: isEligibleForAmendOrRevoke && canAmendPermit,
     },
     {
       action: PERMIT_ACTION_TYPES.VOID_REVOKE,
