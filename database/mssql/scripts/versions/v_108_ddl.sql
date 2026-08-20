@@ -110,7 +110,7 @@ BEGIN TRY
     AND TEMPLATE_VERSION = 2;
 
 
-    -- Payment Receipt v4
+    -- Payment Receipt v3
     UPDATE dops.ORBC_DOCUMENT_TEMPLATE
     SET IS_ACTIVE = 'N'
     WHERE TEMPLATE_NAME IN (
