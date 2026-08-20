@@ -515,4 +515,14 @@
 
 ### Version 108
 
-- Updates to Permit template documents
+- Updated permit template documents.
+- Impacted permit types:
+  - NRSCV
+  - NRQCV
+  - STOS
+  - TROW
+  - TROS
+  - MFP
+  - STFR
+  - QRFR
+- Updated the Payment Receipt template from v3 to v4.
