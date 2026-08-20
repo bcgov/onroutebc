@@ -570,7 +570,7 @@ BEGIN TRY
 
     DECLARE @VersionDescription VARCHAR(255);
 
-    SET @VersionDescription = 'Configure permit templates updates';
+    SET @VersionDescription = 'Global updates to permit and payment templates';
 
 
     INSERT INTO dbo.ORBC_SYS_VERSION
