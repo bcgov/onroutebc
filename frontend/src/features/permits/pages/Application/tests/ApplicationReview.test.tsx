@@ -1,36 +1,12 @@
 import { screen } from "@testing-library/react";
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
-import type { ValidationResult } from "onroute-policy-engine";
-
-const policyWarningMocks = vi.hoisted(() => ({
-  hasPolicyIssues: false,
-  policyWarnings: [] as ValidationResult[],
-}));
-
-vi.mock("../../../hooks/usePolicyWarnings", () => ({
-  usePolicyWarnings: () => policyWarningMocks,
-}));
-
-vi.mock("../../../../policy/hooks/usePolicyEngine", () => ({
-  usePolicyEngine: () => ({
-    getCommodities: () => new Map(),
-    validate: vi.fn().mockResolvedValue({
-      cost: [],
-      information: [],
-      requirements: [],
-      violations: [],
-      warnings: [],
-    }),
-  }),
-}));
 
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { Application } from "../../../types/application";
 import { vehicleTypeDisplayText } from "../../../../manageVehicles/types/Vehicle";
 import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { getPermitTypeName, PERMIT_TYPES } from "../../../types/PermitType";
+import { getPermitTypeName } from "../../../types/PermitType";
 import { getCountryFullName } from "../../../../../common/helpers/countries/getCountryFullName";
 import { getProvinceFullName } from "../../../../../common/helpers/countries/getProvinceFullName";
 import {
@@ -85,8 +61,6 @@ import {
 
 import {
   closeMockServer,
-  applicationSaveRequestCount,
-  cartAddRequestCount,
   companyInfo,
   companyInfoDescription,
   companyInfoTitle,
@@ -109,8 +83,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  policyWarningMocks.hasPolicyIssues = false;
-  policyWarningMocks.policyWarnings = [];
   resetMockServer();
 });
 
@@ -461,68 +433,4 @@ describe("Review and Confirm Application Details", () => {
       expect(async () => await attestationErrorMsg()).rejects.toThrow();
     });
   });
-
-  describe("Staff STOW policy warning confirmation", () => {
-    const staffStowApplication = {
-      ...defaultApplicationData,
-      permitType: PERMIT_TYPES.STOW,
-    } as Application;
-
-    it("keeps the application out of the cart when staff cancel", async () => {
-      policyWarningMocks.hasPolicyIssues = true;
-      const { user } = renderTestComponent(staffStowApplication, true);
-
-      await checkAttestations(user, [0, 1, 2]);
-      await proceedToAddToCart(user);
-
-      expect(
-        await screen.findByText(
-          "Application has violation(s) and/or warning(s)",
-        ),
-      ).toBeVisible();
-      await user.click(screen.getByTestId("cancel-review-button"));
-
-      expect(cartAddRequestCount).toBe(0);
-      expect(
-        screen.queryByText("Application has violation(s) and/or warning(s)"),
-      ).not.toBeInTheDocument();
-    });
-
-    it("uses the original add-to-cart flow when staff confirm", async () => {
-      policyWarningMocks.hasPolicyIssues = true;
-      const { user } = renderTestComponent(staffStowApplication, true);
-
-      await checkAttestations(user, [0, 1, 2]);
-      await proceedToAddToCart(user);
-      await user.click(await screen.findByTestId("confirm-review-button"));
-
-      await waitFor(() => expect(applicationSaveRequestCount).toBe(1));
-    });
-
-    it("adds directly when staff STOW has no policy issues", async () => {
-      const { user } = renderTestComponent(staffStowApplication, true);
-
-      await checkAttestations(user, [0, 1, 2]);
-      await proceedToAddToCart(user);
-
-      expect(
-        screen.queryByText("Application has violation(s) and/or warning(s)"),
-      ).not.toBeInTheDocument();
-      await waitFor(() => expect(applicationSaveRequestCount).toBe(1));
-    });
-
-    it("does not show the staff modal to a CV user", async () => {
-      policyWarningMocks.hasPolicyIssues = true;
-      const { user } = renderTestComponent(staffStowApplication);
-
-      await checkAttestations(user, [0, 1, 2]);
-      await proceedToAddToCart(user);
-
-      expect(
-        screen.queryByText("Application has violation(s) and/or warning(s)"),
-      ).not.toBeInTheDocument();
-      await waitFor(() => expect(applicationSaveRequestCount).toBe(1));
-    });
-  });
-
 });

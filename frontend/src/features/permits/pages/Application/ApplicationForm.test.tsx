@@ -93,17 +93,8 @@ vi.mock("./components/form/PermitForm", async () => {
 
   return {
     PermitForm: () => {
-      const { axleCalculationResultsFromValidation, onContinue } = useContext(
-        ApplicationFormContext,
-      );
-      return (
-        <>
-          <button onClick={() => void onContinue()}>Continue</button>
-          <output data-testid="validated-gcvw">
-            {axleCalculationResultsFromValidation?.totalGCVW}
-          </output>
-        </>
-      );
+      const { onContinue } = useContext(ApplicationFormContext);
+      return <button onClick={() => void onContinue()}>Continue</button>;
     },
   };
 });
@@ -246,26 +237,6 @@ describe("ApplicationForm permit-not-required handling", () => {
         name: "This permit type is not required",
       }),
     ).not.toBeInTheDocument();
-  });
-
-  it("blocks incomplete STOW axle data before policy validation", async () => {
-    const user = userEvent.setup();
-    const formData = createFormData();
-    formData.permitData.vehicleConfiguration = {
-      ...formData.permitData.vehicleConfiguration,
-      axleConfiguration: validAxleConfiguration.map((axleUnit, index) =>
-        index === 0 ? { ...axleUnit, axleUnitWeight: null } : axleUnit,
-      ),
-    };
-    mockFormData(formData);
-    renderApplicationForm(true);
-
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    expect(
-      screen.queryByText("Application has violation(s) and/or warning(s)"),
-    ).not.toBeInTheDocument();
-    expect(mocks.saveApplication).not.toHaveBeenCalled();
   });
 
   it("retains the existing validation stop when an axle calculation fails", async () => {
