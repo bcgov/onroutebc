@@ -7,6 +7,7 @@ import { ReplaceDayjsWithString } from "../types/utility";
 import { PermitData } from "../types/PermitData";
 import { doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { hasPolicyValidationIssues } from "../helpers/policy/hasPolicyValidationIssues";
 
 export const usePolicyWarnings = (
   permit: {
@@ -16,12 +17,16 @@ export const usePolicyWarnings = (
   policyEngine?: Nullable<Policy>,
 ) => {
   const [policyWarnings, setPolicyWarnings] = useState<ValidationResult[]>([]);
+  const [hasPolicyIssues, setHasPolicyIssues] = useState(false);
 
   useEffect(() => {
     const validate = async () => {
       if (policyEngine) {
-        const { warnings } = await policyEngine.validate(permit);
-        
+        const validationResults = await policyEngine.validate(permit);
+        const { warnings } = validationResults;
+
+        setHasPolicyIssues(hasPolicyValidationIssues(validationResults));
+
         // IMPORTANT: Since 'warnings' is an array of ValidationResult objects that will be returned and used
         // in other components, it's important to memoize it to avoid potential infinite render loops.
         // Warning arrays are assumed to contain unique objects (since there shouldn't be cases where
@@ -52,5 +57,5 @@ export const usePolicyWarnings = (
     validate();
   }, [permit, policyEngine]);
 
-  return { policyWarnings };
+  return { policyWarnings, hasPolicyIssues };
 };
