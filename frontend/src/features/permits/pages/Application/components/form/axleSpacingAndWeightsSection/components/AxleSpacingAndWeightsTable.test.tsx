@@ -440,4 +440,52 @@ describe("AxleSpacingAndWeightsTable", () => {
       screen.getByDisplayValue("12000").closest(".table__input"),
     ).toHaveClass("table__input--fail");
   });
+
+  it("displays axle values without editable controls in read-only mode", () => {
+    const { container } = render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map()}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={vi.fn()}
+        combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
+        readOnly={true}
+      />,
+    );
+
+    expect(
+      container.querySelector(".axle-spacing-and-weights-table"),
+    ).toHaveClass("axle-spacing-and-weights-table--read-only");
+    expect(screen.getByDisplayValue("6700")).toBeDisabled();
+    expect(screen.getByDisplayValue("12000")).toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: "Calculate" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Reset" }),
+    ).not.toBeInTheDocument();
+  });
 });

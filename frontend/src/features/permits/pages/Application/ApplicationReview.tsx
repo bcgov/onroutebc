@@ -50,7 +50,6 @@ import { PERMIT_ACTION_ORIGINS } from "../../types/PermitActionOrigin";
 import { PERMIT_TABS } from "../../types/PermitTabs";
 import { usePolicyWarnings } from "../../hooks/usePolicyWarnings";
 import { PermitReviewConfirmWarningDialog } from "../../components/dialog/PermitReviewConfirmWarningDialog";
-import { useTireSizeOptions } from "../../hooks/useTireSizeOptions";
 
 export const ApplicationReview = ({
   applicationStepContext,
@@ -101,11 +100,8 @@ export const ApplicationReview = ({
     policyEngine,
   );
 
-  const { policyWarnings, hasPolicyIssues, axleCalculationResults } =
-    usePolicyWarnings(serializedPermit, policyEngine, {
-      includeAxleCalculationResults: true,
-    });
-  const { tireSizeOptions } = useTireSizeOptions(policyEngine);
+  const { policyWarnings, hasPolicyIssues } =
+    usePolicyWarnings(serializedPermit, policyEngine);
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -483,8 +479,6 @@ export const ApplicationReview = ({
           companyId={companyId}
           icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
           policyWarnings={policyWarnings}
-          axleCalculationResults={axleCalculationResults}
-          tireSizeOptions={tireSizeOptions}
         />
       </FormProvider>
 

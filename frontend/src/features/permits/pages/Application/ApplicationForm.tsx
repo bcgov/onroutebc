@@ -67,8 +67,6 @@ import { PERMIT_TABS } from "../../types/PermitTabs";
 import { AxleCalculationResult } from "../../types/AxleCalculationResult";
 import { isStowPermitRequired } from "../../helpers/policy/isStowPermitRequired";
 import { PermitNotRequiredModal } from "./components/form/PermitNotRequiredModal";
-import { PermitReviewConfirmWarningDialog } from "../../components/dialog/PermitReviewConfirmWarningDialog";
-import { hasPolicyValidationIssues } from "../../helpers/policy/hasPolicyValidationIssues";
 import {
   mergeInteraxleSpacing,
   validateAxleConfiguration,
@@ -171,10 +169,6 @@ export const ApplicationForm = ({
     useState<boolean>(false);
   const [showPermitNotRequiredModal, setShowPermitNotRequiredModal] =
     useState<boolean>(false);
-  const [showConfirmWarningModal, setShowConfirmWarningModal] =
-    useState<boolean>(false);
-  const [pendingFormData, setPendingFormData] =
-    useState<Nullable<ApplicationFormData>>(null);
 
   const { handleSubmit } = formMethods;
 
@@ -247,15 +241,7 @@ export const ApplicationForm = ({
       : policyViolations;
 
     setPolicyViolations(updatedViolations);
-    return {
-      updatedViolations,
-      axleCalculationResults,
-      hasPolicyIssues: hasPolicyValidationIssues({
-        warnings: validationResults?.warnings,
-        violations: validationResults?.violations,
-        axleCalculationResults,
-      }),
-    };
+    return { updatedViolations, axleCalculationResults };
   };
 
   const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
@@ -283,39 +269,6 @@ export const ApplicationForm = ({
     );
   };
 
-  const continueToReview = async (data: ApplicationFormData) => {
-    const vehicleData = serializePermitVehicleDetails(
-      data.permitData.vehicleDetails,
-    );
-
-    const savedVehicleDetails = await handleSaveVehicle(vehicleData);
-
-    await onSaveApplication((permitId) => {
-      if (isQueueContext) {
-        return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
-      }
-
-      return navigate(
-        APPLICATIONS_ROUTES.REVIEW(
-          permitId,
-          isInitCopyContext || isCopiedApplication,
-          copyPermitOrigin,
-        ),
-      );
-    }, savedVehicleDetails);
-  };
-
-  const handleCloseConfirmWarningModal = () => {
-    setShowConfirmWarningModal(false);
-    setPendingFormData(null);
-  };
-
-  const handleConfirmPolicyIssues = () => {
-    if (pendingFormData) {
-      void continueToReview(pendingFormData);
-    }
-  };
-
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
     const permitType = data.permitType;
@@ -333,7 +286,7 @@ export const ApplicationForm = ({
       return;
     }
 
-    const { updatedViolations, axleCalculationResults, hasPolicyIssues } =
+    const { updatedViolations, axleCalculationResults } =
       await triggerPolicyValidation();
 
     if (
@@ -367,13 +320,26 @@ export const ApplicationForm = ({
       return;
     }
 
-    if (isStaffUser && permitType === PERMIT_TYPES.STOW && hasPolicyIssues) {
-      setPendingFormData(data);
-      setShowConfirmWarningModal(true);
-      return;
-    }
+    const vehicleData = serializePermitVehicleDetails(
+      data.permitData.vehicleDetails,
+    );
 
-    await continueToReview(data);
+    const savedVehicleDetails = await handleSaveVehicle(vehicleData);
+
+    // Save application before continuing
+    await onSaveApplication((permitId) => {
+      if (isQueueContext) {
+        return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
+      }
+
+      return navigate(
+        APPLICATIONS_ROUTES.REVIEW(
+          permitId,
+          isInitCopyContext || isCopiedApplication,
+          copyPermitOrigin,
+        ),
+      );
+    }, savedVehicleDetails);
   };
 
   const onSaveSuccess = (savedApplication: Application, status: number) => {
@@ -621,17 +587,6 @@ export const ApplicationForm = ({
         isOpen={showPermitNotRequiredModal}
         onClose={() => setShowPermitNotRequiredModal(false)}
       />
-
-      {showConfirmWarningModal ? (
-        <PermitReviewConfirmWarningDialog
-          showModal={showConfirmWarningModal}
-          isAmend={false}
-          actionText="continue to review and confirm"
-          confirmButtonText="Continue"
-          onCancel={handleCloseConfirmWarningModal}
-          onConfirm={handleConfirmPolicyIssues}
-        />
-      ) : null}
 
       {showUnavailableApplicationModal && (
         <UnavailableApplicationModal
