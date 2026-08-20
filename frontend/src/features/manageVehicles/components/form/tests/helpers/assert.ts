@@ -1,4 +1,9 @@
-import { VEHICLE_TYPES, VehicleType } from "../../../../types/Vehicle";
+import {
+  VEHICLE_TYPES,
+  VehicleSubType,
+  VehicleType,
+} from "../../../../types/Vehicle";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import {
   PowerUnitDetail,
   VehicleFormDetail,
@@ -15,6 +20,23 @@ import {
   vinInput,
   yearInput,
 } from "./access";
+
+export const assertVehicleSubtypesSorted = (
+  subtypeOptions: HTMLElement[],
+  sourceSubtypes: VehicleSubType[],
+) => {
+  const sourceLabels = sourceSubtypes.map(({ type }) => type);
+  const sortedLabels = [...sourceLabels].sort((label1, label2) =>
+    label1.localeCompare(label2),
+  );
+  const renderedLabels = subtypeOptions.map(({ textContent }) =>
+    getDefaultRequiredVal("", textContent),
+  );
+
+  // Ensure the fixture would expose the absence of sorting in the form.
+  expect(sourceLabels).not.toEqual(sortedLabels);
+  expect(renderedLabels).toEqual(sortedLabels);
+};
 
 export const assertSuccessfulSubmit = async (
   vehicleType: VehicleType,

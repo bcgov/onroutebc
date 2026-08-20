@@ -1,6 +1,10 @@
+import { screen } from "@testing-library/react";
 import { vi } from "vitest";
 
-import { assertSuccessfulSubmit } from "./helpers/assert";
+import {
+  assertSuccessfulSubmit,
+  assertVehicleSubtypesSorted,
+} from "./helpers/assert";
 import {
   actionButtons,
   chooseOption,
@@ -31,7 +35,7 @@ import {
 import { VEHICLE_TYPES } from "../../../types/Vehicle";
 
 beforeAll(() => {
-  sessionStorage.setItem('onRouteBC.user.companyId', "74");
+  sessionStorage.setItem("onRouteBC.user.companyId", "74");
   listenToMockServer();
 });
 
@@ -88,6 +92,19 @@ describe("All Trailer Form Fields", () => {
 });
 
 describe("Trailer Form Submission", () => {
+  it("should sort trailer subtypes alphabetically", async () => {
+    // Arrange
+    const { user } = renderTestTrailerForm();
+
+    // Act
+    const subtypeSelect = await trailerTypeCodeSelect();
+    await user.click(subtypeSelect);
+    const subtypeOptions = await screen.findAllByRole("option");
+
+    // Assert
+    assertVehicleSubtypesSorted(subtypeOptions, defaultTrailerSubtypes);
+  });
+
   it("should return a list of trailer types", async () => {
     // Arrange
     const { user } = renderTestTrailerForm();
