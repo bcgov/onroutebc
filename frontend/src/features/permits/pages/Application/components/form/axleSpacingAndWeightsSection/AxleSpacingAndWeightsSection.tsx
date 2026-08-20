@@ -61,8 +61,8 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleConfiguration[];
-  onUpdatePowerUnitAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration?: (
+  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;

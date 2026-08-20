@@ -94,8 +94,8 @@ export const AxleSpacingAndWeightsTable = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleUnit[];
-  onUpdatePowerUnitAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration?: (
+  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
@@ -434,10 +434,10 @@ export const AxleSpacingAndWeightsTable = ({
   };
 
   const handleReset = () => {
-    onUpdatePowerUnitAxleConfiguration?.(DEFAULT_POWER_UNIT_AXLE_CONFIG);
+    onUpdatePowerUnitAxleConfiguration(DEFAULT_POWER_UNIT_AXLE_CONFIG);
     trailers.forEach((trailer, trailerIndex) => {
       if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
-        onUpdateTrailerAxleConfiguration?.(
+        onUpdateTrailerAxleConfiguration(
           trailerIndex,
           DEFAULT_TRAILER_AXLE_CONFIG,
         );
@@ -516,9 +516,7 @@ export const AxleSpacingAndWeightsTable = ({
               )}
               axleUnitNumber={0}
               isTrailer={false}
-              onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                onUpdatePowerUnitAxleConfiguration?.(axleConfiguration)
-              }
+              onUpdateAxleConfiguration={onUpdatePowerUnitAxleConfiguration}
               tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
               axleCalculationFailures={getAxleCalculationFailures(
                 powerUnitAxleConfiguration,
@@ -544,7 +542,7 @@ export const AxleSpacingAndWeightsTable = ({
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
                   onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                    onUpdateTrailerAxleConfiguration?.(
+                    onUpdateTrailerAxleConfiguration(
                       trailerIndex,
                       axleConfiguration,
                     )
