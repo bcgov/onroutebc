@@ -320,7 +320,7 @@ GO
 
 DECLARE @VersionDescription VARCHAR(255)
 
-SET @VersionDescription = 'Revert permit templates with common footer changes'
+SET @VersionDescription = 'Revert global template updates to permit and payment templates'
 
 
 INSERT [dbo].[ORBC_SYS_VERSION] (
