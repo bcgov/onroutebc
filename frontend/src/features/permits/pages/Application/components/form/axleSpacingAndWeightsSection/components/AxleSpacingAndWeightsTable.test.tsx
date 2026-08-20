@@ -479,6 +479,9 @@ describe("AxleSpacingAndWeightsTable", () => {
     expect(
       container.querySelector(".axle-spacing-and-weights-table"),
     ).toHaveClass("axle-spacing-and-weights-table--read-only");
+    expect(
+      container.querySelector(".table__input-popup-indicator"),
+    ).toBeInTheDocument();
     expect(screen.getByDisplayValue("6700")).toBeDisabled();
     expect(screen.getByDisplayValue("12000")).toBeDisabled();
     expect(

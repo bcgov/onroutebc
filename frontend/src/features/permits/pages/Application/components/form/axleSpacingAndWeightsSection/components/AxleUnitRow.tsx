@@ -256,6 +256,9 @@ export const AxleUnitRow = ({
                     root: "table__input-container",
                   }}
                   autocompleteProps={{
+                    classes: {
+                      popupIndicator: "table__input-popup-indicator",
+                    },
                     className: "table__input table__input--tire-size",
                     clearIcon: null,
                     disabled: readOnly,

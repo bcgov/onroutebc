@@ -10,25 +10,22 @@
       cursor: default;
 
       fieldset,
-      .MuiOutlinedInput-notchedOutline,
       &:hover fieldset,
-      &:hover .MuiOutlinedInput-notchedOutline,
       &.table__input--fail fieldset,
-      &.table__input--fail .MuiOutlinedInput-notchedOutline,
-      &.table__input--fail:hover fieldset,
-      &.table__input--fail:hover .MuiOutlinedInput-notchedOutline {
+      &.table__input--fail:hover fieldset {
         background-color: transparent;
         border: 0;
       }
 
-      .MuiInputBase-input.Mui-disabled {
+      &.number-input__input--disabled input,
+      .autocomplete__input:disabled {
         color: $bc-black;
         cursor: default;
         opacity: 1;
         -webkit-text-fill-color: $bc-black;
       }
 
-      .MuiAutocomplete-popupIndicator {
+      .table__input-popup-indicator {
         display: none;
       }
     }

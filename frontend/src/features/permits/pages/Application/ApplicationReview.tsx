@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { isAxiosError } from "axios";
@@ -82,15 +82,12 @@ export const ApplicationReview = ({
   );
 
   const policyEngine = usePolicyEngine(specialAuth);
-  const serializedPermit = useMemo(
-    () => ({
-      permitType,
-      permitData: applicationData?.permitData
-        ? serializePermitData(applicationData.permitData)
-        : {},
-    }),
-    [applicationData?.permitData, permitType],
-  );
+  const serializedPermit = {
+    permitType,
+    permitData: applicationData?.permitData
+      ? serializePermitData(applicationData.permitData)
+      : {},
+  };
 
   const {
     totalCost,
