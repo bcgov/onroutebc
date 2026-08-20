@@ -12,7 +12,11 @@
       fieldset,
       .MuiOutlinedInput-notchedOutline,
       &:hover fieldset,
-      &:hover .MuiOutlinedInput-notchedOutline {
+      &:hover .MuiOutlinedInput-notchedOutline,
+      &.table__input--fail fieldset,
+      &.table__input--fail .MuiOutlinedInput-notchedOutline,
+      &.table__input--fail:hover fieldset,
+      &.table__input--fail:hover .MuiOutlinedInput-notchedOutline {
         background-color: transparent;
         border: 0;
       }
