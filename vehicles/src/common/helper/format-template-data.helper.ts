@@ -17,6 +17,7 @@ import {
 } from '../constants/api.constant';
 import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 import { EMPTY_VALUE } from '../constants/template.constant';
+import { PermitType } from '../enum/permit-type.enum';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -53,14 +54,19 @@ export const formatTemplateData = (
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
-  template.overloadVW =
-    (template.permitData?.vehicleConfiguration?.actualGVW ?? 0) -
-    (template.permitData?.vehicleDetails?.licensedGVW ?? 0);
-
   // Format Permit information
   template.permitName = fullNames.permitName;
   template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
+  template.overloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
+    ? (
+      (template.permitData?.vehicleConfiguration?.actualGVW ?? 0) -
+      (template.permitData?.vehicleDetails?.licensedGVW ?? 0)
+    ) : permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+    ? (
+      template.permitData?.vehicleConfiguration?.overloadWeight ?? 0
+    ) : 0;
+  
   template.issuedBy =
     permit.permitIssuedBy === PermitIssuedBy.SELF_ISSUED
       ? constants.SELF_ISSUED

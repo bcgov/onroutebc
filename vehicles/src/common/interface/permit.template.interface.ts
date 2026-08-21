@@ -92,6 +92,7 @@ interface VehicleConfiguration {
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleConfiguration[]>;
   vehicleDisplayCode?: Nullable<string>;
+  overloadWeight?: Nullable<number>;
 }
 
 interface PermittedRoute {

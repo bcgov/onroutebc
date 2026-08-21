@@ -18,14 +18,16 @@ const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
-    VITE_KEYCLOAK_ISSUER_URL: "",
-    VITE_KEYCLOAK_AUDIENCE: "",
-    VITE_SITEMINDER_LOG_OFF_URL: "",
-    VITE_POLICY_URL: "",
+    VITE_KEYCLOAK_ISSUER_URL: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+    VITE_KEYCLOAK_AUDIENCE: "on-route-bc-direct-4598",
+    //VITE_KEYCLOAK_AUDIENCE: "on-route-bc-direct-no-basic-5862",
+    VITE_SITEMINDER_LOG_OFF_URL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+    VITE_FRONTEND_PR_NUM: "",
+    VITE_POLICY_URL: "http://localhost:5002",
     VITE_RELEASE_NUM: "",
-    VITE_BC_GEOCODER_CLIENT_ID: "",
-    VITE_BC_GEOCODER_API_KEY: "",
-    VITE_BC_GEOCODER_API_URL: "",
+    VITE_BC_GEOCODER_CLIENT_ID: "F7453A91-B26135167A0",
+    VITE_BC_GEOCODER_API_KEY: "FQCorfltG9Cez1qXT6vWuQAzuLVQnYUL",
+    VITE_BC_GEOCODER_API_URL: "https://geocoder.api.gov.bc.ca/addresses.json",
     VITE_PUBLIC_API_URL: "",
   };
 })();
