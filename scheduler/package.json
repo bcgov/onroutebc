@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/bcgov/onroutebc#readme",
   "dependencies": {
-    "@automapper/classes": "^8.8.1",
+    "@automapper/classes": "^9.0.0",
     "@aws-sdk/client-s3": "^3.1003.0",
     "@aws-sdk/lib-storage": "^3.1003.0",
     "@aws-sdk/s3-request-presigner": "^3.1003.0",
@@ -74,21 +74,21 @@
     "rxjs": "^7.8.2",
     "ssh2-sftp-client": "^12.1.0",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.28",
+    "typeorm": "^1.0.0",
     "typescript-eslint": "^8.56.1",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@golevelup/ts-jest": "^1.2.1",
+    "@golevelup/ts-jest": "^3.0.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",
-    "@types/node": "^22.17.0",
+    "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^7.2.0",
     "@types/uuid": "^11.0.0",
-    "eslint": "^9.32.0",
+    "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^11.1.0",
@@ -98,7 +98,7 @@
     "jest": "^30.2.0",
     "jest-badges": "^0.1.3",
     "jest-sonar-reporter": "^2.0.0",
-    "lint-staged": "^16.3.2",
+    "lint-staged": "^17.0.0",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.3",
     "source-map-support": "^0.5.21",
@@ -107,7 +107,7 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
