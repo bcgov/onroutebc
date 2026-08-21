@@ -97,7 +97,8 @@ export const ApplicationReview = ({
     policyEngine,
   );
 
-  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
+  const { policyWarnings, hasPolicyIssues } =
+    usePolicyWarnings(serializedPermit, policyEngine);
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -277,7 +278,13 @@ export const ApplicationReview = ({
   };
 
   const handleClickAddToCart = async () => {
-    if (permitType === PERMIT_TYPES.STWSE && isStaffUser && policyWarnings.length > 0) {
+    if (
+      isStaffUser
+      && (
+        (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0)
+        || (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+      )
+    ) {
       setShowConfirmWarningModal(true);
     } else {
       await handleAddToCart();

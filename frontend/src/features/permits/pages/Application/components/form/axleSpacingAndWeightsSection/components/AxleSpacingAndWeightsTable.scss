@@ -1,6 +1,36 @@
 @import "../../../../../../../../themes/orbcStyles";
 
 .axle-spacing-and-weights-table {
+  &--read-only {
+    .table__input-container {
+      pointer-events: none;
+    }
+
+    .table__input {
+      cursor: default;
+
+      fieldset,
+      &:hover fieldset,
+      &.table__input--fail fieldset,
+      &.table__input--fail:hover fieldset {
+        background-color: transparent;
+        border: 0;
+      }
+
+      &.number-input__input--disabled input,
+      .autocomplete__input:disabled {
+        color: $bc-black;
+        cursor: default;
+        opacity: 1;
+        -webkit-text-fill-color: $bc-black;
+      }
+
+      .table__input-popup-indicator {
+        display: none;
+      }
+    }
+  }
+
   .table-container {
     margin-top: 1.5rem;
     padding: 0;

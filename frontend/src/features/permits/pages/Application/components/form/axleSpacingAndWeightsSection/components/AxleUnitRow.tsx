@@ -25,6 +25,7 @@ export const AxleUnitRow = ({
   tireSizeOptions = [],
   axleCalculationFailures = [],
   canAddAxleUnits,
+  readOnly = false,
 }: {
   axleConfiguration: AxleUnit[];
   label: Nullable<string>;
@@ -37,6 +38,7 @@ export const AxleUnitRow = ({
   }[];
   axleCalculationFailures?: Array<Partial<Record<PolicyCheckIdType, boolean>>>;
   canAddAxleUnits?: boolean;
+  readOnly?: boolean;
 }) => {
   const updateAxleUnit = (
     axleIndex: number,
@@ -151,7 +153,7 @@ export const AxleUnitRow = ({
                 <div className="row__label-content">
                   <span>{axleUnitNumberDisplay}</span>
 
-                  {isLastAxleUnitRow && canAddAxleUnits ? (
+                  {!readOnly && isLastAxleUnitRow && canAddAxleUnits ? (
                     <div className="row__actions">
                       <Tooltip title="Add Axle Unit">
                         <IconButton
@@ -193,6 +195,8 @@ export const AxleUnitRow = ({
                       hasNumberOfAxlesFailure ? "table__input--fail" : ""
                     }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
+                    readOnly,
+                    disabled: readOnly,
                     onBlur: ({ target: { value } }) => {
                       const updatedNumberOfAxles = convertToNumberIfValid(
                         value,
@@ -236,6 +240,8 @@ export const AxleUnitRow = ({
                         : ""
                     }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
+                    readOnly,
+                    disabled: readOnly,
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
                         index,
@@ -255,8 +261,12 @@ export const AxleUnitRow = ({
                     root: "table__input-container",
                   }}
                   autocompleteProps={{
+                    classes: {
+                      popupIndicator: "table__input-popup-indicator",
+                    },
                     className: "table__input table__input--tire-size",
                     clearIcon: null,
+                    disabled: readOnly,
                     options: tireSizeOptions,
                     value: getDefaultRequiredVal(
                       DEFAULT_TIRE_SIZE_OPTION,
@@ -290,6 +300,8 @@ export const AxleUnitRow = ({
                       null,
                       axleUnit?.interaxleSpacing,
                     ),
+                    readOnly,
+                    disabled: readOnly,
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
                         index,
@@ -318,8 +330,8 @@ export const AxleUnitRow = ({
                         convertToNumberIfValid(value, null),
                       );
                     },
-                    readOnly: disableAxleSpread,
-                    disabled: disableAxleSpread,
+                    readOnly: readOnly || disableAxleSpread,
+                    disabled: readOnly || disableAxleSpread,
                     maskFn: (numericVal) => numericVal.toFixed(2),
                   }}
                 />
@@ -337,6 +349,8 @@ export const AxleUnitRow = ({
                       null,
                       axleUnit?.axleUnitWeight,
                     ),
+                    readOnly,
+                    disabled: readOnly,
                     onBlur: ({ target: { value } }) => {
                       updateAxleUnit(
                         index,
