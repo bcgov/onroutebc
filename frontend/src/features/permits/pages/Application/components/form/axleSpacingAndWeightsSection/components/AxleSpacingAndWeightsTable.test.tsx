@@ -4,7 +4,7 @@ import { vi } from "vitest";
 import { PERMIT_TYPES } from "../../../../../../types/PermitType";
 import { AxleConfiguration, AxleUnit } from "../../../../../../types/AxleUnit";
 import { POLICY_CHECK_ID_TYPES } from "../../../../../../types/AxleCalculationResult";
-import { AxleSpacingAndWeightsTable } from "./AxleSpacingAndWeightsTable";
+import { AxleSpacingAndWeights } from "./AxleSpacingAndWeights";
 
 const loadEqualizationMessage =
   "Axle Unit 2 and Axle Unit 3 must be load equalized within 1000 kg.";
@@ -85,10 +85,10 @@ beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = vi.fn();
 });
 
-describe("AxleSpacingAndWeightsTable", () => {
+describe("AxleSpacingAndWeights", () => {
   it("displays and highlights validate-provided axle calculation failures", async () => {
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -124,7 +124,17 @@ describe("AxleSpacingAndWeightsTable", () => {
             },
           ],
           totalGCVW: 29699,
-          overload: 0,
+          overload: 100,
+          overloadDetails: [
+            {
+              kind: "axle-weight",
+              startAxleUnit: 2,
+              endAxleUnit: 2,
+              actualWeight: 12000,
+              legalMaxWeight: 11900,
+              overload: 100,
+            },
+          ],
         }}
         tireSizeOptions={[
           { name: "330", size: 330 },
@@ -141,6 +151,12 @@ describe("AxleSpacingAndWeightsTable", () => {
     expect(await screen.findByText(loadEqualizationMessage)).toHaveClass(
       "results__text--fail",
     );
+    expect(
+      screen.getByRole("button", { name: "Overload Details" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Actual (kg)" }),
+    ).toBeVisible();
     expect(
       screen.queryByText("This permit type is not required."),
     ).not.toBeInTheDocument();
@@ -171,7 +187,7 @@ describe("AxleSpacingAndWeightsTable", () => {
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -250,7 +266,7 @@ describe("AxleSpacingAndWeightsTable", () => {
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -474,7 +490,7 @@ describe("AxleSpacingAndWeightsTable", () => {
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -539,7 +555,7 @@ describe("AxleSpacingAndWeightsTable", () => {
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={
           new Map([["PICKRTT", "Picker Truck Tractor"]])
@@ -588,7 +604,7 @@ describe("AxleSpacingAndWeightsTable", () => {
 
   it("displays axle values without editable controls in read-only mode", () => {
     const { container } = render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeights
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{

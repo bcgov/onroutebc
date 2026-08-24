@@ -1,0 +1,34 @@
+@use "../../../../../../../../themes/orbcStyles";
+
+.axle-spacing-and-weights-results {
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__item {
+    padding: 1rem 0;
+    border-bottom: 1px solid orbcStyles.$bc-border-grey;
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  &__text {
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &--fail {
+      color: orbcStyles.$bc-red;
+    }
+
+    &--success {
+      padding: 0.5rem 0;
+      color: orbcStyles.$bc-black;
+      font-weight: bold;
+    }
+  }
+}

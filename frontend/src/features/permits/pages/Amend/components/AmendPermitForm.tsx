@@ -172,7 +172,7 @@ export const AmendPermitForm = () => {
     );
 
     const axleCalculationResults = getDefaultRequiredVal(
-      { results: [], overload: 0, totalGCVW: 0 },
+      { results: [], overload: 0, overloadDetails: [], totalGCVW: 0 },
       validationResults?.axleCalculationResults,
     );
 

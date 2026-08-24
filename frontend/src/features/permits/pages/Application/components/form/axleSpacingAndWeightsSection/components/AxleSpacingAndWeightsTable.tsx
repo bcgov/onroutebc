@@ -13,7 +13,6 @@ import {
 import { isTrailerSubtypeNone } from "../../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { Button } from "@mui/material";
-import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { AxleUnitResetModal } from "./AxleUnitResetModal";
 import { PermitType } from "../../../../../../types/PermitType";
 import {
@@ -34,36 +33,13 @@ import {
   DEFAULT_POWER_UNIT_AXLE_CONFIG,
   DEFAULT_TRAILER_AXLE_CONFIG,
 } from "../../../../../../constants/constants";
-import { PermitNotRequiredBanner } from "./PermitNotRequiredBanner";
 import {
   ASW_TABLE_ROW_TYPES,
   ASWTableRowType,
 } from "../../../../../../types/ASWTableRowType";
-import { WarningBanner } from "./WarningBanner";
-import { CustomExternalLink } from "../../../../../../../../common/components/links/CustomExternalLink";
-import {
-  CTPM_CHAPTER_5_TITLE,
-  ONROUTE_WEBPAGE_LINKS,
-} from "../../../../../../../../routes/constants";
+import { DISPLAYABLE_POLICY_CHECK_IDS } from "./displayablePolicyCheckIds";
 
-export const AxleSpacingAndWeightsTable = ({
-  permitType,
-  selectedCommodityType,
-  powerUnitSubtypeNamesMap,
-  vehicleFormData,
-  trailerSubtypeNamesMap,
-  vehicleConfiguration,
-  axleCalculationResultsFromValidation,
-  tireSizeOptions,
-  runAxleCalculation,
-  canAddAxleUnitsToPowerUnit,
-  canAddAxleUnitsToTrailer,
-  combineAxleConfigurations,
-  onUpdatePowerUnitAxleConfiguration,
-  onUpdateTrailerAxleConfiguration,
-  showASWRequiredFieldsBanner,
-  readOnly = false,
-}: {
+export type AxleSpacingAndWeightsTableProps = {
   permitType: PermitType;
   selectedCommodityType?: Nullable<string>;
   powerUnitSubtypeNamesMap: Map<string, string>;
@@ -99,9 +75,34 @@ export const AxleSpacingAndWeightsTable = ({
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
+  onAxleCalculationResultsChange: (
+    axleCalculationResults?: AxleCalculationResult,
+  ) => void;
+  onValidationBannerChange: (showValidationBanner: boolean) => void;
   showASWRequiredFieldsBanner: boolean;
   readOnly?: boolean;
-}) => {
+};
+
+export const AxleSpacingAndWeightsTable = ({
+  permitType,
+  selectedCommodityType,
+  powerUnitSubtypeNamesMap,
+  vehicleFormData,
+  trailerSubtypeNamesMap,
+  vehicleConfiguration,
+  axleCalculationResultsFromValidation,
+  tireSizeOptions,
+  runAxleCalculation,
+  canAddAxleUnitsToPowerUnit,
+  canAddAxleUnitsToTrailer,
+  combineAxleConfigurations,
+  onUpdatePowerUnitAxleConfiguration,
+  onUpdateTrailerAxleConfiguration,
+  onAxleCalculationResultsChange,
+  onValidationBannerChange,
+  showASWRequiredFieldsBanner,
+  readOnly = false,
+}: AxleSpacingAndWeightsTableProps) => {
   const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
 
@@ -132,19 +133,11 @@ export const AxleSpacingAndWeightsTable = ({
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
-  const [showValidationBanner, setShowValidationBanner] = useState<boolean>(
-    showASWRequiredFieldsBanner,
-  );
-  const [GCVW, setGCVW] = useState<number>();
-  const [overload, setOverload] = useState<number>();
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
 
   useEffect(() => {
     if (axleCalculationResultsFromValidation) {
-      setShowValidationBanner(false);
-      setGCVW(axleCalculationResultsFromValidation.totalGCVW);
-      setOverload(axleCalculationResultsFromValidation.overload);
       setAxleCalculationResults(axleCalculationResultsFromValidation);
 
       // Scroll to table if new validation results are different from current
@@ -160,56 +153,18 @@ export const AxleSpacingAndWeightsTable = ({
   useEffect(() => {
     if (showASWRequiredFieldsBanner) {
       // Scroll to table if required fields are missing
-      setShowValidationBanner(showASWRequiredFieldsBanner);
       ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [showASWRequiredFieldsBanner]);
 
-  // Since we are not yet handling all evaluations returned from the policyEngine.runAxleCalculation(), this set allows us to filter the results to only those we have implemented.
-  const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
-    POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
-    POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT,
-    POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
-    POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION,
-    POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD,
-    POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING,
-    POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT,
-    POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT,
-    POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT,
-    POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT,
-    POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES,
-    POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE,
-    POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD,
-    POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT,
-    POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
-    POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS,
-  ]);
-
   const failedAxleCalculationResults = axleCalculationResults?.results.filter(
     (result) =>
       result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
-      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
+      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id as PolicyCheckIdType),
   );
-
-  const hasAxleCalculationFailures = Boolean(
-    failedAxleCalculationResults?.length,
-  );
-
-  const warningAxleCalculationResults = axleCalculationResults?.results.filter(
-    (result) =>
-      result.result === POLICY_CHECK_RESULT_TYPES.WARNING &&
-      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id),
-  );
-
-  const hasAxleCalculationWarnings = Boolean(
-    warningAxleCalculationResults?.length,
-  );
-
-  const shouldShowResultsSection =
-    showValidationBanner || Boolean(axleCalculationResults);
 
   const handleCalculate = () => {
-    setShowValidationBanner(false);
+    onValidationBannerChange(false);
 
     // Merge all axle configurations from power unit and trailers
     const mergedPowerUnit = mergeInteraxleSpacing(
@@ -245,7 +200,8 @@ export const AxleSpacingAndWeightsTable = ({
       !validateAxleConfiguration(trailerAxleConfigurationData)
     ) {
       setAxleCalculationResults(undefined);
-      setShowValidationBanner(true);
+      onAxleCalculationResultsChange(undefined);
+      onValidationBannerChange(true);
       return;
     }
 
@@ -277,8 +233,7 @@ export const AxleSpacingAndWeightsTable = ({
 
     if (axleCalculationResults) {
       setAxleCalculationResults(axleCalculationResults);
-      setGCVW(axleCalculationResults.totalGCVW);
-      setOverload(axleCalculationResults.overload);
+      onAxleCalculationResultsChange(axleCalculationResults);
     }
   };
 
@@ -468,18 +423,11 @@ export const AxleSpacingAndWeightsTable = ({
       }
     });
 
-    setShowValidationBanner(false);
-    setGCVW(undefined);
     setAxleCalculationResults(undefined);
+    onAxleCalculationResultsChange(undefined);
+    onValidationBannerChange(false);
     setIsResetModalOpen(false);
   };
-
-  const isReferencingCTPMChapter5 = (message: string) => {
-    return message.toLowerCase().includes(CTPM_CHAPTER_5_TITLE.toLowerCase());
-  };
-
-  const showPermitNotRequiredBanner =
-    !hasAxleCalculationFailures && Number(overload) === 0;
 
   return (
     <div
@@ -614,90 +562,6 @@ export const AxleSpacingAndWeightsTable = ({
           </Button>
         </div>
       ) : null}
-      {shouldShowResultsSection && (
-        <div className="results">
-          {showValidationBanner ? (
-            <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
-          ) : (
-            <div className="results__list">
-              {GCVW && !isNaN(GCVW) && Number(GCVW) >= 0 ? (
-                <span className="list__item">
-                  <strong>Total GCVW (kg):</strong> {GCVW}
-                </span>
-              ) : null}
-              {Number(overload) >= 0 ? (
-                <span className="list__item">
-                  <strong>Overload (kg):</strong> {overload}
-                </span>
-              ) : null}
-              <span className="list__item">
-                <strong>Violation(s): </strong>
-                {hasAxleCalculationFailures
-                  ? getDefaultRequiredVal([], failedAxleCalculationResults).map(
-                      (failedResult, index) => (
-                        <div key={`axle-calc-fail-${index}`}>
-                          {isReferencingCTPMChapter5(failedResult.message) ? (
-                            <p className="results__text results__text--fail">
-                              {failedResult.message.replace(
-                                CTPM_CHAPTER_5_TITLE,
-                                "",
-                              )}
-                              <CustomExternalLink
-                                href={ONROUTE_WEBPAGE_LINKS.CTPM_CHAPTER_5}
-                                className="warning-banner__text--link"
-                                openInNewTab={true}
-                              >
-                                {CTPM_CHAPTER_5_TITLE}
-                              </CustomExternalLink>
-                            </p>
-                          ) : (
-                            <p className="results__text results__text--fail">
-                              {failedResult.message}
-                            </p>
-                          )}
-                        </div>
-                      ),
-                    )
-                  : "None"}
-              </span>
-              {hasAxleCalculationWarnings ? (
-                getDefaultRequiredVal([], warningAxleCalculationResults).map(
-                  (warningResult, index) => (
-                    <WarningBanner
-                      key={index}
-                      content={
-                        isReferencingCTPMChapter5(warningResult.message) ? (
-                          <>
-                            {warningResult.message.replace(
-                              CTPM_CHAPTER_5_TITLE,
-                              "",
-                            )}
-                            <CustomExternalLink
-                              href={ONROUTE_WEBPAGE_LINKS.CTPM_CHAPTER_5}
-                              openInNewTab={true}
-                            >
-                              {CTPM_CHAPTER_5_TITLE}
-                            </CustomExternalLink>
-                          </>
-                        ) : (
-                          <>{warningResult.message}</>
-                        )
-                      }
-                    />
-                  ),
-                )
-              ) : showPermitNotRequiredBanner ? (
-                <>
-                  <p className="results__text--success">
-                    This permit type is not required.
-                  </p>
-                  <PermitNotRequiredBanner />
-                </>
-              ) : null}
-            </div>
-          )}
-        </div>
-      )}
       <AxleUnitHelpModal
         isOpen={isHelpModalOpen}
         onCancel={() => setIsHelpModalOpen(false)}

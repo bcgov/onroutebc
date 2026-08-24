@@ -1,6 +1,28 @@
 import { screen } from "@testing-library/react";
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
+import type {
+  ValidationResult,
+  ValidationResults,
+} from "onroute-policy-engine";
+
+import { PERMIT_TYPES } from "../../../types/PermitType";
+import { Application } from "../../../types/application";
+
+const policyWarningMocks = vi.hoisted(() => ({
+  hasPolicyIssues: false,
+  policyWarnings: [] as ValidationResult[],
+  axleCalculationResults:
+    undefined as ValidationResults["axleCalculationResults"],
+}));
+
+vi.mock("../../../hooks/usePolicyWarnings", () => ({
+  usePolicyWarnings: () => policyWarningMocks,
+}));
+
+vi.mock("../../../../policy/hooks/usePolicyEngine", () => ({
+  usePolicyEngine: () => undefined,
+}));
 
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { vehicleTypeDisplayText } from "../../../../manageVehicles/types/Vehicle";
@@ -83,6 +105,9 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  policyWarningMocks.hasPolicyIssues = false;
+  policyWarningMocks.policyWarnings = [];
+  policyWarningMocks.axleCalculationResults = undefined;
   resetMockServer();
 });
 
@@ -431,6 +456,113 @@ describe("Review and Confirm Application Details", () => {
 
       // Assert
       expect(async () => await attestationErrorMsg()).rejects.toThrow();
+    });
+  });
+
+  describe("STOW axle spacing, weights, and overload review", () => {
+    const stowApplication = {
+      ...defaultApplicationData,
+      permitType: PERMIT_TYPES.STOW,
+      permitData: {
+        ...defaultApplicationData.permitData,
+        vehicleDetails: {
+          ...defaultApplicationData.permitData.vehicleDetails,
+          vin: "654321",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        },
+        vehicleConfiguration: {
+          axleConfiguration: [
+            {
+              numberOfAxles: 1,
+              axleUnitWeight: 6700,
+              numberOfTires: 2,
+              tireSize: 355,
+            },
+            { interaxleSpacing: 3.5 },
+            {
+              numberOfAxles: 2,
+              axleSpread: 1.6,
+              axleUnitWeight: 12000,
+              numberOfTires: 4,
+              tireSize: 330,
+            },
+          ],
+          trailers: [],
+        },
+      },
+    } as Application;
+
+    beforeEach(() => {
+      policyWarningMocks.axleCalculationResults = {
+        results: [],
+        totalGCVW: 18700,
+        overload: 100,
+        overloadDetails: [
+          {
+            kind: "axle-weight",
+            startAxleUnit: 1,
+            endAxleUnit: 1,
+            actualWeight: 6700,
+            legalMaxWeight: 6600,
+            overload: 100,
+          },
+        ],
+      };
+    });
+
+    it("shows read-only ASW and OCD tables for STOW", async () => {
+      renderTestComponent(stowApplication);
+
+      expect(
+        await screen.findByRole("heading", {
+          name: "Axle Spacing and Weights",
+        }),
+      ).toBeVisible();
+      expect(screen.getByDisplayValue("6700")).toBeDisabled();
+      expect(screen.queryByRole("button", { name: "Calculate" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Reset" })).toBeNull();
+      expect(
+        screen.getByRole("button", { name: "Overload Details" }),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("columnheader", { name: "Actual (kg)" }),
+      ).toBeVisible();
+    });
+
+    it("keeps the read-only ASW table but hides OCD when overload is zero", async () => {
+      policyWarningMocks.axleCalculationResults = {
+        results: [],
+        totalGCVW: 18700,
+        overload: 0,
+        overloadDetails: [],
+      };
+
+      renderTestComponent(stowApplication);
+
+      expect(
+        await screen.findByRole("heading", {
+          name: "Axle Spacing and Weights",
+        }),
+      ).toBeVisible();
+      expect(
+        screen.getByText("Overload (kg):").parentElement,
+      ).toHaveTextContent("Overload (kg): 0");
+      expect(
+        screen.queryByRole("button", { name: "Overload Details" }),
+      ).toBeNull();
+    });
+
+    it("does not show ASW or OCD for a non-STOW permit", async () => {
+      renderTestComponent(defaultApplicationData);
+
+      await screen.findByRole("heading", { name: "Vehicle Information" });
+      expect(
+        screen.queryByRole("heading", { name: "Axle Spacing and Weights" }),
+      ).toBeNull();
+      expect(
+        screen.queryByRole("button", { name: "Overload Details" }),
+      ).toBeNull();
     });
   });
 });

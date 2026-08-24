@@ -210,35 +210,4 @@
     }
   }
 
-  .results {
-    &__list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .list {
-      &__item {
-        padding: 1rem 0;
-        border-bottom: 1px solid $bc-border-grey;
-        &:last-child {
-          padding-bottom: 0;
-          border-bottom: none;
-        }
-      }
-    }
-
-    &__text {
-      &:last-child {
-          margin-bottom: 0;
-        }
-      &--fail {
-        color: $bc-red;
-      }
-      &--success {
-        color: $bc-black;
-        font-weight: bold;
-        padding: .5rem 0;
-      }
-    }
-  }
 }

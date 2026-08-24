@@ -2,7 +2,7 @@ import { InfoBcGovBanner } from "../../../../../../../common/components/banners/
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import "./AxleSpacingAndWeightsSection.scss";
 import { Box } from "@mui/material";
-import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTable";
+import { AxleSpacingAndWeights } from "./components/AxleSpacingAndWeights";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
@@ -61,8 +61,8 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleConfiguration[];
-  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration: (
+  onUpdatePowerUnitAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration?: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
@@ -87,7 +87,7 @@ export const AxleSpacingAndWeightsSection = ({
         <h3>Axle Spacing and Weights</h3>
       </Box>
       <Box className="axle-spacing-and-weights-section-section__body">
-        <AxleSpacingAndWeightsTable
+        <AxleSpacingAndWeights
           permitType={permitType}
           selectedCommodityType={selectedCommodityType}
           powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
