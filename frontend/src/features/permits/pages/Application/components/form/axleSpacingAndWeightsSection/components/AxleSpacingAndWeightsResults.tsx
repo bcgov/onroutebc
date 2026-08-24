@@ -41,7 +41,7 @@ export const AxleSpacingAndWeightsResults = ({
   const hasWarnings = Boolean(warningResults?.length);
   const totalGCVW = axleCalculationResults?.totalGCVW;
   const overload = axleCalculationResults?.overload;
-  const showPermitNotRequiredBanner = !hasFailures && Number(overload) === 0;
+  const showPermitNotRequiredBanner = !hasFailures && overload === 0;
   const isReferencingCTPMChapter5 = (message: string) =>
     message.toLowerCase().includes(CTPM_CHAPTER_5_TITLE.toLowerCase());
 
@@ -57,16 +57,16 @@ export const AxleSpacingAndWeightsResults = ({
               {formatNumberWithCommas(totalGCVW)}
             </span>
           ) : null}
-          {Number(overload) > 0 &&
+          {overload !== undefined &&
+          overload > 0 &&
           axleCalculationResults?.overloadDetails?.length ? (
             <OverloadCalculationDetails
-              overload={Number(overload)}
+              overload={overload}
               details={axleCalculationResults.overloadDetails}
             />
-          ) : Number(overload) >= 0 ? (
+          ) : overload !== undefined && overload >= 0 ? (
             <span className="axle-spacing-and-weights-results__item">
-              <strong>Overload (kg):</strong>{" "}
-              {formatNumberWithCommas(Number(overload))}
+              <strong>Overload (kg):</strong> {formatNumberWithCommas(overload)}
             </span>
           ) : null}
           <span className="axle-spacing-and-weights-results__item">
@@ -76,7 +76,7 @@ export const AxleSpacingAndWeightsResults = ({
                   (failedResult, index) => (
                     <div key={`axle-calc-fail-${index}`}>
                       {isReferencingCTPMChapter5(failedResult.message) ? (
-                        <p className="results__text--fail axle-spacing-and-weights-results__text axle-spacing-and-weights-results__text--fail">
+                        <p className="axle-spacing-and-weights-results__text axle-spacing-and-weights-results__text--fail">
                           {failedResult.message.replace(
                             CTPM_CHAPTER_5_TITLE,
                             "",
@@ -90,7 +90,7 @@ export const AxleSpacingAndWeightsResults = ({
                           </CustomExternalLink>
                         </p>
                       ) : (
-                        <p className="results__text--fail axle-spacing-and-weights-results__text axle-spacing-and-weights-results__text--fail">
+                        <p className="axle-spacing-and-weights-results__text axle-spacing-and-weights-results__text--fail">
                           {failedResult.message}
                         </p>
                       )}
@@ -127,7 +127,7 @@ export const AxleSpacingAndWeightsResults = ({
             )
           ) : showPermitNotRequiredBanner ? (
             <>
-              <p className="results__text--success axle-spacing-and-weights-results__text--success">
+              <p className="axle-spacing-and-weights-results__text axle-spacing-and-weights-results__text--success">
                 This permit type is not required.
               </p>
               <PermitNotRequiredBanner />

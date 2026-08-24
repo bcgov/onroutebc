@@ -520,8 +520,12 @@ describe("Review and Confirm Application Details", () => {
         }),
       ).toBeVisible();
       expect(screen.getByDisplayValue("6700")).toBeDisabled();
-      expect(screen.queryByRole("button", { name: "Calculate" })).toBeNull();
-      expect(screen.queryByRole("button", { name: "Reset" })).toBeNull();
+      expect(
+        screen.queryByRole("button", { name: "Calculate" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Reset" }),
+      ).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Overload Details" }),
       ).toBeVisible();
@@ -550,7 +554,7 @@ describe("Review and Confirm Application Details", () => {
       ).toHaveTextContent("Overload (kg): 0");
       expect(
         screen.queryByRole("button", { name: "Overload Details" }),
-      ).toBeNull();
+      ).not.toBeInTheDocument();
     });
 
     it("does not show ASW or OCD for a non-STOW permit", async () => {
@@ -559,10 +563,10 @@ describe("Review and Confirm Application Details", () => {
       await screen.findByRole("heading", { name: "Vehicle Information" });
       expect(
         screen.queryByRole("heading", { name: "Axle Spacing and Weights" }),
-      ).toBeNull();
+      ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: "Overload Details" }),
-      ).toBeNull();
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -39,10 +39,10 @@ describe("OverloadCalculationDetails", () => {
     ).toBeVisible();
     expect(
       screen.queryByRole("columnheader", { name: "LGVW (kg)" }),
-    ).toBeNull();
+    ).not.toBeInTheDocument();
 
     const rangeRow = screen.getByText("3 - 4").closest("tr");
-    expect(rangeRow).not.toBeNull();
+    expect(rangeRow).toBeInTheDocument();
     expect(
       within(rangeRow as HTMLTableRowElement).getByText("35,100"),
     ).toBeVisible();
@@ -68,8 +68,8 @@ describe("OverloadCalculationDetails", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     expect(
       screen.queryByRole("columnheader", { name: "Actual (kg)" }),
-    ).toBeNull();
-    expect(screen.queryByRole("alert")).toBeNull();
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("shows only the licensed-GVW column set for a licensed overload", () => {
@@ -97,7 +97,7 @@ describe("OverloadCalculationDetails", () => {
     ).toBeVisible();
     expect(
       screen.queryByRole("columnheader", { name: "Actual (kg)" }),
-    ).toBeNull();
+    ).not.toBeInTheDocument();
     expect(screen.getByText("1 - 3")).toBeVisible();
     expect(screen.getByText("35,000")).toBeVisible();
     expect(screen.getByText("52,000")).toBeVisible();

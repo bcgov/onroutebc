@@ -70,8 +70,8 @@ export type AxleSpacingAndWeightsTableProps = {
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleUnit[];
-  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration: (
+  onUpdatePowerUnitAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration?: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
@@ -139,6 +139,8 @@ export const AxleSpacingAndWeightsTable = ({
   useEffect(() => {
     if (axleCalculationResultsFromValidation) {
       setAxleCalculationResults(axleCalculationResultsFromValidation);
+      onAxleCalculationResultsChange(axleCalculationResultsFromValidation);
+      onValidationBannerChange(false);
 
       // Scroll to table if new validation results are different from current
       if (
@@ -152,6 +154,8 @@ export const AxleSpacingAndWeightsTable = ({
 
   useEffect(() => {
     if (showASWRequiredFieldsBanner) {
+      onValidationBannerChange(true);
+
       // Scroll to table if required fields are missing
       ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
     }
@@ -413,10 +417,10 @@ export const AxleSpacingAndWeightsTable = ({
   };
 
   const handleReset = () => {
-    onUpdatePowerUnitAxleConfiguration(DEFAULT_POWER_UNIT_AXLE_CONFIG);
+    onUpdatePowerUnitAxleConfiguration?.(DEFAULT_POWER_UNIT_AXLE_CONFIG);
     trailers.forEach((trailer, trailerIndex) => {
       if (!isTrailerSubtypeNone(trailer.vehicleSubType)) {
-        onUpdateTrailerAxleConfiguration(
+        onUpdateTrailerAxleConfiguration?.(
           trailerIndex,
           DEFAULT_TRAILER_AXLE_CONFIG,
         );
@@ -513,11 +517,14 @@ export const AxleSpacingAndWeightsTable = ({
                   label={trailerSubtypeNamesMap.get(trailer.vehicleSubType)}
                   axleUnitNumber={getAxleUnitNumber(trailerIndex)}
                   isTrailer={true}
-                  onUpdateAxleConfiguration={(axleConfiguration: AxleUnit[]) =>
-                    onUpdateTrailerAxleConfiguration(
-                      trailerIndex,
-                      axleConfiguration,
-                    )
+                  onUpdateAxleConfiguration={
+                    onUpdateTrailerAxleConfiguration
+                      ? (axleConfiguration: AxleUnit[]) =>
+                          onUpdateTrailerAxleConfiguration(
+                            trailerIndex,
+                            axleConfiguration,
+                          )
+                      : undefined
                   }
                   tireSizeOptions={getDefaultRequiredVal([], tireSizeOptions)}
                   axleCalculationFailures={getAxleCalculationFailures(

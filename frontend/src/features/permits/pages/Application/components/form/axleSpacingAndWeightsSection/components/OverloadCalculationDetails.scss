@@ -49,8 +49,8 @@
     }
   }
 
-  &__total-spacer {
-    border: 0 !important;
+  &__table &__total-spacer {
+    border: 0;
   }
 
   &__total {
