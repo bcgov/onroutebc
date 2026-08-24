@@ -42,13 +42,19 @@ export const TripOriginDestination = ({
   ) => void;
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
+  
   const showTotalDistance = (
     permitType === PERMIT_TYPES.MFP ||
     permitType === PERMIT_TYPES.STOW ||
     permitType === PERMIT_TYPES.STWSE ||
     permitType === PERMIT_TYPES.STGVWI
   );
-  
+
+  const totalDistanceBannerMessage =
+    permitType === PERMIT_TYPES.STOW || permitType === PERMIT_TYPES.STGVWI
+      ? BANNER_MESSAGES.TOTAL_DISTANCE_ALT
+      : BANNER_MESSAGES.TOTAL_DISTANCE;
+
   const origin = getDefaultRequiredVal("", tripOrigin);
 
   const handleUpdateTotalDistance = (numericStr: string) => {
@@ -134,7 +140,7 @@ export const TripOriginDestination = ({
       {showTotalDistance ? (
         <InfoBcGovBanner
           className="trip-origin-destination__info"
-          msg={BANNER_MESSAGES.TOTAL_DISTANCE}
+          msg={totalDistanceBannerMessage}
         />
       ) : null}
 

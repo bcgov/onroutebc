@@ -53,6 +53,8 @@ export const BANNER_MESSAGES = {
     "The start date you choose determines the valid quarter for the permit. This permit allows multiple trips into and out of the province during the permit duration.",
   TOTAL_DISTANCE:
     "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
+  TOTAL_DISTANCE_ALT:
+    "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border) on the Provincial and Federal road network.",
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
   NON_FINANCE_USER: "For Credit Accounts, please contact CVSE Revenue. ",
