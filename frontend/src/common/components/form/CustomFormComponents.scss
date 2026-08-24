@@ -13,7 +13,7 @@
     .custom-form-components &--error {
       color: $bc-black;
     }
-  }  
+  }
 }
 
 @mixin custom-form-component($component) {
@@ -26,18 +26,19 @@
           -webkit-text-fill-color: $bc-black;
         }
       }
-  
+
       svg {
         z-index: 1;
       }
-  
+
       fieldset {
         background-color: $bc-background-light-grey;
         border: 2px solid $bc-text-box-border-grey;
       }
     }
 
-    &#{&}.Mui-focused, &#{&} .Mui-focused {
+    &#{&}.Mui-focused,
+    &#{&} .Mui-focused {
       fieldset {
         border: 2px solid $focus-blue;
       }
@@ -53,7 +54,18 @@
     }
 
     fieldset {
-      border: 2px solid $bc-text-box-border-grey;   
+      border: 2px solid $bc-text-box-border-grey;
     }
   }
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
