@@ -512,3 +512,17 @@
 ### Version 107:
 
 - Updates to the policy configuration to add STWSE permit type.
+
+### Version 108
+
+- Updated permit template documents.
+- Impacted permit types:
+  - NRSCV
+  - NRQCV
+  - STOS
+  - TROW
+  - TROS
+  - MFP
+  - STFR
+  - QRFR
+- Updated the Payment Receipt template from v3 to v4.

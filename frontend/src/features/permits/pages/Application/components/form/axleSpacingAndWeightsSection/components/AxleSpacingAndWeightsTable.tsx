@@ -62,6 +62,7 @@ export const AxleSpacingAndWeightsTable = ({
   onUpdatePowerUnitAxleConfiguration,
   onUpdateTrailerAxleConfiguration,
   showASWRequiredFieldsBanner,
+  readOnly = false,
 }: {
   permitType: PermitType;
   selectedCommodityType?: Nullable<string>;
@@ -99,6 +100,7 @@ export const AxleSpacingAndWeightsTable = ({
     axleConfiguration: AxleUnit[],
   ) => void;
   showASWRequiredFieldsBanner: boolean;
+  readOnly?: boolean;
 }) => {
   const ASWTableRef = useRef<HTMLDivElement>(null);
   const trailers = getDefaultRequiredVal([], vehicleConfiguration?.trailers);
@@ -146,7 +148,10 @@ export const AxleSpacingAndWeightsTable = ({
       setAxleCalculationResults(axleCalculationResultsFromValidation);
 
       // Scroll to table if new validation results are different from current
-      if (axleCalculationResultsFromValidation !== axleCalculationResults) {
+      if (
+        !readOnly &&
+        axleCalculationResultsFromValidation !== axleCalculationResults
+      ) {
         ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     }
@@ -471,7 +476,12 @@ export const AxleSpacingAndWeightsTable = ({
     !hasAxleCalculationFailures && Number(overload) === 0;
 
   return (
-    <div className="axle-spacing-and-weights-table" ref={ASWTableRef}>
+    <div
+      className={`axle-spacing-and-weights-table${
+        readOnly ? " axle-spacing-and-weights-table--read-only" : ""
+      }`}
+      ref={ASWTableRef}
+    >
       <div className="table-container">
         <table className="table">
           <thead className="table__head">
@@ -536,6 +546,7 @@ export const AxleSpacingAndWeightsTable = ({
                 selectedCommodityType,
                 vehicleFormData.vehicleSubType,
               )}
+              readOnly={readOnly}
             />
             {trailers.map((trailer, trailerIndex) =>
               !isTrailerSubtypeNone(trailer.vehicleSubType) ? (
@@ -566,6 +577,7 @@ export const AxleSpacingAndWeightsTable = ({
                     vehicleFormData.vehicleSubType,
                     trailer.vehicleSubType,
                   )}
+                  readOnly={readOnly}
                 />
               ) : null,
             )}
@@ -576,24 +588,26 @@ export const AxleSpacingAndWeightsTable = ({
         <strong>Legend:</strong> Interaxle Spacing (SPC); Axle Spread (SPD);
         Gross Combination Vehicle Weight (GCVW)
       </p>
-      <div className="button-container">
-        <Button
-          variant="contained"
-          onClick={() => {
-            setIsResetModalOpen(true);
-          }}
-          className="button button--reset"
-        >
-          Reset
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleCalculate}
-          className="button button--submit"
-        >
-          Calculate
-        </Button>
-      </div>
+      {!readOnly ? (
+        <div className="button-container">
+          <Button
+            variant="contained"
+            onClick={() => {
+              setIsResetModalOpen(true);
+            }}
+            className="button button--reset"
+          >
+            Reset
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleCalculate}
+            className="button button--submit"
+          >
+            Calculate
+          </Button>
+        </div>
+      ) : null}
       {shouldShowResultsSection && (
         <div className="results">
           {showValidationBanner ? (
