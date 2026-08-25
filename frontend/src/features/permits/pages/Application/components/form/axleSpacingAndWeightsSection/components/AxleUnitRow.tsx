@@ -107,6 +107,7 @@ export const AxleUnitRow = ({
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
             ] ||
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT] ||
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
             ] ||
@@ -117,6 +118,7 @@ export const AxleUnitRow = ({
               POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
             ] ||
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD] ||
+            axleCalculationFailure[POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT] ||
             axleCalculationFailure[
               POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT
             ],
@@ -128,7 +130,9 @@ export const AxleUnitRow = ({
         );
 
         const hasAxleSpreadFailure = Boolean(
-          axleCalculationFailure[POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS],
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
+          ] || axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD],
         );
 
         const hasInteraxleSpacingFailure = Boolean(

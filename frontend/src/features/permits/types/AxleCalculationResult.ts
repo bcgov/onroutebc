@@ -13,6 +13,7 @@ export const POLICY_CHECK_ID_TYPES = {
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
   DRIVE_JEEP_LOAD_EQUALIZATION: "drive-jeep-load-equalization",
+  LEGAL_AXLE_SPREAD: "legal-axle-spread",
   LEGAL_INTERAXLE_SPACING: "legal-interaxle-spacing",
   LEGAL_WEIGHT: "legal-weight",
   MAX_TIRE_LOAD: "max-tire-load",
