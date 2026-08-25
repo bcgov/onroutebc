@@ -16,6 +16,9 @@ const pickerTruckTractorWeightMessage =
   "Axle Unit 1 must carry a minimum 50% of Axle Unit 2 axle unit weight.";
 const axleGroupMaximumLegalWeightMessage =
   "Axle Group 2 to 3 exceeds the maximum legal weight threshold of 21000 kg by 1999 kg.";
+const legalWeightMessage = "Weight for axle unit 1 must not exceed 6000 kgs";
+const permittableWeightMessage =
+  "Weight for axle unit 2 must not exceed 23000 kgs";
 
 const powerUnitAxleConfiguration: AxleUnit[] = [
   {
@@ -303,6 +306,148 @@ describe("AxleSpacingAndWeightsTable", () => {
     ).not.toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("3.00").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+  });
+
+  it("displays a legal weight failure and highlights only the applicable axle unit weight", async () => {
+    const user = userEvent.setup();
+    const runAxleCalculation = vi.fn().mockReturnValue({
+      results: [
+        {
+          id: POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT,
+          result: "fail",
+          message: legalWeightMessage,
+          axleUnit: 1,
+          actualWeight: 6700,
+          thresholdWeight: 6000,
+          startAxleUnit: 1,
+          endAxleUnit: 1,
+        },
+      ],
+      totalGCVW: 18700,
+      overload: 0,
+    });
+
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map()}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={runAxleCalculation}
+        combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(await screen.findByText(legalWeightMessage)).toHaveClass(
+      "results__text--fail",
+    );
+    expect(
+      screen.queryByText("This permit type is not required."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("3.50").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+  });
+
+  it("displays a permittable weight failure and highlights only the applicable axle unit weight", async () => {
+    const user = userEvent.setup();
+    const runAxleCalculation = vi.fn().mockReturnValue({
+      results: [
+        {
+          id: POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT,
+          result: "fail",
+          message: permittableWeightMessage,
+          axleUnit: 2,
+          actualWeight: 23001,
+          thresholdWeight: 23000,
+          startAxleUnit: 2,
+          endAxleUnit: 2,
+        },
+      ],
+      totalGCVW: 29701,
+      overload: 0,
+    });
+
+    render(
+      <AxleSpacingAndWeightsTable
+        permitType={PERMIT_TYPES.STOW}
+        powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+        vehicleFormData={{
+          vehicleId: "101",
+          vin: "654321",
+          plate: "D654321",
+          make: "Custom",
+          year: 2010,
+          countryCode: "CA",
+          provinceCode: "BC",
+          vehicleType: "powerUnit",
+          vehicleSubType: "TRKTRAC",
+          licensedGVW: 40000,
+        }}
+        trailerSubtypeNamesMap={new Map()}
+        vehicleConfiguration={{
+          axleConfiguration: powerUnitAxleConfiguration,
+          trailers: [],
+        }}
+        tireSizeOptions={[
+          { name: "330", size: 330 },
+          { name: "355", size: 355 },
+        ]}
+        runAxleCalculation={runAxleCalculation}
+        combineAxleConfigurations={() => combinedAxleConfiguration.slice(0, 2)}
+        onUpdatePowerUnitAxleConfiguration={vi.fn()}
+        onUpdateTrailerAxleConfiguration={vi.fn()}
+        showASWRequiredFieldsBanner={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(await screen.findByText(permittableWeightMessage)).toHaveClass(
+      "results__text--fail",
+    );
+    expect(
+      screen.queryByText("This permit type is not required."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("6700").closest(".table__input"),
+    ).not.toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("12000").closest(".table__input"),
+    ).toHaveClass("table__input--fail");
+    expect(
+      screen.getByDisplayValue("3.50").closest(".table__input"),
     ).not.toHaveClass("table__input--fail");
   });
 
