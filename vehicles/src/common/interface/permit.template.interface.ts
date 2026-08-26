@@ -16,13 +16,15 @@ export interface PermitTemplateData {
   clientNumber: string;
   issuedBy: string;
   revisions: Revision[];
-  permitData?: PermitData;
+  // dimensions, weights, distances, currency need to be formatted in the template
+  // TemplatePermitData contains all of the PermitData values plus required formatted numbers
+  permitData?: TemplatePermitData;
   loas?: string;
   permitIssueDateTime?: string;
   revisionIssueDateTime?: string;
   thirdPartyLiability?: string;
   conditionalLicensingFee?: string;
-  overloadVW?: Nullable<number>;
+  overloadVW?: Nullable<string>; // formatted number
 }
 
 interface Revision {
@@ -92,6 +94,7 @@ interface VehicleConfiguration {
   netWeight?: Nullable<number>;
   axleConfiguration?: Nullable<AxleConfiguration[]>;
   vehicleDisplayCode?: Nullable<string>;
+  overloadWeight?: Nullable<number>;
 }
 
 interface PermittedRoute {
@@ -167,4 +170,43 @@ export interface Loas {
   vehicleSubType: string;
   originalLoaId?: Nullable<number>;
   previousLoaId?: Nullable<number>;
+}
+
+interface TemplateVehicleDetails extends Omit<VehicleDetails, "licensedGVW"> {
+  licensedGVW?: string; // field used as formatted number
+}
+
+interface TemplateVehicleConfiguration {
+  overallLength?: Nullable<string>; // formatted number
+  overallWidth?: Nullable<string>; // formatted number
+  overallHeight?: Nullable<string>; // formatted number
+  frontProjection?: Nullable<string>; // formatted number
+  rearProjection?: Nullable<string>; // formatted number
+  trailers?: VehicleDetails[];
+  loadedGVW?: Nullable<string>; // formatted number
+  actualGVW?: Nullable<string>; // formatted number
+  netWeight?: Nullable<string>; // formatted number
+  axleConfiguration?: Nullable<AxleConfiguration[]>;
+  vehicleDisplayCode?: Nullable<string>;
+  overloadWeight?: Nullable<string>; // formatted number
+}
+
+interface TemplateManualRoute extends Omit<ManualRoute, "totalDistance"> {
+  totalDistance?: string; // formatted number
+}
+
+interface TemplatePermittedRoute {
+  routeDetails: string;
+  manualRoute: TemplateManualRoute;
+}
+
+interface TemplatePermitData extends Omit<
+  PermitData,
+  "vehicleDetails"
+  | "vehicleConfiguration"
+  | "permittedRoute"
+> {
+  vehicleDetails?: TemplateVehicleDetails;
+  vehicleConfiguration?: TemplateVehicleConfiguration;
+  permittedRoute?: TemplatePermittedRoute;
 }
