@@ -18,6 +18,7 @@ import {
 import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 import { EMPTY_VALUE } from '../constants/template.constant';
 import { PermitType } from '../enum/permit-type.enum';
+import { formatNumber } from './numeric.helper';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -52,25 +53,16 @@ export const formatTemplateData = (
     conditionalLicensingFee: '',
   };
 
-  template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-
   // Format Permit information
   template.permitName = fullNames.permitName;
   template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
-  template.overloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
-    ? (
-      (template.permitData?.vehicleConfiguration?.actualGVW ?? 0) -
-      (template.permitData?.vehicleDetails?.licensedGVW ?? 0)
-    ) : permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
-    ? (
-      template.permitData?.vehicleConfiguration?.overloadWeight ?? 0
-    ) : 0;
   
   template.issuedBy =
     permit.permitIssuedBy === PermitIssuedBy.SELF_ISSUED
       ? constants.SELF_ISSUED
       : constants.PPC_FULL_TEXT;
+  
   template.createdDateTime = convertUtcToPt(
     permit.createdDateTime,
     'MMM. D, YYYY, hh:mm a Z',
@@ -79,6 +71,53 @@ export const formatTemplateData = (
     permit.updatedDateTime,
     'MMM. D, YYYY, hh:mm a Z',
   );
+
+  // Format numbers for distances, weights, dimensions for the template permit data
+  const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+  template.permitData = {
+    ...permitData,
+    vehicleDetails: permitData.vehicleDetails
+      ? {
+        ...permitData.vehicleDetails,
+        licensedGVW: formatNumber(permitData.vehicleDetails.licensedGVW), 
+      } : undefined,
+    vehicleConfiguration: permitData.vehicleConfiguration
+      ? {
+        ...permitData.vehicleConfiguration,
+        overallLength: formatNumber(permitData.vehicleConfiguration.overallLength, 2),
+        overallWidth: formatNumber(permitData.vehicleConfiguration.overallWidth, 2),
+        overallHeight: formatNumber(permitData.vehicleConfiguration.overallHeight, 2),
+        frontProjection: formatNumber(permitData.vehicleConfiguration.frontProjection, 2),
+        rearProjection: formatNumber(permitData.vehicleConfiguration.rearProjection, 2),
+        loadedGVW: formatNumber(permitData.vehicleConfiguration.loadedGVW),
+        actualGVW: formatNumber(permitData.vehicleConfiguration.actualGVW),
+        netWeight: formatNumber(permitData.vehicleConfiguration.netWeight),
+        overloadWeight: formatNumber(permitData.vehicleConfiguration.overloadWeight),
+      } : undefined,
+    permittedRoute: permitData.permittedRoute ? {
+      ...permitData.permittedRoute,
+      manualRoute: permitData.permittedRoute.manualRoute ? {
+        ...permitData.permittedRoute.manualRoute,
+        totalDistance: formatNumber(permitData.permittedRoute.manualRoute.totalDistance, 2),
+      } : undefined,
+    } : undefined,
+  };
+
+  // Overload weight
+  const overloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
+    ? (
+      (permitData?.vehicleConfiguration?.actualGVW ?? 0) -
+      (permitData?.vehicleDetails?.licensedGVW ?? 0)
+    )
+    : (
+      permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+        ? (
+          permitData?.vehicleConfiguration?.overloadWeight ?? 0
+        )
+        : 0
+      );
+  
+  template.overloadVW = formatNumber(overloadVW);
 
   // Start & Expiry date
   template.permitData.startDate = dateFormat(
@@ -103,6 +142,7 @@ export const formatTemplateData = (
   template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
     fullNames.mailingProvinceName;
+  
   if (template.permitData?.vehicleConfiguration?.trailers?.length) {
     template.permitData.vehicleConfiguration.trailers =
       fullNames.vehicleConfigurationTrailers;
@@ -131,7 +171,7 @@ export const formatTemplateData = (
       (accumulator, item) => accumulator + item.transactionAmount,
       0,
     ),
-  ).toString();
+  );
 
   if (permit.revision > 0) {
     template.revisionIssueDateTime = convertUtcToPt(
