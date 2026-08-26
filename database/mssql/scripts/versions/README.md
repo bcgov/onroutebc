@@ -513,7 +513,7 @@
 
 - Updates to the policy configuration to add STWSE permit type.
 
-### Version 108
+### Version 108:
 
 - Updated permit template documents.
 - Impacted permit types:
@@ -526,3 +526,7 @@
   - STFR
   - QRFR
 - Updated the Payment Receipt template from v3 to v4.
+
+### Version 109:
+
+- Configure STWSE v1 templates.
