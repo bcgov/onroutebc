@@ -1,7 +1,7 @@
 import { Nullable } from "../types/common";
 
 export const formatNumber = (value?: Nullable<number>, decimalPlaces?: number) => {
-  if ((typeof value === "undefined") || (!value && value == null)) return undefined;
+  if ((value === undefined) || (!value && value == null)) return undefined;
 
   return value.toLocaleString(
     "en-CA",

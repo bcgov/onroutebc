@@ -104,18 +104,20 @@ export const formatTemplateData = (
   };
 
   // Overload weight
-  const overloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
+  const stgvwiOverloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
     ? (
       (permitData?.vehicleConfiguration?.actualGVW ?? 0) -
       (permitData?.vehicleDetails?.licensedGVW ?? 0)
     )
-    : (
-      permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
-        ? (
-          permitData?.vehicleConfiguration?.overloadWeight ?? 0
-        )
-        : 0
-      );
+    : undefined;
+
+  const stwseOverloadVW = permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+    ? (
+      permitData?.vehicleConfiguration?.overloadWeight ?? 0
+    )
+    : undefined;
+  
+  const overloadVW = stgvwiOverloadVW ?? stwseOverloadVW ?? 0;
   
   template.overloadVW = formatNumber(overloadVW);
 
