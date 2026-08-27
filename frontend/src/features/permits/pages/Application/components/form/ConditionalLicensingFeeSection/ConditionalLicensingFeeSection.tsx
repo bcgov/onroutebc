@@ -1,4 +1,4 @@
-import { Box, RadioGroup, Typography } from "@mui/material";
+import { Box, RadioGroup } from "@mui/material";
 
 import "./ConditionalLicensingFeeSection.scss";
 import {
@@ -12,6 +12,7 @@ import {
   ConditionalLicensingFeeType,
 } from "../../../../../types/ConditionalLicensingFee";
 import { TOLL_FREE_NUMBER } from "../../../../../../../common/constants/constants";
+import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 
 export const ConditionalLicensingFeeSection = ({
   permitType,
@@ -36,12 +37,17 @@ export const ConditionalLicensingFeeSection = ({
         <h3 className="conditional-licensing-fee-section__title">
           Conditional Licensing Fee
         </h3>
-        <Typography className="conditional-licensing-fee-section__message">
-          Conditional Licensing Fees are based on vehicle ownership, type and
-          usage. If you are uncertain which option to select, please contact the
-          Provincial Permit Centre at {TOLL_FREE_NUMBER} for assistance.
-        </Typography>
       </Box>
+      <InfoBcGovBanner
+        className="conditional-licensing-fee-section__info-banner"
+        msg={
+          <>
+            Conditional Licensing Fees are based on vehicle ownership, type and
+            usage. If you are uncertain which option to select, please contact
+            the Provincial Permit Centre at {TOLL_FREE_NUMBER} for assistance.
+          </>
+        }
+      />
 
       <Box className="conditional-licensing-fee-section__body">
         <RadioGroup
