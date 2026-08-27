@@ -1,3 +1,4 @@
+import React, { useEffect, useRef } from "react";
 import { OutlinedInput } from "@mui/material";
 import {
   FieldValues,
@@ -8,7 +9,6 @@ import {
 
 import { ORBC_FormTypes } from "../../../types/common";
 import "./CustomOutlinedInput.scss";
-import React from "react";
 
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
@@ -23,7 +23,6 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
   disabled?: boolean;
   readOnly?: boolean;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -35,6 +34,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   props: CustomOutlinedInputProps<T>,
 ): JSX.Element => {
   const { register } = useFormContext();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Add aria-label to input prop for Jest testing purposes
   const updatedInputProps: any = props.inputProps;
@@ -55,8 +55,37 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
 
   const customInputClassName = `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
 
+
+  useEffect(() => {
+    const input = inputRef.current;
+
+    if (!input || props.inputType !== "number") {
+      return;
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+    };
+
+    input.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      input.removeEventListener("wheel", handleWheel);
+    };
+  }, [props.inputType]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      props.inputType === "number" &&
+      (event.key === "ArrowUp" || event.key === "ArrowDown")
+    ) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <OutlinedInput
+      inputRef={inputRef}
       inputProps={{
         ...updatedInputProps,
         className: updatedInputProps.className
@@ -68,7 +97,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
       className={customInputClassName}
       {...register(props.name, props.rules)}
       onFocus={props.onFocus}
-      onWheel={props.onWheel}
+      onKeyDown={handleKeyDown}
     />
   );
 };
