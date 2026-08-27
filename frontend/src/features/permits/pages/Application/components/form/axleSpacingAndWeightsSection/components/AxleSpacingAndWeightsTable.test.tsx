@@ -325,13 +325,13 @@ describe("AxleSpacingAndWeightsSection", () => {
     ).not.toHaveClass("table__input--fail");
   });
 
-  it("displays a legal weight failure and highlights only the applicable axle unit weight", async () => {
+  it("keeps a legal weight warning silent while displaying its overload details", async () => {
     const user = userEvent.setup();
     const runAxleCalculation = vi.fn().mockReturnValue({
       results: [
         {
           id: POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT,
-          result: "fail",
+          result: "warning",
           message: legalWeightMessage,
           axleUnit: 1,
           actualWeight: 6700,
@@ -341,11 +341,21 @@ describe("AxleSpacingAndWeightsSection", () => {
         },
       ],
       totalGCVW: 18700,
-      overload: 0,
+      overload: 700,
+      overloadDetails: [
+        {
+          kind: "axle-weight",
+          startAxleUnit: 1,
+          endAxleUnit: 1,
+          actualWeight: 6700,
+          legalMaxWeight: 6000,
+          overload: 700,
+        },
+      ],
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -379,15 +389,15 @@ describe("AxleSpacingAndWeightsSection", () => {
 
     await user.click(screen.getByRole("button", { name: "Calculate" }));
 
-    expect(await screen.findByText(legalWeightMessage)).toHaveClass(
-      "results__text--fail",
-    );
+    expect(screen.queryByText(legalWeightMessage)).not.toBeInTheDocument();
+    expect(screen.getByText("None")).toBeVisible();
+    expect(screen.getByText(/Total \(kg\): 700/)).toBeVisible();
     expect(
       screen.queryByText("This permit type is not required."),
     ).not.toBeInTheDocument();
     expect(
       screen.getByDisplayValue("6700").closest(".table__input"),
-    ).toHaveClass("table__input--fail");
+    ).not.toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("12000").closest(".table__input"),
     ).not.toHaveClass("table__input--fail");
@@ -416,7 +426,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     });
 
     render(
-      <AxleSpacingAndWeightsTable
+      <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
@@ -451,7 +461,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     await user.click(screen.getByRole("button", { name: "Calculate" }));
 
     expect(await screen.findByText(permittableWeightMessage)).toHaveClass(
-      "results__text--fail",
+      "axle-spacing-and-weights-results__text--fail",
     );
     expect(
       screen.queryByText("This permit type is not required."),
