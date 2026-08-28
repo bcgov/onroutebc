@@ -172,7 +172,7 @@ export interface Loas {
   previousLoaId?: Nullable<number>;
 }
 
-interface TemplateVehicleDetails extends Omit<VehicleDetails, "licensedGVW"> {
+interface TemplateVehicleDetails extends Omit<VehicleDetails, 'licensedGVW'> {
   licensedGVW?: string; // field used as formatted number
 }
 
@@ -191,7 +191,7 @@ interface TemplateVehicleConfiguration {
   overloadWeight?: Nullable<string>; // formatted number
 }
 
-interface TemplateManualRoute extends Omit<ManualRoute, "totalDistance"> {
+interface TemplateManualRoute extends Omit<ManualRoute, 'totalDistance'> {
   totalDistance?: string; // formatted number
 }
 
@@ -202,9 +202,7 @@ interface TemplatePermittedRoute {
 
 interface TemplatePermitData extends Omit<
   PermitData,
-  "vehicleDetails"
-  | "vehicleConfiguration"
-  | "permittedRoute"
+  'vehicleDetails' | 'vehicleConfiguration' | 'permittedRoute'
 > {
   vehicleDetails?: TemplateVehicleDetails;
   vehicleConfiguration?: TemplateVehicleConfiguration;
