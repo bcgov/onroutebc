@@ -1,3 +1,6 @@
+import type { OverloadCalculationDetail } from "onroute-policy-engine/types";
+import type { PolicyCheckId } from "onroute-policy-engine/enum";
+
 export const POLICY_CHECK_RESULT_TYPES = {
   PASS: "pass",
   FAIL: "fail",
@@ -32,7 +35,7 @@ export type PolicyCheckIdType =
   (typeof POLICY_CHECK_ID_TYPES)[keyof typeof POLICY_CHECK_ID_TYPES];
 
 export interface AxleGroupPolicyCheckResult {
-  id: PolicyCheckIdType;
+  id: PolicyCheckIdType | PolicyCheckId;
   result: PolicyCheckResultType;
   message: string;
   axleUnit?: number;
@@ -45,5 +48,6 @@ export interface AxleGroupPolicyCheckResult {
 export interface AxleCalculationResult {
   results: Array<AxleGroupPolicyCheckResult>;
   overload: number;
+  overloadDetails?: Array<OverloadCalculationDetail>;
   totalGCVW: number;
 }

@@ -1,0 +1,77 @@
+@use "../../../../../../../../themes/orbcStyles";
+
+.overload-calculation-details {
+  border-bottom: 1px solid orbcStyles.$bc-border-grey;
+
+  &__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 0;
+    padding: 0;
+    color: orbcStyles.$bc-black;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  &__content {
+    padding-bottom: 1rem;
+  }
+
+  &__table-container {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 47rem;
+    max-width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      min-width: 9rem;
+      border: 1px solid orbcStyles.$bc-border-grey;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+
+    th {
+      background: orbcStyles.$bc-background-light-grey;
+    }
+  }
+
+  &__table &__total-spacer {
+    border: 0;
+  }
+
+  &__total {
+    background: orbcStyles.$bc-background-blue-grey;
+    color: orbcStyles.$bc-primary-blue;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  &__info {
+    width: min(100%, 72rem);
+    box-sizing: border-box;
+    margin-top: 1.5rem;
+
+    .bc-gov-alertbanner__msg {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+
+    p {
+      margin: 0.5rem 0 0;
+    }
+  }
+}

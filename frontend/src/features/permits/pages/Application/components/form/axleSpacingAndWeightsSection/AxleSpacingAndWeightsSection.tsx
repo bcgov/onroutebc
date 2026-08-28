@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import "./AxleSpacingAndWeightsSection.scss";
 import { Box } from "@mui/material";
 import { AxleSpacingAndWeightsTable } from "./components/AxleSpacingAndWeightsTable";
+import { AxleSpacingAndWeightsResults } from "./components/AxleSpacingAndWeightsResults";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable } from "../../../../../../../common/types/common";
@@ -61,14 +63,22 @@ export const AxleSpacingAndWeightsSection = ({
     powerUnitAxleConfiguration: AxleConfiguration[],
     trailers: VehicleInConfiguration[],
   ) => AxleConfiguration[];
-  onUpdatePowerUnitAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
-  onUpdateTrailerAxleConfiguration: (
+  onUpdatePowerUnitAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateTrailerAxleConfiguration?: (
     trailerIndex: number,
     axleConfiguration: AxleUnit[],
   ) => void;
   showASWRequiredFieldsBanner: boolean;
   readOnly?: boolean;
 }) => {
+  const [axleCalculationResults, setAxleCalculationResults] =
+    useState<Nullable<AxleCalculationResult>>(
+      axleCalculationResultsFromValidation,
+    );
+  const [showValidationBanner, setShowValidationBanner] = useState(
+    axleCalculationResultsFromValidation ? false : showASWRequiredFieldsBanner,
+  );
+
   return permitType === PERMIT_TYPES.STOW && vehicleFormData.vin ? (
     <Box className="axle-spacing-and-weights-section">
       <InfoBcGovBanner
@@ -106,8 +116,14 @@ export const AxleSpacingAndWeightsSection = ({
             onUpdatePowerUnitAxleConfiguration
           }
           onUpdateTrailerAxleConfiguration={onUpdateTrailerAxleConfiguration}
+          onAxleCalculationResultsChange={setAxleCalculationResults}
+          onValidationBannerChange={setShowValidationBanner}
           showASWRequiredFieldsBanner={showASWRequiredFieldsBanner}
           readOnly={readOnly}
+        />
+        <AxleSpacingAndWeightsResults
+          axleCalculationResults={axleCalculationResults}
+          showValidationBanner={showValidationBanner}
         />
       </Box>
     </Box>
