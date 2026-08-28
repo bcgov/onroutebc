@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { OverloadCalculationDetailKind } from "onroute-policy-engine/enum";
 import { vi } from "vitest";
 import { PERMIT_TYPES } from "../../../../../../types/PermitType";
 import { AxleConfiguration, AxleUnit } from "../../../../../../types/AxleUnit";
@@ -127,7 +128,7 @@ describe("AxleSpacingAndWeightsSection", () => {
           overload: 100,
           overloadDetails: [
             {
-              kind: "axle-weight",
+              kind: OverloadCalculationDetailKind.AxleWeight,
               startAxleUnit: 2,
               endAxleUnit: 2,
               actualWeight: 12000,
@@ -344,7 +345,7 @@ describe("AxleSpacingAndWeightsSection", () => {
       overload: 700,
       overloadDetails: [
         {
-          kind: "axle-weight",
+          kind: OverloadCalculationDetailKind.AxleWeight,
           startAxleUnit: 1,
           endAxleUnit: 1,
           actualWeight: 6700,

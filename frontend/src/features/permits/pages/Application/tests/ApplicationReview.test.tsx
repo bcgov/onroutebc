@@ -5,6 +5,7 @@ import type {
   ValidationResult,
   ValidationResults,
 } from "onroute-policy-engine";
+import { OverloadCalculationDetailKind } from "onroute-policy-engine/enum";
 
 import { PERMIT_TYPES } from "../../../types/PermitType";
 import { Application } from "../../../types/application";
@@ -500,7 +501,7 @@ describe("Review and Confirm Application Details", () => {
         overload: 100,
         overloadDetails: [
           {
-            kind: "axle-weight",
+            kind: OverloadCalculationDetailKind.AxleWeight,
             startAxleUnit: 1,
             endAxleUnit: 1,
             actualWeight: 6700,

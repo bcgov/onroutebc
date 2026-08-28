@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { OverloadCalculationDetailKind } from "onroute-policy-engine/enum";
 import type { OverloadCalculationDetail } from "onroute-policy-engine/types";
 
 import "./OverloadCalculationDetails.scss";
@@ -22,7 +23,8 @@ export const OverloadCalculationDetails = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const detailsId = useId();
-  const isLicensedGvwCalculation = details[0]?.kind === "licensed-gvw";
+  const isLicensedGvwCalculation =
+    details[0]?.kind === OverloadCalculationDetailKind.LicensedGvw;
   const columnCount = 4;
 
   return (
@@ -74,7 +76,8 @@ export const OverloadCalculationDetails = ({
                         ? detail.startAxleUnit
                         : `${detail.startAxleUnit} - ${detail.endAxleUnit}`}
                     </td>
-                    {detail.kind === "licensed-gvw" ? (
+                    {detail.kind ===
+                    OverloadCalculationDetailKind.LicensedGvw ? (
                       <>
                         <td>{formatNumberWithCommas(detail.licensedGVW)}</td>
                         <td>{formatNumberWithCommas(detail.totalGCVW)}</td>

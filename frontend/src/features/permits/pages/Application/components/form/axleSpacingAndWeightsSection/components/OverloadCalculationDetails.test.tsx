@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { OverloadCalculationDetailKind } from "onroute-policy-engine/enum";
 
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../../../routes/constants";
 import { OverloadCalculationDetails } from "./OverloadCalculationDetails";
@@ -12,7 +13,7 @@ describe("OverloadCalculationDetails", () => {
         overload={8360}
         details={[
           {
-            kind: "axle-weight",
+            kind: OverloadCalculationDetailKind.AxleWeight,
             startAxleUnit: 1,
             endAxleUnit: 1,
             actualWeight: 7560,
@@ -20,7 +21,7 @@ describe("OverloadCalculationDetails", () => {
             overload: 260,
           },
           {
-            kind: "axle-weight",
+            kind: OverloadCalculationDetailKind.AxleWeight,
             startAxleUnit: 3,
             endAxleUnit: 4,
             actualWeight: 35100,
@@ -78,7 +79,7 @@ describe("OverloadCalculationDetails", () => {
         overload={17000}
         details={[
           {
-            kind: "licensed-gvw",
+            kind: OverloadCalculationDetailKind.LicensedGvw,
             startAxleUnit: 1,
             endAxleUnit: 3,
             licensedGVW: 35000,
