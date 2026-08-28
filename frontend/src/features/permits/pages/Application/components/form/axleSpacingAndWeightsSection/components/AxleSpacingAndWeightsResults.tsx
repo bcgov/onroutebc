@@ -2,8 +2,13 @@ import "./AxleSpacingAndWeightsResults.scss";
 
 import { ErrorAltBcGovBanner } from "../../../../../../../../common/components/banners/ErrorAltBcGovBanner";
 import { CustomExternalLink } from "../../../../../../../../common/components/links/CustomExternalLink";
-import { formatNumberWithCommas } from "../../../../../../../../common/helpers/formatNumberWithCommas";
+import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
+import { formatNumber } from "../../../../../../../../common/helpers/numeric/formatNumber";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
+import {
+  isUndefined,
+  Nullable,
+} from "../../../../../../../../common/types/common";
 import {
   CTPM_CHAPTER_5_TITLE,
   ONROUTE_WEBPAGE_LINKS,
@@ -22,7 +27,7 @@ export const AxleSpacingAndWeightsResults = ({
   axleCalculationResults,
   showValidationBanner,
 }: {
-  axleCalculationResults?: AxleCalculationResult;
+  axleCalculationResults?: Nullable<AxleCalculationResult>;
   showValidationBanner: boolean;
 }) => {
   if (!showValidationBanner && !axleCalculationResults) return null;
@@ -39,8 +44,17 @@ export const AxleSpacingAndWeightsResults = ({
   );
   const hasFailures = Boolean(failedResults?.length);
   const hasWarnings = Boolean(warningResults?.length);
-  const totalGCVW = axleCalculationResults?.totalGCVW;
+  const totalGCVW = convertToNumberIfValid<number | undefined>(
+    axleCalculationResults?.totalGCVW,
+  );
   const overload = axleCalculationResults?.overload;
+  const hasOverload = !isUndefined(overload) && overload >= 0;
+  const showOverloadCalculationDetails = Boolean(
+    hasOverload &&
+      overload > 0 &&
+      axleCalculationResults?.overloadDetails?.length,
+  );
+  const showOverloadSummary = hasOverload && !showOverloadCalculationDetails;
   const showPermitNotRequiredBanner = !hasFailures && overload === 0;
   const isReferencingCTPMChapter5 = (message: string) =>
     message.toLowerCase().includes(CTPM_CHAPTER_5_TITLE.toLowerCase());
@@ -51,22 +65,24 @@ export const AxleSpacingAndWeightsResults = ({
         <ErrorAltBcGovBanner msg="All fields in Axle Spacing and Weights are required to calculate results." />
       ) : (
         <div className="axle-spacing-and-weights-results__list">
-          {totalGCVW && !Number.isNaN(totalGCVW) ? (
+          {totalGCVW ? (
             <span className="axle-spacing-and-weights-results__item">
               <strong>Total GCVW (kg):</strong>{" "}
-              {formatNumberWithCommas(totalGCVW)}
+              {formatNumber(totalGCVW)}
             </span>
           ) : null}
-          {overload !== undefined &&
-          overload > 0 &&
-          axleCalculationResults?.overloadDetails?.length ? (
+          {showOverloadCalculationDetails ? (
             <OverloadCalculationDetails
-              overload={overload}
-              details={axleCalculationResults.overloadDetails}
+              overload={getDefaultRequiredVal(0, overload)}
+              details={getDefaultRequiredVal(
+                [],
+                axleCalculationResults?.overloadDetails,
+              )}
             />
-          ) : overload !== undefined && overload >= 0 ? (
+          ) : null}
+          {showOverloadSummary ? (
             <span className="axle-spacing-and-weights-results__item">
-              <strong>Overload (kg):</strong> {formatNumberWithCommas(overload)}
+              <strong>Overload (kg):</strong> {formatNumber(overload)}
             </span>
           ) : null}
           <span className="axle-spacing-and-weights-results__item">

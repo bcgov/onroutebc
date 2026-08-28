@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Policy, ValidationResult } from "onroute-policy-engine";
-import type { ValidationResults } from "onroute-policy-engine";
+import { Policy, ValidationResult, type ValidationResults} from "onroute-policy-engine";
 
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";

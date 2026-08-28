@@ -1,8 +1,7 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useMemo } from "react";
-import { ValidationResult } from "onroute-policy-engine";
-import type { ValidationResults } from "onroute-policy-engine";
+import type { ValidationResult, ValidationResults } from "onroute-policy-engine";
 import type { StandardTireSize } from "onroute-policy-engine/types";
 
 import "./PermitReview.scss";

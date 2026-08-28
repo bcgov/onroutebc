@@ -11,7 +11,7 @@ import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../../../common/constants/constants";
-import { formatNumberWithCommas } from "../../../../../../../../common/helpers/formatNumberWithCommas";
+import { formatNumber } from "../../../../../../../../common/helpers/numeric/formatNumber";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../../../routes/constants";
 
 export const OverloadCalculationDetails = ({
@@ -31,7 +31,7 @@ export const OverloadCalculationDetails = ({
     <section className="overload-calculation-details">
       <div className="overload-calculation-details__summary">
         <span>
-          <strong>Overload (kg):</strong> {formatNumberWithCommas(overload)}
+          <strong>Overload (kg):</strong> {formatNumber(overload)}
         </span>
         <button
           type="button"
@@ -79,16 +79,16 @@ export const OverloadCalculationDetails = ({
                     {detail.kind ===
                     OverloadCalculationDetailKind.LicensedGvw ? (
                       <>
-                        <td>{formatNumberWithCommas(detail.licensedGVW)}</td>
-                        <td>{formatNumberWithCommas(detail.totalGCVW)}</td>
+                        <td>{formatNumber(detail.licensedGVW)}</td>
+                        <td>{formatNumber(detail.totalGCVW)}</td>
                       </>
                     ) : (
                       <>
-                        <td>{formatNumberWithCommas(detail.actualWeight)}</td>
-                        <td>{formatNumberWithCommas(detail.legalMaxWeight)}</td>
+                        <td>{formatNumber(detail.actualWeight)}</td>
+                        <td>{formatNumber(detail.legalMaxWeight)}</td>
                       </>
                     )}
-                    <td>{formatNumberWithCommas(detail.overload)}</td>
+                    <td>{formatNumber(detail.overload)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -99,7 +99,7 @@ export const OverloadCalculationDetails = ({
                     colSpan={columnCount - 1}
                   />
                   <td className="overload-calculation-details__total">
-                    Total (kg): {formatNumberWithCommas(overload)}
+                    Total (kg): {formatNumber(overload)}
                   </td>
                 </tr>
               </tfoot>
