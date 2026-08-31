@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Policy, ValidationResult } from "onroute-policy-engine";
+import { Policy, ValidationResult, type ValidationResults} from "onroute-policy-engine";
 
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
@@ -15,9 +15,14 @@ export const usePolicyWarnings = (
     permitData: Partial<ReplaceDayjsWithString<PermitData>>;
   },
   policyEngine?: Nullable<Policy>,
+  {
+    includeAxleCalculationResults = false,
+  }: { includeAxleCalculationResults?: boolean } = {},
 ) => {
   const [policyWarnings, setPolicyWarnings] = useState<ValidationResult[]>([]);
   const [hasPolicyIssues, setHasPolicyIssues] = useState(false);
+  const [axleCalculationResults, setAxleCalculationResults] =
+    useState<ValidationResults["axleCalculationResults"]>();
 
   useEffect(() => {
     const validate = async () => {
@@ -26,6 +31,9 @@ export const usePolicyWarnings = (
         const { warnings } = validationResults;
 
         setHasPolicyIssues(hasPolicyValidationIssues(validationResults));
+        if (includeAxleCalculationResults) {
+          setAxleCalculationResults(validationResults.axleCalculationResults);
+        }
 
         // IMPORTANT: Since 'warnings' is an array of ValidationResult objects that will be returned and used
         // in other components, it's important to memoize it to avoid potential infinite render loops.
@@ -55,7 +63,7 @@ export const usePolicyWarnings = (
     };
 
     validate();
-  }, [permit, policyEngine]);
+  }, [permit, policyEngine, includeAxleCalculationResults]);
 
-  return { policyWarnings, hasPolicyIssues };
+  return { policyWarnings, hasPolicyIssues, axleCalculationResults };
 };

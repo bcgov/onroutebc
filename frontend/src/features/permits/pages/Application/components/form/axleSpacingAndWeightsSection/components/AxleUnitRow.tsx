@@ -31,7 +31,7 @@ export const AxleUnitRow = ({
   label: Nullable<string>;
   axleUnitNumber: number;
   isTrailer: boolean;
-  onUpdateAxleConfiguration: (axleConfiguration: AxleUnit[]) => void;
+  onUpdateAxleConfiguration?: (axleConfiguration: AxleUnit[]) => void;
   tireSizeOptions?: {
     name: string;
     size: number;
@@ -48,7 +48,7 @@ export const AxleUnitRow = ({
     const updatedConfiguration = axleConfiguration.map((axleUnit, index) =>
       index === axleIndex ? { ...axleUnit, [field]: value } : axleUnit,
     );
-    onUpdateAxleConfiguration(updatedConfiguration);
+    onUpdateAxleConfiguration?.(updatedConfiguration);
   };
 
   const addAxleUnit = () => {
@@ -57,14 +57,14 @@ export const AxleUnitRow = ({
       { interaxleSpacing: null },
       DEFAULT_AXLE_UNIT,
     ];
-    onUpdateAxleConfiguration(newAxleConfiguration);
+    onUpdateAxleConfiguration?.(newAxleConfiguration);
   };
 
   const removeAxleUnit = () => {
     if (axleConfiguration.length >= 4) {
       // Remove the last two items (interaxle spacing + axle unit pair)
       const newAxleConfiguration = axleConfiguration.slice(0, -2);
-      onUpdateAxleConfiguration(newAxleConfiguration);
+      onUpdateAxleConfiguration?.(newAxleConfiguration);
     }
   };
 
@@ -224,7 +224,7 @@ export const AxleUnitRow = ({
                             : currentAxleUnit,
                       );
 
-                      onUpdateAxleConfiguration(updatedConfiguration);
+                      onUpdateAxleConfiguration?.(updatedConfiguration);
                     },
                     maskFn: (numericVal) => numericVal.toFixed(0),
                   }}
