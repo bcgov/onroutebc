@@ -22,6 +22,7 @@ import {
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
+  PE_ID_AXLE_WEIGHT_SPACING,
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
 } from '../constants/policy-engine.constant';
 
@@ -48,20 +49,35 @@ export const evaluatePolicyValidationResult = (
   currentUser: IUserJWT,
   validationResults: ValidationResults,
 ): boolean => {
-  // Return false if the current user is a CV Client and there are validation violations
-  // where not all of the violations are related to start date
-  if (
-    isCVClient(currentUser.identity_provider) &&
-    validationResults?.violations?.length
-  ) {
-    return false;
-  }
-
   const { permitType, permitData } = application;
 
-  const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
+  const elApprovalNumber = permitData?.elApprovalNumber;
 
+  const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
   const isSTOW = permitType === PermitType.SINGLE_TRIP_OVERWEIGHT;
+
+  // CV clients: generally reject if any policy validation violations exist.
+  // Special handling for STOW (single-trip overweight) permits:
+  // - If there's exactly one violation and it is `PE_ID_AXLE_WEIGHT_SPACING`,
+  //   allow only when an `elApprovalNumber` (EL approval number) is present;
+  //   otherwise reject.
+  // - All other STOW or non-STOW violations cause rejection for CV clients.
+  if (isCVClient(currentUser.identity_provider)) {
+    const violations = validationResults?.violations;
+    if (violations?.length) {
+      if (isSTOW) {
+        const isAxleWeightSpacingViolationOnly =
+          violations?.length === 1 &&
+          violations?.at(0)?.id === PE_ID_AXLE_WEIGHT_SPACING;
+        if (!isAxleWeightSpacingViolationOnly || !elApprovalNumber) {
+          return false;
+        }
+        // If only axle-weight-spacing violation and an elApprovalNumber is present: allow
+      } else {
+        return false;
+      }
+    }
+  }
 
   // Function to check if the permit duration is within the allowed expiration limit
   const isAllowedDuration = (expirationLimit: number) =>
@@ -71,6 +87,10 @@ export const evaluatePolicyValidationResult = (
   // Function to check if there is a duration violation
   const isDurationViolation = (violation: ValidationResult) =>
     violation?.fieldReference === PE_FIELD_REFERENCE_PERMIT_DURATION;
+
+  // Function to check if there is a axle weight spacing violation
+  const isAxleWeightSpacingViolation = (violation: ValidationResult) =>
+    violation?.id === PE_ID_AXLE_WEIGHT_SPACING;
 
   const isStartDateViolationAllowed = (
     violation: ValidationResult,
@@ -146,6 +166,11 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STOW_MAX_ALLOWED_DURATION_AMEND);
 
+  // Function to check if there is an STOW axle weight spacing violation which can be excluded
+  const isSTOWAxleWeightSpacingViolationAllowed = (
+    violation: ValidationResult,
+  ) => isSTOW && isAxleWeightSpacingViolation(violation);
+
   // Return true only if all violations are either STOS & STOW duration or start date violations
   return !validationResults?.violations?.some(
     (violation) =>
@@ -154,6 +179,7 @@ export const evaluatePolicyValidationResult = (
         (
           isSTOSDurationViolationAllowed(violation) ||
           isSTOWDurationViolationAllowed(violation) ||
+          isSTOWAxleWeightSpacingViolationAllowed(violation) ||
           isStartDateViolationAllowed(violation, permitType)
         )
       ),
