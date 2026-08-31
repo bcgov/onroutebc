@@ -1,4 +1,7 @@
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../common/helpers/formatDate";
 import { PermitData } from "../../types/PermitData";
 import { ReplaceDayjsWithString } from "../../types/utility";
 import { serializePermitVehicleConfiguration } from "./serializePermitVehicleConfiguration";
@@ -18,29 +21,26 @@ export const serializePermitData = (
 
   const serializedPermittedRoute = permittedRoute
     ? {
-      manualRoute: permittedRoute.manualRoute
-        ? {
-          ...permittedRoute.manualRoute,
-          highwaySequence: permittedRoute.manualRoute.highwaySequence
-            .filter(highwayNumber => Boolean(highwayNumber.trim())),
-        }
-        : null,
-      routeDetails: permittedRoute.routeDetails,
-    }
+        manualRoute: permittedRoute.manualRoute
+          ? {
+              ...permittedRoute.manualRoute,
+              highwaySequence:
+                permittedRoute.manualRoute.highwaySequence.filter(
+                  (highwayNumber) => Boolean(highwayNumber.trim()),
+                ),
+            }
+          : null,
+        routeDetails: permittedRoute.routeDetails,
+      }
     : null;
 
   return {
     ...restOfPermitData,
-    startDate: dayjsToLocalStr(
-      startDate,
-      DATE_FORMATS.DATEONLY,
-    ),
-    expiryDate: dayjsToLocalStr(
-      expiryDate,
-      DATE_FORMATS.DATEONLY,
-    ),
+    startDate: dayjsToLocalStr(startDate, DATE_FORMATS.DATEONLY),
+    expiryDate: dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY),
     vehicleDetails: serializePermitVehicleDetails(vehicleDetails),
-    vehicleConfiguration: serializePermitVehicleConfiguration(vehicleConfiguration),
+    vehicleConfiguration:
+      serializePermitVehicleConfiguration(vehicleConfiguration),
     permittedRoute: serializedPermittedRoute,
   };
 };

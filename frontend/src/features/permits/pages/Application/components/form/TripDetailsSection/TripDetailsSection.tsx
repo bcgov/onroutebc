@@ -36,13 +36,11 @@ export const TripDetailsSection = ({
     updatedTotalDistance?: RequiredOrNull<number>,
   ) => void;
 }) => {
-  return (
-    permitType === PERMIT_TYPES.STOS ||
+  return permitType === PERMIT_TYPES.STOS ||
     permitType === PERMIT_TYPES.STOW ||
     permitType === PERMIT_TYPES.MFP ||
     permitType === PERMIT_TYPES.STWSE ||
-    permitType === PERMIT_TYPES.STGVWI
-  ) ? (
+    permitType === PERMIT_TYPES.STGVWI ? (
     <Box className="trip-details-section">
       <Box className="trip-details-section__header">
         <h3 className="trip-details-section__title">Trip Details</h3>
@@ -60,12 +58,10 @@ export const TripDetailsSection = ({
           onUpdateTotalDistance={onUpdateTotalDistance}
         />
 
-        {(
-          permitType === PERMIT_TYPES.STOS ||
-          permitType === PERMIT_TYPES.STOW ||
-          permitType === PERMIT_TYPES.STWSE ||
-          permitType === PERMIT_TYPES.STGVWI
-        ) ? (
+        {permitType === PERMIT_TYPES.STOS ||
+        permitType === PERMIT_TYPES.STOW ||
+        permitType === PERMIT_TYPES.STWSE ||
+        permitType === PERMIT_TYPES.STGVWI ? (
           <HighwaySequences
             permitType={permitType}
             highwaySequence={highwaySequence}

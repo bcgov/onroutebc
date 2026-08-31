@@ -114,7 +114,9 @@ export const durationOptionsForPermitType = (
     case PERMIT_TYPES.STWSE:
       return isStaff ? STWSE_STAFF_DURATION_OPTIONS : STWSE_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.STGVWI:
-      return isStaff ? STGVWI_STAFF_DURATION_OPTIONS : STGVWI_CV_DURATION_OPTIONS;
+      return isStaff
+        ? STGVWI_STAFF_DURATION_OPTIONS
+        : STGVWI_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:

@@ -6,18 +6,20 @@ export const STWSE_CONDITIONS: PermitCondition[] = [
     condition: "CVSE-1000",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1251",
     checked: true,
-    disabled: true
+    disabled: true,
   },
   {
     description: "Permit Scope and Limitation",
     condition: "CVSE-1070",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261",
     checked: true,
-    disabled: true
+    disabled: true,
   },
 ];
 
-export const MANDATORY_STWSE_CONDITIONS: PermitCondition[] = [...STWSE_CONDITIONS];
+export const MANDATORY_STWSE_CONDITIONS: PermitCondition[] = [
+  ...STWSE_CONDITIONS,
+];
 export const MIN_STWSE_DURATION = 1;
 export const MAX_STWSE_CV_DURATION = 7;
 export const MAX_STWSE_STAFF_DURATION = 30;

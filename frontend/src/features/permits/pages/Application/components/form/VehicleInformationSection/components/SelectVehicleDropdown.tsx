@@ -12,7 +12,10 @@ import {
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { sortVehicles } from "../../../../../../helpers/vehicles/sortVehicles";
-import { VEHICLE_CHOOSE_FROM, VehicleChooseFrom } from "../../../../../../constants/constants";
+import {
+  VEHICLE_CHOOSE_FROM,
+  VehicleChooseFrom,
+} from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
@@ -58,10 +61,10 @@ export const SelectVehicleDropdown = ({
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
-  const eligibleVehicles = useMemo(() => sortVehicles(
-    vehicleOptions,
-    chooseFrom,
-  ), [chooseFrom, vehicleOptions]);
+  const eligibleVehicles = useMemo(
+    () => sortVehicles(vehicleOptions, chooseFrom),
+    [chooseFrom, vehicleOptions],
+  );
 
   const selectedOption = selectedVehicle
     ? getDefaultRequiredVal(
@@ -87,10 +90,7 @@ export const SelectVehicleDropdown = ({
   }, [selectedOption]);
 
   return (
-    <FormControl
-      margin="normal"
-      className="select-vehicle-dropdown"
-    >
+    <FormControl margin="normal" className="select-vehicle-dropdown">
       <FormLabel className="select-vehicle-dropdown__label">{label}</FormLabel>
       <Autocomplete
         id="application-select-vehicle"
@@ -111,13 +111,13 @@ export const SelectVehicleDropdown = ({
         getOptionLabel={(option) => {
           if (!option) return "";
           if (!option.unitNumber) option.unitNumber = EMPTY_VEHICLE_UNIT_NUMBER;
-          return chooseFrom == VEHICLE_CHOOSE_FROM.PLATE ? option.plate : option.unitNumber;
+          return chooseFrom == VEHICLE_CHOOSE_FROM.PLATE
+            ? option.plate
+            : option.unitNumber;
         }}
-        className={
-          `select-vehicle-dropdown__autocomplete ${
-            disabled ? "select-vehicle-dropdown__autocomplete--disabled" : ""
-          }`
-        }
+        className={`select-vehicle-dropdown__autocomplete ${
+          disabled ? "select-vehicle-dropdown__autocomplete--disabled" : ""
+        }`}
         classes={{
           endAdornment: "select-vehicle-dropdown__end-adornment",
         }}

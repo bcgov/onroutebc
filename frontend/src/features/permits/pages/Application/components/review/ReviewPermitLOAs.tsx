@@ -25,7 +25,7 @@ export const ReviewPermitLOAs = ({
           </Typography>
 
           <LOATable
-            loas={loas.map(loa => ({
+            loas={loas.map((loa) => ({
               loa,
               checked: true,
               disabled: true,

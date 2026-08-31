@@ -26,7 +26,7 @@ export const areValuesDifferent = <T>(
  * @param arr2 Second array consisting of only non-duplicate primitive values
  * @returns Whether or not the two arrays have the same values
  */
-export const doUniqueArraysHaveSameItems = <T extends (number | string)>(
+export const doUniqueArraysHaveSameItems = <T extends number | string>(
   arr1: T[],
   arr2: T[],
 ) => {
@@ -40,7 +40,7 @@ export const doUniqueArraysHaveSameItems = <T extends (number | string)>(
   for (const val of set2) {
     if (!set1.has(val)) return false;
   }
-  
+
   return true;
 };
 
@@ -53,14 +53,14 @@ export const doUniqueArraysHaveSameItems = <T extends (number | string)>(
  * @param equalFn Function that compares equality of two objects of the given type
  * @returns Whether or not the two arrays have the same objects
  */
-export const doUniqueArraysHaveSameObjects = <T, K extends (number | string)>(
+export const doUniqueArraysHaveSameObjects = <T, K extends number | string>(
   arr1: T[],
   arr2: T[],
   key: (item: T) => K,
   equalFn: (item1: T, item2: T) => boolean,
 ) => {
-  const map1 = new Map<K, T>(arr1.map(item => [key(item), item]));
-  const map2 = new Map<K, T>(arr2.map(item => [key(item), item]));
+  const map1 = new Map<K, T>(arr1.map((item) => [key(item), item]));
+  const map2 = new Map<K, T>(arr2.map((item) => [key(item), item]));
 
   for (const [key, item] of map1) {
     const itemInOtherMapWithSameKey = map2.get(key);
@@ -90,7 +90,7 @@ export const areOrderedSequencesEqual = <T>(
 ) => {
   const seq1 = getDefaultRequiredVal([], sequence1);
   const seq2 = getDefaultRequiredVal([], sequence2);
-  
+
   if (seq1.length !== seq2.length) return false;
   return seq1.every((seqNumber, index) => equalFn(seqNumber, seq2[index]));
 };

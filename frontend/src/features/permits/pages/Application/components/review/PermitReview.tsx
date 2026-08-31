@@ -1,7 +1,10 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useMemo } from "react";
-import type { ValidationResult, ValidationResults } from "onroute-policy-engine";
+import type {
+  ValidationResult,
+  ValidationResults,
+} from "onroute-policy-engine";
 import type { StandardTireSize } from "onroute-policy-engine/types";
 
 import "./PermitReview.scss";
@@ -146,24 +149,16 @@ export const PermitReview = (props: PermitReviewProps) => {
   // but there are no dimension oversize warnings
   // 4. Amending a permit and the total amount due is a positive amount
   // (ie. Additional amount needs to be paid for amendment)
-  const hasToCartButton = (
-    props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY
-      && (
-        (
-          props.permitType !== PERMIT_TYPES.STOS
-            && props.permitType !== PERMIT_TYPES.STWSE
-        ) || (
-          props.isStaffUser
-        ) || (
-          props.permitType === PERMIT_TYPES.STWSE
-            && props.policyWarnings.length <= 0
-        )
-      )
-  ) || (
-    props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND
-      && Number(props.calculatedFee) > 0
-  );
-  
+  const hasToCartButton =
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
+      ((props.permitType !== PERMIT_TYPES.STOS &&
+        props.permitType !== PERMIT_TYPES.STWSE) ||
+        props.isStaffUser ||
+        (props.permitType === PERMIT_TYPES.STWSE &&
+          props.policyWarnings.length <= 0))) ||
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.AMEND &&
+      Number(props.calculatedFee) > 0);
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">

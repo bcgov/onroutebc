@@ -4,7 +4,10 @@ import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
 import { TROS_CONDITIONS } from "../../../../../constants/tros";
-import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../../../../types/PermitType";
+import {
+  DEFAULT_PERMIT_TYPE,
+  PERMIT_TYPES,
+} from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
 import { PermitStatus } from "../../../../../types/PermitStatus";
@@ -107,9 +110,7 @@ export const updateApplication = (
       applicationNumber,
       permitStatus,
       permitId,
-      companyId: getDefaultRequiredVal(
-        getDefaultUserDetails().companyId,
-      ),
+      companyId: getDefaultRequiredVal(getDefaultUserDetails().companyId),
       permitType: getDefaultRequiredVal(
         PERMIT_TYPES.TROS,
         application.permitType,
@@ -140,15 +141,11 @@ export const getDefaultApplication = () => {
   const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
   const permitType = DEFAULT_PERMIT_TYPE;
   const minDuration = minDurationForPermitType(permitType);
-  const expiryDt = getExpiryDate(
-    currentDt,
-    permitType,
-    minDuration,
-  );
-  
+  const expiryDt = getExpiryDate(currentDt, permitType, minDuration);
+
   const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
-  
+
   const contactDetails = {
     firstName: userDetails.firstName,
     lastName: userDetails.lastName,

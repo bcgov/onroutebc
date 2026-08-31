@@ -6,11 +6,13 @@ export const NRSCV_CONDITIONS: PermitCondition[] = [
     condition: "CVSE-1070",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261",
     checked: true,
-    disabled: true
+    disabled: true,
   },
 ];
 
-export const MANDATORY_NRSCV_CONDITIONS: PermitCondition[] = [...NRSCV_CONDITIONS];
+export const MANDATORY_NRSCV_CONDITIONS: PermitCondition[] = [
+  ...NRSCV_CONDITIONS,
+];
 
 export const MIN_NRSCV_DURATION = 1;
 export const MAX_NRSCV_DURATION = 30;

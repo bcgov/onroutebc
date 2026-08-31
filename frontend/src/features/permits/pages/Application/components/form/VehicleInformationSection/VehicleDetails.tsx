@@ -27,9 +27,7 @@ import {
   ORBCFormFeatureType,
 } from "../../../../../../../common/types/common";
 
-import {
-  disableMouseWheelInputOnNumberField,
-} from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   gvwLimit,
@@ -138,21 +136,23 @@ export const VehicleDetails = ({
   const vehicleType = vehicleFormData.vehicleType;
 
   const shouldDisableVehicleSubtype =
-    disableSubtypeSelection
-    || isLOAUsed 
-    || (vehicleType !== VEHICLE_TYPES.POWER_UNIT && vehicleType !== VEHICLE_TYPES.TRAILER);
+    disableSubtypeSelection ||
+    isLOAUsed ||
+    (vehicleType !== VEHICLE_TYPES.POWER_UNIT &&
+      vehicleType !== VEHICLE_TYPES.TRAILER);
 
-  const shouldDisableSaveVehicleToInventory = 
-    isSelectedLOAVehicle
-      || (vehicleType !== VEHICLE_TYPES.POWER_UNIT && vehicleType !== VEHICLE_TYPES.TRAILER)
-      || (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
-  
+  const shouldDisableSaveVehicleToInventory =
+    isSelectedLOAVehicle ||
+    (vehicleType !== VEHICLE_TYPES.POWER_UNIT &&
+      vehicleType !== VEHICLE_TYPES.TRAILER) ||
+    (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
+
   const shouldDisableSelectVehicleFromInventory =
     permitType === PERMIT_TYPES.HC && haveICBCCertificate;
 
   const shouldDisablePlate =
-    isSelectedLOAVehicle
-      || (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
+    isSelectedLOAVehicle ||
+    (permitType === PERMIT_TYPES.HC && haveICBCCertificate);
 
   const shouldShowVehicleDescription =
     permitType === PERMIT_TYPES.HC && vehicleType === OTHER_VEHICLE_TYPE;
@@ -428,14 +428,12 @@ export const VehicleDetails = ({
             rules: {
               validate: {
                 mustSelect: (value) =>
-                  (
-                    (!value || value === DEFAULT_EMPTY_SELECT_VALUE)
-                      && shouldShowVehicleDescription
-                  ) || (
-                    Boolean(value)
-                      && value !== DEFAULT_EMPTY_SELECT_VALUE
-                      && !shouldShowVehicleDescription
-                  ) || requiredMessage(),
+                  ((!value || value === DEFAULT_EMPTY_SELECT_VALUE) &&
+                    shouldShowVehicleDescription) ||
+                  (Boolean(value) &&
+                    value !== DEFAULT_EMPTY_SELECT_VALUE &&
+                    !shouldShowVehicleDescription) ||
+                  requiredMessage(),
               },
             },
             label: "Vehicle Sub-type",

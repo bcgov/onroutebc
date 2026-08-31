@@ -17,19 +17,21 @@ export const LoadedDimensions = ({
   showChangedFields = false,
   policyWarnings,
 }: {
-  permitType?: Nullable<PermitType>,
+  permitType?: Nullable<PermitType>;
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   oldVehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   showChangedFields?: boolean;
   policyWarnings?: Nullable<ValidationResult[]>;
 }) => {
-  const headerTitle = permitType === PERMIT_TYPES.STWSE
-    ? "Dimensions (Metres)"
-    : "Loaded Dimensions (Metres)";
-  
+  const headerTitle =
+    permitType === PERMIT_TYPES.STWSE
+      ? "Dimensions (Metres)"
+      : "Loaded Dimensions (Metres)";
+
   const warnings = getDefaultRequiredVal([], policyWarnings);
-  const showWarningBanner = permitType === PERMIT_TYPES.STWSE && warnings.length > 0;
-  
+  const showWarningBanner =
+    permitType === PERMIT_TYPES.STWSE && warnings.length > 0;
+
   const changedFields = showChangedFields
     ? {
         overallWidth: areValuesDifferent(
@@ -61,11 +63,12 @@ export const LoadedDimensions = ({
         rearProjection: false,
       };
 
-  const showLoadedDimensions = vehicleConfiguration?.overallWidth
-    || vehicleConfiguration?.overallHeight
-    || vehicleConfiguration?.overallLength
-    || vehicleConfiguration?.frontProjection
-    || vehicleConfiguration?.rearProjection;
+  const showLoadedDimensions =
+    vehicleConfiguration?.overallWidth ||
+    vehicleConfiguration?.overallHeight ||
+    vehicleConfiguration?.overallLength ||
+    vehicleConfiguration?.frontProjection ||
+    vehicleConfiguration?.rearProjection;
 
   return showLoadedDimensions ? (
     <Box className="review-loaded-dimensions">
@@ -87,7 +90,10 @@ export const LoadedDimensions = ({
             className="loaded-dimension__data"
             data-testid="permit-overall-width"
           >
-            {getDefaultRequiredVal(0, vehicleConfiguration?.overallWidth).toFixed(2)}
+            {getDefaultRequiredVal(
+              0,
+              vehicleConfiguration?.overallWidth,
+            ).toFixed(2)}
           </Typography>
         </div>
 
@@ -102,7 +108,10 @@ export const LoadedDimensions = ({
             className="loaded-dimension__data"
             data-testid="permit-overall-height"
           >
-            {getDefaultRequiredVal(0, vehicleConfiguration?.overallHeight).toFixed(2)}
+            {getDefaultRequiredVal(
+              0,
+              vehicleConfiguration?.overallHeight,
+            ).toFixed(2)}
           </Typography>
         </div>
 
@@ -117,13 +126,18 @@ export const LoadedDimensions = ({
             className="loaded-dimension__data"
             data-testid="permit-overall-length"
           >
-            {getDefaultRequiredVal(0, vehicleConfiguration?.overallLength).toFixed(2)}
+            {getDefaultRequiredVal(
+              0,
+              vehicleConfiguration?.overallLength,
+            ).toFixed(2)}
           </Typography>
         </div>
 
         <div className="loaded-dimension loaded-dimension--front-projection">
           <Typography className="loaded-dimension__label">
-            <span className="loaded-dimension__label-text">Front Projection</span>
+            <span className="loaded-dimension__label-text">
+              Front Projection
+            </span>
 
             {changedFields.frontProjection ? <DiffChip /> : null}
           </Typography>
@@ -132,13 +146,18 @@ export const LoadedDimensions = ({
             className="loaded-dimension__data"
             data-testid="permit-front-projection"
           >
-            {getDefaultRequiredVal(0, vehicleConfiguration?.frontProjection).toFixed(2)}
+            {getDefaultRequiredVal(
+              0,
+              vehicleConfiguration?.frontProjection,
+            ).toFixed(2)}
           </Typography>
         </div>
 
         <div className="loaded-dimension loaded-dimension--rear-projection">
           <Typography className="loaded-dimension__label">
-            <span className="loaded-dimension__label-text">Rear Projection</span>
+            <span className="loaded-dimension__label-text">
+              Rear Projection
+            </span>
 
             {changedFields.rearProjection ? <DiffChip /> : null}
           </Typography>
@@ -147,7 +166,10 @@ export const LoadedDimensions = ({
             className="loaded-dimension__data"
             data-testid="permit-rear-projection"
           >
-            {getDefaultRequiredVal(0, vehicleConfiguration?.rearProjection).toFixed(2)}
+            {getDefaultRequiredVal(
+              0,
+              vehicleConfiguration?.rearProjection,
+            ).toFixed(2)}
           </Typography>
         </div>
       </Box>
@@ -161,9 +183,7 @@ export const LoadedDimensions = ({
             />
 
             <div className="warning-banner__body">
-              <p className="warning-banner__text">
-                {warnings[0].message}
-              </p>
+              <p className="warning-banner__text">{warnings[0].message}</p>
             </div>
           </div>
         </Box>

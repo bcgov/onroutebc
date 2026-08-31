@@ -67,8 +67,7 @@ export const AxleSpacingAndWeightsResults = ({
         <div className="axle-spacing-and-weights-results__list">
           {totalGCVW ? (
             <span className="axle-spacing-and-weights-results__item">
-              <strong>Total GCVW (kg):</strong>{" "}
-              {formatNumber(totalGCVW)}
+              <strong>Total GCVW (kg):</strong> {formatNumber(totalGCVW)}
             </span>
           ) : null}
           {showOverloadCalculationDetails ? (

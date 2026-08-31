@@ -60,12 +60,8 @@ export const usePermitVehicles = ({
       selectedCommodity,
       policyEngine,
     );
-  }, [
-    policyEngine,
-    permitType,
-    selectedCommodity,
-  ]);
-  
+  }, [policyEngine, permitType, selectedCommodity]);
+
   const {
     vin: vinInForm,
     plate: plateInForm,
@@ -83,35 +79,33 @@ export const usePermitVehicles = ({
   } = vehicleFormData;
 
   // Get vehicle subtypes options based on current vehicle details in the form
-  const {
-    subtypeOptions,
-    isSelectedLOAVehicle,
-  } = useMemo(() => {
+  const { subtypeOptions, isSelectedLOAVehicle } = useMemo(() => {
     // Try to find all of the unfiltered vehicles in the inventory, and get a list of their subtypes
     // as some of these unfiltered subtypes can potentially be used by a selected LOA
-    const powerUnitsInInventory = allVehiclesFromInventory
-      .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) as PowerUnit[];
-  
-    const trailersInInventory = allVehiclesFromInventory
-      .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
-  
+    const powerUnitsInInventory = allVehiclesFromInventory.filter(
+      (vehicle) => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT,
+    ) as PowerUnit[];
+
+    const trailersInInventory = allVehiclesFromInventory.filter(
+      (vehicle) => vehicle.vehicleType === VEHICLE_TYPES.TRAILER,
+    ) as Trailer[];
+
     const allowedLOASubtypes = new Set([
       ...selectedLOAs.map((selectedLOA) => selectedLOA.vehicleSubType),
     ]);
-  
+
     // Check if selected vehicle is an LOA vehicle
-    const isSelectedLOAVehicle = selectedLOAs.length > 0
-      && Boolean(vehicleIdInForm)
-      && (
-        allowedLOASubtypes.has(vehicleSubtypeInForm)
-      )
-      && (
-        powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
-          .includes(vehicleIdInForm as string)
-        || trailersInInventory.map(trailer => trailer.trailerId)
-          .includes(vehicleIdInForm as string)
-      );
-  
+    const isSelectedLOAVehicle =
+      selectedLOAs.length > 0 &&
+      Boolean(vehicleIdInForm) &&
+      allowedLOASubtypes.has(vehicleSubtypeInForm) &&
+      (powerUnitsInInventory
+        .map((powerUnit) => powerUnit.powerUnitId)
+        .includes(vehicleIdInForm as string) ||
+        trailersInInventory
+          .map((trailer) => trailer.trailerId)
+          .includes(vehicleIdInForm as string));
+
     const subtypeOptions = getEligibleSubtypeOptions(
       [...powerUnitSubtypeNamesMap.entries()].map(([typeCode, type]) => ({
         type,
@@ -144,10 +138,7 @@ export const usePermitVehicles = ({
   ]);
 
   // Get updated vehicle form details and vehicle inventory options if selected LOA has changed
-  const {
-    updatedVehicle,
-    filteredVehicleOptions,
-  } = useMemo(() => {
+  const { updatedVehicle, filteredVehicleOptions } = useMemo(() => {
     const updatedVehicleDetails = getUpdatedVehicleDetailsForLOAs(
       selectedLOAs,
       allVehiclesFromInventory,
@@ -168,8 +159,9 @@ export const usePermitVehicles = ({
       },
       eligibleVehicleSubtypes,
       [
-        (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
-          || isPermitVehicleWithinGvwLimit(
+        (v) =>
+          v.vehicleType !== VEHICLE_TYPES.POWER_UNIT ||
+          isPermitVehicleWithinGvwLimit(
             permitType,
             VEHICLE_TYPES.POWER_UNIT,
             (v as PowerUnit).licensedGvw,
@@ -179,18 +171,22 @@ export const usePermitVehicles = ({
 
     // Make sure that the selected subtype is available as one of the select dropdown options,
     // Otherwise set the subtype to be the default first subtype in the dropdown list,
-    // or set subtype to empty if no subtype options are available 
+    // or set subtype to empty if no subtype options are available
     return {
       updatedVehicle: !subtypeOptions.find(
-        ({ typeCode }) => updatedVehicleDetails.updatedVehicle.vehicleSubType === typeCode,
-      ) ? {
-        ...updatedVehicleDetails.updatedVehicle,
-        vehicleSubType: subtypeOptions.length > 0 ? subtypeOptions[0].typeCode : "",
-        saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
-      } : {
-        ...updatedVehicleDetails.updatedVehicle,
-        saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
-      },
+        ({ typeCode }) =>
+          updatedVehicleDetails.updatedVehicle.vehicleSubType === typeCode,
+      )
+        ? {
+            ...updatedVehicleDetails.updatedVehicle,
+            vehicleSubType:
+              subtypeOptions.length > 0 ? subtypeOptions[0].typeCode : "",
+            saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
+          }
+        : {
+            ...updatedVehicleDetails.updatedVehicle,
+            saveVehicle: isSelectedLOAVehicle ? false : saveVehicleInForm,
+          },
       filteredVehicleOptions: updatedVehicleDetails.filteredVehicleOptions,
     };
   }, [
@@ -294,8 +290,8 @@ export const usePermitVehicles = ({
 
   useEffect(() => {
     if (
-      getDefaultRequiredVal(0, licensedGVWInForm)
-      !== getDefaultRequiredVal(0, updatedLicensedGVW)
+      getDefaultRequiredVal(0, licensedGVWInForm) !==
+      getDefaultRequiredVal(0, updatedLicensedGVW)
     ) {
       onSetLicensedGVW(updatedLicensedGVW);
     }
@@ -320,8 +316,9 @@ export const usePermitVehicles = ({
   }, [vehicleTypeInForm, updatedVehicleType]);
 
   useEffect(() => {
-    if (getDefaultRequiredVal("", vehicleDescriptionInForm)
-      !== getDefaultRequiredVal("", updatedVehicleDescription)
+    if (
+      getDefaultRequiredVal("", vehicleDescriptionInForm) !==
+      getDefaultRequiredVal("", updatedVehicleDescription)
     ) {
       onSetVehicleDescription(
         getDefaultRequiredVal("", updatedVehicleDescription),

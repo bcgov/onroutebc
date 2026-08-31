@@ -6,8 +6,10 @@ export const QRFR_CONDITIONS: PermitCondition[] = [
     condition: "APV96",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1547",
     checked: true,
-    disabled: true
+    disabled: true,
   },
 ];
 
-export const MANDATORY_QRFR_CONDITIONS: PermitCondition[] = [...QRFR_CONDITIONS];
+export const MANDATORY_QRFR_CONDITIONS: PermitCondition[] = [
+  ...QRFR_CONDITIONS,
+];

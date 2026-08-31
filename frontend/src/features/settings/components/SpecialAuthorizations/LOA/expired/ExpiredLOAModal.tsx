@@ -27,7 +27,7 @@ export const ExpiredLOAModal = ({
       open={showModal}
       onClose={handleCancel}
       PaperProps={{
-        className: "expired-loa-modal__container"
+        className: "expired-loa-modal__container",
       }}
     >
       <div className="expired-loa-modal__header">
@@ -35,9 +35,7 @@ export const ExpiredLOAModal = ({
           <FontAwesomeIcon className="icon" icon={faClockRotateLeft} />
         </div>
 
-        <span className="expired-loa-modal__title">
-          Expired LOA(s)
-        </span>
+        <span className="expired-loa-modal__title">Expired LOA(s)</span>
       </div>
 
       <div className="expired-loa-modal__body">

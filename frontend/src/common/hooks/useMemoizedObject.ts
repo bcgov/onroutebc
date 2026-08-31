@@ -23,4 +23,3 @@ export const useMemoizedObject = <T>(
 
   return memoizedObj;
 };
-
