@@ -35,6 +35,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "serve-vite": "vite preview",
     "start": "vite",
