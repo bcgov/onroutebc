@@ -21,10 +21,11 @@ export interface CreditAccountData {
   isVerified: boolean;
 }
 
-export interface CreditAccountUser extends Pick<
-  CompanyProfile,
-  "companyId" | "clientNumber" | "legalName" | "alternateName"
-> {
+export interface CreditAccountUser
+  extends Pick<
+    CompanyProfile,
+    "companyId" | "clientNumber" | "legalName" | "alternateName"
+  > {
   userType: CreditAccountUserType;
 }
 

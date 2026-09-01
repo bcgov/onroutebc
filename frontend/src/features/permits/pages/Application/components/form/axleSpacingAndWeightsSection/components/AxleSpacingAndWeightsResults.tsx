@@ -51,8 +51,8 @@ export const AxleSpacingAndWeightsResults = ({
   const hasOverload = !isUndefined(overload) && overload >= 0;
   const showOverloadCalculationDetails = Boolean(
     hasOverload &&
-    overload > 0 &&
-    axleCalculationResults?.overloadDetails?.length,
+      overload > 0 &&
+      axleCalculationResults?.overloadDetails?.length,
   );
   const showOverloadSummary = hasOverload && !showOverloadCalculationDetails;
   const showPermitNotRequiredBanner = !hasFailures && overload === 0;

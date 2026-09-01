@@ -140,7 +140,8 @@ export interface DataFilterOptions {
  * The options for pagination and filtering data.
  */
 export interface PaginationAndFilters
-  extends PaginationOptions, DataFilterOptions {}
+  extends PaginationOptions,
+    DataFilterOptions {}
 
 /**
  * The metadata containing info about a page in the paginated response.

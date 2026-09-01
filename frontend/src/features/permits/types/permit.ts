@@ -11,10 +11,11 @@ import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
  * A partial permit type that consists of all common fields used for a permit.
  * This is an incomplete type and meant to be extended for use.
  */
-interface PartialPermit extends Omit<
-  Required<PartialApplication>,
-  "previousRevision" | "comment" | "userGuid" | "documentId"
-> {
+interface PartialPermit
+  extends Omit<
+    Required<PartialApplication>,
+    "previousRevision" | "comment" | "userGuid" | "documentId"
+  > {
   previousRevision?: Nullable<string>;
   comment?: Nullable<string>;
   documentId?: Nullable<string>;

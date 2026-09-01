@@ -61,7 +61,8 @@ export interface PaymentGatewayData {
   pgMessageText: string;
 }
 
-export interface StartTransactionRequestData extends NullableFields<PaymentGatewayData> {
+export interface StartTransactionRequestData
+  extends NullableFields<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   paymentCardTypeCode?: Nullable<PaymentCardTypeCode>;
@@ -71,7 +72,8 @@ export interface StartTransactionRequestData extends NullableFields<PaymentGatew
   }[];
 }
 
-export interface StartTransactionResponseData extends NullableFields<PaymentGatewayData> {
+export interface StartTransactionResponseData
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
@@ -89,6 +91,7 @@ export interface StartTransactionResponseData extends NullableFields<PaymentGate
 
 export type CompleteTransactionRequestData = NullableFields<PaymentGatewayData>;
 
-export interface CompleteTransactionResponseData extends NullableFields<PaymentGatewayData> {
+export interface CompleteTransactionResponseData
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
 }

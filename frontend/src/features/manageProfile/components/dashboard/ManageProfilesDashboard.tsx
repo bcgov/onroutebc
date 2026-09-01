@@ -104,10 +104,10 @@ export const ManageProfilesDashboard = React.memo(() => {
       !isSpecialAuthAPILoading &&
       Boolean(
         specialAuthorizations?.isLcvAllowed ||
-        specialAuthorizations?.noFeeType ||
-        activeLOAs.length > 0 ||
-        expiredLOAs.length > 0 ||
-        canWriteLOA,
+          specialAuthorizations?.noFeeType ||
+          activeLOAs.length > 0 ||
+          expiredLOAs.length > 0 ||
+          canWriteLOA,
       ),
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
