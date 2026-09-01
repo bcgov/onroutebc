@@ -41,18 +41,16 @@ export const formatAmount = (
   transactionTypeCode: TransactionType,
   amount: number,
 ): string => {
-  const amountToFormat = (transactionTypeCode === TransactionType.REFUND && amount !== 0)
-    ? -1 * Math.abs(amount)
-    : Math.abs(amount);
+  const amountToFormat =
+    transactionTypeCode === TransactionType.REFUND && amount !== 0
+      ? -1 * Math.abs(amount)
+      : Math.abs(amount);
 
-  return amountToFormat.toLocaleString(
-    "en-CA",
-    {
-      style: "currency",
-      currency: "CAD",
-      currencyDisplay: "symbol",
-    },
-  );
+  return amountToFormat.toLocaleString('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    currencyDisplay: 'symbol',
+  });
 };
 
 export const isCfsPaymentMethodType = (

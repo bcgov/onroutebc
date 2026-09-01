@@ -57,12 +57,12 @@ export const formatTemplateData = (
   template.permitName = fullNames.permitName;
   template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
-  
+
   template.issuedBy =
     permit.permitIssuedBy === PermitIssuedBy.SELF_ISSUED
       ? constants.SELF_ISSUED
       : constants.PPC_FULL_TEXT;
-  
+
   template.createdDateTime = convertUtcToPt(
     permit.createdDateTime,
     'MMM. D, YYYY, hh:mm a Z',
@@ -78,47 +78,71 @@ export const formatTemplateData = (
     ...permitData,
     vehicleDetails: permitData.vehicleDetails
       ? {
-        ...permitData.vehicleDetails,
-        licensedGVW: formatNumber(permitData.vehicleDetails.licensedGVW), 
-      } : undefined,
+          ...permitData.vehicleDetails,
+          licensedGVW: formatNumber(permitData.vehicleDetails.licensedGVW),
+        }
+      : undefined,
     vehicleConfiguration: permitData.vehicleConfiguration
       ? {
-        ...permitData.vehicleConfiguration,
-        overallLength: formatNumber(permitData.vehicleConfiguration.overallLength, 2),
-        overallWidth: formatNumber(permitData.vehicleConfiguration.overallWidth, 2),
-        overallHeight: formatNumber(permitData.vehicleConfiguration.overallHeight, 2),
-        frontProjection: formatNumber(permitData.vehicleConfiguration.frontProjection, 2),
-        rearProjection: formatNumber(permitData.vehicleConfiguration.rearProjection, 2),
-        loadedGVW: formatNumber(permitData.vehicleConfiguration.loadedGVW),
-        actualGVW: formatNumber(permitData.vehicleConfiguration.actualGVW),
-        netWeight: formatNumber(permitData.vehicleConfiguration.netWeight),
-        overloadWeight: formatNumber(permitData.vehicleConfiguration.overloadWeight),
-      } : undefined,
-    permittedRoute: permitData.permittedRoute ? {
-      ...permitData.permittedRoute,
-      manualRoute: permitData.permittedRoute.manualRoute ? {
-        ...permitData.permittedRoute.manualRoute,
-        totalDistance: formatNumber(permitData.permittedRoute.manualRoute.totalDistance, 2),
-      } : undefined,
-    } : undefined,
+          ...permitData.vehicleConfiguration,
+          overallLength: formatNumber(
+            permitData.vehicleConfiguration.overallLength,
+            2,
+          ),
+          overallWidth: formatNumber(
+            permitData.vehicleConfiguration.overallWidth,
+            2,
+          ),
+          overallHeight: formatNumber(
+            permitData.vehicleConfiguration.overallHeight,
+            2,
+          ),
+          frontProjection: formatNumber(
+            permitData.vehicleConfiguration.frontProjection,
+            2,
+          ),
+          rearProjection: formatNumber(
+            permitData.vehicleConfiguration.rearProjection,
+            2,
+          ),
+          loadedGVW: formatNumber(permitData.vehicleConfiguration.loadedGVW),
+          actualGVW: formatNumber(permitData.vehicleConfiguration.actualGVW),
+          netWeight: formatNumber(permitData.vehicleConfiguration.netWeight),
+          overloadWeight: formatNumber(
+            permitData.vehicleConfiguration.overloadWeight,
+          ),
+        }
+      : undefined,
+    permittedRoute: permitData.permittedRoute
+      ? {
+          ...permitData.permittedRoute,
+          manualRoute: permitData.permittedRoute.manualRoute
+            ? {
+                ...permitData.permittedRoute.manualRoute,
+                totalDistance: formatNumber(
+                  permitData.permittedRoute.manualRoute.totalDistance,
+                  2,
+                ),
+              }
+            : undefined,
+        }
+      : undefined,
   };
 
   // Overload weight
-  const stgvwiOverloadVW = permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
-    ? (
-      (permitData?.vehicleConfiguration?.actualGVW ?? 0) -
-      (permitData?.vehicleDetails?.licensedGVW ?? 0)
-    )
-    : undefined;
+  const stgvwiOverloadVW =
+    permit.permitType === PermitType.SINGLE_TRIP_GVW_INCREASE
+      ? (permitData?.vehicleConfiguration?.actualGVW ?? 0) -
+        (permitData?.vehicleDetails?.licensedGVW ?? 0)
+      : undefined;
 
-  const stwseOverloadVW = permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
-    ? (
-      permitData?.vehicleConfiguration?.overloadWeight ?? 0
-    )
-    : undefined;
-  
+  const stwseOverloadVW =
+    permit.permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY
+      ? (permitData?.vehicleConfiguration?.overloadWeight ?? 0)
+      : undefined;
+
   const overloadVW = stgvwiOverloadVW ?? stwseOverloadVW ?? 0;
-  
+
   template.overloadVW = formatNumber(overloadVW);
 
   // Start & Expiry date
@@ -144,7 +168,7 @@ export const formatTemplateData = (
   template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
     fullNames.mailingProvinceName;
-  
+
   if (template.permitData?.vehicleConfiguration?.trailers?.length) {
     template.permitData.vehicleConfiguration.trailers =
       fullNames.vehicleConfigurationTrailers;
