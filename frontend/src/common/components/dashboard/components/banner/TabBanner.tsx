@@ -25,9 +25,7 @@ export const TabBanner = ({
         </div>
 
         {bannerButton ? (
-          <Box className="tab-banner__actions--mobile">
-            {bannerButton}
-          </Box>
+          <Box className="tab-banner__actions--mobile">{bannerButton}</Box>
         ) : null}
 
         <TabsList
@@ -36,11 +34,9 @@ export const TabBanner = ({
           componentList={componentList}
         />
       </div>
-      
+
       {bannerButton ? (
-        <Box className="tab-banner__actions--main">
-          {bannerButton}
-        </Box>
+        <Box className="tab-banner__actions--main">{bannerButton}</Box>
       ) : null}
     </Box>
   );

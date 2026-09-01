@@ -12,4 +12,4 @@ export interface LOAVehicle {
     typeCode: string;
     type?: Nullable<string>;
   };
-};
+}

@@ -8,8 +8,10 @@ import { getDefaultRequiredVal } from "../util";
  * @returns Whether or not the country supports provinces
  */
 export const countrySupportsProvinces = (countryCode?: Nullable<string>) => {
-  return getDefaultRequiredVal(
-    [],
-    COUNTRIES.find(country => country.code === countryCode)?.states,
-  ).length > 0;
+  return (
+    getDefaultRequiredVal(
+      [],
+      COUNTRIES.find((country) => country.code === countryCode)?.states,
+    ).length > 0
+  );
 };

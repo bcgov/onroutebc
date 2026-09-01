@@ -16,9 +16,7 @@ export const DIRECTORY = {
 /**
  * The enum type for directory.
  */
-export type DirectoryType =
-  (typeof DIRECTORY)[keyof typeof DIRECTORY];
-
+export type DirectoryType = (typeof DIRECTORY)[keyof typeof DIRECTORY];
 
 /**
  * Company Metadata type

@@ -7,7 +7,7 @@ export const ErrorPage = ({
 }: {
   errorTitle: string;
   msgNode: React.ReactNode;
-  imgSrc?: string; 
+  imgSrc?: string;
 }) => {
   return (
     <div className="error-page">
@@ -18,13 +18,9 @@ export const ErrorPage = ({
           alt="Error Screen Graphic"
         />
 
-        <div className="error-page__title">
-          {errorTitle}
-        </div>
+        <div className="error-page__title">{errorTitle}</div>
 
-        <div className="error-page__msg">
-          {msgNode}
-        </div>
+        <div className="error-page__msg">{msgNode}</div>
       </div>
     </div>
   );

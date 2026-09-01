@@ -32,9 +32,11 @@ export interface LOAFormData {
   startDate: Dayjs;
   expiryDate?: Nullable<Dayjs>;
   neverExpires: boolean;
-  uploadFile: Nullable<{
-    fileName: string;
-  }> | File;
+  uploadFile:
+    | Nullable<{
+        fileName: string;
+      }>
+    | File;
   additionalNotes?: Nullable<string>;
   vehicleType: VehicleType;
   vehicleSubtype: string;
@@ -48,7 +50,10 @@ export interface LOAFormData {
 export const loaDetailToFormData = (
   loaDetail?: Nullable<LOADetail>,
 ): LOAFormData => {
-  const loaDetailPermitTypes = getDefaultRequiredVal([], loaDetail?.loaPermitType);
+  const loaDetailPermitTypes = getDefaultRequiredVal(
+    [],
+    loaDetail?.loaPermitType,
+  );
   const permitTypes = {
     [PERMIT_TYPES.STOS]: loaDetailPermitTypes.includes(PERMIT_TYPES.STOS),
     [PERMIT_TYPES.TROS]: loaDetailPermitTypes.includes(PERMIT_TYPES.TROS),
@@ -59,28 +64,33 @@ export const loaDetailToFormData = (
   };
 
   const startDate = applyWhenNotNullable(
-    startDateStr => getStartOfDate(toLocalDayjs(startDateStr)),
+    (startDateStr) => getStartOfDate(toLocalDayjs(startDateStr)),
     loaDetail?.startDate,
     now(),
   );
 
   const expiryDate = applyWhenNotNullable(
-    expiryDateStr => getEndOfDate(toLocalDayjs(expiryDateStr)),
+    (expiryDateStr) => getEndOfDate(toLocalDayjs(expiryDateStr)),
     loaDetail?.expiryDate,
     null,
   );
 
   const neverExpires = !expiryDate;
   const additionalNotes = getDefaultRequiredVal("", loaDetail?.comment);
-  const vehicleType = getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, loaDetail?.vehicleType);
+  const vehicleType = getDefaultRequiredVal(
+    DEFAULT_VEHICLE_TYPE,
+    loaDetail?.vehicleType,
+  );
   const vehicleSubtype = getDefaultRequiredVal(
     DEFAULT_EMPTY_SELECT_VALUE,
     loaDetail?.vehicleSubType,
   );
 
-  const defaultFile = loaDetail?.documentId ? {
-    fileName: getDefaultRequiredVal("", loaDetail?.fileName),
-  } : null;
+  const defaultFile = loaDetail?.documentId
+    ? {
+        fileName: getDefaultRequiredVal("", loaDetail?.fileName),
+      }
+    : null;
 
   return {
     permitTypes,
@@ -125,6 +135,6 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
   }
 
   requestData.append("body", JSON.stringify(body));
-  
+
   return requestData;
 };

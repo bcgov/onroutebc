@@ -41,7 +41,8 @@ export const StartApplicationAction = () => {
   const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
   const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
 
-  const showSingleTrip = enableSTOS || enableSTOW || enableSTWSE || enableSTGVWI;
+  const showSingleTrip =
+    enableSTOS || enableSTOW || enableSTWSE || enableSTGVWI;
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
 

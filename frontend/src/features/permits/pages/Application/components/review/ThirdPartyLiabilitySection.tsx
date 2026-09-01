@@ -2,7 +2,10 @@ import { Box, Typography } from "@mui/material";
 
 import "./ThirdPartyLiabilitySection.scss";
 import { Nullable } from "../../../../../../common/types/common";
-import { ThirdPartyLiability, thirdPartyLiabilityFullName } from "../../../../types/ThirdPartyLiability";
+import {
+  ThirdPartyLiability,
+  thirdPartyLiabilityFullName,
+} from "../../../../types/ThirdPartyLiability";
 import { DiffChip } from "./DiffChip";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 
@@ -33,7 +36,10 @@ export const ThirdPartyLiabilitySection = ({
   return thirdPartyLiability ? (
     <Box className="third-party-liability-section">
       <Box className="third-party-liability-section__header">
-        <Typography variant={"h3"} className="third-party-liability-section__title">
+        <Typography
+          variant={"h3"}
+          className="third-party-liability-section__title"
+        >
           Third Party Liability
         </Typography>
       </Box>

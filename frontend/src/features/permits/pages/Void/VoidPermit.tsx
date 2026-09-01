@@ -24,7 +24,10 @@ import {
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
-import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
+import {
+  SEARCH_BY_FILTERS,
+  SEARCH_ENTITIES,
+} from "../../../idir/search/types/types";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { getPermitTabForActionOrigin } from "../../helpers/getPermitTabForActionOrigin";
 import { isPermitEligibleForAmendOrRevokeActions } from "../../helpers/isPermitEligibleForAmendOrRevokeActions";

@@ -15,18 +15,21 @@ export const usePermittedCommodity = (
 ) => {
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
 
-  const onChangeCommodityType = useCallback((commodityType: string) => {
-    if (selectedCommodityType !== commodityType) {
-      onSetCommodityType(commodityType);
-      onClearVehicle();
-      onClearVehicleConfig(permitType);
-    }
-  }, [
-    onSetCommodityType,
-    onClearVehicleConfig,
-    selectedCommodityType,
-    permitType,
-  ]);
+  const onChangeCommodityType = useCallback(
+    (commodityType: string) => {
+      if (selectedCommodityType !== commodityType) {
+        onSetCommodityType(commodityType);
+        onClearVehicle();
+        onClearVehicleConfig(permitType);
+      }
+    },
+    [
+      onSetCommodityType,
+      onClearVehicleConfig,
+      selectedCommodityType,
+      permitType,
+    ],
+  );
 
   return {
     commodityOptions,

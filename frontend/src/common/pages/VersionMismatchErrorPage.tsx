@@ -16,7 +16,7 @@ export const VersionMismatchErrorPage = () => {
             <Link
               className="version-mismatch__link"
               onClick={() => {
-                // Directly changing the href refreshes the page 
+                // Directly changing the href refreshes the page
                 // and takes user to home.
                 window.location.href = HOME;
               }}

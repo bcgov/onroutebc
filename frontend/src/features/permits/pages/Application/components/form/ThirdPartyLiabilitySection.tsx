@@ -5,7 +5,10 @@ import "./ThirdPartyLiabilitySection.scss";
 import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { Nullable } from "../../../../../../common/types/common";
-import { THIRD_PARTY_LIABILITIES, ThirdPartyLiability } from "../../../../types/ThirdPartyLiability";
+import {
+  THIRD_PARTY_LIABILITIES,
+  ThirdPartyLiability,
+} from "../../../../types/ThirdPartyLiability";
 
 export const ThirdPartyLiabilitySection = ({
   permitType,
@@ -16,10 +19,9 @@ export const ThirdPartyLiabilitySection = ({
   thirdPartyLiability?: Nullable<ThirdPartyLiability>;
   onChange: (updatedThirdPartyLiability: ThirdPartyLiability) => void;
 }) => {
-  const showSection = ([
-    PERMIT_TYPES.STFR,
-    PERMIT_TYPES.QRFR,
-  ] as PermitType[]).includes(permitType);
+  const showSection = (
+    [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+  ).includes(permitType);
 
   return showSection ? (
     <div className="third-party-liability-section">
@@ -58,15 +60,17 @@ export const ThirdPartyLiabilitySection = ({
                       key="general-goods"
                       className="third-party-liability__radio"
                       classes={{
-                        checked: "third-party-liability__radio--checked"
+                        checked: "third-party-liability__radio--checked",
                       }}
-                    />}
+                    />
+                  }
                 />
               </div>
 
               <div
                 className={`third-party-liability third-party-liability--dangerous ${
-                  thirdPartyLiability === THIRD_PARTY_LIABILITIES.DANGEROUS_GOODS
+                  thirdPartyLiability ===
+                  THIRD_PARTY_LIABILITIES.DANGEROUS_GOODS
                     ? "third-party-liability--active"
                     : ""
                 }`}
@@ -80,7 +84,7 @@ export const ThirdPartyLiabilitySection = ({
                       key="dangerous-goods"
                       className="third-party-liability__radio"
                       classes={{
-                        checked: "third-party-liability__radio--checked"
+                        checked: "third-party-liability__radio--checked",
                       }}
                     />
                   }

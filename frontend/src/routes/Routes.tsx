@@ -420,9 +420,7 @@ export const AppRoutes = () => {
           element={
             <ApplicationSteps
               applicationStep={routes.APPLICATION_STEPS.DETAILS}
-              applicationStepContext={
-                routes.APPLICATION_STEP_CONTEXTS.COPY
-              }
+              applicationStepContext={routes.APPLICATION_STEP_CONTEXTS.COPY}
             />
           }
         />

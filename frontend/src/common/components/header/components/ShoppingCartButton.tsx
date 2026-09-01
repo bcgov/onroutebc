@@ -28,9 +28,7 @@ export const ShoppingCartButton = ({
         className="shopping-cart-button__icon"
       />
 
-      <div className="shopping-cart-button__count">
-        {cartItemCount}
-      </div>
+      <div className="shopping-cart-button__count">{cartItemCount}</div>
     </Button>
   );
 };

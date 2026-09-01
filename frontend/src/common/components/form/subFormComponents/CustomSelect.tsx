@@ -54,7 +54,7 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       value={value ?? ""}
       {...register(name, rules)}
       MenuProps={{
-        className: "custom-select__menu"
+        className: "custom-select__menu",
       }}
       // This onClose function fixes a bug where the Select component does not immediately
       // revalidate when selecting an option after an invalid form submission.

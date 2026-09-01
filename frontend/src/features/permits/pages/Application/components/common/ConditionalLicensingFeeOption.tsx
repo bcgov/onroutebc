@@ -41,11 +41,7 @@ export const ConditionalLicensingFeeOption = ({
         />
       }
       value={clf}
-      control={
-        <Radio
-          key={clf}
-          className={classes.radio}
-        />}
+      control={<Radio key={clf} className={classes.radio} />}
     />
   );
 };
