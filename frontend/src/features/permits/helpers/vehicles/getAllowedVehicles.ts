@@ -25,22 +25,24 @@ export const getAllowedVehicles = (
 
     if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = vehicle as Trailer;
-      return isLOAUsed ? loas.some(loa => (
-        trailer.vehicleType === loa.vehicleType
-        && trailer.trailerTypeCode === loa.vehicleSubType
-      )) : (
-        eligibleSubtypes.has(trailer.trailerTypeCode)
-          && restrictions.every(restriction => restriction(trailer))
-      );
+      return isLOAUsed
+        ? loas.some(
+            (loa) =>
+              trailer.vehicleType === loa.vehicleType &&
+              trailer.trailerTypeCode === loa.vehicleSubType,
+          )
+        : eligibleSubtypes.has(trailer.trailerTypeCode) &&
+            restrictions.every((restriction) => restriction(trailer));
     }
 
     const powerUnit = vehicle as PowerUnit;
-    return isLOAUsed ? loas.some(loa => (
-      powerUnit.vehicleType === loa.vehicleType
-      && powerUnit.powerUnitTypeCode === loa.vehicleSubType
-    )) : (
-      eligibleSubtypes.has(powerUnit.powerUnitTypeCode)
-        && restrictions.every(restriction => restriction(powerUnit))
-    );
+    return isLOAUsed
+      ? loas.some(
+          (loa) =>
+            powerUnit.vehicleType === loa.vehicleType &&
+            powerUnit.powerUnitTypeCode === loa.vehicleSubType,
+        )
+      : eligibleSubtypes.has(powerUnit.powerUnitTypeCode) &&
+          restrictions.every((restriction) => restriction(powerUnit));
   });
 };

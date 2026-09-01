@@ -2,11 +2,20 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
 import { PermitType } from "../types/PermitType";
-import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
+import {
+  getEndOfDate,
+  getStartOfDate,
+  toLocalDayjs,
+} from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { PowerUnit, Trailer, Vehicle, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
+import {
+  PowerUnit,
+  Trailer,
+  Vehicle,
+  VEHICLE_TYPES,
+} from "../../manageVehicles/types/Vehicle";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { getAllowedVehicles } from "./vehicles/getAllowedVehicles";
 import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
@@ -34,25 +43,21 @@ export const filterLOAsForPermitType = (
   loas: LOADetail[],
   permitType: PermitType,
 ) => {
-  return loas.filter(loa => loa.loaPermitType.includes(permitType));
+  return loas.filter((loa) => loa.loaPermitType.includes(permitType));
 };
 
 /**
- * Filter non-expired LOAs that do not expire before the start date of a permit. 
+ * Filter non-expired LOAs that do not expire before the start date of a permit.
  * @param loas LOAs to filter
  * @param permitStart The start date of the permit
  * @returns LOAs that do not expire before the start date of the permit
  */
-export const filterNonExpiredLOAs = (
-  loas: LOADetail[],
-  permitStart: Dayjs,
-) => {
-  return loas.filter(loa => (
-    !loa.expiryDate
-      || !permitStart.isAfter(
-        getEndOfDate(toLocalDayjs(loa.expiryDate)),
-      )
-  ));
+export const filterNonExpiredLOAs = (loas: LOADetail[], permitStart: Dayjs) => {
+  return loas.filter(
+    (loa) =>
+      !loa.expiryDate ||
+      !permitStart.isAfter(getEndOfDate(toLocalDayjs(loa.expiryDate))),
+  );
 };
 
 /**
@@ -61,15 +66,18 @@ export const filterNonExpiredLOAs = (
  * @returns The most recent expiry date for all the LOAs, or null if none of the LOAs expire
  */
 export const getMostRecentExpiryFromLOAs = (loas: PermitLOA[]) => {
-  const expiringLOAs = loas.filter(loa => Boolean(loa.expiryDate));
+  const expiringLOAs = loas.filter((loa) => Boolean(loa.expiryDate));
   if (expiringLOAs.length === 0) return null;
 
   const firstLOAExpiryDate = getEndOfDate(dayjs(expiringLOAs[0].expiryDate));
-  return expiringLOAs.map(loa => loa.expiryDate)
+  return expiringLOAs
+    .map((loa) => loa.expiryDate)
     .reduce((prevExpiry, currExpiry) => {
       const prevExpiryDate = getEndOfDate(dayjs(prevExpiry));
       const currExpiryDate = getEndOfDate(dayjs(currExpiry));
-      return prevExpiryDate.isAfter(currExpiryDate) ? currExpiryDate : prevExpiryDate;
+      return prevExpiryDate.isAfter(currExpiryDate)
+        ? currExpiryDate
+        : prevExpiryDate;
     }, firstLOAExpiryDate);
 };
 
@@ -91,25 +99,31 @@ export const getUpdatedLOASelection = (
   // which means that LOA should only be shown once.
   // Thus, any overlapping LOA between the up-to-date LOAs and previously selected LOAs should only be included once,
   // and all non-overlapping LOAs that are not part of the up-to-date LOAs should be removed
-  const prevSelectedLOANumbers = new Set([...prevSelectedLOAs.map(loa => loa.loaNumber)]);
+  const prevSelectedLOANumbers = new Set([
+    ...prevSelectedLOAs.map((loa) => loa.loaNumber),
+  ]);
 
   // Updated selection for LOAs, not including empty selection option "None"
-  const updatedSelection = upToDateLOAs.map(loa => {
+  const updatedSelection = upToDateLOAs.map((loa) => {
     const wasSelected = prevSelectedLOANumbers.has(loa.loaNumber);
-    const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
-      && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
+    const isExpiringBeforeMinPermitExpiry =
+      Boolean(loa.expiryDate) &&
+      minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
 
-    const isStartingAfterPermitStartDate =
-      permitStartDate.isBefore(getStartOfDate(dayjs(loa.startDate)));
+    const isStartingAfterPermitStartDate = permitStartDate.isBefore(
+      getStartOfDate(dayjs(loa.startDate)),
+    );
 
     // Deselect and disable any LOAs expiring before min permit expiry date,
     // or hasn't started yet (ie. LOA starts after permit start date)
-    const isSelected = wasSelected
-      && !isExpiringBeforeMinPermitExpiry
-      && !isStartingAfterPermitStartDate;
-    
-    const isEnabled = !isExpiringBeforeMinPermitExpiry && !isStartingAfterPermitStartDate;
-    
+    const isSelected =
+      wasSelected &&
+      !isExpiringBeforeMinPermitExpiry &&
+      !isStartingAfterPermitStartDate;
+
+    const isEnabled =
+      !isExpiringBeforeMinPermitExpiry && !isStartingAfterPermitStartDate;
+
     return {
       loa: {
         loaId: loa.loaId,
@@ -179,21 +193,25 @@ export const getUpdatedVehicleDetailsForLOAs = (
       filteredVehicleOptions: filteredVehicles,
       // If an LOA is used, fill the vehicle type and subtype with the LOA's vehicle type/subtype
       // Otherwise, simply clear the vehicle details and fill with default empty values
-      updatedVehicle: isLOAUsed ? {
-        ...defaultVehicleDetails,
-        vehicleType: selectedLOAs[0].vehicleType,
-        vehicleSubType: selectedLOAs[0].vehicleSubType,
-      } : defaultVehicleDetails,
+      updatedVehicle: isLOAUsed
+        ? {
+            ...defaultVehicleDetails,
+            vehicleType: selectedLOAs[0].vehicleType,
+            vehicleSubType: selectedLOAs[0].vehicleSubType,
+          }
+        : defaultVehicleDetails,
     };
   }
 
   return {
     filteredVehicleOptions: filteredVehicles,
-    updatedVehicle: isLOAUsed ? {
-      ...prevSelectedVehicle,
-      vehicleType: selectedLOAs[0].vehicleType,
-      vehicleSubType: selectedLOAs[0].vehicleSubType,
-    } : prevSelectedVehicle,
+    updatedVehicle: isLOAUsed
+      ? {
+          ...prevSelectedVehicle,
+          vehicleType: selectedLOAs[0].vehicleType,
+          vehicleSubType: selectedLOAs[0].vehicleSubType,
+        }
+      : prevSelectedVehicle,
   };
 };
 
@@ -206,7 +224,9 @@ export const getUpdatedVehicleDetailsForLOAs = (
  * @param isStaff Whether or not the user who manages the application is staff
  * @returns Application data after applying the up-to-date LOAs
  */
-export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFormData | Application>>(
+export const applyUpToDateLOAsToApplication = <
+  T extends Nullable<ApplicationFormData | Application>,
+>(
   applicationData: T,
   upToDateLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
@@ -228,7 +248,10 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
   );
 
   // Update selected LOAs in the permit data
-  const prevSelectedLOAs = getDefaultRequiredVal([], applicationData.permitData.loas);
+  const prevSelectedLOAs = getDefaultRequiredVal(
+    [],
+    applicationData.permitData.loas,
+  );
   const minPermitExpiryDate = getMinPermitExpiryDate(
     applicationData.permitType,
     applicationData.permitData.startDate,
@@ -270,8 +293,9 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     applicationData.permitData.vehicleDetails,
     eligibleVehicleSubtypes,
     [
-      (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
-        || isPermitVehicleWithinGvwLimit(
+      (v) =>
+        v.vehicleType !== VEHICLE_TYPES.POWER_UNIT ||
+        isPermitVehicleWithinGvwLimit(
           applicationData.permitType,
           VEHICLE_TYPES.POWER_UNIT,
           (v as PowerUnit).licensedGvw,
@@ -286,12 +310,12 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     availableCLFs,
     applicationData.permitData.conditionalLicensingFee,
   );
-  
+
   const { enableLoadedGVW, enableNetWeight } = getVehicleWeightStatusForCLF(
     !updatedVehicle.vehicleSubType,
     updatedCLF,
   );
-  
+
   const { updatedLoadedGVW, updatedNetWeight } = getUpdatedVehicleWeights(
     applicationData.permitType,
     enableLoadedGVW,
@@ -309,12 +333,13 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
       loas: newSelectedLOAs,
       vehicleDetails: updatedVehicle,
       conditionalLicensingFee: updatedCLF,
-      vehicleConfiguration: applicationData.permitData.vehicleConfiguration ?
-        {
-          ...applicationData.permitData.vehicleConfiguration,
-          loadedGVW: updatedLoadedGVW,
-          netWeight: updatedNetWeight,
-        } : null,
+      vehicleConfiguration: applicationData.permitData.vehicleConfiguration
+        ? {
+            ...applicationData.permitData.vehicleConfiguration,
+            loadedGVW: updatedLoadedGVW,
+            netWeight: updatedNetWeight,
+          }
+        : null,
     },
   };
 };

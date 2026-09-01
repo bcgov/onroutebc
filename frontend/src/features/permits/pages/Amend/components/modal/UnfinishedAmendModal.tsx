@@ -25,7 +25,7 @@ export const UnfinishedAmendModal = ({
       aria-describedby="unfinished-amend-modal-desc"
       open={shouldOpen}
       classes={{
-        paper: "unfinished-amend-modal__paper"
+        paper: "unfinished-amend-modal__paper",
       }}
     >
       <div className="unfinished-amend-modal__header">
@@ -46,10 +46,9 @@ export const UnfinishedAmendModal = ({
         </h4>
 
         <p className="unfinished-amend-modal__info">
-          <span className="staff-name">
-            {unfinishedAmendmentCreatedBy}
-          </span>
-          has started an amendment for this permit. Would you like to continue editing it or restart with a new amendment?
+          <span className="staff-name">{unfinishedAmendmentCreatedBy}</span>
+          has started an amendment for this permit. Would you like to continue
+          editing it or restart with a new amendment?
         </p>
       </div>
 
@@ -74,7 +73,7 @@ export const UnfinishedAmendModal = ({
         >
           New Amendment
         </Button>
-        
+
         <Button
           className="unfinished-amend-modal__btn unfinished-amend-modal__btn--continue"
           key="continue-amendment-button"

@@ -18,10 +18,8 @@ export const BANNER_MESSAGES = {
       "If you are creating a new vehicle, a desired Vehicle Sub-Type may not be available because it is not eligible for the permit application you are currently in.",
     HAS_INSURANCE_INFO:
       "If your vehicle has a MV1805/APV96, you will be unable to choose it from your inventory or add/update it to your inventory.",
-    OTHER_VEHICLE_TYPE_INFO_START:
-      "If you select",
-    OTHER_VEHICLE_TYPE_VALUE:
-      "Other",
+    OTHER_VEHICLE_TYPE_INFO_START: "If you select",
+    OTHER_VEHICLE_TYPE_VALUE: "Other",
     OTHER_VEHICLE_TYPE_INFO_END:
       "for Vehicle Type, you will be unable to add/update it to your inventory.",
   },
@@ -67,14 +65,17 @@ export const BANNER_MESSAGES = {
   CONVERSION_FACTS:
     "1 mm = 0.1 cm; 1 inch = 2.54 cm; 1 lb = 0.455 kg; 1 ft = 0.305 m.",
   ICBC_INSURANCE_CERTIFICATE: {
-    TITLE: "A valid ICBC Certificate of Insurance is required in addition to a Highway Crossing Permit.",
+    TITLE:
+      "A valid ICBC Certificate of Insurance is required in addition to a Highway Crossing Permit.",
     SELECT_NO_MSG: {
-      START: "If the vehicle has a valid BC license plate and insurance, please select", 
-      NO: "No", 
+      START:
+        "If the vehicle has a valid BC license plate and insurance, please select",
+      NO: "No",
       END: "and proceed to the Vehicle Information section below.",
     },
     CONTACT: {
-      START: "If the vehicle does not have a valid BC license plate and insurance, an ICBC Certificate of Insurance for Crossing Permit (MV1805/APV36) must be obtained by contacting the Provincial Permit Centre at",
+      START:
+        "If the vehicle does not have a valid BC license plate and insurance, an ICBC Certificate of Insurance for Crossing Permit (MV1805/APV36) must be obtained by contacting the Provincial Permit Centre at",
       TOLL_FREE: `Toll-free: ${TOLL_FREE_NUMBER}`,
       OR: "or",
       EMAIL: `Email: ${PPC_EMAIL}`,

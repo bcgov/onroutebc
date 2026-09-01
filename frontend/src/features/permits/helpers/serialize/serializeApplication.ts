@@ -42,11 +42,7 @@ export const serializeForCreateApplication = (
 export const serializeForUpdateApplication = (
   application: ApplicationFormData,
 ): UpdateApplicationRequestData => {
-  const {
-    permitType,
-    comment,
-    permitData,
-  } = application;
+  const { permitType, comment, permitData } = application;
 
   return {
     permitType,

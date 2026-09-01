@@ -1,4 +1,7 @@
-import { PayBCPaymentDetails, StartTransactionResponseData } from "../types/payment";
+import {
+  PayBCPaymentDetails,
+  StartTransactionResponseData,
+} from "../types/payment";
 import { Nullable } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
@@ -38,7 +41,8 @@ export const getPayBCPaymentDetails = (
     trnApproved: applyWhenNotNullable(
       (approved) => Number(approved),
       params.get("trnApproved"),
-    0),
+      0,
+    ),
     messageId: applyWhenNotNullable(
       (messageId) => Number(messageId),
       params.get("messageId"),

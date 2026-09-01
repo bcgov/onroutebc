@@ -61,12 +61,8 @@ describe("Permit Details duration", () => {
     // Arrange
     const { text: durationText, days: durationDays } =
       allDurations[allDurations.length - 1];
-      
-    const { user } = renderTestComponent(
-      dayjs(currentDt),
-      durationDays,
-      [],
-    );
+
+    const { user } = renderTestComponent(dayjs(currentDt), durationDays, []);
 
     // Act
     await openDurationSelect(user);
@@ -191,11 +187,7 @@ describe("Permit Details start date", () => {
 
   it("should display correct expiry date after selecting start date", async () => {
     // Arrange
-    const { user } = renderTestComponent(
-      dayjs(tomorrow),
-      defaultDuration,
-      [],
-    );
+    const { user } = renderTestComponent(dayjs(tomorrow), defaultDuration, []);
 
     // Act
     await openStartDateSelect(user);

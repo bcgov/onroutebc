@@ -5,7 +5,11 @@ import { Nullable } from "../../../common/types/common";
 import { removeEmptyIdsFromPermitsActionResponse } from "./mappers";
 import { minDurationForPermitType } from "./dateSelection";
 import { BASE_DAYS_IN_YEAR } from "../constants/constants";
-import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../types/PermitType";
+import {
+  isQuarterlyPermit,
+  PERMIT_TYPES,
+  PermitType,
+} from "../types/PermitType";
 import {
   getDateDiffInDays,
   getEndOfDate,

@@ -27,7 +27,7 @@ export const ReviewConditionalLicensingFeesSection = ({
   const showDiffChip = (show: boolean) => {
     return show ? <DiffChip /> : null;
   };
-  
+
   return selectedCLF ? (
     <Box className="review-conditional-licensing-fees-section">
       <Box className="review-conditional-licensing-fees-section__header">

@@ -17,9 +17,7 @@ const createTestQueryClient = () =>
  * @param ui Component to be rendered for tests
  * @returns A customized wrapper component that includes QueryClient and Router that prepares components to be rendered for tests
  */
-export const renderForTests = (
-  ui: React.ReactElement,
-) => {
+export const renderForTests = (ui: React.ReactElement) => {
   const testQueryClient = createTestQueryClient();
   const { rerender, ...result } = render(
     <QueryClientProvider client={testQueryClient}>

@@ -45,28 +45,25 @@ export const LOAList = ({
     data: loas,
     enableRowActions: isActive,
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        row: MRT_Row<LOADetail>;
-      }) => isActive && allowEditLOA ? (
-        <div className="loa-list__row-actions">
-          <Tooltip arrow placement="top" title="Delete">
-            <IconButton
-              classes={{
-                root: "loa-list__delete-btn",
-              }}
-              onClick={() => {
-                if (!isActive) return;
-                onDelete?.(row.original.loaId);
-              }}
-              disabled={false}
-            >
-              <FontAwesomeIcon icon={faTrashCan} />
-            </IconButton>
-          </Tooltip>
-        </div>
-      ) : null,
+      ({ row }: { row: MRT_Row<LOADetail> }) =>
+        isActive && allowEditLOA ? (
+          <div className="loa-list__row-actions">
+            <Tooltip arrow placement="top" title="Delete">
+              <IconButton
+                classes={{
+                  root: "loa-list__delete-btn",
+                }}
+                onClick={() => {
+                  if (!isActive) return;
+                  onDelete?.(row.original.loaId);
+                }}
+                disabled={false}
+              >
+                <FontAwesomeIcon icon={faTrashCan} />
+              </IconButton>
+            </Tooltip>
+          </div>
+        ) : null,
       [isActive, allowEditLOA],
     ),
     enableGlobalFilter: false,
