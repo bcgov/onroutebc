@@ -638,12 +638,12 @@ export const checkPermissionMatrix = ({
   if (isIdir) {
     isAllowed = Boolean(
       currentUserRole &&
-        allowedIDIRRoles?.includes(currentUserRole as IDIRUserRoleType),
+      allowedIDIRRoles?.includes(currentUserRole as IDIRUserRoleType),
     );
   } else {
     isAllowed = Boolean(
       currentUserRole &&
-        allowedBCeIDRoles?.includes(currentUserRole as BCeIDUserRoleType),
+      allowedBCeIDRoles?.includes(currentUserRole as BCeIDUserRoleType),
     );
   }
   return isAllowed;

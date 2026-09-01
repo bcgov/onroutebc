@@ -87,9 +87,8 @@ vi.mock("../../../queue/components/UnavailableApplicationModal", () => ({
 
 vi.mock("./components/form/PermitForm", async () => {
   const { useContext } = await import("react");
-  const { ApplicationFormContext } = await import(
-    "../../context/ApplicationFormContext"
-  );
+  const { ApplicationFormContext } =
+    await import("../../context/ApplicationFormContext");
 
   return {
     PermitForm: () => {

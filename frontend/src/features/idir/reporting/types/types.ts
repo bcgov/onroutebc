@@ -28,8 +28,7 @@ export type PaymentAndRefundSummaryRequest = {
 /**
  * The request object type for payment and refund detail
  */
-export interface PaymentAndRefundDetailRequest
-  extends PaymentAndRefundSummaryRequest {
+export interface PaymentAndRefundDetailRequest extends PaymentAndRefundSummaryRequest {
   permitType: string[];
   paymentCodes: AllPaymentMethodAndCardTypeCodes[];
   users?: string[];
@@ -55,8 +54,7 @@ export type PaymentAndRefundSummaryFormData = {
 /**
  * The data type for the detail form.
  */
-export interface PaymentAndRefundDetailFormData
-  extends PaymentAndRefundSummaryFormData {
+export interface PaymentAndRefundDetailFormData extends PaymentAndRefundSummaryFormData {
   permitType: string[];
   paymentMethods?: string[];
   users?: string[];

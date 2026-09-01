@@ -104,29 +104,29 @@ export const AxleUnitRow = ({
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD
           ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
-            ] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
-            ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
-            ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
-            ] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT
-            ],
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION
+          ] ||
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT] ||
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.MINIMUM_STEER_AXLE_WEIGHT
+          ] ||
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.MINIMUM_TANDEM_STEER_AXLE_WEIGHT
+          ] ||
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS
+          ] ||
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.MAX_TIRE_LOAD] ||
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT] ||
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.MINIMUM_DRIVE_AXLE_WEIGHT
+          ],
         );
 
         const hasNumberOfAxlesFailure = Boolean(
           axleCalculationFailure[POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES] ||
-            axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
         );
 
         const hasAxleSpreadFailure = Boolean(
@@ -139,9 +139,7 @@ export const AxleUnitRow = ({
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
           ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING
-            ],
+          axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING],
         );
 
         return (

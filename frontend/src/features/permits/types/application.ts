@@ -62,8 +62,9 @@ type TransformPermitData<T> = {
 /**
  * Type for response data from fetching Application details.
  */
-export interface ApplicationResponseData
-  extends TransformPermitData<ReplaceDayjsWithString<Application>> {}
+export interface ApplicationResponseData extends TransformPermitData<
+  ReplaceDayjsWithString<Application>
+> {}
 
 /**
  * Type for create application request payload.

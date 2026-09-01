@@ -18,9 +18,9 @@ export interface GeocoderInputProps<
   DisableClearable extends boolean | undefined,
   ChipComponent extends React.ElementType,
 > extends Omit<
-    AutocompleteProps<string, false, DisableClearable, true, ChipComponent>,
-    "autocompleteProps"
-  > {
+  AutocompleteProps<string, false, DisableClearable, true, ChipComponent>,
+  "autocompleteProps"
+> {
   autocompleteProps?: Omit<
     MuiAutocompleteProps<string, false, DisableClearable, true, ChipComponent>,
     | "renderInput"

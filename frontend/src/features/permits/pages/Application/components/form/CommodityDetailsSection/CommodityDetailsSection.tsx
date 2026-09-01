@@ -66,10 +66,10 @@ export const CommodityDetailsSection = ({
   const hasVin = Boolean(vehicleFormData.vin);
   const hasDimensions = Boolean(
     vehicleConfiguration?.overallWidth ||
-      vehicleConfiguration?.overallHeight ||
-      vehicleConfiguration?.overallLength ||
-      vehicleConfiguration?.frontProjection ||
-      vehicleConfiguration?.rearProjection,
+    vehicleConfiguration?.overallHeight ||
+    vehicleConfiguration?.overallLength ||
+    vehicleConfiguration?.frontProjection ||
+    vehicleConfiguration?.rearProjection,
   );
 
   const handleCommodityTypeChange = useCallback(
