@@ -80,6 +80,27 @@ jobs:
       - run: npm ci
       - run: npm run format:check
 
+  backend-prettier:
+    name: Backend Prettier Check (${{ matrix.dir }})
+    if: (! github.event.pull_request.draft)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        dir: [dops, policy, public, scheduler, vehicles]
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ matrix.dir }}/package-lock.json
+      - run: npm ci
+      - run: npm run format:check
+
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
@@ -147,7 +168,7 @@ jobs:
 
   results:
     name: Results
-    needs: [codeql, trivy, prettier, tests]
+    needs: [codeql, trivy, prettier, backend-prettier, tests]
     if: always() && (! failure())
     runs-on: ubuntu-24.04
     timeout-minutes: 1
