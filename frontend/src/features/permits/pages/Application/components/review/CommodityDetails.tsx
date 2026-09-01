@@ -39,8 +39,7 @@ export const CommodityDetails = ({
 
   const commodityTypeDisplay = getDefaultRequiredVal(
     "",
-    commodityOptions.find(({ value }) => value === commodity?.commodityType)
-      ?.label,
+    commodityOptions.find(({ value }) => value === commodity?.commodityType)?.label,
     commodity?.commodityType,
   );
 
@@ -67,7 +66,7 @@ export const CommodityDetails = ({
             {commodityTypeDisplay}
           </Typography>
         </div>
-
+        
         <div className="commodity-info commodity-info--load-description">
           <Typography className="commodity-info__label">
             <span className="commodity-info__label-text">Load Description</span>

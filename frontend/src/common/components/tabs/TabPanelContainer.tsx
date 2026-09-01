@@ -9,10 +9,9 @@ export const TabPanelContainer = (props: TabPanelProps) => {
   const { children, value, index, className } = props;
 
   const baseContainerClassName = "tabpanel-container";
-  const containerClassName = className
-    ? `${baseContainerClassName} ${className}`
-    : baseContainerClassName;
-
+  const containerClassName = className ?
+    `${baseContainerClassName} ${className}` : baseContainerClassName;
+  
   return (
     <div
       className={containerClassName}

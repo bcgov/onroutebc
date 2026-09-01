@@ -12,7 +12,7 @@ import { PermitHistory } from "../types/PermitHistory";
  * Hook that calculates the amount to refund for a permit.
  * (The policy engine calculates the fee in an async manner, hence this hook acts as a utility hook
  * to get the fee in a synchronous manner.)
- *
+ * 
  * @param permitHistory List of history objects that make up the history of a permit and its transactions
  * @param permit Object containing permit information (must have permitType and parts of permitData)
  * @param policyEngine Instance of policy engine, if it exists

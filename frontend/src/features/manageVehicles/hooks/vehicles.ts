@@ -18,19 +18,17 @@ export const useVehicleByIdQuery = (
   vehicleType: VehicleType,
   vehicleId?: Nullable<string>,
 ) => {
-  const queryKey =
-    vehicleType === VEHICLE_TYPES.POWER_UNIT
-      ? QUERY_KEYS.POWER_UNIT(companyId, vehicleId)
-      : QUERY_KEYS.TRAILER(companyId, vehicleId);
+  const queryKey = vehicleType === VEHICLE_TYPES.POWER_UNIT
+    ? QUERY_KEYS.POWER_UNIT(companyId, vehicleId)
+    : QUERY_KEYS.TRAILER(companyId, vehicleId);
 
   const vehicleIdStr = getDefaultRequiredVal("", vehicleId);
-
+  
   return useQuery({
     queryKey,
-    queryFn: async () =>
-      vehicleType === VEHICLE_TYPES.POWER_UNIT
-        ? await getPowerUnit(vehicleIdStr, companyId)
-        : await getTrailer(vehicleIdStr, companyId),
+    queryFn: async () => vehicleType === VEHICLE_TYPES.POWER_UNIT
+      ? await getPowerUnit(vehicleIdStr, companyId)
+      : await getTrailer(vehicleIdStr, companyId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground

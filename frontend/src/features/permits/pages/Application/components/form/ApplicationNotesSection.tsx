@@ -15,7 +15,11 @@ export const ApplicationNotesSection = ({
   permitType: PermitType;
 }) => {
   const showSection = (
-    [PERMIT_TYPES.STOS, PERMIT_TYPES.STOW, PERMIT_TYPES.STWSE] as PermitType[]
+    [
+      PERMIT_TYPES.STOS,
+      PERMIT_TYPES.STOW,
+      PERMIT_TYPES.STWSE,
+    ] as PermitType[]
   ).includes(permitType);
 
   return showSection ? (

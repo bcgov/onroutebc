@@ -30,9 +30,14 @@ export const RemoveCartButton = ({
       disabled={isDisabled}
       onClick={handleRemove}
     >
-      <FontAwesomeIcon className="remove-cart-button__icon" icon={faTrashCan} />
+      <FontAwesomeIcon
+        className="remove-cart-button__icon"
+        icon={faTrashCan}
+      />
 
-      <span className="remove-cart-button__text">Remove from cart</span>
+      <span className="remove-cart-button__text">
+        Remove from cart
+      </span>
     </Button>
   );
 };

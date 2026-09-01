@@ -93,7 +93,10 @@ export const ApplicationReview = ({
     [applicationData?.permitData, permitType],
   );
 
-  const { totalCost, costs } = useCalculatePermitFee(
+  const {
+    totalCost,
+    costs,
+  } = useCalculatePermitFee(
     serializedPermit,
     policyEngine,
   );
@@ -264,16 +267,16 @@ export const ApplicationReview = ({
 
           refetchCartCount();
 
-          if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+          if (!isCopiedApplication)
+            return navigate(APPLICATIONS_ROUTES.BASE);
 
           return navigate(APPLICATIONS_ROUTES.BASE, {
             state: {
-              selectedTab:
-                copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-                  ? PERMIT_TABS.ACTIVE_PERMITS
-                  : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-                    ? PERMIT_TABS.EXPIRED_PERMITS
-                    : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+              selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+                ? PERMIT_TABS.ACTIVE_PERMITS
+                : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+                ? PERMIT_TABS.EXPIRED_PERMITS
+                : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
             },
           });
         });
@@ -283,9 +286,11 @@ export const ApplicationReview = ({
 
   const handleClickAddToCart = async () => {
     if (
-      isStaffUser &&
-      ((permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) ||
-        (permitType === PERMIT_TYPES.STOW && hasPolicyIssues))
+      isStaffUser
+      && (
+        (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0)
+        || (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+      )
     ) {
       setShowConfirmWarningModal(true);
     } else {
@@ -297,15 +302,13 @@ export const ApplicationReview = ({
     setShowConfirmWarningModal(false);
   };
 
-  const shouldSubmitForReview =
-    (permitType === PERMIT_TYPES.STOS && !isStaffUser) ||
-    (permitType === PERMIT_TYPES.STWSE &&
-      !isStaffUser &&
-      policyWarnings.length > 0);
+  const shouldSubmitForReview = (
+    permitType === PERMIT_TYPES.STOS && !isStaffUser
+  ) || (
+    permitType === PERMIT_TYPES.STWSE && !isStaffUser && policyWarnings.length > 0
+  );
 
-  const continueBtnText = shouldSubmitForReview
-    ? "Submit for Review"
-    : undefined;
+  const continueBtnText = shouldSubmitForReview ? "Submit for Review" : undefined;
 
   const handleSubmitForReview = async () => {
     if (!shouldSubmitForReview) return;
@@ -319,17 +322,17 @@ export const ApplicationReview = ({
           message: `Application ${applicationNumber} submitted for review`,
           alertType: "success",
         });
-
-        if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+        
+        if (!isCopiedApplication)
+          return navigate(APPLICATIONS_ROUTES.BASE);
 
         return navigate(APPLICATIONS_ROUTES.BASE, {
           state: {
-            selectedTab:
-              copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
-                ? PERMIT_TABS.ACTIVE_PERMITS
-                : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
-                  ? PERMIT_TABS.EXPIRED_PERMITS
-                  : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
+            selectedTab: copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
+              ? PERMIT_TABS.ACTIVE_PERMITS
+              : copyPermitOrigin === PERMIT_ACTION_ORIGINS.EXPIRED_PERMITS
+              ? PERMIT_TABS.EXPIRED_PERMITS
+              : PERMIT_TABS.APPLICATIONS_IN_PROGRESS,
           },
         });
       },
@@ -349,11 +352,7 @@ export const ApplicationReview = ({
   };
 
   const handleClickApprove = async () => {
-    if (
-      isQueueContext &&
-      permitType === PERMIT_TYPES.STWSE &&
-      policyWarnings.length > 0
-    ) {
+    if (isQueueContext && permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
       setShowConfirmWarningModal(true);
     } else {
       await handleApprove();
@@ -482,9 +481,7 @@ export const ApplicationReview = ({
             applicationData?.permitData?.conditionalLicensingFee
           }
           companyId={companyId}
-          icbcInsuranceCertificate={
-            applicationData?.permitData?.icbcInsuranceCertificate
-          }
+          icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
           policyWarnings={policyWarnings}
           axleCalculationResults={axleCalculationResults}
           tireSizeOptions={tireSizeOptions}

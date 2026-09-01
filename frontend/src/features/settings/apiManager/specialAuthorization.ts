@@ -1,9 +1,6 @@
 import { AxiosResponse } from "axios";
 
-import {
-  NoFeePermitType,
-  SpecialAuthorizationData,
-} from "../types/SpecialAuthorization";
+import { NoFeePermitType, SpecialAuthorizationData } from "../types/SpecialAuthorization";
 import { SPECIAL_AUTH_API_ROUTES } from "./endpoints/endpoints";
 import { RequiredOrNull } from "../../../common/types/common";
 import {
@@ -30,10 +27,12 @@ export const getSpecialAuthorizations = async (
  * @param NoFeeData Information for the no-fee flag to be updated for the company
  * @returns Result of updating the no-fee flag, or error on fail
  */
-export const updateNoFee = async (NoFeeData: {
-  companyId: number | string;
-  noFee: RequiredOrNull<NoFeePermitType>;
-}): Promise<AxiosResponse<SpecialAuthorizationData>> => {
+export const updateNoFee = async (
+  NoFeeData: {
+    companyId: number | string;
+    noFee: RequiredOrNull<NoFeePermitType>;
+  },
+): Promise<AxiosResponse<SpecialAuthorizationData>> => {
   const { companyId, noFee } = NoFeeData;
   return await httpPUTRequest(
     SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.UPDATE_NO_FEE(companyId),
@@ -46,10 +45,12 @@ export const updateNoFee = async (NoFeeData: {
  * @param NoFeeData Information for the LCV flag to be updated for the company
  * @returns Result of updating the LCV flag, or error on fail
  */
-export const updateLCV = async (NoFeeData: {
-  companyId: number | string;
-  isLcvAllowed: boolean;
-}): Promise<AxiosResponse<SpecialAuthorizationData>> => {
+export const updateLCV = async (
+  NoFeeData: {
+    companyId: number | string;
+    isLcvAllowed: boolean;
+  },
+): Promise<AxiosResponse<SpecialAuthorizationData>> => {
   const { companyId, isLcvAllowed } = NoFeeData;
   return await httpPUTRequest(
     SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.UPDATE_LCV(companyId),

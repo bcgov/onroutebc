@@ -1,10 +1,7 @@
 import dayjs from "dayjs";
 
 import { getExpiryDate } from "../permitState";
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-} from "../../../../common/helpers/formatDate";
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
 import { BASE_DAYS_IN_YEAR } from "../../constants/constants";
 import { PERMIT_TYPES } from "../../types/PermitType";
 
@@ -57,25 +54,13 @@ describe("Permit States", () => {
 
     // Act
     const expiryDateQ1 = getExpiryDate(startDateQ1, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ1 = dayjsToLocalStr(
-      expiryDateQ1,
-      DATE_FORMATS.DATEONLY,
-    );
+    const expiryDateStrQ1 = dayjsToLocalStr(expiryDateQ1, DATE_FORMATS.DATEONLY);
     const expiryDateQ2 = getExpiryDate(startDateQ2, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ2 = dayjsToLocalStr(
-      expiryDateQ2,
-      DATE_FORMATS.DATEONLY,
-    );
+    const expiryDateStrQ2 = dayjsToLocalStr(expiryDateQ2, DATE_FORMATS.DATEONLY);
     const expiryDateQ3 = getExpiryDate(startDateQ3, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ3 = dayjsToLocalStr(
-      expiryDateQ3,
-      DATE_FORMATS.DATEONLY,
-    );
+    const expiryDateStrQ3 = dayjsToLocalStr(expiryDateQ3, DATE_FORMATS.DATEONLY);
     const expiryDateQ4 = getExpiryDate(startDateQ4, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ4 = dayjsToLocalStr(
-      expiryDateQ4,
-      DATE_FORMATS.DATEONLY,
-    );
+    const expiryDateStrQ4 = dayjsToLocalStr(expiryDateQ4, DATE_FORMATS.DATEONLY);
 
     // Assert
     expect(expiryDateStrQ1).toBe("2023-03-31");

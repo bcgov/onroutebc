@@ -9,7 +9,7 @@ interface GeometryPoint {
     };
   };
   coordinates: [number, number];
-}
+};
 
 export interface GeocoderQueryOptions {
   autoComplete?: boolean;
@@ -19,11 +19,11 @@ export interface GeocoderQueryOptions {
   brief?: boolean;
   locationDescriptor?: string;
   outputSRS?: number;
-}
+};
 
 export interface GeocoderFeature {
   type: "Feature";
-}
+};
 
 export interface GeocoderAddressProps {
   fullAddress: string;
@@ -58,12 +58,12 @@ export interface GeocoderAddressProps {
   changeDate: string;
   isOfficial: "" | "true" | "false" | boolean;
   streetAddress?: Nullable<string>;
-}
+};
 
 export interface GeocoderAddressFeature extends GeocoderFeature {
   geometry: GeometryPoint;
   properties: GeocoderAddressProps;
-}
+};
 
 interface GeocoderResponse {
   searchTimestamp: string;
@@ -75,9 +75,9 @@ interface GeocoderResponse {
   interpolation: string;
   outputSRS?: Nullable<number>;
   setBack: number;
-}
+};
 
 export interface GeocoderAddressResponse extends GeocoderResponse {
   type: "FeatureCollection";
   features: GeocoderAddressFeature[];
-}
+};

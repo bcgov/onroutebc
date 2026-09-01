@@ -11,9 +11,7 @@ import { SpecialAuthorizationData } from "../../settings/types/SpecialAuthorizat
  * and null when there's a problem getting the policy configuration.
  * @returns The instantiated policy engine, or undefined when loading, and null on error
  */
-export const usePolicyEngine = (
-  specialAuthorizations?: SpecialAuthorizationData,
-) => {
+export const usePolicyEngine = (specialAuthorizations?: SpecialAuthorizationData) => {
   const { data: policyConfiguration } = usePolicyConfigurationQuery();
 
   const policyEngine = useMemo(() => {

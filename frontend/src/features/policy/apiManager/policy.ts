@@ -18,3 +18,4 @@ export const getPolicyConfiguration = async (
   const policyConfigurations = response.data as PolicyConfiguration[];
   return policyConfigurations.length > 0 ? policyConfigurations[0] : null;
 };
+

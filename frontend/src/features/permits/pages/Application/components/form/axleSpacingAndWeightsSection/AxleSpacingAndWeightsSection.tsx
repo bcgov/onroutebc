@@ -71,9 +71,10 @@ export const AxleSpacingAndWeightsSection = ({
   showASWRequiredFieldsBanner: boolean;
   readOnly?: boolean;
 }) => {
-  const [axleCalculationResults, setAxleCalculationResults] = useState<
-    Nullable<AxleCalculationResult>
-  >(axleCalculationResultsFromValidation);
+  const [axleCalculationResults, setAxleCalculationResults] =
+    useState<Nullable<AxleCalculationResult>>(
+      axleCalculationResultsFromValidation,
+    );
   const [showValidationBanner, setShowValidationBanner] = useState(
     axleCalculationResultsFromValidation ? false : showASWRequiredFieldsBanner,
   );

@@ -1,11 +1,7 @@
 import { Policy } from "onroute-policy-engine";
 
 import { Nullable } from "../../../../../common/types/common";
-import {
-  isTermPermitType,
-  PERMIT_TYPES,
-  PermitType,
-} from "../../../types/PermitType";
+import { isTermPermitType, PERMIT_TYPES, PermitType } from "../../../types/PermitType";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
 
@@ -22,7 +18,8 @@ export const getEligibleVehicleSubtypes = (
   selectedCommodity?: Nullable<string>,
   policyEngine?: Nullable<Policy>,
 ) => {
-  if (!policyEngine) return new Set<string>();
+  if (!policyEngine)
+    return new Set<string>();
 
   // The policy engine requires a commodity to be provided for any
   // permit type where commodity is required, hence the nullish
@@ -33,17 +30,19 @@ export const getEligibleVehicleSubtypes = (
     getDefaultRequiredVal(DEFAULT_EMPTY_SELECT_VALUE, selectedCommodity),
   );
 
-  return new Set([
-    ...getDefaultRequiredVal(
-      new Map<string, string>(),
-      subtypesMap.get("powerUnits"),
-    ).keys(),
-    ...getDefaultRequiredVal(
-      new Map<string, string>(),
-      // Only term permits and Highway Crossing allow trailer subtypes to be used
-      isTermPermitType(permitType) || permitType === PERMIT_TYPES.HC
-        ? subtypesMap.get("trailers")
-        : undefined,
-    ).keys(),
-  ]);
+  return new Set(
+    [
+      ...getDefaultRequiredVal(
+        new Map<string, string>(),
+        subtypesMap.get("powerUnits"),
+      ).keys(),
+      ...getDefaultRequiredVal(
+        new Map<string, string>(),
+        // Only term permits and Highway Crossing allow trailer subtypes to be used
+        isTermPermitType(permitType) || (permitType === PERMIT_TYPES.HC)
+          ? subtypesMap.get("trailers")
+          : undefined,
+      ).keys(),
+    ],
+  );
 };

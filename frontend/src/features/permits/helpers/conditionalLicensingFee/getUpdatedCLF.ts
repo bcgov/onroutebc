@@ -1,8 +1,5 @@
 import { Nullable } from "../../../../common/types/common";
-import {
-  CONDITIONAL_LICENSING_FEE_TYPES,
-  ConditionalLicensingFeeType,
-} from "../../types/ConditionalLicensingFee";
+import { CONDITIONAL_LICENSING_FEE_TYPES, ConditionalLicensingFeeType } from "../../types/ConditionalLicensingFee";
 import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 
 /**
@@ -17,11 +14,10 @@ export const getUpdatedCLF = (
   availableCLFs: ConditionalLicensingFeeType[],
   selectedCLF?: Nullable<ConditionalLicensingFeeType>,
 ) => {
-  if (
-    !([PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]).includes(
-      permitType,
-    )
-  ) {
+  if (!([
+    PERMIT_TYPES.NRSCV,
+    PERMIT_TYPES.NRQCV,
+  ] as PermitType[]).includes(permitType)) {
     return null;
   }
 
@@ -29,13 +25,13 @@ export const getUpdatedCLF = (
     // When there are no available CLFs to select, the default CLF would be "none"
     return CONDITIONAL_LICENSING_FEE_TYPES.NONE;
   }
-
+  
   if (!selectedCLF) {
     // Upon initialization of the form, and there are no currently selected CLF yet,
     // the default selection should be the first available CLF
     return availableCLFs[0];
   }
-
+  
   // When there are available CLFs that can be selected, and the selected CLF
   // is not one of the available CLFs, default the selection to become the first available CLF
   return !availableCLFs.includes(selectedCLF) ? availableCLFs[0] : selectedCLF;

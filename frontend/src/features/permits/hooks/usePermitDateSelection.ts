@@ -80,15 +80,28 @@ export const usePermitDateSelection = ({
 
   useEffect(() => {
     onSetDuration(updatedDuration);
-  }, [updatedDuration]);
-
+  }, [
+    updatedDuration,
+  ]);
+  
   useEffect(() => {
-    const expiryDate = getExpiryDate(startDate, permitType, selectedDuration);
+    const expiryDate = getExpiryDate(
+      startDate,
+      permitType,
+      selectedDuration,
+    );
 
     onSetExpiryDate(expiryDate);
-  }, [startDate, selectedDuration, permitType]);
+  }, [
+    startDate,
+    selectedDuration,
+    permitType,
+  ]);
 
-  const { minAllowedPastStartDate, maxAllowedFutureStartDate } = useMemo(() => {
+  const {
+    minAllowedPastStartDate,
+    maxAllowedFutureStartDate,
+  } = useMemo(() => {
     const currentDate = now();
 
     return {
@@ -107,7 +120,12 @@ export const usePermitDateSelection = ({
         isStaff,
       ),
     };
-  }, [permitType, oldPermitStartDate, isStaff, isAmend]);
+  }, [
+    permitType,
+    oldPermitStartDate,
+    isStaff,
+    isAmend,
+  ]);
 
   return {
     availableDurationOptions,

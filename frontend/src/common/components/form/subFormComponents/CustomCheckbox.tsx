@@ -34,17 +34,21 @@ export interface CustomCheckboxProps<T extends FieldValues> {
 export const CustomCheckbox = <T extends ORBC_FormTypes>(
   props: CustomCheckboxProps<T>,
 ): JSX.Element => {
-  const { control, register } = useFormContext<T>();
+  const {
+    control,
+    register,
+  } = useFormContext<T>();
 
-  const className = `custom-checkbox__checkbox ${props.inputProps?.className ? props.inputProps.className : ""}`;
-
+  const className =
+    `custom-checkbox__checkbox ${props.inputProps?.className ? props.inputProps.className : ""}`;
+  
   return (
     <Controller
       key={`controller-${props.feature}-${props.name}`}
       name={props.name}
       control={control}
       rules={props.rules}
-      render={({ fieldState: { invalid } }) => (
+      render={({ fieldState: { invalid }}) => (
         <FormControl className="custom-checkbox">
           <Checkbox
             {...register(props.name, props.rules)}

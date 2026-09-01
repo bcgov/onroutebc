@@ -16,11 +16,11 @@ export const getProvinceFullName = (
 
   const provincesOfCountry = getDefaultRequiredVal(
     [],
-    COUNTRIES.find((country) => country.code === countryCode)?.states,
+    COUNTRIES.find(country => country.code === countryCode)?.states,
   );
 
   return getDefaultRequiredVal(
     "",
-    provincesOfCountry.find((province) => province.code === provinceCode)?.name,
+    provincesOfCountry.find(province => province.code === provinceCode)?.name,
   );
 };

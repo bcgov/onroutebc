@@ -6,7 +6,7 @@ export const MFP_CONDITIONS: PermitCondition[] = [
     condition: "MV4001",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1539",
     checked: true,
-    disabled: true,
+    disabled: true
   },
 ];
 

@@ -1,4 +1,9 @@
-import { FormControlLabel, Radio, RadioGroup, Switch } from "@mui/material";
+import {
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Switch,
+} from "@mui/material";
 
 import "./NoFeePermitsSection.scss";
 import { RequiredOrNull } from "../../../../../common/types/common";
@@ -26,21 +31,22 @@ export const NoFeePermitsSection = ({
     return (
       <div className="no-fee-permits-section">
         <div className="no-fee-permits-section__header">
-          <div className="no-fee-permits-section__title">No Fee Permits</div>
-
+          <div className="no-fee-permits-section__title">
+            No Fee Permits
+          </div>
+  
           <Switch
             className="no-fee-permits-section__enable-switch"
             checked={enableNoFeePermits}
             onChange={async (_, checked) => onUpdateEnableNoFee(checked)}
           />
         </div>
-
+  
         <div className="no-fee-options">
           <div className="no-fee-options__title">
-            Permits are required, but no fee is charged for a vehicle owned or
-            leased or operated by:
+            Permits are required, but no fee is charged for a vehicle owned or leased or operated by:
           </div>
-
+  
           <RadioGroup
             className="no-fee-options__types"
             defaultValue={noFeePermitType}
@@ -62,8 +68,7 @@ export const NoFeePermitsSection = ({
                   <Radio
                     key={noFeePermitType}
                     className="no-fee-options__radio"
-                  />
-                }
+                  />}
               />
             ))}
           </RadioGroup>
@@ -75,15 +80,16 @@ export const NoFeePermitsSection = ({
   return noFeePermitType ? (
     <div className="no-fee-permits-section no-fee-permits-section--readonly">
       <div className="no-fee-permits-section__header">
-        <div className="no-fee-permits-section__title">No Fee Permits</div>
+        <div className="no-fee-permits-section__title">
+          No Fee Permits
+        </div>
 
         <AllowedIndicator />
       </div>
 
       <div className="no-fee-options">
         <div className="no-fee-options__title">
-          Permits are required, but no fee is charged for a vehicle owned or
-          leased or operated by:
+          Permits are required, but no fee is charged for a vehicle owned or leased or operated by:
         </div>
 
         <RadioGroup
@@ -100,8 +106,10 @@ export const NoFeePermitsSection = ({
             label={noFeePermitTypeDescription(noFeePermitType)}
             value={noFeePermitType}
             control={
-              <Radio key={noFeePermitType} className="no-fee-options__radio" />
-            }
+              <Radio
+                key={noFeePermitType}
+                className="no-fee-options__radio"
+              />}
           />
         </RadioGroup>
       </div>

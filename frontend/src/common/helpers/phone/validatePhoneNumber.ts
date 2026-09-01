@@ -9,7 +9,8 @@ import { invalidPhoneLength } from "../validationMessages";
 export const validatePhoneNumber = (phone: string) => {
   const filteredPhone = filterNonDigits(phone);
   return (
-    (filteredPhone.length >= 10 && filteredPhone.length <= 20) ||
+    (filteredPhone.length >= 10 &&
+      filteredPhone.length <= 20) ||
     invalidPhoneLength(10, 20)
   );
 };

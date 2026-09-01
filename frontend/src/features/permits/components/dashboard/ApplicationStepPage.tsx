@@ -82,7 +82,7 @@ export const ApplicationStepPage = ({
   const enableHC = featureFlags?.["HC"] === "ENABLED";
   const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
   const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
-
+  
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
@@ -145,15 +145,24 @@ export const ApplicationStepPage = ({
   // d) Permit status can be ignored only if the application is being copied from another permit
   const isValidApplicationStatus = () => {
     return (
-      !isInvalidApplication &&
-      ((applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
-        (typeof applicationData === "undefined" ||
-          applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
-          applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS)) ||
-        (applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
-          (!applicationData?.permitStatus ||
+      !isInvalidApplication && (
+        (
+          applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            typeof applicationData === "undefined" ||
+            applicationData?.permitStatus === PERMIT_STATUSES.ISSUED ||
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+          )
+        ) ||
+        (
+          applicationStepContext !== APPLICATION_STEP_CONTEXTS.COPY &&
+          (
+            !applicationData?.permitStatus ||
             applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)))
+            applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
+          )
+        )
+      )
     );
   };
 

@@ -11,17 +11,14 @@ export const convertToNumberIfValid = <T extends Nullable<number | string>>(
   fallbackWhenInvalid?: T,
 ) => {
   const isNullable = isNull(numericVal) || isUndefined(numericVal);
-  const isNumberButInvalid =
-    typeof numericVal === "number" && isNaN(numericVal);
-  const isStringButInvalid =
-    typeof numericVal === "string" &&
-    (numericVal.trim() === "" || isNaN(Number(numericVal.trim())));
-
-  const isInvalid =
-    isNullable ||
-    (typeof numericVal !== "number" && typeof numericVal !== "string") ||
-    isNumberButInvalid ||
-    isStringButInvalid;
-
-  return !isInvalid ? Number(numericVal) : (fallbackWhenInvalid as T);
+  const isNumberButInvalid = (typeof numericVal === "number") && isNaN(numericVal);
+  const isStringButInvalid = (typeof numericVal === "string")
+    && (numericVal.trim() === "" || isNaN(Number(numericVal.trim())));
+  
+  const isInvalid = isNullable
+    || ((typeof numericVal !== "number") && (typeof numericVal !== "string"))
+    || isNumberButInvalid
+    || isStringButInvalid;
+  
+  return !isInvalid ? Number(numericVal) : fallbackWhenInvalid as T;
 };

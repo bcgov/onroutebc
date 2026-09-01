@@ -1,6 +1,7 @@
 import validationMessages from "../constants/validation_messages.json";
 import { getDefaultRequiredVal } from "./util";
 
+
 const replacePlaceholders = (
   messageTemplate: string,
   placeholders: string[],
@@ -20,20 +21,11 @@ export const invalidNumber = () => validationMessages.NaN.defaultMessage;
 
 export const invalidInput = () => validationMessages.invalid.defaultMessage;
 
-export const mustBeGreaterThan = (
-  val: number,
-  decimalPlaces?: number,
-  unit?: string,
-) => {
+export const mustBeGreaterThan = (val: number, decimalPlaces?: number, unit?: string) => {
   const { messageTemplate, placeholders } = validationMessages.greaterThan;
   const roundedValue = val.toFixed(getDefaultRequiredVal(0, decimalPlaces));
   const unitStr = getDefaultRequiredVal("", unit);
-  return replacePlaceholders(
-    messageTemplate,
-    placeholders,
-    roundedValue,
-    unitStr,
-  );
+  return replacePlaceholders(messageTemplate, placeholders, roundedValue, unitStr);
 };
 
 export const mustBeLessThan = (val: number) => {
@@ -183,22 +175,12 @@ export const creditAccountNumberNotFound = () =>
   validationMessages.creditAccount.creditAccountNumber.defaultMessage;
 
 export const creditAccountNumberAlreadyAssigned = () =>
-  validationMessages.creditAccount.creditAccountNumber.alreadyAssigned
-    .defaultMessage;
+  validationMessages.creditAccount.creditAccountNumber.alreadyAssigned.defaultMessage;
 
-export const creditAccounteGARMSError = (
-  eGARMSReturnCode: string,
-  message: string,
-) => {
-  const { messageTemplate, placeholders } =
-    validationMessages.creditAccount.eGARMSError;
-  return replacePlaceholders(
-    messageTemplate,
-    placeholders,
-    eGARMSReturnCode,
-    message,
-  );
-};
+export const creditAccounteGARMSError = (eGARMSReturnCode: string, message: string) =>{
+  const { messageTemplate, placeholders } = validationMessages.creditAccount.eGARMSError;
+  return replacePlaceholders(messageTemplate, placeholders, eGARMSReturnCode, message);
+}
 
 /**
  * Checks if a given string is

@@ -11,7 +11,9 @@ export const AllowedIndicator = () => {
         className="allowed-indicator__icon"
       />
 
-      <span className="allowed-indicator__label">Allowed</span>
+      <span className="allowed-indicator__label">
+        Allowed
+      </span>
     </div>
   );
 };

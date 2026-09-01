@@ -26,16 +26,20 @@ export const ReviewConditionsTable = ({
       <Table className="review-conditions-table" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell className="review-conditions-table__header review-conditions-table__header--description">
+            <TableCell
+              className="review-conditions-table__header review-conditions-table__header--description"
+            >
               Description
             </TableCell>
 
-            <TableCell className="review-conditions-table__header review-conditions-table__header--link">
+            <TableCell
+              className="review-conditions-table__header review-conditions-table__header--link"
+            >
               Conditions
             </TableCell>
           </TableRow>
         </TableHead>
-
+        
         <TableBody>
           {reviewConditions.map((row: PermitCondition) => {
             return (

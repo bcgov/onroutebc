@@ -11,10 +11,7 @@ import { EmailNotificationType } from "../../types/EmailNotificationType";
 import { useAttemptAmend } from "../../hooks/useAttemptAmend";
 import { UnfinishedAmendModal } from "../../pages/Amend/components/modal/UnfinishedAmendModal";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import {
-  PERMIT_ACTION_ORIGINS,
-  PermitActionOrigin,
-} from "../../types/PermitActionOrigin";
+import { PERMIT_ACTION_ORIGINS, PermitActionOrigin } from "../../types/PermitActionOrigin";
 import { PERMIT_ACTION_TYPES } from "../../types/PermitActionType";
 import {
   getPermitRowActionOptions,
@@ -56,8 +53,7 @@ export const PermitRowOptions = ({
   // This is used to trigger a query fetch of the company info when
   // copying a permit in staff global search
   const [companyIdForCopy, setCompanyIdForCopy] = useState<number>(0);
-  const { data: selectedCompanyInfo } =
-    useCompanyInfoDetailsQuery(companyIdForCopy);
+  const { data: selectedCompanyInfo } = useCompanyInfoDetailsQuery(companyIdForCopy);
   useEffect(() => {
     if (selectedCompanyInfo && companyId && permitId) {
       handleSelectCompany(
@@ -67,7 +63,7 @@ export const PermitRowOptions = ({
           permitId,
           // After acting as company, leaving the copy permit should go back to AIP tab
           PERMIT_ACTION_ORIGINS.AIP,
-        ),
+        )
       );
     }
   }, [selectedCompanyInfo, companyId, permitId]);
@@ -120,7 +116,7 @@ export const PermitRowOptions = ({
           permitId,
           permitActionOrigin,
         );
-
+        
         navigate(copyPermitRoute);
       }
     }
@@ -156,12 +152,14 @@ export const PermitRowOptions = ({
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getPermitRowActionOptions({
-          isPermitInactiveOrExpired,
-          permitStatus,
-          permitApprovalSource,
-          permissions,
-        })}
+        options={
+          getPermitRowActionOptions({
+            isPermitInactiveOrExpired,
+            permitStatus,
+            permitApprovalSource,
+            permissions,
+          })
+        }
         key={`idir-search-row-${permitNumber}`}
       />
 

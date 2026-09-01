@@ -81,15 +81,11 @@ export const selectDayFromDateOptions = async (
 };
 
 export const invalidPastDateMessageElement = async () => {
-  return await screen.findByTestId(
-    "custom-date-picker-permitData.startDate-error",
-  );
+  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
 };
 
 export const invalidFutureDateMessageElement = async () => {
-  return await screen.findByTestId(
-    "custom-date-picker-permitData.startDate-error",
-  );
+  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
 };
 
 export const conditionsInfoBox = async () => {

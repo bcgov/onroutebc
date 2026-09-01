@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { Nullable } from "../../../common/types/common";
 import {
@@ -23,13 +27,13 @@ const QUERY_KEYS = {
  * @returns Query result of the company's LOAs
  */
 export const useFetchLOAs = (companyId: number | string, expired: boolean) => {
-  const { data: featureFlags } = useFeatureFlagsQuery();
+  const {data: featureFlags} = useFeatureFlagsQuery();
   return useQuery({
     queryKey: QUERY_KEYS.LOAS(expired),
     queryFn: () => getLOAs(companyId, expired),
     retry: false,
     refetchOnMount: "always",
-    enabled: featureFlags?.["LOA"] === "ENABLED",
+    enabled: featureFlags?.['LOA'] === 'ENABLED',
     refetchOnWindowFocus: false,
   });
 };
@@ -40,10 +44,7 @@ export const useFetchLOAs = (companyId: number | string, expired: boolean) => {
  * @param loaId id of the LOA to fetch
  * @returns Query result of the LOA details
  */
-export const useFetchLOADetail = (
-  companyId: number,
-  loaId?: Nullable<number>,
-) => {
+export const useFetchLOADetail = (companyId: number, loaId?: Nullable<number>) => {
   return useQuery({
     queryKey: QUERY_KEYS.LOA(loaId),
     queryFn: () => {

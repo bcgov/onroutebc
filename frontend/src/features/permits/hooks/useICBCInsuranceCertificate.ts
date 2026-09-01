@@ -7,9 +7,7 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 export const useICBCInsuranceCertificate = (
   permitType: PermitType,
   haveCertificate: boolean,
-  onUpdateCertificateNumber: (
-    updatedCertificateNumber?: Nullable<string>,
-  ) => void,
+  onUpdateCertificateNumber: (updatedCertificateNumber?: Nullable<string>) => void,
   onSetPlate: (plate: string) => void,
   onSetVehicleId: (vehicleId: Nullable<string>) => void,
   onToggleSaveVehicle: (saveVehicle: boolean) => void,
@@ -32,5 +30,9 @@ export const useICBCInsuranceCertificate = (
         }
       }
     }
-  }, [permitType, haveCertificate, certificateNumber]);
+  }, [
+    permitType,
+    haveCertificate,
+    certificateNumber,
+  ]);
 };

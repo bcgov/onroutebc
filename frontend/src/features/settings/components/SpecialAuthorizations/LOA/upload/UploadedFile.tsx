@@ -22,7 +22,9 @@ export const UploadedFile = ({
       </div>
 
       <div className="uploaded-file__info">
-        <div className="uploaded-file__name">{fileName}</div>
+        <div className="uploaded-file__name">
+          {fileName}
+        </div>
       </div>
 
       <IconButton
@@ -46,7 +48,11 @@ export const UploadedFile = ({
           />
         )}
 
-        {deleteOnHover ? <div className="tooltip">Delete</div> : null}
+        {deleteOnHover ? (
+          <div className="tooltip">
+            Delete
+          </div>
+        ) : null}
       </IconButton>
     </div>
   );

@@ -5,7 +5,7 @@ export const LOA_STEPS = {
   REVIEW: 1,
 } as const;
 
-export type LOAStep = (typeof LOA_STEPS)[keyof typeof LOA_STEPS];
+export type LOAStep = typeof LOA_STEPS[keyof typeof LOA_STEPS];
 
 export const labelForLOAStep = (
   loaStep: LOAStep,

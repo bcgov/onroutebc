@@ -200,10 +200,7 @@ export const deletePowerUnits = async (
   companyId: number,
 ) => {
   const url = VEHICLES_API.POWER_UNITS.DELETE(companyId);
-  return await httpPOSTRequest(
-    url,
-    replaceEmptyValuesWithNull({ powerUnits: vehicleIds }),
-  );
+  return await httpPOSTRequest(url, replaceEmptyValuesWithNull({ powerUnits: vehicleIds }));
 };
 
 /**
@@ -217,8 +214,5 @@ export const deleteTrailers = async (
   companyId: number,
 ) => {
   const url = VEHICLES_API.TRAILERS.DELETE(companyId);
-  return await httpPOSTRequest(
-    url,
-    replaceEmptyValuesWithNull({ trailers: vehicleIds }),
-  );
+  return await httpPOSTRequest(url, replaceEmptyValuesWithNull({ trailers: vehicleIds }));
 };

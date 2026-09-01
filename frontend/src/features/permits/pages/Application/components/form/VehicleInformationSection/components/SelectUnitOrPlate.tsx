@@ -22,10 +22,15 @@ export const SelectUnitOrPlate = ({
   menuItems: Optional<JSX.Element[]>;
   disabled?: boolean;
 }) => (
-  <FormControl margin="normal" className="select-unit-or-plate">
+  <FormControl
+    margin="normal"
+    className="select-unit-or-plate"
+  >
     <FormLabel className="select-unit-or-plate__label">{label}</FormLabel>
     <Select
-      className={`select-unit-or-plate__select ${disabled ? "select-unit-or-plate__select--disabled" : ""}`}
+      className={
+        `select-unit-or-plate__select ${disabled ? "select-unit-or-plate__select--disabled" : ""}`
+      }
       value={value}
       onChange={onChange}
       SelectDisplayProps={

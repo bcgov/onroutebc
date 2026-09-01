@@ -18,4 +18,4 @@ export type InternalLinkProps = Props<false>;
 
 export interface CustomActionLinkProps extends MuiLinkProps {
   disabled?: boolean;
-}
+};

@@ -5,10 +5,7 @@ import { Policy } from "onroute-policy-engine";
 import { Nullable } from "../../../../../common/types/common";
 import { Permit } from "../../../types/permit";
 import { Application } from "../../../types/application";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
 import { applyLCVToApplicationData } from "../../../helpers/permitLCV";
 import { LOADetail } from "../../../../settings/types/LOADetail";
@@ -21,16 +18,18 @@ import {
   getDefaultFormDataFromPermit,
 } from "../types/AmendPermitFormData";
 
-export const useAmendPermitForm = (data: {
-  repopulateFormData: boolean;
-  isLcvDesignated: boolean;
-  companyLOAs: LOADetail[];
-  inventoryVehicles: (PowerUnit | Trailer)[];
-  companyInfo: Nullable<CompanyProfile>;
-  permit?: Nullable<Permit>;
-  amendmentApplication?: Nullable<Application>;
-  policyEngine?: Nullable<Policy>;
-}) => {
+export const useAmendPermitForm = (
+  data: {
+    repopulateFormData: boolean;
+    isLcvDesignated: boolean;
+    companyLOAs: LOADetail[];
+    inventoryVehicles: (PowerUnit | Trailer)[];
+    companyInfo: Nullable<CompanyProfile>;
+    permit?: Nullable<Permit>;
+    amendmentApplication?: Nullable<Application>;
+    policyEngine?: Nullable<Policy>;
+  },
+) => {
   const {
     repopulateFormData,
     isLcvDesignated,
@@ -53,7 +52,10 @@ export const useAmendPermitForm = (data: {
 
       const formDataFromApplication = applyUpToDateLOAsToApplication(
         applyLCVToApplicationData(
-          getDefaultFormDataFromApplication(companyInfo, amendmentApplication),
+          getDefaultFormDataFromApplication(
+            companyInfo,
+            amendmentApplication,
+          ),
           isLcvDesignated,
         ),
         companyLOAs,
@@ -87,9 +89,12 @@ export const useAmendPermitForm = (data: {
       defaultPermitFormData.permitData.permittedCommodity?.commodityType,
       policyEngine,
     );
-
+    
     return applyUpToDateLOAsToApplication(
-      applyLCVToApplicationData(defaultPermitFormData, isLcvDesignated),
+      applyLCVToApplicationData(
+        defaultPermitFormData,
+        isLcvDesignated,
+      ),
       companyLOAs,
       inventoryVehicles,
       eligibleSubtypes,

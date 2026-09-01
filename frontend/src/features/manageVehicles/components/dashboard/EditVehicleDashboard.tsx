@@ -31,11 +31,7 @@ export const EditVehicleDashboard = React.memo(
   ({ vehicleType }: { vehicleType: VehicleType }) => {
     const navigate = useNavigate();
     const { vehicleId } = useParams();
-    const companyId: number = applyWhenNotNullable(
-      (id) => Number(id),
-      getCompanyIdFromSession(),
-      0,
-    );
+    const companyId: number = applyWhenNotNullable(id => Number(id), getCompanyIdFromSession(), 0);
     const isTrailer = vehicleType === VEHICLE_TYPES.TRAILER;
 
     const { data: vehicleToEdit, isError } = useVehicleByIdQuery(
@@ -60,9 +56,12 @@ export const EditVehicleDashboard = React.memo(
       return <Loading />;
     }
 
-    const editText = isTrailer ? "Edit Trailer" : "Edit Power Unit";
-    const backText = isTrailer ? "Trailer" : "Power Unit";
-    const detailsText = isTrailer ? "Trailer Details" : "Power Unit Details";
+    const editText = isTrailer
+      ? "Edit Trailer" : "Edit Power Unit";
+    const backText = isTrailer
+      ? "Trailer" : "Power Unit";
+    const detailsText = isTrailer
+      ? "Trailer Details" : "Power Unit Details";
 
     return (
       <div className="dashboard-page">
@@ -120,7 +119,9 @@ export const EditVehicleDashboard = React.memo(
 
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
-          <Typography>{editText}</Typography>
+          <Typography>
+            {editText}
+          </Typography>
         </Box>
 
         <Box className="dashboard-page__info-banner layout-box">
@@ -128,7 +129,9 @@ export const EditVehicleDashboard = React.memo(
         </Box>
 
         <Box className="dashboard-page__form layout-box">
-          <Typography variant={"h2"}>{detailsText}</Typography>
+          <Typography variant={"h2"}>
+            {detailsText}
+          </Typography>
 
           {isTrailer ? (
             <TrailerForm

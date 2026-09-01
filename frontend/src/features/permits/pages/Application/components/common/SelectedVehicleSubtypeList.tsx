@@ -15,7 +15,9 @@ export const SelectedVehicleSubtypeList = ({
   selectedSubtypesDisplay: string[];
 }) => {
   return (
-    <TableContainer className="selected-vehicle-subtype-list">
+    <TableContainer
+      className="selected-vehicle-subtype-list"
+    >
       <Table
         className="selected-vehicle-subtype-list__table"
         aria-label="simple table"

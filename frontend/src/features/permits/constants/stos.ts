@@ -6,63 +6,63 @@ export const STOS_CONDITIONS: PermitCondition[] = [
     condition: "CVSE-1000",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1251",
     checked: true,
-    disabled: true,
+    disabled: true
   },
   {
     description: "Permit Scope and Limitation",
     condition: "CVSE-1070",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261",
     checked: true,
-    disabled: true,
+    disabled: true
   },
   {
     description: "Routes Pre-Approved for 5.0 m OAW",
     condition: "CVSE-1001",
     conditionLink: "",
-    checked: false,
+    checked: false
   },
   {
     description: "General Permit Conditions to 6.1 m in the Peace River Area",
     condition: "CVSE-1002",
     conditionLink: "",
-    checked: false,
+    checked: false
   },
   {
     description: "East-West Overheight Corridors in the Lower Mainland",
     condition: "CVSE-1010",
     conditionLink: "",
-    checked: false,
+    checked: false
   },
   {
     description: "Routes - Woods Chips & Residual",
     condition: "CVSE-1012",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1259",
-    checked: false,
+    checked: false
   },
   {
     description: "Restricted Routes for Hauling Wood on Wide Bunks",
     condition: "CVSE-1013",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1254",
-    checked: false,
+    checked: false
   },
   {
     description: "Structure Permit Conditions",
     condition: "CVSE-1000S",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1255",
-    checked: false,
+    checked: false
   },
   {
     description: "Log Permit Conditions",
     condition: "CVSE-1000L",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1250",
-    checked: false,
+    checked: false
   },
 ];
 
 export const MANDATORY_STOS_CONDITIONS: PermitCondition[] =
   STOS_CONDITIONS.filter(
     ({ condition }: PermitCondition) =>
-      condition === "CVSE-1000" || condition === "CVSE-1070",
+      condition === "CVSE-1000" || condition === "CVSE-1070"
   );
 
 export const MIN_STOS_DURATION = 1;

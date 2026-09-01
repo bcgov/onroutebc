@@ -16,8 +16,7 @@ export const IssuanceErrorPage = () => {
 
             <div className="issuance-error-page__msg--bottom">
               <span className="issuance-error-page__text">
-                However, some of your applications weren&apos;t processed.
-                Please go to
+                However, some of your applications weren&apos;t processed. Please go to
               </span>
 
               <CustomNavLink
@@ -37,3 +36,4 @@ export const IssuanceErrorPage = () => {
     </div>
   );
 };
+  

@@ -1,11 +1,7 @@
 import "./FeeSummary.scss";
 import { Nullable } from "../../../../common/types/common";
 import { feeSummaryDisplayText } from "../../helpers/feeSummary";
-import {
-  getPermitTypeName,
-  PERMIT_TYPES,
-  PermitType,
-} from "../../types/PermitType";
+import { getPermitTypeName, PERMIT_TYPES, PermitType } from "../../types/PermitType";
 
 export const FeeSummary = ({
   permitType,

@@ -1,10 +1,7 @@
 import axios from "axios";
 
 import { GEOCODER_API_KEY, GEOCODER_URL } from "./endpoints/endpoints";
-import {
-  GeocoderAddressResponse,
-  GeocoderQueryOptions,
-} from "../types/geocoder";
+import { GeocoderAddressResponse, GeocoderQueryOptions } from "../types/geocoder";
 import { getDefaultRequiredVal } from "../helpers/util";
 import {
   DEFAULT_AUTOCOMPLETE,
@@ -42,22 +39,13 @@ export const httpGETGeocoder = async (
     `${getDefaultRequiredVal(DEFAULT_MIN_SCORE, options?.minScore)}`,
   );
 
-  queryParams.set(
-    "echo",
-    `${getDefaultRequiredVal(DEFAULT_ECHO, options?.echo)}`,
-  );
-  queryParams.set(
-    "brief",
-    `${getDefaultRequiredVal(DEFAULT_BRIEF, options?.brief)}`,
-  );
+  queryParams.set("echo", `${getDefaultRequiredVal(DEFAULT_ECHO, options?.echo)}`);
+  queryParams.set("brief", `${getDefaultRequiredVal(DEFAULT_BRIEF, options?.brief)}`);
   queryParams.set(
     "locationDescriptor",
-    getDefaultRequiredVal(
-      DEFAULT_LOCATION_DESCRIPTOR,
-      options?.locationDescriptor,
-    ),
+    getDefaultRequiredVal(DEFAULT_LOCATION_DESCRIPTOR, options?.locationDescriptor),
   );
-
+  
   queryParams.set(
     "outputSRS",
     `${getDefaultRequiredVal(DEFAULT_OUTPUT_SRS, options?.outputSRS)}`,
