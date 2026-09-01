@@ -32,20 +32,14 @@ export const VehicleWeightInput = ({
   onUpdateValue: (updateValue: Nullable<number>) => void;
 }) => {
   // Display any violation messages thrown by policy engine
-  const { policyViolations, clearViolation } = useContext(
-    ApplicationFormContext,
-  );
-  const policyViolationMsg =
-    name in policyViolations ? policyViolations[name] : null;
+  const { policyViolations, clearViolation } = useContext(ApplicationFormContext);
+  const policyViolationMsg = (name in policyViolations) ? policyViolations[name] : null;
 
   const validationRules = {
-    required:
-      isEnabled || shouldValidateWhenEmpty
-        ? {
-            value: true,
-            message: requiredMessage(),
-          }
-        : false,
+    required: (isEnabled || shouldValidateWhenEmpty) ? {
+      value: true,
+      message: requiredMessage(),
+    } : false,
     min: { value: 0, message: mustBeGreaterThanOrEqualTo(0) },
   };
 
@@ -85,11 +79,12 @@ export const VehicleWeightInput = ({
               ? {
                   errors: [error.message],
                 }
-              : policyViolationMsg
-                ? {
+              : (
+                policyViolationMsg
+                  ? {
                     errors: [policyViolationMsg],
-                  }
-                : undefined
+                  } : undefined
+              )
           }
         />
       )}

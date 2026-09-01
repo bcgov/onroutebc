@@ -22,15 +22,19 @@ export const EditCartItemDialog = ({
     >
       <div className="edit-cart-item-dialog__header">
         <div className="edit-cart-item-dialog__icon">
-          <FontAwesomeIcon className="icon" icon={faPen} />
+          <FontAwesomeIcon
+            className="icon"
+            icon={faPen}
+          />
         </div>
 
-        <span className="edit-cart-item-dialog__title">Edit Application</span>
+        <span className="edit-cart-item-dialog__title">
+          Edit Application
+        </span>
       </div>
 
       <div className="edit-cart-item-dialog__info">
-        Editing a permit application that&apos;s in the cart will remove it from
-        your cart. You will have to re-add it to your cart.
+        Editing a permit application that&apos;s in the cart will remove it from your cart. You will have to re-add it to your cart.
       </div>
 
       <div className="edit-cart-item-dialog__actions">

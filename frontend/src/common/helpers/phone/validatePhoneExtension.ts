@@ -1,8 +1,5 @@
 import { Nullable } from "../../types/common";
-import {
-  invalidExtension,
-  invalidExtensionLength,
-} from "../validationMessages";
+import { invalidExtension, invalidExtensionLength } from "../validationMessages";
 
 /**
  * Validate optional phone extension.

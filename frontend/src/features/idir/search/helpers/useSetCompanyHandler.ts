@@ -35,7 +35,10 @@ export const useSetCompanyHandler = () => {
   });
 
   const handleSelectCompany = useCallback(
-    (selectedCompany: CompanyOrClient, redirectToRouteForCompany?: string) => {
+    (
+      selectedCompany: CompanyOrClient,
+      redirectToRouteForCompany?: string,
+    ) => {
       const {
         companyId,
         legalName,

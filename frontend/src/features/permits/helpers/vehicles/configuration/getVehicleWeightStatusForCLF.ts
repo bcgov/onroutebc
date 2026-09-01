@@ -19,7 +19,7 @@ export const getVehicleWeightStatusForCLF = (
       enableLoadedGVW: false,
       enableNetWeight: false,
     };
-
+  
   switch (clf) {
     case CONDITIONAL_LICENSING_FEE_TYPES.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE:
     case CONDITIONAL_LICENSING_FEE_TYPES.CONDITIONAL_LICENSING_FEE_RATE:

@@ -69,7 +69,8 @@ export const canViewNoFeePermitsFlag = (
   userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    (userRole && READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
     Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_NOFEE)) ||
     canUpdateNoFeePermitsFlag(userClaims, userRole)
   );
@@ -91,7 +92,8 @@ export const canViewLCVFlag = (
   userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    (userRole && READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
     Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_LCV_FLAG)) ||
     canUpdateLCVFlag(userClaims, userRole)
   );
@@ -140,7 +142,8 @@ export const canViewSpecialAuthorizations = (
   userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    (userRole && READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
     canViewNoFeePermitsFlag(userClaims, userRole) ||
     canViewLCVFlag(userClaims, userRole) ||
     canViewLOA(userClaims, userRole) ||

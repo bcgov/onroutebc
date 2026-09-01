@@ -49,10 +49,12 @@ export const getLOADetail = async (
  * @param LOAData Information about the LOA to be created for the company
  * @returns Result of creating the LOA, or error on fail
  */
-export const createLOA = async (LOAData: {
-  companyId: number | string;
-  data: LOAFormData;
-}): Promise<AxiosResponse<LOADetail>> => {
+export const createLOA = async (
+  LOAData: {
+    companyId: number | string;
+    data: LOAFormData;
+  },
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, data } = LOAData;
   return await httpPOSTRequestWithFile(
     SPECIAL_AUTH_API_ROUTES.LOA.CREATE(companyId),
@@ -65,11 +67,13 @@ export const createLOA = async (LOAData: {
  * @param LOAData Information about the LOA to be updated for the company
  * @returns Result of updating the LOA, or error on fail
  */
-export const updateLOA = async (LOAData: {
-  companyId: number | string;
-  loaId: number;
-  data: LOAFormData;
-}): Promise<AxiosResponse<LOADetail>> => {
+export const updateLOA = async (
+  LOAData: {
+    companyId: number | string;
+    loaId: number;
+    data: LOAFormData;
+  },
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId, data } = LOAData;
   return await httpPUTRequestWithFile(
     SPECIAL_AUTH_API_ROUTES.LOA.UPDATE(companyId, loaId),
@@ -82,10 +86,12 @@ export const updateLOA = async (LOAData: {
  * @param LOAData LOA id and id of the company to remove it from
  * @returns Result of removing the LOA, or error on fail
  */
-export const removeLOA = async (LOAData: {
-  companyId: number | string;
-  loaId: number;
-}): Promise<AxiosResponse<LOADetail>> => {
+export const removeLOA = async (
+  LOAData: {
+    companyId: number | string;
+    loaId: number;
+  },
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId } = LOAData;
   return await httpDELETERequest(
     SPECIAL_AUTH_API_ROUTES.LOA.REMOVE(companyId, loaId),
@@ -112,10 +118,12 @@ export const downloadLOA = async (
  * @param LOAData LOA id and id of the company to remove it from
  * @returns Result of removing the LOA document, or error on fail
  */
-export const removeLOADocument = async (LOAData: {
-  companyId: number | string;
-  loaId: number;
-}): Promise<AxiosResponse<LOADetail>> => {
+export const removeLOADocument = async (
+  LOAData: {
+    companyId: number | string;
+    loaId: number;
+  },
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId } = LOAData;
   return await httpDELETERequest(
     SPECIAL_AUTH_API_ROUTES.LOA.REMOVE_DOCUMENT(companyId, loaId),

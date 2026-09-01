@@ -14,7 +14,7 @@ export const OverloadWeights = ({
   oldVehicleConfiguration,
   showChangedFields = false,
 }: {
-  permitType?: Nullable<PermitType>;
+  permitType?: Nullable<PermitType>,
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   oldVehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
   showChangedFields?: boolean;
@@ -52,10 +52,7 @@ export const OverloadWeights = ({
             className="overload__data"
             data-testid="permit-overload-weight"
           >
-            {getDefaultRequiredVal(
-              0,
-              vehicleConfiguration?.overloadWeight,
-            ).toFixed(2)}
+            {getDefaultRequiredVal(0, vehicleConfiguration?.overloadWeight).toFixed(2)}
           </Typography>
         </div>
       </Box>

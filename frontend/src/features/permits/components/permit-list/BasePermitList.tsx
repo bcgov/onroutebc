@@ -210,9 +210,8 @@ export const BasePermitList = ({
     manualSorting: true,
     muiSearchTextFieldProps: {
       ...defaultTableOptions.muiSearchTextFieldProps,
-      helperText:
-        getDefaultRequiredVal(0, globalFilter?.length) >= 100 &&
-        "100 characters maximum.",
+      helperText: getDefaultRequiredVal(0, globalFilter?.length) >= 100
+        && "100 characters maximum.",
       placeholder: "Search by Unit No., Plate or Permit No.",
       sx: {
         minWidth: "450px",
@@ -239,7 +238,7 @@ export const BasePermitList = ({
           row.original.permitStatus,
           row.original.permitApprovalSource,
         );
-
+        
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions

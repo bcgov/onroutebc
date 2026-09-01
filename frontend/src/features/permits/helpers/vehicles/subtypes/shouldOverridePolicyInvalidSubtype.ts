@@ -16,11 +16,7 @@ export const shouldOverridePolicyInvalidSubtype = (
 ) => {
   // By default, if policy violations don't include subtype,
   // it's safe to assume that subtype is valid and hence should let it pass
-  if (
-    !Object.keys(policyViolations).includes(
-      "permitData.vehicleDetails.vehicleSubType",
-    )
-  )
+  if (!Object.keys(policyViolations).includes("permitData.vehicleDetails.vehicleSubType"))
     return true;
 
   // If no LOAs were selected, then an invalid subtype stays invalid

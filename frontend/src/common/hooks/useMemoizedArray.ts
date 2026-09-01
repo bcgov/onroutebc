@@ -11,7 +11,7 @@ import { doUniqueArraysHaveSameObjects } from "../helpers/equality";
  * @param equalFn Function that determines whether or not two objects are equal
  * @returns Memoized array of objects
  */
-export const useMemoizedArray = <T, K extends number | string>(
+export const useMemoizedArray = <T, K extends (number | string)>(
   items: T[],
   key: (item: T) => K,
   equalFn: (item1: T, item2: T) => boolean,
@@ -19,7 +19,12 @@ export const useMemoizedArray = <T, K extends number | string>(
   const [arrayItems, setArrayItems] = useState<T[]>(items);
 
   useEffect(() => {
-    if (!doUniqueArraysHaveSameObjects(arrayItems, items, key, equalFn)) {
+    if (!doUniqueArraysHaveSameObjects(
+      arrayItems,
+      items,
+      key,
+      equalFn,
+    )) {
       setArrayItems(items);
     }
   }, [items]);

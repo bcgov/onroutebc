@@ -42,15 +42,15 @@ export const LOASteps = ({
 
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
-  const powerUnitSubtypes = useMemo(
-    () => getDefaultRequiredVal([], powerUnitSubTypesQuery.data),
-    [powerUnitSubTypesQuery.data],
-  );
+  const powerUnitSubtypes = useMemo(() => getDefaultRequiredVal(
+    [],
+    powerUnitSubTypesQuery.data,
+  ), [powerUnitSubTypesQuery.data]);
 
-  const trailerSubtypes = useMemo(
-    () => getDefaultRequiredVal([], trailerSubTypesQuery.data),
-    [trailerSubTypesQuery.data],
-  );
+  const trailerSubtypes = useMemo(() => getDefaultRequiredVal(
+    [],
+    trailerSubTypesQuery.data,
+  ), [trailerSubTypesQuery.data]);
 
   const formMethods = useForm<LOAFormData>({
     defaultValues: loaFormData,
@@ -143,12 +143,18 @@ export const LOASteps = ({
           />
         );
     }
-  }, [activeStep, powerUnitSubtypes, trailerSubtypes]);
+  }, [
+    activeStep,
+    powerUnitSubtypes,
+    trailerSubtypes,
+  ]);
 
   return (
     <FormProvider {...formMethods}>
       <div className="loa-steps">
-        <h3 className="loa-steps__step-label">{stepLabel}</h3>
+        <h3 className="loa-steps__step-label">
+          {stepLabel}
+        </h3>
 
         <div className="loa-steps__step-component">{stepComponent}</div>
 
@@ -174,10 +180,7 @@ export const LOASteps = ({
               color="tertiary"
               className="steps-navigation__btn steps-navigation__btn--prev"
             >
-              <FontAwesomeIcon
-                className="steps-navigation__icon"
-                icon={faPencil}
-              />
+              <FontAwesomeIcon className="steps-navigation__icon" icon={faPencil} />
               Edit
             </Button>
           ) : null}

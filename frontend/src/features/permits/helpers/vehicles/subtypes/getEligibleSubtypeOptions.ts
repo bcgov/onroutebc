@@ -1,9 +1,6 @@
 import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../common/constants/constants";
 import { EMPTY_VEHICLE_SUBTYPE } from "../../../../manageVehicles/helpers/vehicleSubtypes";
-import {
-  VEHICLE_TYPES,
-  VehicleSubType,
-} from "../../../../manageVehicles/types/Vehicle";
+import { VEHICLE_TYPES, VehicleSubType } from "../../../../manageVehicles/types/Vehicle";
 import { sortVehicleSubtypes } from "./sortVehicleSubtypes";
 
 /**
@@ -17,9 +14,8 @@ const getAllowedVehicleSubtypes = (
   allowedSubtypeCodes: Set<string>,
 ) => {
   return allVehicleSubtypes.filter(
-    ({ typeCode }) =>
-      typeCode === DEFAULT_EMPTY_SELECT_VALUE ||
-      allowedSubtypeCodes.has(typeCode),
+    ({ typeCode }) => typeCode === DEFAULT_EMPTY_SELECT_VALUE
+      || allowedSubtypeCodes.has(typeCode),
   );
 };
 

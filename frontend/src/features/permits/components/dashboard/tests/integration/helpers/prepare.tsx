@@ -13,10 +13,7 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import {
-  APPLICATION_STEP_CONTEXTS,
-  APPLICATION_STEPS,
-} from "../../../../../../../routes/constants";
+import { APPLICATION_STEP_CONTEXTS, APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
 import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
@@ -255,12 +252,14 @@ const server = setupServer(
   http.get(
     `${SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.GET(companyInfo.companyId.toString())}`,
     () => {
-      return HttpResponse.json({
-        companyId: companyInfo.companyId,
-        specialAuthId: 1,
-        isLcvAllowed: false,
-        noFeeType: null,
-      });
+      return HttpResponse.json(
+        {
+          companyId: companyInfo.companyId,
+          specialAuthId: 1,
+          isLcvAllowed: false,
+          noFeeType: null,
+        },
+      );
     },
   ),
 );
@@ -332,7 +331,10 @@ export const getVehicleDetails = (
       make: vehicle.make,
       year: getDefaultRequiredVal(0, vehicle.year as Nullable<number>),
       country: getCountryFullName(vehicle.countryCode),
-      province: getProvinceFullName(vehicle.countryCode, vehicle.provinceCode),
+      province: getProvinceFullName(
+        vehicle.countryCode,
+        vehicle.provinceCode,
+      ),
       vehicleType: "Power Unit",
       vehicleSubtype,
       saveVehicle,

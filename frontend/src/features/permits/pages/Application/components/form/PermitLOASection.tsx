@@ -25,43 +25,39 @@ export const PermitLOASection = ({
   startDate: Dayjs;
   selectedLOAs: PermitLOA[];
   companyLOAs: LOADetail[];
-  onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void;
+  onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void,
 }) => {
-  const isTermPermit = (
-    [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as PermitType[]
-  ).includes(permitType);
+  const isTermPermit = ([
+    PERMIT_TYPES.TROS,
+    PERMIT_TYPES.TROW,
+  ] as PermitType[]).includes(permitType);
 
   const minPermitExpiryDate = getMinPermitExpiryDate(permitType, startDate);
 
   // Only show the current active company LOAs as selectable LOAs
-  const loasForTable = useMemo(
-    () =>
-      getUpdatedLOASelection(
-        companyLOAs,
-        selectedLOAs,
-        minPermitExpiryDate,
-        startDate,
-      ),
-    [companyLOAs, selectedLOAs, minPermitExpiryDate, startDate],
-  );
+  const loasForTable = useMemo(() => getUpdatedLOASelection(
+    companyLOAs,
+    selectedLOAs,
+    minPermitExpiryDate,
+    startDate,
+  ), [
+    companyLOAs,
+    selectedLOAs,
+    minPermitExpiryDate,
+    startDate,
+  ]);
 
   // Since certain LOAs might have been removed from the table, we need to make sure
   // that the selected LOAs in the permit form matches the selection state of the table
   const selectedLOAsInTable = loasForTable
-    .filter(
-      (selectableLOA) => selectableLOA.checked && Boolean(selectableLOA.loa),
-    )
-    .map((selectableLOA) => selectableLOA.loa) as PermitLOA[];
+    .filter(selectableLOA => selectableLOA.checked && Boolean(selectableLOA.loa))
+    .map(selectableLOA => selectableLOA.loa) as PermitLOA[];
 
-  const selectedLOANumbers = selectedLOAs.map((loa) => loa.loaNumber);
-
+  const selectedLOANumbers = selectedLOAs.map(loa => loa.loaNumber);
+  
   useEffect(() => {
-    const selectedNumbersInTable = selectedLOAsInTable.map(
-      (loa) => loa.loaNumber,
-    );
-    if (
-      !doUniqueArraysHaveSameItems(selectedLOANumbers, selectedNumbersInTable)
-    ) {
+    const selectedNumbersInTable = selectedLOAsInTable.map(loa => loa.loaNumber);
+    if (!doUniqueArraysHaveSameItems(selectedLOANumbers, selectedNumbersInTable)) {
       onUpdateLOAs([...selectedLOAsInTable]);
     }
   }, [selectedLOANumbers, selectedLOAsInTable]);
@@ -73,9 +69,7 @@ export const PermitLOASection = ({
       return;
     }
 
-    const loa = loasForTable.find(
-      (loaRow) => loaRow.loa?.loaNumber === loaNumber,
-    );
+    const loa = loasForTable.find(loaRow => loaRow.loa?.loaNumber === loaNumber);
     if (!loa || loa?.disabled || loa?.checked) return;
 
     // Select the LOA
@@ -83,10 +77,12 @@ export const PermitLOASection = ({
     onUpdateLOAs(loaToSelect ? [loaToSelect] : []);
   };
 
-  return isTermPermit && loasForTable.length > 1 ? (
+  return isTermPermit && (loasForTable.length > 1) ? (
     <Box className="permit-loa-section">
       <Box className="permit-loa-section__header">
-        <h3>Letter of Authorization (LOA)</h3>
+        <h3>
+          Letter of Authorization (LOA)
+        </h3>
       </Box>
 
       <Box className="permit-loa-section__body">
@@ -105,7 +101,10 @@ export const PermitLOASection = ({
           }
         />
 
-        <LOATable loas={loasForTable} onSelectLOA={handleSelectLOA} />
+        <LOATable
+          loas={loasForTable}
+          onSelectLOA={handleSelectLOA}
+        />
       </Box>
     </Box>
   ) : null;

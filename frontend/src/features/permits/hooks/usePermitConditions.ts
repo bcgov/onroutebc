@@ -20,20 +20,27 @@ export const usePermitConditions = (
       vehicleSubtype,
       selectedConditions,
     );
-  }, [permitType, isLcvDesignated, vehicleSubtype, selectedConditions]);
+  }, [
+    permitType,
+    isLcvDesignated,
+    vehicleSubtype,
+    selectedConditions,
+  ]);
 
-  const updatedConditions = allConditions.filter(({ checked }) => checked);
+  const updatedConditions = allConditions
+    .filter(({ checked }) => checked);
 
   useEffect(() => {
-    if (
-      !doUniqueArraysHaveSameItems(
-        updatedConditions.map(({ condition }) => condition),
-        selectedConditions.map(({ condition }) => condition),
-      )
-    ) {
+    if (!doUniqueArraysHaveSameItems(
+      updatedConditions.map(({ condition }) => condition),
+      selectedConditions.map(({ condition }) => condition),
+    )) {
       onSetConditions(updatedConditions);
     }
-  }, [updatedConditions, selectedConditions]);
+  }, [
+    updatedConditions,
+    selectedConditions,
+  ]);
 
   return { allConditions };
 };

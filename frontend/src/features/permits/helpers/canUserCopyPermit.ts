@@ -1,9 +1,6 @@
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES, PermitStatus } from "../types/PermitStatus";
-import {
-  PERMIT_APPROVAL_SOURCES,
-  PermitApprovalSource,
-} from "../types/PermitApprovalSource";
+import { PERMIT_APPROVAL_SOURCES, PermitApprovalSource } from "../types/PermitApprovalSource";
 import {
   IDIR_USER_ROLE,
   UserRoleType,
@@ -30,16 +27,11 @@ export const canUserCopyPermit = (
   if (!role) return false;
 
   // No one can copy permits that are of status "Revoked", "Voided", or "Rejected"
-  if (
-    !permitStatus ||
-    (
-      [
-        PERMIT_STATUSES.REJECTED,
-        PERMIT_STATUSES.VOIDED,
-        PERMIT_STATUSES.REVOKED,
-      ] as PermitStatus[]
-    ).includes(permitStatus)
-  ) {
+  if (!permitStatus || ([
+    PERMIT_STATUSES.REJECTED,
+    PERMIT_STATUSES.VOIDED,
+    PERMIT_STATUSES.REVOKED,
+  ] as PermitStatus[]).includes(permitStatus)) {
     return false;
   }
 

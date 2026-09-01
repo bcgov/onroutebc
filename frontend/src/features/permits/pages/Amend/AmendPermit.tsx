@@ -234,9 +234,11 @@ export const AmendPermit = () => {
     ],
   );
 
+  
   if (isLoadingState()) {
     return <Loading />;
   }
+
 
   // unable to use permission matrix in this component, using manual role check instead
   const canAmendPermit = (role?: string) => {

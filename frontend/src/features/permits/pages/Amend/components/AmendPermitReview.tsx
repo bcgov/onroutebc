@@ -172,7 +172,7 @@ export const AmendPermitReview = () => {
       ? serializePermitData(amendmentApplication.permitData)
       : {},
   };
-
+  
   const amountToRefund = useCalculateRefundAmount(
     validTransactionHistory,
     serializedPermit,
@@ -388,12 +388,8 @@ export const AmendPermitReview = () => {
         <PermitReviewConfirmWarningDialog
           showModal={showConfirmWarningModal}
           isAmend={true}
-          actionText={
-            isFollowUpActionContinue ? "continue" : "add it to the cart"
-          }
-          confirmButtonText={
-            isFollowUpActionContinue ? "Continue" : "Add to Cart"
-          }
+          actionText={isFollowUpActionContinue ? "continue" : "add it to the cart"}
+          confirmButtonText={isFollowUpActionContinue ? "Continue" : "Add to Cart"}
           onCancel={handleCloseConfirmWarningModal}
           onConfirm={isFollowUpActionContinue ? onSubmit : handleAddToCart}
         />

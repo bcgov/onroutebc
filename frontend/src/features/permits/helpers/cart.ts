@@ -11,10 +11,8 @@ export const getOutdatedCartItems = (
   oldItems: CartItem[],
   newItems: CartItem[],
 ) => {
-  const oldIds = new Set(oldItems.map((item) => item.applicationId));
-  const newIds = new Set(newItems.map((item) => item.applicationId));
-  const oldRemovedIds = new Set(
-    [...oldIds].filter((oldId) => !newIds.has(oldId)),
-  );
-  return oldItems.filter((item) => oldRemovedIds.has(item.applicationId));
+  const oldIds = new Set(oldItems.map(item => item.applicationId));
+  const newIds = new Set(newItems.map(item => item.applicationId));
+  const oldRemovedIds = new Set([...oldIds].filter(oldId => !newIds.has(oldId)));
+  return oldItems.filter(item => oldRemovedIds.has(item.applicationId));
 };

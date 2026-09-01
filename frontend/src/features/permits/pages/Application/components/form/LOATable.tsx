@@ -11,14 +11,8 @@ import {
 } from "@mui/material";
 
 import "./LOATable.scss";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../../common/helpers/util";
-import {
-  DATE_FORMATS,
-  toLocal,
-} from "../../../../../../common/helpers/formatDate";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 import { SelectableLOA } from "../../../../types/PermitLOA";
 import { Nullable } from "../../../../../../common/types/common";
 
@@ -64,7 +58,9 @@ export const LOATable = ({
                   control={
                     <Radio
                       className={`loa-radio ${
-                        selectableLOA.disabled ? "loa-radio--disabled" : ""
+                        selectableLOA.disabled
+                          ? "loa-radio--disabled"
+                          : ""
                       }`}
                       key={getDefaultRequiredVal(
                         DEFAULT_EMPTY_LOA_NUMBER,
@@ -72,9 +68,7 @@ export const LOATable = ({
                       )}
                       checked={selectableLOA.checked}
                       disabled={selectableLOA.disabled}
-                      onChange={() =>
-                        onSelectLOA?.(selectableLOA.loa?.loaNumber)
-                      }
+                      onChange={() => onSelectLOA?.(selectableLOA.loa?.loaNumber)}
                     />
                   }
                   key={getDefaultRequiredVal(
@@ -88,8 +82,7 @@ export const LOATable = ({
                   )}
                   classes={{
                     root: "loa-table__form-control",
-                    disabled:
-                      "loa-table__form-control loa-table__form-control--disabled",
+                    disabled: "loa-table__form-control loa-table__form-control--disabled",
                   }}
                   slotProps={{
                     typography: {
@@ -105,8 +98,7 @@ export const LOATable = ({
                 scope="row"
               >
                 {applyWhenNotNullable(
-                  (expiryDate) =>
-                    toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
+                  expiryDate => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
                   selectableLOA.loa?.expiryDate,
                   "Never expires",
                 )}

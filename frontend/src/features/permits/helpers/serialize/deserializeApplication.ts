@@ -37,7 +37,11 @@ export const deserializeApplicationResponse = (
   const expiryDateOrDefault = applyWhenNotNullable(
     (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
     response.permitData.expiryDate,
-    getExpiryDate(startDateOrDefault, response.permitType, durationOrDefault),
+    getExpiryDate(
+      startDateOrDefault,
+      response.permitType,
+      durationOrDefault,
+    ),
   );
 
   return {

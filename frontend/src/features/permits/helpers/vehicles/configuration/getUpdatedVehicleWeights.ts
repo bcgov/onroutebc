@@ -17,9 +17,10 @@ export const getUpdatedVehicleWeights = (
   currentLoadedGVW?: Nullable<number>,
   currentNetWeight?: Nullable<number>,
 ) => {
-  const isNonResidentPermitType = (
-    [PERMIT_TYPES.NRSCV, PERMIT_TYPES.NRQCV] as PermitType[]
-  ).includes(permitType);
+  const isNonResidentPermitType = ([
+    PERMIT_TYPES.NRSCV,
+    PERMIT_TYPES.NRQCV,
+  ] as PermitType[]).includes(permitType);
 
   if (!isNonResidentPermitType) {
     return {

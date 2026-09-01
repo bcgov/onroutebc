@@ -26,7 +26,9 @@ export const OverloadWeightSection = ({
   return permitType === PERMIT_TYPES.STWSE ? (
     <Box className="overload-weight-section">
       <Box className="overload-weight-section__header">
-        <h3 className="overload-weight-section__title">Overload (kg)</h3>
+        <h3 className="overload-weight-section__title">
+          Overload (kg)
+        </h3>
       </Box>
 
       <Box className="overload-weight-section__body">

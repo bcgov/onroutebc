@@ -12,6 +12,6 @@ export const getCountryFullName = (countryCode?: Nullable<string>) => {
 
   return getDefaultRequiredVal(
     "",
-    COUNTRIES.find((c) => c.code === countryCode)?.name,
+    COUNTRIES.find(c => c.code === countryCode)?.name,
   );
 };

@@ -12,11 +12,7 @@ import { pastStartOrExpiryDate } from "../../../../../../common/helpers/validati
 import { ErrorBcGovBanner } from "../../../../../../common/components/banners/ErrorBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
-import {
-  isQuarterlyPermit,
-  PERMIT_TYPES,
-  PermitType,
-} from "../../../../types/PermitType";
+import { isQuarterlyPermit, PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -118,13 +114,11 @@ export const ReviewPermitDetails = ({
               )}
             </Typography>
           </div>
-
+          
           {showDuration ? (
             <div className="permit-dates__duration">
               <Typography className="permit-dates__label">
-                <span className="permit-dates__label-text">
-                  Permit Duration
-                </span>
+                <span className="permit-dates__label-text">Permit Duration</span>
                 {changedFields.duration ? <DiffChip /> : null}
               </Typography>
 
@@ -132,9 +126,15 @@ export const ReviewPermitDetails = ({
                 className="permit-dates__data"
                 data-testid="permit-duration"
               >
-                {!isQuarterlyPermit(permitType)
-                  ? applyWhenNotNullable(displayDuration, permitDuration, "")
-                  : applyWhenNotNullable(displayDurationQuarter, startDate, "")}
+                {!isQuarterlyPermit(permitType) ? applyWhenNotNullable(
+                  displayDuration,
+                  permitDuration,
+                  "",
+                ) : applyWhenNotNullable(
+                  displayDurationQuarter,
+                  startDate,
+                  "",
+                )}
               </Typography>
             </div>
           ) : null}

@@ -3,4 +3,5 @@
  * @param input Any string input
  * @returns String containing only digits
  */
-export const filterNonDigits = (input: string) => input.replace(/[^0-9]/g, "");
+export const filterNonDigits = (input: string) =>
+  input.replace(/[^0-9]/g, "");

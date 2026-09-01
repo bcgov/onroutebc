@@ -1,7 +1,4 @@
-import {
-  areValuesDifferent,
-  doUniqueArraysHaveSameItems,
-} from "../../../common/helpers/equality";
+import { areValuesDifferent, doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
 import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { VehicleType } from "../../manageVehicles/types/Vehicle";
 import { PermitType } from "./PermitType";
@@ -37,20 +34,15 @@ export const arePermitLOADetailsEqual = (
 ) => {
   if (!loa1 && !loa2) return true;
   if (!loa1 || !loa2) return false;
-
-  return (
-    loa1.loaId === loa2.loaId &&
-    loa1.loaNumber === loa2.loaNumber &&
-    loa1.companyId === loa2.companyId &&
-    loa1.startDate === loa2.startDate &&
-    !areValuesDifferent(loa1.expiryDate, loa2.expiryDate) &&
-    doUniqueArraysHaveSameItems<string>(
-      loa1.loaPermitType,
-      loa2.loaPermitType,
-    ) &&
-    loa1.vehicleType === loa2.vehicleType &&
-    loa1.vehicleSubType === loa2.vehicleSubType &&
-    loa1.originalLoaId === loa2.originalLoaId &&
-    !areValuesDifferent(loa1.previousLoaId, loa2.previousLoaId)
-  );
+  
+  return loa1.loaId === loa2.loaId
+    && loa1.loaNumber === loa2.loaNumber
+    && loa1.companyId === loa2.companyId
+    && loa1.startDate === loa2.startDate
+    && !areValuesDifferent(loa1.expiryDate, loa2.expiryDate)
+    && doUniqueArraysHaveSameItems<string>(loa1.loaPermitType, loa2.loaPermitType)
+    && loa1.vehicleType === loa2.vehicleType
+    && loa1.vehicleSubType === loa2.vehicleSubType
+    && loa1.originalLoaId === loa2.originalLoaId
+    && !areValuesDifferent(loa1.previousLoaId, loa2.previousLoaId);
 };

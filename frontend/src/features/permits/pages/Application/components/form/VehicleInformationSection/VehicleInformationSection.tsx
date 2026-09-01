@@ -78,7 +78,7 @@ export const VehicleInformationSection = ({
 }) => {
   const isSingleTrip =
     permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW;
-
+  
   const infoSectionClassName =
     `vehicle-information-section__info` +
     `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;
@@ -173,20 +173,11 @@ export const VehicleInformationSection = ({
                     {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.HAS_INSURANCE_INFO}
                     <br />
                     <br />
-                    {
-                      BANNER_MESSAGES.CANNOT_FIND_VEHICLE
-                        .OTHER_VEHICLE_TYPE_INFO_START
-                    }
+                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_START}
                     <span className="highlighted-value">
-                      {
-                        BANNER_MESSAGES.CANNOT_FIND_VEHICLE
-                          .OTHER_VEHICLE_TYPE_VALUE
-                      }
+                      {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_VALUE}
                     </span>
-                    {
-                      BANNER_MESSAGES.CANNOT_FIND_VEHICLE
-                        .OTHER_VEHICLE_TYPE_INFO_END
-                    }
+                    {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.OTHER_VEHICLE_TYPE_INFO_END}
                   </>
                 ) : null}
               </div>

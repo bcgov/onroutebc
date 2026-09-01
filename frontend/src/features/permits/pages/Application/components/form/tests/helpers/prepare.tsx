@@ -4,16 +4,15 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent, { Options } from "@testing-library/user-event";
 
 import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
-import {
-  getDefaultConditions,
-  getMandatoryConditions,
-} from "../../../../../../helpers/conditions";
+import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
 import { PermitCondition } from "../../../../../../types/PermitCondition";
 import { ORBC_FORM_FEATURES } from "../../../../../../../../common/types/common";
 import { MAX_ALLOWED_FUTURE_DAYS_CV } from "../../../../../../constants/constants";
-import { PAST_START_DATE_STATUSES } from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import {
+  PAST_START_DATE_STATUSES,
+} from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 import {
   getStartOfDate,
@@ -67,7 +66,11 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
       permitData: {
         startDate: currentDt,
         permitDuration: defaultDuration,
-        expiryDate: getExpiryDate(currentDt, permitType, defaultDuration),
+        expiryDate: getExpiryDate(
+          currentDt,
+          permitType,
+          defaultDuration,
+        ),
         commodities: [],
         loas: [],
       },
@@ -86,13 +89,16 @@ export const renderTestComponent = (
 ) => {
   const user = userEvent.setup(userEventOptions);
   let selectedConditions = [...conditions];
-  const expiryDate = getExpiryDate(startDate, permitType, duration);
+  const expiryDate = getExpiryDate(
+    startDate,
+    permitType,
+    duration,
+  );
 
-  const allConditions = getDefaultConditions(permitType, false).map(
-    (condition) => {
-      const existingCondition = selectedConditions.find(
-        (c) => c.condition === condition.condition,
-      );
+  const allConditions = getDefaultConditions(permitType, false)
+    .map(condition => {
+      const existingCondition = selectedConditions
+        .find(c => c.condition === condition.condition);
 
       return {
         ...condition,

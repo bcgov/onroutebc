@@ -1,10 +1,7 @@
 import { MRT_ColumnDef, MRT_Row } from "material-react-table";
 
 import { LOADetail } from "../../../../types/LOADetail";
-import {
-  DATE_FORMATS,
-  toLocal,
-} from "../../../../../../common/helpers/formatDate";
+import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { LOANumberCell } from "./LOANumberCell";
 import { LOADownloadCell } from "./LOADownloadCell";
@@ -15,7 +12,9 @@ export const LOAListColumnDef = (
   onDownload: (loaId: number) => void,
 ): MRT_ColumnDef<LOADetail>[] => [
   {
-    Cell: (props: { row: MRT_Row<LOADetail> }) => (
+    Cell: (
+      props: { row: MRT_Row<LOADetail> },
+    ) => (
       <LOANumberCell
         allowEditLOA={allowEditLOA}
         onEditLOA={onEditLOA}
@@ -25,10 +24,12 @@ export const LOAListColumnDef = (
     accessorKey: "loaNumber",
     header: "LOA #",
     muiTableHeadCellProps: {
-      className: "loa-list__header loa-list__header--number",
+      className:
+        "loa-list__header loa-list__header--number",
     },
     muiTableBodyCellProps: {
-      className: "loa-list__data loa-list__data--number",
+      className:
+        "loa-list__data loa-list__data--number",
     },
     enableSorting: false,
     enableColumnActions: false,
@@ -40,10 +41,12 @@ export const LOAListColumnDef = (
     id: "startDate",
     header: "Start Date",
     muiTableHeadCellProps: {
-      className: "loa-list__header loa-list__header--start",
+      className:
+        "loa-list__header loa-list__header--start",
     },
     muiTableBodyCellProps: {
-      className: "loa-list__data loa-list__data--start",
+      className:
+        "loa-list__data loa-list__data--start",
     },
     enableSorting: false,
     enableColumnActions: false,
@@ -58,24 +61,33 @@ export const LOAListColumnDef = (
     id: "expiryDate",
     header: "Expiry Date",
     muiTableHeadCellProps: {
-      className: "loa-list__header loa-list__header--expiry",
+      className:
+        "loa-list__header loa-list__header--expiry",
     },
     muiTableBodyCellProps: {
-      className: "loa-list__data loa-list__data--expiry",
+      className:
+        "loa-list__data loa-list__data--expiry",
     },
     enableSorting: false,
     enableColumnActions: false,
   },
   {
-    Cell: (props: { row: MRT_Row<LOADetail> }) => (
-      <LOADownloadCell onDownload={onDownload} props={props} />
+    Cell: (
+      props: { row: MRT_Row<LOADetail> },
+    ) => (
+      <LOADownloadCell
+        onDownload={onDownload}
+        props={props}
+      />
     ),
     header: "",
     muiTableHeadCellProps: {
-      className: "loa-list__header loa-list__header--download",
+      className:
+        "loa-list__header loa-list__header--download",
     },
     muiTableBodyCellProps: {
-      className: "loa-list__data loa-list__data--download",
+      className:
+        "loa-list__data loa-list__data--download",
     },
     accessorKey: "documentId",
     enableSorting: false,

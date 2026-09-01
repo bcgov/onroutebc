@@ -78,8 +78,8 @@ export const PermitDetails = ({
       ? warnPastStartDate()
       : null;
 
-  const showDurationSelection =
-    !isQuarterlyPermit(permitType) && permitType !== PERMIT_TYPES.HC;
+  const showDurationSelection = !isQuarterlyPermit(permitType)
+    && permitType !== PERMIT_TYPES.HC;
 
   return (
     <Box className="permit-details">

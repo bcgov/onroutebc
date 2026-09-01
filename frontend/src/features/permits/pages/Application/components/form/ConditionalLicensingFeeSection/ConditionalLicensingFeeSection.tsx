@@ -168,9 +168,7 @@ export const ConditionalLicensingFeeSection = ({
                 CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE,
               )
             }
-            clf={
-              CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE
-            }
+            clf={CONDITIONAL_LICENSING_FEE_TYPES.COMMERCIAL_PASSENGER_VEHICLE_FEE_RATE}
           />
         </RadioGroup>
       </Box>

@@ -20,16 +20,18 @@ export const serializePermitVehicleDetails = (
     countryCode: vehicleDetails.countryCode,
     provinceCode: vehicleDetails.provinceCode,
     vehicleType: vehicleDetails.vehicleType,
-    vehicleSubType:
-      !vehicleDetails.vehicleSubType ||
-      vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
-        ? ""
-        : vehicleDetails.vehicleSubType,
+    vehicleSubType: (
+      !vehicleDetails.vehicleSubType
+      || vehicleDetails.vehicleSubType === DEFAULT_EMPTY_SELECT_VALUE
+    ) ? "" : vehicleDetails.vehicleSubType,
     saveVehicle: vehicleDetails.saveVehicle,
     unitNumber: vehicleDetails.unitNumber,
     // Either powerUnitId or trailerId, depending on vehicleType
     vehicleId: vehicleDetails.vehicleId,
-    licensedGVW: convertToNumberIfValid(vehicleDetails.licensedGVW, null),
+    licensedGVW: convertToNumberIfValid(
+      vehicleDetails.licensedGVW,
+      null,
+    ),
     vehicleDescription: vehicleDetails.vehicleDescription,
   };
 };

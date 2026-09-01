@@ -8,14 +8,11 @@ export const NO_FEE_PERMIT_TYPES = {
   OTHER_USA_GOVT: "OTHER_USA_GOVT",
 } as const;
 
-export type NoFeePermitType =
-  (typeof NO_FEE_PERMIT_TYPES)[keyof typeof NO_FEE_PERMIT_TYPES];
+export type NoFeePermitType = typeof NO_FEE_PERMIT_TYPES[keyof typeof NO_FEE_PERMIT_TYPES];
 
 export const DEFAULT_NO_FEE_PERMIT_TYPE = NO_FEE_PERMIT_TYPES.CA_GOVT;
 
-export const noFeePermitTypeDescription = (
-  noFeePermitType: NoFeePermitType,
-) => {
+export const noFeePermitTypeDescription = (noFeePermitType: NoFeePermitType) => {
   switch (noFeePermitType) {
     case NO_FEE_PERMIT_TYPES.CA_GOVT:
       return "The government of Canada or any province or territory";

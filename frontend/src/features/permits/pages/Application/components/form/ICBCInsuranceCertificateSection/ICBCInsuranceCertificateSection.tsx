@@ -20,7 +20,7 @@ export const ICBCInsuranceCertificateSection = ({
   onSetHaveCertificate: (updatedHaveCertificate: boolean) => void;
 }) => {
   const showSection = permitType === PERMIT_TYPES.HC;
-
+  
   return showSection ? (
     <Box className="icbc-insurance-certificate-section">
       <Box className="icbc-insurance-certificate-section__header">
@@ -53,15 +53,9 @@ export const ICBCInsuranceCertificateSection = ({
               </p>
 
               <p className="certificate-info__section">
-                {
-                  BANNER_MESSAGES.ICBC_INSURANCE_CERTIFICATE.SELECT_YES_MSG
-                    .START
-                }
+                {BANNER_MESSAGES.ICBC_INSURANCE_CERTIFICATE.SELECT_YES_MSG.START}
                 <span className="certificate-info__highlighted-text">
-                  {
-                    BANNER_MESSAGES.ICBC_INSURANCE_CERTIFICATE.SELECT_YES_MSG
-                      .YES
-                  }
+                  {BANNER_MESSAGES.ICBC_INSURANCE_CERTIFICATE.SELECT_YES_MSG.YES}
                 </span>
                 {BANNER_MESSAGES.ICBC_INSURANCE_CERTIFICATE.SELECT_YES_MSG.END}
               </p>
@@ -71,15 +65,16 @@ export const ICBCInsuranceCertificateSection = ({
 
         <Box className="icbc-insurance-certificate-section__have-certificate">
           <h4 className="icbc-insurance-certificate-section__have-certificate-header">
-            Do you have an ICBC Certificate of Insurance for Crossing Permit
-            (MV1805/APV36)?
+            Do you have an ICBC Certificate of Insurance for Crossing Permit (MV1805/APV36)?
           </h4>
 
           <RadioGroup
             className="icbc-insurance-certificate-section__radio-group"
             defaultValue={haveCertificate}
             value={haveCertificate}
-            onChange={(e) => onSetHaveCertificate(e.target.value === "true")}
+            onChange={(e) =>
+              onSetHaveCertificate(e.target.value === "true")
+            }
           >
             <FormControlLabel
               key="have-certificate-no"
@@ -93,8 +88,7 @@ export const ICBCInsuranceCertificateSection = ({
                 <Radio
                   key="have-certificate-radio-no"
                   className="have-certificate__radio"
-                />
-              }
+                />}
             />
 
             <FormControlLabel
@@ -109,8 +103,7 @@ export const ICBCInsuranceCertificateSection = ({
                 <Radio
                   key="have-certificate-radio-yes"
                   className="have-certificate__radio"
-                />
-              }
+                />}
             />
           </RadioGroup>
         </Box>

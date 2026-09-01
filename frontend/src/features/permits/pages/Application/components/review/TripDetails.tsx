@@ -5,10 +5,7 @@ import { Nullable } from "../../../../../../common/types/common";
 import { DiffChip } from "./DiffChip";
 import { PermittedRoute } from "../../../../types/PermittedRoute";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import {
-  areOrderedSequencesEqual,
-  areValuesDifferent,
-} from "../../../../../../common/helpers/equality";
+import { areOrderedSequencesEqual, areValuesDifferent } from "../../../../../../common/helpers/equality";
 
 export const TripDetails = ({
   routeDetails,
@@ -20,22 +17,10 @@ export const TripDetails = ({
   showChangedFields?: boolean;
 }) => {
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
-  const destination = getDefaultRequiredVal(
-    "",
-    routeDetails?.manualRoute?.destination,
-  );
-  const exitPoint = getDefaultRequiredVal(
-    "",
-    routeDetails?.manualRoute?.exitPoint,
-  );
-  const totalDistanceStr = getDefaultRequiredVal(
-    0,
-    routeDetails?.manualRoute?.totalDistance,
-  ).toFixed(2);
-  const highwaySequence = getDefaultRequiredVal(
-    [],
-    routeDetails?.manualRoute?.highwaySequence,
-  );
+  const destination = getDefaultRequiredVal("", routeDetails?.manualRoute?.destination);
+  const exitPoint = getDefaultRequiredVal("", routeDetails?.manualRoute?.exitPoint);
+  const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(2);
+  const highwaySequence = getDefaultRequiredVal([], routeDetails?.manualRoute?.highwaySequence);
   const details = getDefaultRequiredVal("", routeDetails?.routeDetails);
 
   const changedFields = showChangedFields
@@ -54,10 +39,7 @@ export const TripDetails = ({
         ),
         totalDistance: areValuesDifferent(
           totalDistanceStr,
-          getDefaultRequiredVal(
-            0,
-            oldRouteDetails?.manualRoute?.totalDistance,
-          ).toFixed(2),
+          getDefaultRequiredVal(0, oldRouteDetails?.manualRoute?.totalDistance).toFixed(2),
         ),
         highwaySequences: areOrderedSequencesEqual(
           routeDetails?.manualRoute?.highwaySequence,
@@ -109,7 +91,7 @@ export const TripDetails = ({
                 </Typography>
               </div>
             ) : null}
-
+            
             {destination ? (
               <div className="manual-route__destination">
                 <Typography className="manual-route__label">
@@ -147,9 +129,7 @@ export const TripDetails = ({
             {Number(totalDistanceStr) > 0 ? (
               <div className="manual-route__total-distance">
                 <Typography className="manual-route__label">
-                  <span className="manual-route__label-text">
-                    Total Distance (km)
-                  </span>
+                  <span className="manual-route__label-text">Total Distance (km)</span>
 
                   {showDiffChip(changedFields.totalDistance)}
                 </Typography>
@@ -171,10 +151,10 @@ export const TripDetails = ({
               <Typography variant="h4">
                 Sequences of highways to be travelled
               </Typography>
-
+              
               {showDiffChip(changedFields.highwaySequences)}
             </div>
-
+            
             <div className="review-highway-sequences__sequences">
               {highwaySequence.map((highwaySequence, index) => (
                 <Typography
