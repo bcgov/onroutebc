@@ -101,13 +101,13 @@ export const TROS_CONDITIONS: PermitCondition[] = [
     condition: "CVSE-1013",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1254",
     checked: false,
-  }
+  },
 ];
 
-export const MANDATORY_TROS_CONDITIONS: PermitCondition[] = 
+export const MANDATORY_TROS_CONDITIONS: PermitCondition[] =
   TROS_CONDITIONS.filter(
     ({ condition }: PermitCondition) =>
-      condition === "CVSE-1000" || condition === "CVSE-1070"
+      condition === "CVSE-1000" || condition === "CVSE-1070",
   );
 
 export const MIN_TROS_DURATION = TERM_PERMIT_MIN_DURATION;

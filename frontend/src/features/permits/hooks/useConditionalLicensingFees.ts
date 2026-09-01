@@ -8,7 +8,9 @@ import { getUpdatedCLF } from "../helpers/conditionalLicensingFee/getUpdatedCLF"
 
 export const useConditionalLicensingFees = (
   permitType: PermitType,
-  onUpdateCLF: (updatedCLF: RequiredOrNull<ConditionalLicensingFeeType>) => void,
+  onUpdateCLF: (
+    updatedCLF: RequiredOrNull<ConditionalLicensingFeeType>,
+  ) => void,
   selectedCLF?: Nullable<ConditionalLicensingFeeType>,
   vehicleSubtype?: Nullable<string>,
 ) => {
@@ -17,11 +19,7 @@ export const useConditionalLicensingFees = (
     [vehicleSubtype],
   );
 
-  const updatedCLF = getUpdatedCLF(
-    permitType,
-    availableCLFs,
-    selectedCLF,
-  );
+  const updatedCLF = getUpdatedCLF(permitType, availableCLFs, selectedCLF);
 
   // Change the selected CLF based on changes to list of available CLFs
   useEffect(() => {

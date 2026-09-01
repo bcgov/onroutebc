@@ -12,16 +12,14 @@ export const CustomExternalLink = (props: ExternalLinkProps) => {
       : baseClassName;
   };
 
-  const linkTarget = openInNewTab ? {
-    target: "_blank",
-  } : {};
+  const linkTarget = openInNewTab
+    ? {
+        target: "_blank",
+      }
+    : {};
 
   return (
-    <a
-      {...linkProps}
-      {...linkTarget}
-      className={className()}
-    >
+    <a {...linkProps} {...linkTarget} className={className()}>
       <CustomLinkContent withLinkIcon={withLinkIcon}>
         {linkProps.children}
       </CustomLinkContent>

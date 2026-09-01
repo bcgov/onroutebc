@@ -16,7 +16,10 @@ import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
 import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
 import { Application } from "../../permits/types/application";
 import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
-import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../permits/types/PermitType";
+import {
+  DEFAULT_PERMIT_TYPE,
+  PERMIT_TYPES,
+} from "../../permits/types/PermitType";
 import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
 import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
 import { QueueBreadcrumb } from "./QueueBreadcrumb";
@@ -55,10 +58,7 @@ export const ApplicationInQueueReview = ({
       : {},
   };
 
-  const {
-    totalCost,
-    costs,
-  } = useCalculatePermitFee(
+  const { totalCost, costs } = useCalculatePermitFee(
     serializedPermit,
     policyEngine,
   );
@@ -198,7 +198,9 @@ export const ApplicationInQueueReview = ({
             applicationData?.permitData?.conditionalLicensingFee
           }
           companyId={companyId}
-          icbcInsuranceCertificate={applicationData?.permitData?.icbcInsuranceCertificate}
+          icbcInsuranceCertificate={
+            applicationData?.permitData?.icbcInsuranceCertificate
+          }
           policyWarnings={policyWarnings}
         />
       </FormProvider>

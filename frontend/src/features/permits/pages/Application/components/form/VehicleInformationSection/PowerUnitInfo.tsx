@@ -14,8 +14,8 @@ export const PowerUnitInfo = ({
 }: {
   powerUnitInfo: PermitVehicleDetails;
   powerUnitSubtypeNamesMap: Map<string, string>;
-  onRemovePowerUnit: () => void,
-  onEditPowerUnit: () => void,
+  onRemovePowerUnit: () => void;
+  onEditPowerUnit: () => void;
 }) => {
   return (
     <div className="power-unit-info">

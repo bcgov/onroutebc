@@ -4,10 +4,8 @@ import { httpGETGeocoder } from "../apiManager/geocoder";
 import { GeocoderQueryOptions } from "../types/geocoder";
 
 const QUERY_KEYS = {
-  ADDRESS: (
-    address: string,
-    queryOptions?: GeocoderQueryOptions,
-  ) => ["address", address, queryOptions] as const,
+  ADDRESS: (address: string, queryOptions?: GeocoderQueryOptions) =>
+    ["address", address, queryOptions] as const,
 } as const;
 
 export const useGeocoder = ({

@@ -6,8 +6,14 @@ import {
 } from "material-react-table";
 
 import "./SuspensionHistory.scss";
-import { SUSPEND_ACTIVITY_TYPES, SuspendHistoryData } from "../../types/suspend";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  SUSPEND_ACTIVITY_TYPES,
+  SuspendHistoryData,
+} from "../../types/suspend";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import {
   defaultTableInitialStateOptions,
@@ -30,8 +36,7 @@ export const SuspensionHistory = ({
             "suspension-history__header suspension-history__header--user",
         },
         muiTableBodyCellProps: {
-          className:
-            "suspension-history__data suspension-history__data--user",
+          className: "suspension-history__data suspension-history__data--user",
         },
         size: 50,
         enableSorting: false,
@@ -52,8 +57,7 @@ export const SuspensionHistory = ({
             "suspension-history__header suspension-history__header--date",
         },
         muiTableBodyCellProps: {
-          className:
-            "suspension-history__data suspension-history__data--date",
+          className: "suspension-history__data suspension-history__data--date",
         },
         size: 120,
         enableSorting: false,
@@ -61,10 +65,7 @@ export const SuspensionHistory = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal(
-            "",
-            originalRow.comment,
-          ),
+          getDefaultRequiredVal("", originalRow.comment),
         id: "comment",
         header: "Reason",
         muiTableHeadCellProps: {
@@ -81,8 +82,10 @@ export const SuspensionHistory = ({
       },
       {
         accessorFn: (originalRow) =>
-          originalRow.suspendActivityType === SUSPEND_ACTIVITY_TYPES.SUSPEND_COMPANY
-            ? "Suspended" : "Suspension Removed",
+          originalRow.suspendActivityType ===
+          SUSPEND_ACTIVITY_TYPES.SUSPEND_COMPANY
+            ? "Suspended"
+            : "Suspension Removed",
         header: "Status",
         muiTableHeadCellProps: {
           className:
