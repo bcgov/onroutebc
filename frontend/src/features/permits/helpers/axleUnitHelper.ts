@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { isNull, isUndefined } from "../../../common/types/common";
 import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/constants";
@@ -93,9 +94,9 @@ export const validateAxleConfiguration = (
       !isNull(axleUnit.axleUnitWeight);
 
     // axleSpread is required unless numberOfAxles === 1
-    const hasAxleSpread =
-      axleUnit.numberOfAxles === 1 ||
-      (!isNull(axleUnit.axleSpread) && !isUndefined(axleUnit.axleSpread));
+    const requiresAxleSpread =
+      getDefaultRequiredVal(0, axleUnit.numberOfAxles) > 1;
+    const hasAxleSpread = !requiresAxleSpread || !isNull(axleUnit.axleSpread);
 
     // interaxleSpacing is required for all but the first axle unit (i.e. the first axle unit of the power unit)
     const hasInteraxleSpacing =
