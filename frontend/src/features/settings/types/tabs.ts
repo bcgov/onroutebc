@@ -8,4 +8,4 @@ export const SETTINGS_TABS = {
   SUSPEND: 2,
 } as const;
 
-export type SettingsTab = typeof SETTINGS_TABS[keyof typeof SETTINGS_TABS];
+export type SettingsTab = (typeof SETTINGS_TABS)[keyof typeof SETTINGS_TABS];

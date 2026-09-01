@@ -162,12 +162,11 @@ export const useUserContext = (
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
-      }
+      } else if (pendingCompanies.length > 0) {
 
       /**
        * The user has been invited to a company.
        */
-      else if (pendingCompanies.length > 0) {
         const { companyId, legalName, isSuspended } = pendingCompanies[0];
 
         setCompanyId?.(() => companyId);
@@ -179,12 +178,11 @@ export const useUserContext = (
           companyId.toString(),
         );
         setIsNewBCeIDUser?.(() => true);
-      }
+      } else if (unclaimedClient?.clientNumber) {
 
       /**
        * The user has been migrated or added to a staff created company.
        */
-      else if (unclaimedClient?.clientNumber) {
         setUnclaimedClient?.(() => unclaimedClient);
       }
 

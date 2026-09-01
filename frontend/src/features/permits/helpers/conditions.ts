@@ -11,7 +11,10 @@ import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { Nullable } from "../../../common/types/common";
 import { MANDATORY_STOW_CONDITIONS, STOW_CONDITIONS } from "../constants/stow";
 import { HC_CONDITIONS, MANDATORY_HC_CONDITIONS } from "../constants/hc";
-import { MANDATORY_STWSE_CONDITIONS, STWSE_CONDITIONS } from "../constants/stwse";
+import {
+  MANDATORY_STWSE_CONDITIONS,
+  STWSE_CONDITIONS,
+} from "../constants/stwse";
 import {
   MANDATORY_NRSCV_CONDITIONS,
   NRSCV_CONDITIONS,

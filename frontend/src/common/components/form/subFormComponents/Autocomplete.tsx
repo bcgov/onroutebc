@@ -10,8 +10,7 @@ import {
 import "./Autocomplete.scss";
 import { getDefaultRequiredVal } from "../../../helpers/util";
 
-type AutocompleteClassKey =
-  "root" | "label";
+type AutocompleteClassKey = "root" | "label";
 
 export interface AutocompleteProps<
   Value,
@@ -30,7 +29,13 @@ export interface AutocompleteProps<
     errors?: string[];
   };
   autocompleteProps: Omit<
-    MuiAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>,
+    MuiAutocompleteProps<
+      Value,
+      Multiple,
+      DisableClearable,
+      FreeSolo,
+      ChipComponent
+    >,
     "renderInput"
   >;
 }
@@ -41,21 +46,23 @@ export const Autocomplete = <
   DisableClearable extends boolean | undefined = false,
   FreeSolo extends boolean | undefined = false,
   ChipComponent extends React.ElementType = "div",
->(props: AutocompleteProps<
-  Value,
-  Multiple,
-  DisableClearable,
-  FreeSolo,
-  ChipComponent
->) => {
+>(
+  props: AutocompleteProps<
+    Value,
+    Multiple,
+    DisableClearable,
+    FreeSolo,
+    ChipComponent
+  >,
+) => {
   const helperMessages = getDefaultRequiredVal([], props.helperText?.messages);
   const errorMessages = getDefaultRequiredVal([], props.helperText?.errors);
   const helperTexts = [
-    ...helperMessages.map(message => ({
+    ...helperMessages.map((message) => ({
       type: "message",
       message,
     })),
-    ...errorMessages.map(message => ({
+    ...errorMessages.map((message) => ({
       type: "error",
       message,
     })),
@@ -65,9 +72,7 @@ export const Autocomplete = <
     <FormControl
       margin="normal"
       className={`
-        autocomplete ${
-          props.classes?.root ? props.classes.root : ""
-        } ${
+        autocomplete ${props.classes?.root ? props.classes.root : ""} ${
           errorMessages.length > 0 ? "autocomplete--error" : ""
         }
       `}
@@ -86,11 +91,11 @@ export const Autocomplete = <
 
       <MuiAutocomplete
         {...props.autocompleteProps}
-        className={
-          `autocomplete__autocomplete ${
-            props.autocompleteProps.className ? props.autocompleteProps.className : ""
-          }`
-        }
+        className={`autocomplete__autocomplete ${
+          props.autocompleteProps.className
+            ? props.autocompleteProps.className
+            : ""
+        }`}
         renderInput={(params) => (
           <TextField
             {...{

@@ -11,4 +11,4 @@ export interface ManualRoute {
 export interface PermittedRoute {
   manualRoute?: Nullable<ManualRoute>;
   routeDetails?: Nullable<string>;
-};
+}

@@ -12,7 +12,9 @@ export const useVehicleConfiguration = (
   selectedCommodity: string,
   selectedSubtypes: string[],
   selectedPowerUnitSubtype: string,
-  onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void,
+  onUpdateVehicleConfigTrailers: (
+    updatedTrailerSubtypes: VehicleInConfiguration[],
+  ) => void,
 ) => {
   const getNextAllowedVehicleSubtypes = useCallback(
     (selectedCommodity: string, selectedSubtypes: string[]) => {
@@ -22,16 +24,21 @@ export const useVehicleConfiguration = (
         selectedSubtypes,
       );
 
-      return [...nextAllowedSubtypes.entries()].map(([subtypeCode, subtypeFullName]) => ({
-        value: subtypeCode,
-        label: subtypeFullName,
-      }));
+      return [...nextAllowedSubtypes.entries()].map(
+        ([subtypeCode, subtypeFullName]) => ({
+          value: subtypeCode,
+          label: subtypeFullName,
+        }),
+      );
     },
     [policyEngine, permitType],
   );
 
   useEffect(() => {
-    if ((permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW) && selectedSubtypes.length > 0) {
+    if (
+      (permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.STOW) &&
+      selectedSubtypes.length > 0
+    ) {
       if (
         selectedCommodity === DEFAULT_EMPTY_SELECT_VALUE ||
         !policyEngine.isConfigurationValid(
@@ -70,12 +77,22 @@ export const useVehicleConfiguration = (
 
     // Sort next allowed subtypes so that if the option "None" is present,
     // it appears at the very beginning
-    const hasNoneOption = nextAllowed.find((subtypeOption) => isTrailerSubtypeNone(subtypeOption.value));
+    const hasNoneOption = nextAllowed.find((subtypeOption) =>
+      isTrailerSubtypeNone(subtypeOption.value),
+    );
 
     return hasNoneOption
-      ? [hasNoneOption, ...nextAllowed.filter(({ value }) => value !== hasNoneOption.value)]
+      ? [
+          hasNoneOption,
+          ...nextAllowed.filter(({ value }) => value !== hasNoneOption.value),
+        ]
       : nextAllowed;
-  }, [selectedCommodity, selectedSubtypes, selectedPowerUnitSubtype, getNextAllowedVehicleSubtypes]);
+  }, [
+    selectedCommodity,
+    selectedSubtypes,
+    selectedPowerUnitSubtype,
+    getNextAllowedVehicleSubtypes,
+  ]);
 
   return {
     nextAllowedSubtypes,

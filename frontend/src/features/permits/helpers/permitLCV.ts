@@ -15,7 +15,10 @@ export const getUpdatedVehicleDetailsForLCV = (
   isLcvDesignated: boolean,
   prevSelectedVehicle: PermitVehicleDetails,
 ) => {
-  if (!isLcvDesignated && isVehicleSubtypeLCV(prevSelectedVehicle.vehicleSubType)) {
+  if (
+    !isLcvDesignated &&
+    isVehicleSubtypeLCV(prevSelectedVehicle.vehicleSubType)
+  ) {
     // If LCV isn't designated, and selected vehicle has LCV subtype, clear the vehicle
     return getDefaultVehicleDetails();
   }
@@ -30,7 +33,9 @@ export const getUpdatedVehicleDetailsForLCV = (
  * @param isLcvDesignated Whether or not the LCV designation is to be used
  * @returns Application data after applying the LCV check
  */
-export const applyLCVToApplicationData = <T extends Nullable<ApplicationFormData | Application>>(
+export const applyLCVToApplicationData = <
+  T extends Nullable<ApplicationFormData | Application>,
+>(
   applicationData: T,
   isLcvDesignated: boolean,
 ): T => {

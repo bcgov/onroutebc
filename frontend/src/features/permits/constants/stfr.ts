@@ -6,11 +6,13 @@ export const STFR_CONDITIONS: PermitCondition[] = [
     condition: "APV96",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1547",
     checked: true,
-    disabled: true
+    disabled: true,
   },
 ];
 
-export const MANDATORY_STFR_CONDITIONS: PermitCondition[] = [...STFR_CONDITIONS];
+export const MANDATORY_STFR_CONDITIONS: PermitCondition[] = [
+  ...STFR_CONDITIONS,
+];
 export const MIN_STFR_DURATION = 1;
 export const MAX_STFR_DURATION = 30;
 export const STFR_DURATION_OPTIONS = [

@@ -16,16 +16,16 @@ export const PowerUnitInfoDisplay = ({
   const provinceDisplay = countrySupportsProvinces(powerUnitInfo.countryCode)
     ? getProvinceFullName(powerUnitInfo.countryCode, powerUnitInfo.provinceCode)
     : getCountryFullName(powerUnitInfo.countryCode);
-  
+
   return (
     <div className="power-unit-info-display">
       <div className="power-unit-info-display__data power-unit-info-display__data--unit">
-        <div className="power-unit-info-display__label">
-          Unit #
-        </div>
+        <div className="power-unit-info-display__label">Unit #</div>
 
         <div className="power-unit-info-display__value">
-          {powerUnitInfo.unitNumber ? powerUnitInfo.unitNumber : EMPTY_VEHICLE_UNIT_NUMBER}
+          {powerUnitInfo.unitNumber
+            ? powerUnitInfo.unitNumber
+            : EMPTY_VEHICLE_UNIT_NUMBER}
         </div>
       </div>
 
@@ -40,9 +40,7 @@ export const PowerUnitInfoDisplay = ({
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--plate">
-        <div className="power-unit-info-display__label">
-          Plate
-        </div>
+        <div className="power-unit-info-display__label">Plate</div>
 
         <div className="power-unit-info-display__value">
           {powerUnitInfo.plate}
@@ -50,9 +48,7 @@ export const PowerUnitInfoDisplay = ({
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--make">
-        <div className="power-unit-info-display__label">
-          Make
-        </div>
+        <div className="power-unit-info-display__label">Make</div>
 
         <div className="power-unit-info-display__value">
           {powerUnitInfo.make}
@@ -60,9 +56,7 @@ export const PowerUnitInfoDisplay = ({
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--year">
-        <div className="power-unit-info-display__label">
-          Year
-        </div>
+        <div className="power-unit-info-display__label">Year</div>
 
         <div className="power-unit-info-display__value">
           {powerUnitInfo.year}
@@ -70,19 +64,13 @@ export const PowerUnitInfoDisplay = ({
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--province">
-        <div className="power-unit-info-display__label">
-          Province / State
-        </div>
+        <div className="power-unit-info-display__label">Province / State</div>
 
-        <div className="power-unit-info-display__value">
-          {provinceDisplay}
-        </div>
+        <div className="power-unit-info-display__value">{provinceDisplay}</div>
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--subtype">
-        <div className="power-unit-info-display__label">
-          Vehicle Sub-type
-        </div>
+        <div className="power-unit-info-display__label">Vehicle Sub-type</div>
 
         <div className="power-unit-info-display__value">
           {powerUnitSubtypeNamesMap.get(powerUnitInfo.vehicleSubType)}
@@ -90,9 +78,7 @@ export const PowerUnitInfoDisplay = ({
       </div>
 
       <div className="power-unit-info-display__data power-unit-info-display__data--gvw">
-        <div className="power-unit-info-display__label">
-          Licensed GVW (kg)
-        </div>
+        <div className="power-unit-info-display__label">Licensed GVW (kg)</div>
 
         <div className="power-unit-info-display__value">
           {getDefaultRequiredVal(0, powerUnitInfo.licensedGVW).toLocaleString()}

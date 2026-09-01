@@ -78,7 +78,7 @@ export const ReviewFeeSummary = ({
   // amountToRefund is a negative number so we add here rather than subtract
   const newPermitValue = currentPermitValue + amountToRefund;
 
-  const intermediaryCosts = permitIntermediaryCosts.map(intermediaryCost => ({
+  const intermediaryCosts = permitIntermediaryCosts.map((intermediaryCost) => ({
     costDescription: intermediaryCost.message,
     cost: getDefaultRequiredVal(0, intermediaryCost.cost),
   }));

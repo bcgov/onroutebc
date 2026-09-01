@@ -1,4 +1,8 @@
-import { httpDELETERequest, httpGETRequest, httpPOSTRequest } from "../../../common/apiManager/httpRequestHandler";
+import {
+  httpDELETERequest,
+  httpGETRequest,
+  httpPOSTRequest,
+} from "../../../common/apiManager/httpRequestHandler";
 import { CartActionResponse, CartItem } from "../types/CartItem";
 import { CART_API_ROUTES } from "./endpoints/endpoints";
 
@@ -29,7 +33,9 @@ export const fetchCart = async (
   companyId: number,
   fetchAllApplications?: boolean,
 ): Promise<CartItem[]> => {
-  const response = await httpGETRequest(CART_API_ROUTES.GET(companyId, fetchAllApplications));
+  const response = await httpGETRequest(
+    CART_API_ROUTES.GET(companyId, fetchAllApplications),
+  );
   return response.data;
 };
 
@@ -55,9 +61,7 @@ export const removeFromCart = async (
  * @param companyId id of company that has the shopping cart
  * @returns Number of items currently in the cart
  */
-export const getCartCount = async (
-  companyId: number,
-): Promise<number> => {
+export const getCartCount = async (companyId: number): Promise<number> => {
   const response = await httpGETRequest(CART_API_ROUTES.COUNT(companyId));
   return response.data;
 };

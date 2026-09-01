@@ -18,8 +18,9 @@ export const PermitReviewConfirmWarningDialog = ({
   onCancel: () => void;
 }) => {
   const headerText = `${isAmend ? "Amendment" : "Application"} has violation(s) and/or warning(s)`;
-  const bodyText = `I confirm that I have reviewed the violation(s) and/or warning(s) associated with this `
-    + `${isAmend ? "amendment" : "permit application"} and would like to ${actionText}.`;
+  const bodyText =
+    `I confirm that I have reviewed the violation(s) and/or warning(s) associated with this ` +
+    `${isAmend ? "amendment" : "permit application"} and would like to ${actionText}.`;
 
   const handleConfirm = () => {
     onConfirm();
