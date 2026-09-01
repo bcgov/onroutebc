@@ -362,6 +362,7 @@ export const AxleUnitRow = ({
                         convertToNumberIfValid(value, null),
                       );
                     },
+                    maskFn: (numericVal) => numericVal.toFixed(0),
                   }}
                 />
               )}
