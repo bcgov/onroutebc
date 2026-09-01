@@ -163,10 +163,9 @@ export const useUserContext = (
           companyId.toString(),
         );
       } else if (pendingCompanies.length > 0) {
-
-      /**
-       * The user has been invited to a company.
-       */
+        /**
+         * The user has been invited to a company.
+         */
         const { companyId, legalName, isSuspended } = pendingCompanies[0];
 
         setCompanyId?.(() => companyId);
@@ -179,10 +178,9 @@ export const useUserContext = (
         );
         setIsNewBCeIDUser?.(() => true);
       } else if (unclaimedClient?.clientNumber) {
-
-      /**
-       * The user has been migrated or added to a staff created company.
-       */
+        /**
+         * The user has been migrated or added to a staff created company.
+         */
         setUnclaimedClient?.(() => unclaimedClient);
       }
 
