@@ -110,14 +110,14 @@ export const useApplicationFormContext = () => {
   const createdAt = useMemoizedObject(createdDateTime, (dateObj1, dateObj2) =>
     Boolean(
       (!dateObj1 && !dateObj2) ||
-        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+      (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
     ),
   );
 
   const updatedAt = useMemoizedObject(updatedDateTime, (dateObj1, dateObj2) =>
     Boolean(
       (!dateObj1 && !dateObj2) ||
-        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+      (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
     ),
   );
 
@@ -126,7 +126,7 @@ export const useApplicationFormContext = () => {
     (dateObj1, dateObj2) =>
       Boolean(
         (!dateObj1 && !dateObj2) ||
-          (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+        (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
       ),
   );
 
