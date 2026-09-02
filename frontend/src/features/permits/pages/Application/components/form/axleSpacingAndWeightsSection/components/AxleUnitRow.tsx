@@ -129,6 +129,12 @@ export const AxleUnitRow = ({
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
         );
 
+        const hasNumberOfWheelsFailure = Boolean(
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
+          ],
+        );
+
         const hasAxleSpreadFailure = Boolean(
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
@@ -190,7 +196,7 @@ export const AxleUnitRow = ({
                 </div>
               )}
             </td>
-            <td className="table__cell">
+            <td className={`table__cell ${hasNumberOfAxlesFailure && readOnly ? "table__cell--fail" : ""}`}>
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
@@ -231,15 +237,13 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td className={`table__cell ${hasNumberOfWheelsFailure && readOnly ? "table__cell--fail" : ""}`}>
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
                     className: `table__input ${
-                      axleCalculationFailure[
-                        POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
-                      ]
+                     hasNumberOfWheelsFailure
                         ? "table__input--fail"
                         : ""
                     }`,
@@ -292,7 +296,7 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td className={`table__cell ${isInteraxleSpacingRow && hasInteraxleSpacingFailure && readOnly ? "table__cell--fail" : ""}`}>
               {isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
@@ -318,7 +322,7 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td className={`table__cell ${hasAxleSpreadFailure && readOnly ? "table__cell--fail" : ""}`}>
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
@@ -341,7 +345,7 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td className={`table__cell ${hasAxleUnitWeightFailure && readOnly ? "table__cell--fail" : ""}`}>
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}

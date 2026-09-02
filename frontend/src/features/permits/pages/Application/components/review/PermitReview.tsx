@@ -50,6 +50,8 @@ import {
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
 import { AxleSpacingAndWeightsSection } from "../form/axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
+import { ReviewExtraordinaryLoadRequest } from "./ReviewExtraordinaryLoadRequest";
+import { ExtraordinaryLoadRequest } from "../../../../types/ExtraordinaryLoadRequest";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -103,6 +105,7 @@ interface PermitReviewProps {
   policyWarnings: ValidationResult[];
   axleCalculationResults?: ValidationResults["axleCalculationResults"];
   tireSizeOptions?: StandardTireSize[];
+  extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -277,6 +280,8 @@ export const PermitReview = (props: PermitReviewProps) => {
           }
           showChangedFields={props.showChangedFields}
         />
+
+        <ReviewExtraordinaryLoadRequest permitType={props.permitType} isExtraordinaryLoadRequest={props.extraordinaryLoadRequest?.isExtraordinaryLoadRequest} approvalNumber={props.extraordinaryLoadRequest?.approvalNumber} />
 
         <TripDetails
           routeDetails={props.route}

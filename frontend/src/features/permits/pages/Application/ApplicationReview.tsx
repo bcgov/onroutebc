@@ -489,6 +489,7 @@ export const ApplicationReview = ({
           policyWarnings={policyWarnings}
           axleCalculationResults={axleCalculationResults}
           tireSizeOptions={tireSizeOptions}
+          extraordinaryLoadRequest={applicationData?.permitData?.extraordinaryLoadRequest}
         />
       </FormProvider>
 
