@@ -22,13 +22,17 @@ export const ConditionsTable = ({
   onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
   const handleSelect = (checkedCondition: string) => {
-    const conditionInTable = allConditions.find(({ condition }) => condition === checkedCondition);
+    const conditionInTable = allConditions.find(
+      ({ condition }) => condition === checkedCondition,
+    );
     if (!conditionInTable || conditionInTable.disabled) return;
 
     const isConditionChecked = Boolean(conditionInTable.checked);
     if (isConditionChecked) {
       onSetConditions(
-        allConditions.filter(({ condition, checked }) => checked && condition !== checkedCondition),
+        allConditions.filter(
+          ({ condition, checked }) => checked && condition !== checkedCondition,
+        ),
       );
     } else {
       onSetConditions([
@@ -68,9 +72,7 @@ export const ConditionsTable = ({
                   control={
                     <Checkbox
                       className={`condition-checkbox ${
-                        row.disabled
-                          ? "condition-checkbox--disabled"
-                          : ""
+                        row.disabled ? "condition-checkbox--disabled" : ""
                       }`}
                       key={row.condition}
                       checked={row.checked}
@@ -82,7 +84,8 @@ export const ConditionsTable = ({
                   label={row.description}
                   classes={{
                     root: "conditions-table__form-control",
-                    disabled: "conditions-table__form-control conditions-table__form-control--disabled",
+                    disabled:
+                      "conditions-table__form-control conditions-table__form-control--disabled",
                   }}
                   slotProps={{
                     typography: {

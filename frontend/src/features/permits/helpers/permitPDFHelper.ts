@@ -23,7 +23,7 @@ export const openBlobInNewTab = (blob: Blob) => {
  */
 export const viewReceiptPdf = async (
   companyId: number,
-  permitId: string, 
+  permitId: string,
   onDocumentUnavailable?: () => void,
 ) => {
   if (permitId) {
@@ -48,7 +48,7 @@ export const viewReceiptPdf = async (
  */
 export const viewPermitPdf = async (
   companyId: number,
-  permitId: string, 
+  permitId: string,
   onDocumentUnavailable?: () => void,
 ) => {
   try {

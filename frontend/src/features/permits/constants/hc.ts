@@ -6,7 +6,7 @@ export const HC_CONDITIONS: PermitCondition[] = [
     condition: "CVSE-1070",
     conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261",
     checked: true,
-    disabled: true
+    disabled: true,
   },
 ];
 

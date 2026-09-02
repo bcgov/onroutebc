@@ -3,4 +3,5 @@ export const LOA_VEHICLE_TABS = {
   TRAILERS: 1,
 } as const;
 
-export type LOAVehicleTab = typeof LOA_VEHICLE_TABS[keyof typeof LOA_VEHICLE_TABS];
+export type LOAVehicleTab =
+  (typeof LOA_VEHICLE_TABS)[keyof typeof LOA_VEHICLE_TABS];

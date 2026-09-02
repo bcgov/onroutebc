@@ -18,11 +18,7 @@ export const useMemoizedSequence = <T>(
   const [sequenceItems, setSequenceItems] = useState<T[]>(sequence);
 
   useEffect(() => {
-    if (!areOrderedSequencesEqual(
-      sequenceItems,
-      sequence,
-      equalFn,
-    )) {
+    if (!areOrderedSequencesEqual(sequenceItems, sequence, equalFn)) {
       setSequenceItems(sequence);
     }
   }, [sequence]);

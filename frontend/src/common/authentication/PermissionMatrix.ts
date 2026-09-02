@@ -335,7 +335,7 @@ const MANAGE_SETTINGS = {
   /**
    * Add Credit Account - Account Holder
    */
-  ADD_CREDIT_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },  
+  ADD_CREDIT_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },
 
   /**
    * Suspend tab

@@ -23,17 +23,11 @@ export const UploadInput = ({
       </div>
 
       <div className="upload-input__msg">
-        <span className="upload-info">
-          Upload file
-        </span>
+        <span className="upload-info">Upload file</span>
 
-        <span className="upload-info upload-info--extension">
-          (PDF only)
-        </span>
+        <span className="upload-info upload-info--extension">(PDF only)</span>
 
-        <span className="upload-info">
-          from computer
-        </span>
+        <span className="upload-info">from computer</span>
 
         <input
           type="file"
@@ -45,17 +39,11 @@ export const UploadInput = ({
         />
 
         <label htmlFor="file-input">
-          <CustomActionLink
-            component="span"
-          >
-            Select file
-          </CustomActionLink>
+          <CustomActionLink component="span">Select file</CustomActionLink>
         </label>
       </div>
 
-      <div className="upload-input__size">
-        Maximum file size 10MB
-      </div>
+      <div className="upload-input__size">Maximum file size 10MB</div>
     </div>
   );
 };

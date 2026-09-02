@@ -1,4 +1,10 @@
-import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
+import {
+  Box,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+} from "@mui/material";
 
 import "./ReviewICBCInsuranceCertificateSection.scss";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
@@ -30,7 +36,7 @@ export const ReviewICBCInsuranceCertificateSection = ({
   };
 
   const showSection = permitType === PERMIT_TYPES.HC;
-  
+
   return showSection ? (
     <Box className="review-icbc-insurance-certificate-section">
       <Box className="review-icbc-insurance-certificate-section__header">
@@ -45,7 +51,8 @@ export const ReviewICBCInsuranceCertificateSection = ({
       <Box className="review-icbc-insurance-certificate-section__body">
         <Box className="have-certificate">
           <h4 className="have-certificate__header">
-            Do you have an ICBC Certificate of Insurance for Crossing Permit (MV1805/APV36)?
+            Do you have an ICBC Certificate of Insurance for Crossing Permit
+            (MV1805/APV36)?
           </h4>
 
           <RadioGroup
@@ -67,7 +74,8 @@ export const ReviewICBCInsuranceCertificateSection = ({
                   className="have-certificate__radio"
                   disabled={true}
                   readOnly={true}
-                />}
+                />
+              }
             />
 
             <FormControlLabel
@@ -84,7 +92,8 @@ export const ReviewICBCInsuranceCertificateSection = ({
                   className="have-certificate__radio"
                   disabled={true}
                   readOnly={true}
-                />}
+                />
+              }
             />
 
             {showDiffChip(changedFields.clf)}

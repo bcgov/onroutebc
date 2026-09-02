@@ -38,7 +38,7 @@ export const ApplicationBreadcrumb = ({
 
   const isInitCopyContext =
     applicationStepContext === APPLICATION_STEP_CONTEXTS.COPY;
-  
+
   const homePageLabel = useMemo(() => {
     if (isQueueContext) return "Home";
     if (copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS)
@@ -83,31 +83,23 @@ export const ApplicationBreadcrumb = ({
       });
 
     return navigate(APPLICATIONS_ROUTES.BASE, { replace: true });
-  }, [
-    navigate,
-    isQueueContext,
-    copyPermitOrigin,
-  ]);
+  }, [navigate, isQueueContext, copyPermitOrigin]);
 
   const goToFormPage = useCallback(() => {
     if (!permitId) return;
 
     if (isQueueContext && applicationNumber)
-      return navigate(
-        APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId),
-        { replace: true },
-      );
+      return navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId), {
+        replace: true,
+      });
 
     if (isInitCopyContext || isCopiedApplication)
       return navigate(
         APPLICATIONS_ROUTES.DETAILS(permitId, true, copyPermitOrigin),
         { replace: true },
       );
-    
-    return navigate(
-      APPLICATIONS_ROUTES.DETAILS(permitId),
-      { replace: true },
-    );
+
+    return navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   }, [
     companyId,
     permitId,

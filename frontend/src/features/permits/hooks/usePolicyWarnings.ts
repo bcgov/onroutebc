@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { Policy, ValidationResult, type ValidationResults} from "onroute-policy-engine";
+import {
+  Policy,
+  ValidationResult,
+  type ValidationResults,
+} from "onroute-policy-engine";
 
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
@@ -40,23 +44,23 @@ export const usePolicyWarnings = (
         // Warning arrays are assumed to contain unique objects (since there shouldn't be cases where
         // the same warning appears multiple times), and warning objects are considered to be the same
         // if they have the same type ('warning'), code, field reference, and message
-        if (!doUniqueArraysHaveSameObjects(
-          policyWarnings,
-          warnings,
-          (validationResult) =>
-            `${validationResult.type}_`
-            + `${validationResult.code}_`
-            + getDefaultRequiredVal("", validationResult.fieldReference)
-            + `_${validationResult.message}`,
-          (validationResult1, validationResult2) =>
-            validationResult1.type === validationResult2.type
-            && validationResult1.code === validationResult2.code
-            && (
-              getDefaultRequiredVal("", validationResult1.fieldReference)
-                === getDefaultRequiredVal("", validationResult2.fieldReference)
-            )
-            && validationResult1.message === validationResult2.message
-        )) {
+        if (
+          !doUniqueArraysHaveSameObjects(
+            policyWarnings,
+            warnings,
+            (validationResult) =>
+              `${validationResult.type}_` +
+              `${validationResult.code}_` +
+              getDefaultRequiredVal("", validationResult.fieldReference) +
+              `_${validationResult.message}`,
+            (validationResult1, validationResult2) =>
+              validationResult1.type === validationResult2.type &&
+              validationResult1.code === validationResult2.code &&
+              getDefaultRequiredVal("", validationResult1.fieldReference) ===
+                getDefaultRequiredVal("", validationResult2.fieldReference) &&
+              validationResult1.message === validationResult2.message,
+          )
+        ) {
           setPolicyWarnings(warnings);
         }
       }
