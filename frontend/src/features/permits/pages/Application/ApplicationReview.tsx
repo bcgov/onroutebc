@@ -299,6 +299,7 @@ export const ApplicationReview = ({
 
   const shouldSubmitForReview =
     (permitType === PERMIT_TYPES.STOS && !isStaffUser) ||
+    (permitType === PERMIT_TYPES.STOW && !isStaffUser) ||
     (permitType === PERMIT_TYPES.STWSE &&
       !isStaffUser &&
       policyWarnings.length > 0);
