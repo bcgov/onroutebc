@@ -399,6 +399,7 @@ export class ApplicationService {
       plate: 'permitData.plate',
       vin: 'permitData.vin',
       elApprovalNumber: 'permitData.elApprovalNumber',
+      caseOpenedDateTime: 'cases.caseOpenedDateTime',
     };
 
     // Apply sorting if orderBy parameter is provided

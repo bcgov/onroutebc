@@ -30,4 +30,5 @@ export enum ApplicationOrderBy {
   VIN = 'vin',
   UPDATED_DATE_TIME = 'updatedDateTime',
   EL_APPROVAL_NUMBER = 'elApprovalNumber',
+  CASE_OPENED_DATE_TIME = 'caseOpenedDateTime',
 }
