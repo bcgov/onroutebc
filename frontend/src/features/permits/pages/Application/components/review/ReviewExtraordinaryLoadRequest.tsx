@@ -49,7 +49,7 @@ export const ReviewExtraordinaryLoadRequest = ({
                 <Radio
                   className="review-extraordinary-load-request__radio-input"
                   key="is-extraordinary-load-request-radio-yes"
-                  checked={!!isExtraordinaryLoadRequest}
+                  checked={Boolean(isExtraordinaryLoadRequest)}
                   disabled
                 />
               }

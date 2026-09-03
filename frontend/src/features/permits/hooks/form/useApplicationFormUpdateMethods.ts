@@ -346,7 +346,7 @@ export const useApplicationFormUpdateMethods = () => {
       if (!updatedIsExtraordinaryLoadRequest) {
         setValue(
           "permitData.extraordinaryLoadRequest.approvalNumber",
-          undefined,
+          "",
         );
       }
     },
