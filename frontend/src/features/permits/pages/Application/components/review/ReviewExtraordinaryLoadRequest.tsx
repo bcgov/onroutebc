@@ -26,9 +26,7 @@ export const ReviewExtraordinaryLoadRequest = ({
             Is this an extraordinary load permit application?
           </h4>
 
-          <RadioGroup
-            className="review-extraordinary-load-request__radio-group"
-          >
+          <RadioGroup className="review-extraordinary-load-request__radio-group">
             <FormControlLabel
               className="review-extraordinary-load-request__radio-option"
               key="is-extraordinary-load-request-no"
@@ -61,12 +59,8 @@ export const ReviewExtraordinaryLoadRequest = ({
 
         {isExtraordinaryLoadRequest ? (
           <Box className="review-extraordinary-load-request__approval-number">
-            <p className="approval-number__heading">
-              Approval No.
-            </p>
-            <p className="approval-number__value">
-              {approvalNumber}
-            </p>
+            <p className="approval-number__heading">Approval No.</p>
+            <p className="approval-number__value">{approvalNumber}</p>
           </Box>
         ) : null}
       </Box>

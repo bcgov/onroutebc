@@ -281,7 +281,13 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
         />
 
-        <ReviewExtraordinaryLoadRequest permitType={props.permitType} isExtraordinaryLoadRequest={props.extraordinaryLoadRequest?.isExtraordinaryLoadRequest} approvalNumber={props.extraordinaryLoadRequest?.approvalNumber} />
+        <ReviewExtraordinaryLoadRequest
+          permitType={props.permitType}
+          isExtraordinaryLoadRequest={
+            props.extraordinaryLoadRequest?.isExtraordinaryLoadRequest
+          }
+          approvalNumber={props.extraordinaryLoadRequest?.approvalNumber}
+        />
 
         <TripDetails
           routeDetails={props.route}
