@@ -321,7 +321,11 @@ export const ApplicationReview = ({
           alertType: "success",
         });
 
-        if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+        if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE, {
+          state: {
+            selectedTab: PERMIT_TABS.APPLICATIONS_IN_REVIEW,
+          }
+        });
 
         return navigate(APPLICATIONS_ROUTES.BASE, {
           state: {

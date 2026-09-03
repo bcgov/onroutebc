@@ -7,9 +7,11 @@
   &__header {
     box-sizing: border-box;
     width: 100%;
+     margin-bottom: 1.5rem;
   }
   &__body {
     padding: 1.5rem;
+    margin-top: -1.5rem;
   }
   &__text {
     color: $bc-black;
