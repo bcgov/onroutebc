@@ -435,8 +435,8 @@ export const AxleSpacingAndWeightsTable = ({
 
   return (
     <div
-      className={`axle-spacing-and-weights-table${
-        readOnly ? " axle-spacing-and-weights-table--read-only" : ""
+      className={`axle-spacing-and-weights-table ${
+        readOnly ? "read-only" : ""
       }`}
       ref={ASWTableRef}
     >

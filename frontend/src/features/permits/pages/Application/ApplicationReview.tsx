@@ -299,6 +299,7 @@ export const ApplicationReview = ({
 
   const shouldSubmitForReview =
     (permitType === PERMIT_TYPES.STOS && !isStaffUser) ||
+    (permitType === PERMIT_TYPES.STOW && !isStaffUser) ||
     (permitType === PERMIT_TYPES.STWSE &&
       !isStaffUser &&
       policyWarnings.length > 0);
@@ -320,7 +321,12 @@ export const ApplicationReview = ({
           alertType: "success",
         });
 
-        if (!isCopiedApplication) return navigate(APPLICATIONS_ROUTES.BASE);
+        if (!isCopiedApplication)
+          return navigate(APPLICATIONS_ROUTES.BASE, {
+            state: {
+              selectedTab: PERMIT_TABS.APPLICATIONS_IN_REVIEW,
+            },
+          });
 
         return navigate(APPLICATIONS_ROUTES.BASE, {
           state: {
@@ -488,6 +494,9 @@ export const ApplicationReview = ({
           policyWarnings={policyWarnings}
           axleCalculationResults={axleCalculationResults}
           tireSizeOptions={tireSizeOptions}
+          extraordinaryLoadRequest={
+            applicationData?.permitData?.extraordinaryLoadRequest
+          }
         />
       </FormProvider>
 
