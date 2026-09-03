@@ -110,7 +110,7 @@ export const useClaimedApplicationsInQueueQuery = () => {
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls({
       pageSize: 25,
-      initialSorting: [{ id: "updatedDateTime", desc: false }],
+      initialSorting: [{ id: "caseOpenedDateTime", desc: false }],
     });
 
   const claimedApplicationsInQueueQuery = useQuery({
@@ -149,7 +149,7 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls({
       pageSize: 25,
-      initialSorting: [{ id: "updatedDateTime", desc: false }],
+      initialSorting: [{ id: "caseOpenedDateTime", desc: false }],
     });
 
   const unclaimedApplicationsInQueueQuery = useQuery({
