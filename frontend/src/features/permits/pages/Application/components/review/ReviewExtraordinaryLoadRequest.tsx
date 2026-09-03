@@ -28,18 +28,16 @@ export const ReviewExtraordinaryLoadRequest = ({
 
           <RadioGroup
             className="review-extraordinary-load-request__radio-group"
-            defaultValue={isExtraordinaryLoadRequest}
-            value={isExtraordinaryLoadRequest}
           >
             <FormControlLabel
               className="review-extraordinary-load-request__radio-option"
               key="is-extraordinary-load-request-no"
               label="No"
-              value={!isExtraordinaryLoadRequest}
               control={
                 <Radio
                   className="review-extraordinary-load-request__radio-input"
                   key="is-extraordinary-load-request-radio-no"
+                  checked={!isExtraordinaryLoadRequest}
                   disabled
                 />
               }
@@ -49,11 +47,11 @@ export const ReviewExtraordinaryLoadRequest = ({
               className="review-extraordinary-load-request__radio-option"
               key="is-extraordinary-load-request-yes"
               label="Yes"
-              value={isExtraordinaryLoadRequest}
               control={
                 <Radio
                   className="review-extraordinary-load-request__radio-input"
                   key="is-extraordinary-load-request-radio-yes"
+                  checked={!!isExtraordinaryLoadRequest}
                   disabled
                 />
               }

@@ -342,6 +342,10 @@ export const useApplicationFormUpdateMethods = () => {
         "permitData.extraordinaryLoadRequest.isExtraordinaryLoadRequest",
         updatedIsExtraordinaryLoadRequest,
       );
+      // If the user toggles the extraordinary load request to false, we want to clear the approval number field since it is no longer required
+      if (!updatedIsExtraordinaryLoadRequest) {
+        setValue("permitData.extraordinaryLoadRequest.approvalNumber", undefined);
+      }
     },
     [setValue],
   );
