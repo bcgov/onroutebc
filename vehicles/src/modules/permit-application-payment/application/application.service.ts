@@ -398,6 +398,8 @@ export class ApplicationService {
       unitNumber: 'permitData.unitNumber',
       plate: 'permitData.plate',
       vin: 'permitData.vin',
+      elApprovalNumber: 'permitData.elApprovalNumber',
+      caseOpenedDateTime: 'cases.caseOpenedDateTime',
     };
 
     // Apply sorting if orderBy parameter is provided
