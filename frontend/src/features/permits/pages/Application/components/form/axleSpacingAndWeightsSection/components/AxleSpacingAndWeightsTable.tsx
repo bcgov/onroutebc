@@ -435,8 +435,8 @@ export const AxleSpacingAndWeightsTable = ({
 
   return (
     <div
-      className={`axle-spacing-and-weights-table${
-        readOnly ? " axle-spacing-and-weights-table--read-only" : ""
+      className={`axle-spacing-and-weights-table ${
+        readOnly ? "read-only" : ""
       }`}
       ref={ASWTableRef}
     >
@@ -449,6 +449,7 @@ export const AxleSpacingAndWeightsTable = ({
                 <button
                   type="button"
                   className="column__button column__button--help"
+                  aria-label="Show axle unit and axle group information"
                   onClick={() => setIsHelpModalOpen(true)}
                 >
                   <FontAwesomeIcon
@@ -457,19 +458,7 @@ export const AxleSpacingAndWeightsTable = ({
                   />
                 </button>
               </th>
-              <th className="column__label">
-                No. of Axles{" "}
-                <button
-                  type="button"
-                  className="column__button column__button--help"
-                  onClick={() => setIsHelpModalOpen(true)}
-                >
-                  <FontAwesomeIcon
-                    icon={faQuestionCircle}
-                    className="button__icon"
-                  />
-                </button>
-              </th>
+              <th className="column__label">Axle Type</th>
               <th className="column__label">No. of Wheels</th>
               <th className="column__label">Tire Size (mm)</th>
               <th className="column__label">
@@ -545,10 +534,6 @@ export const AxleSpacingAndWeightsTable = ({
           </tbody>
         </table>
       </div>
-      <p className="axle-spacing-and-weights-table__legend">
-        <strong>Legend:</strong> Interaxle Spacing (SPC); Axle Spread (SPD);
-        Gross Combination Vehicle Weight (GCVW)
-      </p>
       {!readOnly ? (
         <div className="button-container">
           <Button

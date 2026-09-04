@@ -1,6 +1,6 @@
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Nullable } from "../../../../../../../../common/types/common";
+import { isNull, Nullable } from "../../../../../../../../common/types/common";
 import { Autocomplete } from "../../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
@@ -15,6 +15,12 @@ import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_TIRE_SIZE_OPTION,
 } from "../../../../../../constants/constants";
+
+const AXLE_TYPE_OPTIONS = [
+  { name: "Single", numberOfAxles: 1 },
+  { name: "Tandem", numberOfAxles: 2 },
+  { name: "Tridem", numberOfAxles: 3 },
+];
 
 export const AxleUnitRow = ({
   axleConfiguration,
@@ -129,10 +135,19 @@ export const AxleUnitRow = ({
             axleCalculationFailure[POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT],
         );
 
+        const hasNumberOfWheelsFailure = Boolean(
+          axleCalculationFailure[
+            POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
+          ],
+        );
+
         const hasAxleSpreadFailure = Boolean(
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
-          ] || axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD],
+          ] ||
+            (axleCalculationFailure[POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD] &&
+              numberOfAxles &&
+              numberOfAxles > 1),
         );
 
         const hasInteraxleSpacingFailure = Boolean(
@@ -190,34 +205,46 @@ export const AxleUnitRow = ({
                 </div>
               )}
             </td>
-            <td className="table__cell">
+            <td
+              className={`table__cell ${!isInteraxleSpacingRow && hasNumberOfAxlesFailure && readOnly ? "table__cell--fail" : ""}`}
+            >
               {!isInteraxleSpacingRow && (
-                <NumberInput
-                  classes={{ root: "table__input-container" }}
-                  inputProps={{
-                    className: `table__input ${
+                <Autocomplete
+                  classes={{
+                    root: "table__input-container",
+                  }}
+                  autocompleteProps={{
+                    classes: {
+                      popupIndicator: "table__input-popup-indicator",
+                    },
+                    className: `table__input table__input--axle-type ${
                       hasNumberOfAxlesFailure ? "table__input--fail" : ""
                     }`,
-                    value: getDefaultRequiredVal(null, axleUnit?.numberOfAxles),
-                    readOnly,
+                    clearIcon: null,
                     disabled: readOnly,
-                    onBlur: ({ target: { value } }) => {
-                      const updatedNumberOfAxles = convertToNumberIfValid(
-                        value,
-                        null,
-                      );
+                    options: AXLE_TYPE_OPTIONS,
+                    value: getDefaultRequiredVal(
+                      null,
+                      AXLE_TYPE_OPTIONS.find(
+                        (option) =>
+                          option.numberOfAxles === axleUnit?.numberOfAxles,
+                      ),
+                    ),
+                    getOptionLabel: (option) => option.name,
+                    isOptionEqualToValue: (option, value) =>
+                      option.numberOfAxles === value.numberOfAxles,
+                    onChange: (_, selectedOption) => {
+                      if (isNull(selectedOption)) return;
 
                       const updatedConfiguration = axleConfiguration.map(
                         (currentAxleUnit, currentIndex) =>
                           currentIndex === index
                             ? {
                                 ...currentAxleUnit,
-                                numberOfAxles: updatedNumberOfAxles,
+                                numberOfAxles: selectedOption.numberOfAxles,
+                                numberOfTires: selectedOption.numberOfAxles * 2,
                                 axleSpread:
-                                  getDefaultRequiredVal(
-                                    0,
-                                    updatedNumberOfAxles,
-                                  ) <= 1
+                                  selectedOption.numberOfAxles === 1
                                     ? null
                                     : currentAxleUnit.axleSpread,
                               }
@@ -226,22 +253,19 @@ export const AxleUnitRow = ({
 
                       onUpdateAxleConfiguration?.(updatedConfiguration);
                     },
-                    maskFn: (numericVal) => numericVal.toFixed(0),
                   }}
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td
+              className={`table__cell ${!isInteraxleSpacingRow && hasNumberOfWheelsFailure && readOnly ? "table__cell--fail" : ""}`}
+            >
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
                   inputProps={{
                     className: `table__input ${
-                      axleCalculationFailure[
-                        POLICY_CHECK_ID_TYPES.NUMBER_OF_WHEELS_PER_AXLE
-                      ]
-                        ? "table__input--fail"
-                        : ""
+                      hasNumberOfWheelsFailure ? "table__input--fail" : ""
                     }`,
                     value: getDefaultRequiredVal(null, axleUnit?.numberOfTires),
                     readOnly,
@@ -292,7 +316,9 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td
+              className={`table__cell ${isInteraxleSpacingRow && hasInteraxleSpacingFailure && readOnly ? "table__cell--fail" : ""}`}
+            >
               {isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
@@ -318,7 +344,9 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td
+              className={`table__cell ${!isInteraxleSpacingRow && hasAxleSpreadFailure && !disableAxleSpread && readOnly ? "table__cell--fail" : ""}`}
+            >
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}
@@ -341,7 +369,9 @@ export const AxleUnitRow = ({
                 />
               )}
             </td>
-            <td className="table__cell">
+            <td
+              className={`table__cell ${!isInteraxleSpacingRow && hasAxleUnitWeightFailure && readOnly ? "table__cell--fail" : ""}`}
+            >
               {!isInteraxleSpacingRow && (
                 <NumberInput
                   classes={{ root: "table__input-container" }}

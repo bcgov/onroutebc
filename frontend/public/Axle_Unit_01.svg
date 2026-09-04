@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="222" height="118" viewBox="0 0 222 118">
+<svg xmlns="http://www.w3.org/2000/svg" width="246" height="150" viewBox="-8 0 246 150">
   <g id="Group_1802" data-name="Group 1802" transform="translate(0 -3505)">
     <g id="Group_1802-2" data-name="Group 1802" transform="translate(17 3505)">
       <g id="Ellipse_177" data-name="Ellipse 177" fill="#fff" stroke="#313132" stroke-width="4">
@@ -37,9 +37,9 @@
     <line id="Line_1498" data-name="Line 1498" y2="16" transform="translate(158 3553)" fill="none" stroke="#313132" stroke-width="2"/>
     <line id="Line_1534" data-name="Line 1534" x1="44" transform="translate(158 3568)" fill="none" stroke="#313132" stroke-width="2"/>
     <line id="Line_1499" data-name="Line 1499" y2="16" transform="translate(202 3553)" fill="none" stroke="#313132" stroke-width="2"/>
-    <text id="Axle_Unit_1" data-name="Axle Unit
-1" transform="translate(37 3594)" fill="#313132" font-size="16" font-family="BCSans-Bold, BC Sans" font-weight="700"><tspan x="-36.608" y="0">Axle Unit</tspan><tspan x="-4.576" y="24">1</tspan></text>
-    <text id="Axle_Unit_2" data-name="Axle Unit
-2" transform="translate(181 3594)" fill="#313132" font-size="16" font-family="BCSans-Bold, BC Sans" font-weight="700"><tspan x="-36.608" y="0">Axle Unit</tspan><tspan x="-4.576" y="24">2</tspan></text>
+    <text id="Axle_Unit_1" data-name="Axle Unit 1" transform="translate(37 3594)" fill="#313132" font-size="16" font-family="BCSans, Noto Sans, Verdana, Arial, sans-serif" font-weight="600"><tspan x="-45" y="0">Axle Unit 1</tspan></text>
+    <text id="Axle_Unit_2" data-name="Axle Unit 2" transform="translate(181 3594)" fill="#313132" font-size="16" font-family="BCSans, Noto Sans, Verdana, Arial, sans-serif" font-weight="600"><tspan x="-45" y="0">Axle Unit 2</tspan></text>
+    <path id="Axle_Group_Bracket" data-name="Axle Group Bracket" d="M37 3620v12h165v-12" fill="none" stroke="#313132" stroke-width="2"/>
+    <text id="Axle_Group" data-name="Axle Group" transform="translate(119.5 3650)" fill="#313132" font-size="16" font-family="BCSans, Noto Sans, Verdana, Arial, sans-serif" font-weight="600"><tspan x="-42" y="0">Axle Group</tspan></text>
   </g>
 </svg>

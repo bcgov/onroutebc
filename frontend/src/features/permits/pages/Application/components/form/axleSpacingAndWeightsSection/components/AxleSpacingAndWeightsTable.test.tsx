@@ -650,7 +650,7 @@ describe("AxleSpacingAndWeightsSection", () => {
 
     expect(
       container.querySelector(".axle-spacing-and-weights-table"),
-    ).toHaveClass("axle-spacing-and-weights-table--read-only");
+    ).toHaveClass("axle-spacing-and-weights-table read-only");
     expect(
       container.querySelector(".table__input-popup-indicator"),
     ).toBeInTheDocument();

@@ -28,7 +28,7 @@ export const AxleUnitHelpModal = ({
     >
       <div className="axle-unit-help-modal__header">
         <h2 className="axle-unit-help-modal__title">
-          The difference between an Axle Unit and No. of Axles.
+          Information about Axle Unit and Axle Group
         </h2>
       </div>
 
@@ -38,6 +38,7 @@ export const AxleUnitHelpModal = ({
         </h4>
         <div className="axle-unit-help-modal__row axle-unit-help-modal__row--top">
           <div className="axle-unit-help-modal__section">
+            <strong>Example 1:</strong>
             <p className="section__text">
               A single steer and tandem drive truck tractor would have 2 axle
               units.
@@ -45,10 +46,11 @@ export const AxleUnitHelpModal = ({
             <img
               className="section__image"
               src="/Axle_Unit_01.svg"
-              alt="Example showing axle units"
+              alt="Single steer and tandem drive shown as two axle units in one axle group"
             />
           </div>
           <div className="axle-unit-help-modal__section">
+            <strong>Example 2:</strong>
             <p className="section__text">
               A tandem steer and tridem drive truck tractor would have 2 axle
               units.
@@ -56,37 +58,13 @@ export const AxleUnitHelpModal = ({
             <img
               className="section__image"
               src="/Axle_Unit_02.svg"
-              alt="Example showing axle units"
+              alt="Tandem steer and tridem drive shown as two axle units in one axle group"
             />
           </div>
         </div>
         <h4 className="axle-unit-help-modal__heading">
-          No. of Axles: Total axles within an axle unit.
+          Axle Group: Combination of Axle Units
         </h4>
-        <div className="axle-unit-help-modal__row">
-          <div className="axle-unit-help-modal__section">
-            <p className="section__text">
-              A single steer and tandem drive truck tractor would have 1 and 2
-              axles respectively.
-            </p>
-            <img
-              className="section__image"
-              src="/Number_Of_Axles_01.svg"
-              alt="Example showing number of axles"
-            />
-          </div>
-          <div className="axle-unit-help-modal__section">
-            <p className="section__text">
-              A tandem steer and tridem drive truck tractor would have 2 and 3
-              axles respectively.
-            </p>
-            <img
-              className="section__image"
-              src="/Number_Of_Axles_02.svg"
-              alt="Example showing number of axles"
-            />
-          </div>
-        </div>
       </div>
 
       <div className="axle-unit-help-modal__footer">
