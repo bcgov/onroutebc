@@ -168,7 +168,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
               <DatePicker
                 className={`custom-date-picker__picker ${disabled ? "custom-date-picker__picker--disabled" : ""}`}
                 key={`${feature}-date-picker`}
-                ref={ref}
+                inputRef={ref}
                 value={value}
                 disabled={disabled}
                 readOnly={readOnly}
