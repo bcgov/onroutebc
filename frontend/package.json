@@ -84,7 +84,7 @@
     "postcss": "^8.5.23",
     "prettier": "3.4.2",
     "typescript": "^5.7.2",
-    "vite": "^5.4.11",
+    "vite": "^6.0.0",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^4.3.2",
