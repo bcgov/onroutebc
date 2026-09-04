@@ -117,10 +117,9 @@ export const isBeforeCalendarQuarter = (
   const currentReferenceDate = referenceDate
     ? getPacificDateTime(referenceDate)
     : getCurrentPacificDateTime();
-  
-  const quarterStartDate = startOfQuarterOfYear(currentReferenceDate).format(
-    'YYYY-MM-DD',
-  );
+
+  const quarterStartDate =
+    startOfQuarterOfYear(currentReferenceDate).format('YYYY-MM-DD');
 
   // Check if the date to check is outside the quarter boundaries
   return differenceBetween(dateToCheck, quarterStartDate) <= 0;

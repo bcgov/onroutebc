@@ -74,7 +74,10 @@ import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-v
 import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
 import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
-import { convertUtcToPt, getCurrentPacificDateTime } from '../../../common/helper/date-time.helper';
+import {
+  convertUtcToPt,
+  getCurrentPacificDateTime,
+} from '../../../common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {
@@ -109,9 +112,7 @@ export class PaymentService {
     );
     const dayPadded = ('00' + hashExpiryDt.date().toString()).slice(-2);
     const hoursPadded = ('00' + hashExpiryDt.hour().toString()).slice(-2);
-    const minutesPadded = ('00' + hashExpiryDt.minute().toString()).slice(
-      -2,
-    );
+    const minutesPadded = ('00' + hashExpiryDt.minute().toString()).slice(-2);
 
     // Create the hash expiry string in the format "YYYYMMDDHHmm"
     return `${year}${monthPadded}${dayPadded}${hoursPadded}${minutesPadded}`;

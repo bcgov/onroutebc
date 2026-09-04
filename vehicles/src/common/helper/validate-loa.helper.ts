@@ -58,10 +58,12 @@ export const isEndDateValid = (
   expiryDate: string,
   permitExpiryDate: string,
 ): boolean => {
-  return expiryDate ? getPacificDateTime(expiryDate).isSameOrAfter(
-    getPacificDateTime(permitExpiryDate),
-    'day',
-  ) : true;
+  return expiryDate
+    ? getPacificDateTime(expiryDate).isSameOrAfter(
+        getPacificDateTime(permitExpiryDate),
+        'day',
+      )
+    : true;
 };
 
 export const validateLoas = (
