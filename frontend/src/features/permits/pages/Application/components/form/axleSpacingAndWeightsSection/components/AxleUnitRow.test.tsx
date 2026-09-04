@@ -102,5 +102,4 @@ describe("AxleUnitRow", () => {
       configuration[2],
     ]);
   });
-
 });
