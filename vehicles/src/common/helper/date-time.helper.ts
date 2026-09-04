@@ -65,87 +65,48 @@ export const getDuration = ({
 /**
  * Returns the start date of the quarter for a given date time.
  *
- * @param dateTime The dateTime as a string
- * @returns The start date of the quarter as a Date object.
+ * @param dateTime The dateTime as a Dayjs object
+ * @returns The start date of the quarter as a Dayjs object.
  */
-export const startOfQuarterOfYear = (dateTime: string): Date => {
-  const result = dayjs(dateTime).startOf('quarter').toDate();
-  return result;
-};
-
-/**
- * Returns the end date of the quarter for a given date time.
- *
- * @param dateTime The dateTime as a string
- * @returns The end date of the quarter as a Date object.
- */
-export const endOfQuarterOfYear = (dateTime: string): Date => {
-  const result = dayjs(dateTime).endOf('quarter').toDate();
+export const startOfQuarterOfYear = (dateTime: dayjs.Dayjs): dayjs.Dayjs => {
+  const result = dateTime.startOf('quarter');
   return result;
 };
 
 /**
  * Adds a specified number of days to a given date.
  *
- * @param dateTime The date as a Date object
+ * @param dateTime The date as a Dayjs object
  * @param daysToAdd The number of days to add to the date
- * @returns The new date with the added days as a Date object.
+ * @returns The new date with the added days as a Dayjs object.
  */
-export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
-  const result = dayjs.utc(dateTime).add(daysToAdd, 'days').toDate();
-  return result;
+export const addDaysToDate = (
+  dateTime: dayjs.Dayjs,
+  daysToAdd: number,
+): dayjs.Dayjs => {
+  return dateTime.add(daysToAdd, 'days');
 };
 
 /**
  * Subtracts a specified number of days from a given date.
  *
- * @param dateTime The date as a Date object
+ * @param dateTime The date as a Dayjs object
  * @param daysToSubtract The number of days to subtract from the date
- * @returns The new date with the subtracted days as a Date object.
+ * @returns The new date with the subtracted days as a Dayjs object.
  */
 export const subtractDaysFromDate = (
-  dateTime: string,
+  dateTime: dayjs.Dayjs,
   daysToSubtract: number,
-): Date => {
-  const result = dayjs.utc(dateTime).subtract(daysToSubtract, 'days').toDate();
-  return result;
-};
-
-/**
- * Determines if a date falls within the same calendar quarter of a reference date.
- *
- * @param dateToCheck The date to check as a string.
- * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
- * @returns True if the dateToCheck is within the quarter of the referenceDate; otherwise, false.
- */
-export const isWithinCalendarQuarter = (
-  dateToCheck: string,
-  referenceDate?: Nullable<string>,
-): boolean => {
-  // Determine the quarter boundaries of the given or current date
-
-  const currentReferenceDate = referenceDate ?? new Date().toISOString();
-  const quarterEndDate = convertUtcToPt(
-    endOfQuarterOfYear(currentReferenceDate),
-    'YYYY-MM-DD',
-  );
-  const quarterStartDate = convertUtcToPt(
-    startOfQuarterOfYear(currentReferenceDate),
-    'YYYY-MM-DD',
-  );
-
-  // Check if the date to check is outside the quarter boundaries
-  return (
-    differenceBetween(dateToCheck, quarterEndDate) >= 0 &&
-    differenceBetween(dateToCheck, quarterStartDate) <= 0
-  );
+): dayjs.Dayjs => {
+  return dateTime.subtract(daysToSubtract, 'days');
 };
 
 /**
  * Determines if a date falls before the start of the calendar quarter of a reference date.
  *
- * @param dateToCheck The date to check as a string.
- * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
+ * @param dateToCheck The date to check as a string (based on Pacific timezone).
+ * @param referenceDate Optional reference date as a string (based on Pacific timezone).
+ * Defaults to current date if not provided.
  * @returns True if the dateToCheck is before the start of the quarter of the referenceDate; otherwise, false.
  */
 export const isBeforeCalendarQuarter = (
@@ -153,38 +114,15 @@ export const isBeforeCalendarQuarter = (
   referenceDate?: Nullable<string>,
 ): boolean => {
   // Determine the quarter boundaries of the given or current date
+  const currentReferenceDate = referenceDate
+    ? getPacificDateTime(referenceDate)
+    : getCurrentPacificDateTime();
 
-  const currentReferenceDate = referenceDate ?? new Date().toISOString();
-  const quarterStartDate = convertUtcToPt(
-    startOfQuarterOfYear(currentReferenceDate),
-    'YYYY-MM-DD',
-  );
+  const quarterStartDate =
+    startOfQuarterOfYear(currentReferenceDate).format('YYYY-MM-DD');
 
   // Check if the date to check is outside the quarter boundaries
   return differenceBetween(dateToCheck, quarterStartDate) <= 0;
-};
-
-/**
- * Determines if a date falls after the end of the calendar quarter of a reference date.
- *
- * @param dateToCheck The date to check as a string.
- * @param referenceDate Optional reference date as a string. Defaults to current date if not provided.
- * @returns True if the dateToCheck is after the end of the quarter of the referenceDate; otherwise, false.
- */
-export const isAfterCalendarQuarter = (
-  dateToCheck: string,
-  referenceDate?: Nullable<string>,
-): boolean => {
-  // Determine the quarter boundaries of the given or current date
-
-  const currentReferenceDate = referenceDate ?? new Date().toISOString();
-  const quarterEndDate = convertUtcToPt(
-    endOfQuarterOfYear(currentReferenceDate),
-    'YYYY-MM-DD',
-  );
-
-  // Check if the date to check is outside the quarter boundaries
-  return differenceBetween(dateToCheck, quarterEndDate) >= 0;
 };
 
 /* Returns the current date and time in the Pacific timezone.
@@ -193,4 +131,10 @@ export const isAfterCalendarQuarter = (
  */
 export const getCurrentPacificDateTime = (): dayjs.Dayjs => {
   return dayjs().tz('Canada/Pacific');
+};
+
+export const getPacificDateTime = (
+  datetime: dayjs.Dayjs | string | Date,
+): dayjs.Dayjs => {
+  return dayjs.tz(datetime, 'Canada/Pacific');
 };

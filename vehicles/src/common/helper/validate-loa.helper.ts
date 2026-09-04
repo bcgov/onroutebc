@@ -7,9 +7,11 @@ import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { VehicleType } from '../enum/vehicle-type.enum';
 import { ValidationResult } from 'onroute-policy-engine';
+import { getPacificDateTime } from './date-time.helper';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
+
 export const isVehicleTypeValid = (
   permitVehicleType: VehicleType,
   permitVehicleSubtype: string,
@@ -46,7 +48,10 @@ export const isStartDateValid = (
   startDate: string,
   permitStartDate: string,
 ): boolean => {
-  return dayjs(startDate).isSameOrBefore(permitStartDate, 'day');
+  return getPacificDateTime(startDate).isSameOrBefore(
+    getPacificDateTime(permitStartDate),
+    'day',
+  );
 };
 
 export const isEndDateValid = (
@@ -54,7 +59,10 @@ export const isEndDateValid = (
   permitExpiryDate: string,
 ): boolean => {
   return expiryDate
-    ? dayjs(expiryDate).isSameOrAfter(permitExpiryDate, 'day')
+    ? getPacificDateTime(expiryDate).isSameOrAfter(
+        getPacificDateTime(permitExpiryDate),
+        'day',
+      )
     : true;
 };
 
