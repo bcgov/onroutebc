@@ -74,7 +74,7 @@ import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-v
 import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
 import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
-import { getCurrentPacificDateTime } from '../../../common/helper/date-time.helper';
+import { convertUtcToPt, getCurrentPacificDateTime } from '../../../common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {
@@ -96,20 +96,20 @@ export class PaymentService {
     private readonly policyService: PolicyService,
   ) {}
 
-  private generateHashExpiry = (currDate?: Date) => {
-    const curr = currDate ?? new Date();
+  private generateHashExpiry = () => {
+    const currDt = getCurrentPacificDateTime();
 
     // Giving our hash expiry a value of current date plus 10 minutes which is sufficient
-    const hashExpiryDt = new Date(curr.getTime() + 10 * 60000);
+    const hashExpiryDt = currDt.add(10, 'minutes');
 
     // Extract the year, month, day, hours, and minutes from the hash expiry date
-    const year = hashExpiryDt.getFullYear();
-    const monthPadded = ('00' + (hashExpiryDt.getMonth() + 1).toString()).slice(
+    const year = hashExpiryDt.year();
+    const monthPadded = ('00' + (hashExpiryDt.month() + 1).toString()).slice(
       -2,
     );
-    const dayPadded = ('00' + hashExpiryDt.getDate().toString()).slice(-2);
-    const hoursPadded = ('00' + hashExpiryDt.getHours().toString()).slice(-2);
-    const minutesPadded = ('00' + hashExpiryDt.getMinutes().toString()).slice(
+    const dayPadded = ('00' + hashExpiryDt.date().toString()).slice(-2);
+    const hoursPadded = ('00' + hashExpiryDt.hour().toString()).slice(-2);
+    const minutesPadded = ('00' + hashExpiryDt.minute().toString()).slice(
       -2,
     );
 
@@ -119,7 +119,7 @@ export class PaymentService {
 
   private queryHash = async (transaction: Transaction) => {
     const redirectUrl = process.env.PAYBC_REDIRECT;
-    const date = new Date().toISOString().split('T')[0];
+    const currDateOnly = convertUtcToPt(new Date(), 'YYYY-MM-DD');
     const glProjCode = await getFromCache(
       this.cacheManager,
       CacheKey.PAYMENT_METHOD_TYPE_GL_PROJ_CODE,
@@ -162,8 +162,8 @@ export class PaymentService {
       `&trnNumber=${transaction.transactionOrderNumber}` +
       `&trnAmount=${transaction.totalTransactionAmount}` +
       `&redirectUri=${redirectUrl}` +
-      `&trnDate=${date}` +
-      `&glDate=${date}` +
+      `&trnDate=${currDateOnly}` +
+      `&glDate=${currDateOnly}` +
       `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
       `&currency=${PAYMENT_CURRENCY}` +
       `&revenue=${revenue}` +
