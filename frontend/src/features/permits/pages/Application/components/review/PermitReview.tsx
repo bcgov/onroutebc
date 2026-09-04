@@ -50,6 +50,8 @@ import {
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
 import { AxleSpacingAndWeightsSection } from "../form/axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
+import { ReviewExtraordinaryLoadRequest } from "./ReviewExtraordinaryLoadRequest";
+import { ExtraordinaryLoadRequest } from "../../../../types/ExtraordinaryLoadRequest";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -103,6 +105,7 @@ interface PermitReviewProps {
   policyWarnings: ValidationResult[];
   axleCalculationResults?: ValidationResults["axleCalculationResults"];
   tireSizeOptions?: StandardTireSize[];
+  extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -143,7 +146,7 @@ export const PermitReview = (props: PermitReviewProps) => {
       : false;
 
   // The "Add to Cart" button should only show up if:
-  // 1. Applying for permit, and permit type is not STOS nor STWSE
+  // 1. Applying for permit, and permit type is not STOS, STOW or STWSE
   // 2. Applying for permit, and user is staff
   // 3. Applying for permit, and user isn't staff and permit type is STWSE,
   // but there are no dimension oversize warnings
@@ -152,6 +155,7 @@ export const PermitReview = (props: PermitReviewProps) => {
   const hasToCartButton =
     (props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY &&
       ((props.permitType !== PERMIT_TYPES.STOS &&
+        props.permitType !== PERMIT_TYPES.STOW &&
         props.permitType !== PERMIT_TYPES.STWSE) ||
         props.isStaffUser ||
         (props.permitType === PERMIT_TYPES.STWSE &&
@@ -275,6 +279,14 @@ export const PermitReview = (props: PermitReviewProps) => {
             props.oldFields?.permitData?.vehicleConfiguration
           }
           showChangedFields={props.showChangedFields}
+        />
+
+        <ReviewExtraordinaryLoadRequest
+          permitType={props.permitType}
+          isExtraordinaryLoadRequest={
+            props.extraordinaryLoadRequest?.isExtraordinaryLoadRequest
+          }
+          approvalNumber={props.extraordinaryLoadRequest?.approvalNumber}
         />
 
         <TripDetails

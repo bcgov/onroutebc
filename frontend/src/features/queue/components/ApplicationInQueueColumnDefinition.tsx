@@ -72,7 +72,7 @@ export const getApplicationInQueueColumnDefinition = (
   {
     accessorKey: "timeInQueue",
     enableSorting: true,
-    id: "updatedDateTime",
+    id: "caseOpenedDateTime",
     header: "Time in Queue (hh:mm)",
     size: 200,
   },

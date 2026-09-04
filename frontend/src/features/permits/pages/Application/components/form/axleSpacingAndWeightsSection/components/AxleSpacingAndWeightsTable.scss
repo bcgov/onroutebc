@@ -1,32 +1,34 @@
 @import "../../../../../../../../themes/orbcStyles";
 
 .axle-spacing-and-weights-table {
-  &--read-only {
-    .table__input-container {
-      pointer-events: none;
-    }
-
-    .table__input {
-      cursor: default;
-
-      fieldset,
-      &:hover fieldset,
-      &.table__input--fail fieldset,
-      &.table__input--fail:hover fieldset {
-        background-color: transparent;
-        border: 0;
+  &.read-only {
+    .table {
+      &__input-container {
+        pointer-events: none;
       }
 
-      &.number-input__input--disabled input,
-      .autocomplete__input:disabled {
-        color: $bc-black;
+      &__input {
         cursor: default;
-        opacity: 1;
-        -webkit-text-fill-color: $bc-black;
+        fieldset {
+          background-color: transparent;
+          border: 0;
+        }
+
+        &.number-input__input--disabled input,
+        .autocomplete__input:disabled {
+          color: $bc-black;
+          cursor: default;
+          opacity: 1;
+          -webkit-text-fill-color: $bc-black;
+        }
       }
 
-      .table__input-popup-indicator {
+      &__input-popup-indicator {
         display: none;
+      }
+      
+      &__cell {
+        padding: 0;
       }
     }
   }
@@ -39,7 +41,7 @@
     gap: 1rem;
     overflow-x: auto;
   }
-  
+
   .table {
     border-collapse: collapse;
 
@@ -72,7 +74,6 @@
 
     &__input-container {
       margin: 0;
-
     }
 
     &__cell {
@@ -81,10 +82,15 @@
       border: 1px solid $bc-border-grey;
       min-width: 5rem;
       max-width: 5rem;
+
+      &--fail {
+        border: 3px solid $bc-red;
+      }
     }
   }
 
-  .column, .row {
+  .column,
+  .row {
     &__label {
       background-color: $bc-background-light-grey;
       border: 1px solid $bc-border-grey;
@@ -103,6 +109,7 @@
       &--fail {
         background-color: $bc-messages-red-background;
         color: $bc-red;
+
       }
 
       &--subtype {
@@ -114,20 +121,20 @@
     &__label-content {
       display: flex;
       align-items: center;
-      gap: .75rem;
+      gap: 0.75rem;
     }
 
     &__actions {
       display: inline-flex;
       align-items: center;
-      gap: .5rem;
+      gap: 0.5rem;
     }
 
     &__button {
       color: $bc-black;
       width: 1.5rem;
       height: 1.5rem;
-      
+
       &--help {
         border: none;
         cursor: pointer;
@@ -135,12 +142,14 @@
         font-size: 1.5rem;
         transform: translateY(3px);
       }
-      &--add, &--remove {
+      &--add,
+      &--remove {
         border: 2px solid $bc-black;
-        border-radius: .25rem;
+        border-radius: 0.25rem;
         font-size: 1rem;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           background-color: $bc-border-grey;
           border: 2px solid $bc-black;
         }
@@ -159,26 +168,28 @@
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
   }
-  
+
   .button {
     font-size: 1rem;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     box-shadow: none;
     min-width: fit-content;
 
-    &:hover, &:focus {
-      box-shadow: none; 
+    &:hover,
+    &:focus {
+      box-shadow: none;
     }
 
     &--add {
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: 0.5rem;
       margin-top: 1.5rem;
       color: $bc-black;
       border: 2px solid $bc-text-box-border-grey;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background-color: $bc-background-light-grey;
         border: 2px solid $bc-text-box-border-grey;
       }
@@ -188,7 +199,8 @@
       border: 2px solid $bc-black;
       border-radius: 4px;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background: $bc-border-grey;
       }
     }
@@ -198,16 +210,16 @@
       background-color: $bc-background-light-grey;
       border: 2px solid $bc-background-light-grey;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background-color: $bc-background-light-grey;
         border-color: $bc-text-box-border-grey;
       }
     }
 
     &--submit {
-      padding: .5rem 2rem;
+      padding: 0.5rem 2rem;
       font-weight: bold;
     }
   }
-
 }

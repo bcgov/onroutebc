@@ -108,7 +108,6 @@ const navigateBasicBCeID = (
      * No challenge flow does not exist for a basic bceid user because
      * token does not contain business guid.
      */
-
     // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
     else {
       return ERROR_ROUTES.UNAUTHORIZED;
@@ -218,7 +217,6 @@ const navigateBusinessBCeID = (
     }
     // The user does not exist but there is one or more associated companies
     // due to business GUID match. This is an error scenario and the user is unauthorized.
-
     // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
     else {
       return ERROR_ROUTES.UNAUTHORIZED;
