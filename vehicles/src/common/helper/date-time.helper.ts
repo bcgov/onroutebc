@@ -76,28 +76,29 @@ export const startOfQuarterOfYear = (dateTime: dayjs.Dayjs): dayjs.Dayjs => {
 /**
  * Adds a specified number of days to a given date.
  *
- * @param dateTime The date as a Date object
+ * @param dateTime The date as a Dayjs object
  * @param daysToAdd The number of days to add to the date
- * @returns The new date with the added days as a Date object.
+ * @returns The new date with the added days as a Dayjs object.
  */
-export const addDaysToDate = (dateTime: string, daysToAdd: number): Date => {
-  const result = dayjs.utc(dateTime).add(daysToAdd, 'days').toDate();
-  return result;
+export const addDaysToDate = (
+  dateTime: dayjs.Dayjs,
+  daysToAdd: number,
+): dayjs.Dayjs => {
+  return dateTime.add(daysToAdd, 'days');
 };
 
 /**
  * Subtracts a specified number of days from a given date.
  *
- * @param dateTime The date as a Date object
+ * @param dateTime The date as a Dayjs object
  * @param daysToSubtract The number of days to subtract from the date
- * @returns The new date with the subtracted days as a Date object.
+ * @returns The new date with the subtracted days as a Dayjs object.
  */
 export const subtractDaysFromDate = (
-  dateTime: string,
+  dateTime: dayjs.Dayjs,
   daysToSubtract: number,
-): Date => {
-  const result = dayjs.utc(dateTime).subtract(daysToSubtract, 'days').toDate();
-  return result;
+): dayjs.Dayjs => {
+  return dateTime.subtract(daysToSubtract, 'days');
 };
 
 /**
