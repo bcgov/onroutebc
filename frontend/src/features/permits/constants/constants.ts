@@ -154,7 +154,7 @@ export const DEFAULT_TIRE_SIZE_OPTION = {
 
 export const DEFAULT_AXLE_UNIT: AxleUnit = {
   numberOfAxles: 1,
-  numberOfTires: null,
+  numberOfTires: 2,
   tireSize: DEFAULT_TIRE_SIZE_OPTION.size,
   axleSpread: null,
   axleUnitWeight: null,
