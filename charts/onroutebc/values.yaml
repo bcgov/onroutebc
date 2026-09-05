@@ -35,9 +35,9 @@ frontend:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/vehicles"
-      PUBLIC_API_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/public"
-      POLICY_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/policy"
+      ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
+      PUBLIC_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/public"
+      POLICY_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/policy"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
@@ -194,11 +194,11 @@ vehicles:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/dops"
-      POLICY_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/policy"
-      FRONTEND_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/frontend"
-      ACCESS_API_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/vehicles"
-      PAYBC_REDIRECT: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/payment"
+      DOPS_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/dops"
+      POLICY_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/policy"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
+      PAYBC_REDIRECT: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/payment"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: vehicles
@@ -346,7 +346,7 @@ public:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: public
@@ -482,9 +482,9 @@ dops:
   configmap:
     enabled: true
     data:
-      DOPS_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/dops"
-      FRONTEND_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/frontend"
-      ACCESS_API_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/vehicles"
+      DOPS_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/dops"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: dops
@@ -631,7 +631,7 @@ scheduler:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/vehicles"
+      ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: scheduler
@@ -762,7 +762,7 @@ policy:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Values.global.hostname}}/{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: policy
