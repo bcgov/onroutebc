@@ -18,7 +18,7 @@ global:
   #enable pulling from image streams
   imagestreams:
     enabled: false
-  hostname: "dev.onroutebc"    
+  hostname: "dev-onroutebc"    
   domain: "apps.gold.devops.gov.bc.ca" # it is required, apps.gold.devops.gov.bc.ca for gold cluster
   vault:
     authPath: "auth/k8s-gold"
