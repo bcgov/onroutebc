@@ -435,7 +435,6 @@ public:
     className: openshift-default
     annotations: 
       haproxy.router.openshift.io/timeout: 2m
-      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
