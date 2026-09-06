@@ -145,7 +145,7 @@ frontend:
     hosts: 
       - host: "{{.Values.global.hostname}}.{{.Values.global.domain}}"
         paths:
-          - path: /frontend
+          - path: /app
             pathType: ImplementationSpecific
     tls:
       - {}
@@ -196,7 +196,7 @@ vehicles:
     data:
       DOPS_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/dops"
       POLICY_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/policy"
-      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/app"
       ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
       PAYBC_REDIRECT: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/payment"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
@@ -346,7 +346,7 @@ public:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/app"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: public
@@ -483,7 +483,7 @@ dops:
     enabled: true
     data:
       DOPS_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/dops"
-      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/app"
       ACCESS_API_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/vehicles"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
@@ -762,7 +762,7 @@ policy:
   configmap:
     enabled: true
     data:
-      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/frontend"
+      FRONTEND_URL: "https://{{.Values.global.hostname}}.{{.Values.global.domain}}/app"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: policy
