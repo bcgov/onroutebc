@@ -147,6 +147,12 @@ frontend:
         paths:
           - path: /frontend
             pathType: ImplementationSpecific
+          - path: /assets
+            pathType: ImplementationSpecific
+          - path: /config
+            pathType: ImplementationSpecific
+          - path: /BCID_V_rgb_pos.png
+            pathType: ImplementationSpecific
     tls:
       - {}
   service:
