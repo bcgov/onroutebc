@@ -139,6 +139,7 @@ export const AppRoutes = () => {
           />
         }
       >
+        {/* TODO this will need to be updated when we know where the /home route will direct to for IDIR users */}
         <Route
           path={routes.IDIR_ROUTES.STAFF_HOME}
           element={<StaffDashboard />}

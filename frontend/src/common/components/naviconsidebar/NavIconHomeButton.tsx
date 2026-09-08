@@ -16,6 +16,7 @@ export const NavIconHomeButton = () => {
   const isActive = pathname === IDIR_ROUTES.WELCOME;
   const { clearCompanyContext } = useContext(OnRouteBCContext);
 
+  // TODO this will need to be updated when we know where the home button is supposed to direct to
   const canViewApplicationQueue = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",

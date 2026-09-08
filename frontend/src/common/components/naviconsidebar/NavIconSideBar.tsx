@@ -9,6 +9,7 @@ import { NavIconReportButton } from "./NavIconReportButton";
 import { NavIconBFCTButton } from "./NavIconBFCTButton";
 import { useFeatureFlagsQuery } from "../../hooks/hooks";
 import { usePermissionMatrix } from "../../authentication/PermissionMatrix";
+import { NavIconQueueButton } from "./NavIconQueueButton";
 
 /**
  * Displays a sidebar with NavIcon buttons as children
@@ -41,9 +42,17 @@ export const NavIconSideBar = () => {
     },
   });
 
+  const shouldShowQueueButton = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "STICKY_SIDE_BAR",
+      permissionMatrixFunctionKey: "QUEUE_BUTTON",
+    },
+  });
+
   return shouldShowSideBar ? (
     <div className="nav-icon-side-bar">
       <NavIconHomeButton />
+      {shouldShowQueueButton && <NavIconQueueButton />}
       {shouldShowReportsButton && <NavIconReportButton />}
       {BFCTFeatureFlagEnabled && shouldShowBFCTButton && <NavIconBFCTButton />}
     </div>
