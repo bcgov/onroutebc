@@ -7,8 +7,8 @@ import { isCVClient } from './common.helper';
 import { PermitType } from '../enum/permit-type.enum';
 import {
   addDaysToDate,
-  convertUtcToPt,
   differenceBetween,
+  getCurrentPacificDateTime,
   subtractDaysFromDate,
 } from './date-time.helper';
 
@@ -107,13 +107,10 @@ export const evaluatePolicyValidationResult = (
       // For Highway Crossing permit, first check to see if the past date is within allowable range,
       // since staff is restricted to max 60 days in the past (rather than the usual unlimited days)
       const startDateDiffForPast = differenceBetween(
-        convertUtcToPt(
-          subtractDaysFromDate(
-            new Date().toISOString(),
-            MAX_HC_ALLOWED_PAST_DAYS,
-          ),
-          'YYYY-MM-DD',
-        ),
+        subtractDaysFromDate(
+          getCurrentPacificDateTime(),
+          MAX_HC_ALLOWED_PAST_DAYS,
+        ).format('YYYY-MM-DD'),
         permitData.startDate,
       );
 
@@ -131,13 +128,10 @@ export const evaluatePolicyValidationResult = (
     // Calculate the difference between the permit's start date and the allowed start date by staff
     const startDateDiff = differenceBetween(
       permitData.startDate,
-      convertUtcToPt(
-        addDaysToDate(
-          new Date().toISOString(),
-          DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
-        ),
-        'YYYY-MM-DD',
-      ),
+      addDaysToDate(
+        getCurrentPacificDateTime(),
+        DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
+      ).format('YYYY-MM-DD'),
     );
 
     // If Quarterly Non-Resident, check the violation message and date difference to determine allowance
