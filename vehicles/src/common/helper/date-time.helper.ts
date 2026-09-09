@@ -125,7 +125,8 @@ export const isBeforeCalendarQuarter = (
   return differenceBetween(dateToCheck, quarterStartDate) <= 0;
 };
 
-/* Returns the current date and time in the Pacific timezone.
+/**
+ * Returns the current date and time in the Pacific timezone.
  *
  * @returns {dayjs.Dayjs} The current Pacific date and time.
  */
@@ -133,6 +134,12 @@ export const getCurrentPacificDateTime = (): dayjs.Dayjs => {
   return dayjs().tz('Canada/Pacific');
 };
 
+/**
+ * Get the Dayjs object for a given datetime in Pacific timezone.
+ *
+ * @param datetime The date object to use for converting to Pacific timezone
+ * @returns {dayjs.Dayjs} Dayjs object representing the datetime in Pacific timezone
+ */
 export const getPacificDateTime = (
   datetime: dayjs.Dayjs | string | Date,
 ): dayjs.Dayjs => {
