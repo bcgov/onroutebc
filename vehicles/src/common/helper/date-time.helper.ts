@@ -70,6 +70,7 @@ export const getDuration = ({
  */
 export const startOfQuarterOfYear = (dateTime: dayjs.Dayjs): dayjs.Dayjs => {
   const result = dateTime.startOf('quarter');
+  console.log('startOfQuarterOfYear', result);
   return result;
 };
 
@@ -84,6 +85,7 @@ export const addDaysToDate = (
   dateTime: dayjs.Dayjs,
   daysToAdd: number,
 ): dayjs.Dayjs => {
+  console.log('addDaysToDate', dateTime, daysToAdd);
   return dateTime.add(daysToAdd, 'days');
 };
 
@@ -98,6 +100,7 @@ export const subtractDaysFromDate = (
   dateTime: dayjs.Dayjs,
   daysToSubtract: number,
 ): dayjs.Dayjs => {
+  console.log('subtractDaysFromDate', dateTime, daysToSubtract);
   return dateTime.subtract(daysToSubtract, 'days');
 };
 
@@ -118,8 +121,17 @@ export const isBeforeCalendarQuarter = (
     ? getPacificDateTime(referenceDate)
     : getCurrentPacificDateTime();
 
+    console.log('getPacificDateTime', getPacificDateTime(referenceDate));
+    console.log('getCurrentPacificDateTime', getCurrentPacificDateTime());
+
+  console.log('currentReferenceDate', currentReferenceDate);
+
+  console.log('referenceDate', referenceDate);
+
   const quarterStartDate =
     startOfQuarterOfYear(currentReferenceDate).format('YYYY-MM-DD');
+
+console.log('quarterStartDate', quarterStartDate);
 
   // Check if the date to check is outside the quarter boundaries
   return differenceBetween(dateToCheck, quarterStartDate) <= 0;

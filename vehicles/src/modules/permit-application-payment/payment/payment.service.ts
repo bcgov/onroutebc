@@ -102,11 +102,15 @@ export class PaymentService {
   private generateHashExpiry = () => {
     const currDt = getCurrentPacificDateTime();
 
+    console.log('generateHashExpiry - Current Pacific Date Time:', currDt);
+
     // Giving our hash expiry a value of current date plus 10 minutes which is sufficient
     const hashExpiryDt = currDt.add(10, 'minutes');
+    console.log('generateHashExpiry - Hash Expiry Date Time:', hashExpiryDt);
 
     // Extract the year, month, day, hours, and minutes from the hash expiry date
     const year = hashExpiryDt.year();
+    console.log('generateHashExpiry - year', year);
     const monthPadded = ('00' + (hashExpiryDt.month() + 1).toString()).slice(
       -2,
     );
@@ -121,6 +125,7 @@ export class PaymentService {
   private queryHash = async (transaction: Transaction) => {
     const redirectUrl = process.env.PAYBC_REDIRECT;
     const currDateOnly = convertUtcToPt(new Date(), 'YYYY-MM-DD');
+    console.log('queryHash - currDateOnly', currDateOnly);
     const glProjCode = await getFromCache(
       this.cacheManager,
       CacheKey.PAYMENT_METHOD_TYPE_GL_PROJ_CODE,
