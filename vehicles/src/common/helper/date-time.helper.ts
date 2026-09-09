@@ -5,6 +5,7 @@ import * as duration from 'dayjs/plugin/duration';
 import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DurationDifference } from '../interface/duration-difference.interface';
 import { Nullable } from '../types/common';
+import { deprecate } from 'util';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -121,8 +122,8 @@ export const isBeforeCalendarQuarter = (
     ? getPacificDateTime(referenceDate)
     : getCurrentPacificDateTime();
 
-    console.log('getPacificDateTime', getPacificDateTime(referenceDate));
-    console.log('getCurrentPacificDateTime', getCurrentPacificDateTime());
+  console.log('getPacificDateTime', getPacificDateTime(referenceDate));
+  console.log('getCurrentPacificDateTime', getCurrentPacificDateTime());
 
   console.log('currentReferenceDate', currentReferenceDate);
 
@@ -131,7 +132,7 @@ export const isBeforeCalendarQuarter = (
   const quarterStartDate =
     startOfQuarterOfYear(currentReferenceDate).format('YYYY-MM-DD');
 
-console.log('quarterStartDate', quarterStartDate);
+  console.log('quarterStartDate', quarterStartDate);
 
   // Check if the date to check is outside the quarter boundaries
   return differenceBetween(dateToCheck, quarterStartDate) <= 0;
