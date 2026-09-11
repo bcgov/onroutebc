@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check Deployment Triggers
         id: triggers
         run: |
@@ -148,7 +148,7 @@ jobs:
           # If here skip deployment
           echo "No triggers have fired, deployment skipped"
 
-      - uses: redhat-actions/openshift-tools-installer@v1
+      - uses: redhat-actions/openshift-tools-installer@v3
         if: steps.triggers.outputs.triggered == 'true'
         with:
           oc: "4"
