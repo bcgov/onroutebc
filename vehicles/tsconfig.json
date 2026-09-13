@@ -9,7 +9,7 @@
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./vehicles",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
