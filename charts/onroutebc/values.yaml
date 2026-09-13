@@ -295,6 +295,7 @@ vehicles:
     className: openshift-default
     annotations: 
       haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -435,6 +436,7 @@ public:
     className: openshift-default
     annotations: 
       haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -579,6 +581,7 @@ dops:
     className: openshift-default
     annotations: 
       haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -697,6 +700,7 @@ scheduler:
     className: openshift-default
     annotations: 
       haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -854,6 +858,7 @@ policy:
     className: openshift-default
     annotations:
       haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/rewrite-target: /
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
