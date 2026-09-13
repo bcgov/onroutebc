@@ -530,3 +530,7 @@
 ### Version 109:
 
 - Configure STWSE v1 templates.
+
+### Version 110:
+
+- Update the STOW policy configuration to calculate permit fees using the selected OCD overload (ORV2-5692).
