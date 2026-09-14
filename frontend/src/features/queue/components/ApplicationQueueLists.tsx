@@ -3,39 +3,55 @@ import { usePermissionMatrix } from "../../../common/authentication/PermissionMa
 import { TabLayout } from "../../../common/components/dashboard/TabLayout";
 import { ApplicationsInQueueList } from "./ApplicationsInQueueList";
 import { ClaimedApplicationsList } from "./ClaimedApplicationsList";
+import {
+  useClaimedApplicationsInQueueQuery,
+  useUnclaimedApplicationsInQueueQuery,
+} from "../hooks/hooks";
 
 export const ApplicationQueueLists = React.memo(() => {
   const tabs = [];
 
   const showApplicationsInQueueTab = usePermissionMatrix({
     permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFeatureKey: "QUEUE",
       permissionMatrixFunctionKey: "VIEW_QUEUE",
     },
   });
 
+  const { unclaimedApplicationsInQueueQuery } =
+    useUnclaimedApplicationsInQueueQuery();
+
+  const { data: unclaimedApplications } = unclaimedApplicationsInQueueQuery;
+
   if (showApplicationsInQueueTab) {
     tabs.push({
-      label: "Applications In Queue",
+      label: "Applications",
       component: <ApplicationsInQueueList />,
+      count: unclaimedApplications?.items.length,
     });
   }
 
   const showClaimedApplicationsTab = usePermissionMatrix({
     permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFeatureKey: "QUEUE",
       permissionMatrixFunctionKey: "VIEW_QUEUE",
     },
   });
 
+  const { claimedApplicationsInQueueQuery } =
+    useClaimedApplicationsInQueueQuery();
+
+  const { data: claimedApplications } = claimedApplicationsInQueueQuery;
+
   if (showClaimedApplicationsTab) {
     tabs.push({
-      label: "Claimed Applications",
+      label: "Claimed",
       component: <ClaimedApplicationsList />,
+      count: claimedApplications?.items.length,
     });
   }
 
-  return <TabLayout bannerText="Home" componentList={tabs} />;
+  return <TabLayout bannerText="Queue" componentList={tabs} />;
 });
 
 ApplicationQueueLists.displayName = "ApplicationQueueLists";

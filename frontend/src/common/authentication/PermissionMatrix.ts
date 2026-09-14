@@ -430,8 +430,7 @@ const GLOBAL_SEARCH = {
 /**
  * Application review queue on staff home screen
  */
-const STAFF_HOME_SCREEN = {
-  // TODO these might need to be moved to a new QUEUE_SCREEN feature, and all references updated since 'Home' will be directing somewhere new
+const QUEUE = {
   VIEW_QUEUE: { allowedIDIRRoles: [PC, SA, CTPO] },
   MANAGE_QUEUE: { allowedIDIRRoles: [PC, SA, CTPO] },
 } as const;
@@ -488,7 +487,7 @@ export const PERMISSIONS_MATRIX = {
   MANAGE_PPC_USERS: MANAGE_PPC_USERS,
   REPORTS: REPORTS,
   GLOBAL_SEARCH: GLOBAL_SEARCH,
-  STAFF_HOME_SCREEN: STAFF_HOME_SCREEN,
+  QUEUE: QUEUE,
   MISCELLANEOUS: MISCELLANEOUS,
 } as const;
 

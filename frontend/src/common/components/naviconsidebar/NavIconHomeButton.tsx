@@ -5,7 +5,6 @@ import { IDIR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
-import { usePermissionMatrix } from "../../authentication/PermissionMatrix";
 
 /**
  * Displays the navigation icon for Home on the NavIconSideBar
@@ -16,24 +15,12 @@ export const NavIconHomeButton = () => {
   const isActive = pathname === IDIR_ROUTES.WELCOME;
   const { clearCompanyContext } = useContext(OnRouteBCContext);
 
-  // TODO this will need to be updated when we know where the home button is supposed to direct to
-  const canViewApplicationQueue = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
-      permissionMatrixFunctionKey: "VIEW_QUEUE",
-    },
-  });
-
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.HOME}
       onClick={() => {
         clearCompanyContext?.();
-        navigate(
-          canViewApplicationQueue
-            ? IDIR_ROUTES.STAFF_HOME
-            : IDIR_ROUTES.WELCOME,
-        );
+        navigate(IDIR_ROUTES.WELCOME);
       }}
       isActive={isActive}
     />
