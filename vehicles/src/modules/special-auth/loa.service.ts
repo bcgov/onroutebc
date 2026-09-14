@@ -24,6 +24,7 @@ import {
   getQueryRunner,
   setBaseEntityProperties,
 } from '../../common/helper/database.helper';
+import { convertUtcToPt } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class LoaService {
@@ -142,13 +143,13 @@ export class LoaService {
       .andWhere('loaDetail.isActive = :isActive', { isActive: 'Y' });
     if (expired === true) {
       loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
-        expiryDate: new Date(),
+        expiryDate: convertUtcToPt(new Date(), 'YYYY-MM-DD'),
       });
     } else if (expired === false) {
       loaDetailQB.andWhere(
         new Brackets((qb) => {
           qb.where('loaDetail.expiryDate >= :expiryDate', {
-            expiryDate: new Date(),
+            expiryDate: convertUtcToPt(new Date(), 'YYYY-MM-DD'),
           }).orWhere('loaDetail.expiryDate IS NULL');
         }),
       );
