@@ -6,7 +6,8 @@ export const useCalculateBridge = (policyEngine: Nullable<Policy>) => {
   return {
     calculateBridge: policyEngine
       ? (axleConfig: AxleConfiguration[]) =>
-          policyEngine.calculateBridge(axleConfig)
+          // we pass in an empty object for VehicleConfiguration here since it is not relevant for calculateBridge in this context, whereas it is necessary in the context of the ASW table
+          policyEngine.calculateBridge(axleConfig, [])
       : undefined,
   };
 };
