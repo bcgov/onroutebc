@@ -2,11 +2,11 @@ import { screen } from "@testing-library/react";
 import { renderASW } from "./renderASW";
 
 /**
- * The purpose of this test is to make sure that the contract between the ASW and hte Policy Engine 
- * remains stable. There are some kind of trickier behaviour, like the fact that the user selects 
- * "3.25" but the PE expects "325." This is already working, but we want to have a test to make 
+ * The purpose of this test is to make sure that the contract between the ASW and hte Policy Engine
+ * remains stable. There are some kind of trickier behaviour, like the fact that the user selects
+ * "3.25" but the PE expects "325." This is already working, but we want to have a test to make
  * sure it's not broken in the future.
- * 
+ *
  * We do mock the entire PE runAxleCalc function here, just to make sure the inputs are good
  * and the contract is enforced. We aren't actually testing the policy engine here, as it's
  * tested internally.

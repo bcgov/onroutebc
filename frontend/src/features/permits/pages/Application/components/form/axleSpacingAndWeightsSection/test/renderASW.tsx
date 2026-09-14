@@ -11,16 +11,15 @@ type RunAxleCalculation = NonNullable<
   ComponentProps<typeof AxleSpacingAndWeightsSection>["runAxleCalculation"]
 >;
 
-
 /**
  * This is a pretty big testing function and sets up the foundation for future tests
- * 
+ *
  * Basically, it returns the UI rendered itself, but also has a lot of helpers
- * for rendering and asserting in tests like showing highlighted fields, or 
+ * for rendering and asserting in tests like showing highlighted fields, or
  * weight, or axle spacing. It also importantly returns the mocked runAxleCalculation,
  * which is the boundary with the PE, and let's us make sure we have a stable boundary
  * there.
- * 
+ *
  * If we add some OCD tests in the future, this would be the function to add them.
  */
 export const renderASW = ({

@@ -6,7 +6,6 @@ import {
   POLICY_CHECK_ID_TYPES,
 } from "../../../../../../types/AxleCalculationResult";
 
-
 // TODO - Probably need to make this a tiny bit more generic, from just like validTruckTractor to valid vehicle type?
 // Left somewhat lightweight for now to get the point across for initial ASW PR.
 export const validTruckTractor = (): {
@@ -55,10 +54,10 @@ export const emptySuccessfulCalculation = (): AxleCalculationResult => ({
 });
 
 /**
- * This is mocking a failure, basically, so we can just make sure that rendering or 
+ * This is mocking a failure, basically, so we can just make sure that rendering or
  * work as expected. The important thing here is that even if this specific STOW
  * eval would change, the test is still fine! The test FORCES a failure for a specific
- * test and then make sure it renders, so our tests are not overly coupled with 
+ * test and then make sure it renders, so our tests are not overly coupled with
  * specific Policy Engine eval behaviour.
  */
 export const legalInteraxleSpacingFailure = ({

@@ -5,12 +5,11 @@ import {
 } from "./aswFixtures";
 import { renderASW } from "./renderASW";
 
-
 /**
  * The purpose of this file is testing that the results render correctly in ASW table.
  * With the fixtures, we can easily setup failures or inputs for any situation.
- * In this case, we're testing that highlighting works. 
- * 
+ * In this case, we're testing that highlighting works.
+ *
  * Importantly, we aren't actually testing the Policy Engine here, and if the PE changes
  * in the future this test will still pass as it is forcing a failure and making sure
  * that forced failure is properly rendered.
