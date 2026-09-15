@@ -686,9 +686,6 @@ scheduler:
         requests:
           cpu: 25m
           memory: 50Mi
-      volumeMounts:
-        - name: pbi
-          mountPath: "/mnt/pbi/"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: false 
@@ -737,18 +734,8 @@ scheduler:
       - "service-accounts-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   pvc:
-    enabled: true
-    persist: true #Do not remove pvc on uninstall
-    nameOverride: "{{ .Release.Name }}-scheduler-pbi"
-    accessModes: ReadWriteOnce
-    size: 5Mi
-    storageClassName: netapp-file-standard
-  volumes:
-    - name: pbi
-      persistentVolumeClaim:
-        claimName: "{{ .Release.Name }}-scheduler-pbi"
-  deploymentStrategy: 
-    type: Recreate
+    enabled: false
+    persist: false #Do not remove pvc on uninstall
 
 policy:
   enabled: true
