@@ -16,18 +16,17 @@ describe("ASW input → calculation callback contract", () => {
   it("passes numeric centimetres and unchanged weights to the calculation callback", async () => {
     const { user, runAxleCalculation, asw } = renderASW();
 
-    // A changed value catches stale parent state; 3.25 → 325 catches missing or
-    // double conversion.
     await user.clear(asw.spacingBeforeAxle(2));
     await user.type(asw.spacingBeforeAxle(2), "3.25");
     await user.tab();
     await user.click(asw.calculate());
 
     expect(runAxleCalculation).toHaveBeenCalledOnce();
+
+    // Test the data we pass into runAxleCalc, and make sure it matches contract we expect.
+    // We can't just do this with typechecking, as 3.25 and 325 are both typeof "number".
     const axleConfiguration = runAxleCalculation.mock.calls[0][3];
     expect(axleConfiguration).toHaveLength(2);
-    // Ordered axle types anchor the spacing to axle 2. Only dimensions convert;
-    // weights stay in kg. Numeric expectations also reject serialized strings.
     expect(axleConfiguration).toMatchObject([
       { numberOfAxles: 1, axleUnitWeight: 6700 },
       {
@@ -39,6 +38,7 @@ describe("ASW input → calculation callback contract", () => {
     ]);
   });
 
+  // Clear the input, then make sure that we don't hit PE after.
   it("blocks calculation and shows validation when required input is cleared", async () => {
     const { user, runAxleCalculation, asw } = renderASW();
 
@@ -46,8 +46,6 @@ describe("ASW input → calculation callback contract", () => {
       "All fields in Axle Spacing and Weights are required to calculate results.";
     expect(screen.queryByText(requiredFieldsMessage)).not.toBeInTheDocument();
 
-    // Clearing a complete field must reach validation before serialization can
-    // default it to zero. This covers user-cleared input, not all missing-value shapes.
     await user.clear(asw.weight(2));
     await user.tab();
     await user.click(asw.calculate());

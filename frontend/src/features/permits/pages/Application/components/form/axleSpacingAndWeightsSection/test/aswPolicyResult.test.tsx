@@ -15,9 +15,9 @@ import { renderASW } from "./renderASW";
  * that forced failure is properly rendered.
  */
 describe("ASW policy result → UI contract", () => {
+  // Test the ASW actually highlights properly when it's force-fed a failure.
+  // This is a UI test, not a PE test, and assumes PE has already given a failure.
   it("highlights only the affected spacing for a legal interaxle spacing failure", async () => {
-    // Spacing occupies its own row before axle 2: a common off-by-one trap.
-    // Inject the result so this tests field association, not the PE spacing rule.
     const failure = legalInteraxleSpacingFailure({ axleUnit: 2 });
     const { user, asw } = renderASW({
       calculationResult: {
@@ -31,8 +31,6 @@ describe("ASW policy result → UI contract", () => {
     expect(await screen.findByText(failure.message)).toBeVisible();
     const affectedField = asw.spacingBeforeAxle(2).closest(".table__input");
     expect(affectedField).toHaveClass("table__input--fail");
-    // Exact membership catches both a missing highlight and collateral highlights
-    // on weights, spreads, wheels, dropdowns, or the other axle row.
     expect(asw.highlightedFields()).toEqual([affectedField]);
   });
 });
