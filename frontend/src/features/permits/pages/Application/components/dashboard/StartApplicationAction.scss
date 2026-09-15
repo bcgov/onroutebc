@@ -111,6 +111,7 @@ $select-width: 347px;
   &__nested-menu-item:not(:last-child) {
     &.MuiButtonBase-root {
       border-bottom: 1px solid $bc-border-grey;
+      white-space: normal;
     }
   }
   
