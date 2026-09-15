@@ -14,7 +14,6 @@ import {
 
 import {
   DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
-  EPTOP_MAX_ALLOWED_DURATION_AMEND,
   MAX_HC_ALLOWED_PAST_DAYS,
   STGVWI_MAX_ALLOWED_DURATION_AMEND,
   STOS_MAX_ALLOWED_DURATION_AMEND,
@@ -61,8 +60,6 @@ export const evaluatePolicyValidationResult = (
   const isSTWSE =
     permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY;
   const isSTGVWI = permitType === PermitType.SINGLE_TRIP_GVW_INCREASE;
-  const isEPTOP =
-    permitType === PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING;
 
   // CV clients: generally reject if any policy validation violations exist.
   // Special handling for STOW (single-trip overweight) permits:
@@ -180,12 +177,6 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STGVWI_MAX_ALLOWED_DURATION_AMEND);
 
-  // Function to check if there is an EPTOP duration violation which can be excluded
-  const isEPTOPDurationViolationAllowed = (violation: ValidationResult) =>
-    isEPTOP &&
-    isDurationViolation(violation) &&
-    isAllowedDuration(EPTOP_MAX_ALLOWED_DURATION_AMEND);
-
   // Function to check if there is an STOW axle weight spacing violation which can be excluded
   const isSTOWAxleWeightSpacingViolationAllowed = (
     violation: ValidationResult,
@@ -201,7 +192,6 @@ export const evaluatePolicyValidationResult = (
           isSTOWDurationViolationAllowed(violation) ||
           isSTWSEDurationViolationAllowed(violation) ||
           isSTGVWIDurationViolationAllowed(violation) ||
-          isEPTOPDurationViolationAllowed(violation) ||
           isSTOWAxleWeightSpacingViolationAllowed(violation) ||
           isStartDateViolationAllowed(violation, permitType)
         )
