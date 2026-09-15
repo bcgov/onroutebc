@@ -48,8 +48,8 @@ type RunAxleCalculation = NonNullable<
  * // `mock.calls[0][3]` is the fourth argument: serialized axle configuration.
  * const serializedAxles = runAxleCalculation.mock.calls[0][3];
  * expect(serializedAxles[1].interaxleSpacing).toBe(325);
- * 
- * 
+ *
+ *
  * // For the `mocks.calls[0][3]`, the first [0] is how many times you called runAxleCalc
  * // and the [3] is the axleConfiguration, from list below
  * runAxleCalculation(
@@ -74,10 +74,10 @@ export const renderASW = ({
   /**
    * This harness is basically all we need to render the ASW, but we
    * have to have it stateful, as ASW is built to update parent state
-   * 
+   *
    * It will likely grow in a few small ways as we add tests, for example,
    * tireSizeOptions, or trailer subtypes, but it gets the point across.
-   * 
+   *
    * For simplicity, some values are hardcoded, but if added in future
    * we likely need to add all of them programatically similar to the
    * application, eg make sure we get all trailer types, power unit types.
@@ -90,7 +90,7 @@ export const renderASW = ({
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
-        trailerSubtypeNamesMap={new Map()} // No trailers for now! Maybe add in future. 
+        trailerSubtypeNamesMap={new Map()} // No trailers for now! Maybe add in future.
         vehicleFormData={fixture.vehicleFormData}
         vehicleConfiguration={vehicleConfiguration}
         tireSizeOptions={[
