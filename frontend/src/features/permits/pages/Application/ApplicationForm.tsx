@@ -257,7 +257,7 @@ export const ApplicationForm = ({
     useState<boolean>(false);
 
   const handleCloseApplication = () => {
-    navigate(IDIR_ROUTES.STAFF_HOME);
+    navigate(IDIR_ROUTES.QUEUE);
   };
 
   // Check to see if all application values were already saved
@@ -436,7 +436,7 @@ export const ApplicationForm = ({
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
     } else if (isQueueContext) {
-      navigate(IDIR_ROUTES.STAFF_HOME);
+      navigate(IDIR_ROUTES.QUEUE);
     } else if (isInitCopyContext || isCopiedApplication) {
       const homeTab =
         copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS
@@ -457,7 +457,7 @@ export const ApplicationForm = ({
 
   const handleLeaveUnsaved = () => {
     if (isQueueContext) {
-      navigate(IDIR_ROUTES.STAFF_HOME);
+      navigate(IDIR_ROUTES.QUEUE);
     } else if (isInitCopyContext || isCopiedApplication) {
       const homeTab =
         copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS

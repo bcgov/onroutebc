@@ -77,6 +77,13 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
     size: 200,
   },
   {
+    accessorKey: "elApprovalNumber",
+    enableSorting: false,
+    id: "elApprovalNumber",
+    header: "Approval No.",
+    size: 100,
+  },
+  {
     accessorKey: "claimedBy",
     enableSorting: false,
     id: "claimedBy",

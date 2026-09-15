@@ -65,8 +65,7 @@ export const ApplicationBreadcrumb = ({
   ]);
 
   const goHome = useCallback(() => {
-    if (isQueueContext)
-      return navigate(IDIR_ROUTES.STAFF_HOME, { replace: true });
+    if (isQueueContext) return navigate(IDIR_ROUTES.QUEUE, { replace: true });
 
     if (copyPermitOrigin === PERMIT_ACTION_ORIGINS.ACTIVE_PERMITS)
       return navigate(APPLICATIONS_ROUTES.BASE, {

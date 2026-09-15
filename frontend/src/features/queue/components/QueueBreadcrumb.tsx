@@ -15,7 +15,7 @@ export const QueueBreadcrumb = ({
   const allLinks = [
     {
       text: "Home",
-      onClick: () => navigate(IDIR_ROUTES.STAFF_HOME, { replace: true }),
+      onClick: () => navigate(IDIR_ROUTES.QUEUE, { replace: true }),
     },
 
     {
