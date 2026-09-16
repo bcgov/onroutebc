@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
@@ -153,7 +153,10 @@ export const AmendPermitReview = () => {
   };
 
   const handleClickContinue = async () => {
-    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+    if (
+      (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) ||
+      (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+    ) {
       setShowConfirmWarningModal(true);
     } else {
       await onSubmit();
@@ -166,12 +169,15 @@ export const AmendPermitReview = () => {
 
   const oldFields = getDefaultFormDataFromPermit(companyInfo, permit);
 
-  const serializedPermit = {
-    permitType,
-    permitData: amendmentApplication?.permitData
-      ? serializePermitData(amendmentApplication.permitData)
-      : {},
-  };
+  const serializedPermit = useMemo(
+    () => ({
+      permitType,
+      permitData: amendmentApplication?.permitData
+        ? serializePermitData(amendmentApplication.permitData)
+        : {},
+    }),
+    [permitType, amendmentApplication?.permitData],
+  );
 
   const amountToRefund = useCalculateRefundAmount(
     validTransactionHistory,
@@ -179,7 +185,10 @@ export const AmendPermitReview = () => {
     policyEngine,
   );
 
-  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
+  const { policyWarnings, hasPolicyIssues, axleCalculationResults } =
+    usePolicyWarnings(serializedPermit, policyEngine, {
+      includeAxleCalculationResults: true,
+    });
 
   const { setSnackBar } = useContext(SnackBarContext);
   const addToCartMutation = useAddToCart();
@@ -285,7 +294,10 @@ export const AmendPermitReview = () => {
   };
 
   const handleClickAddToCart = async () => {
-    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+    if (
+      (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) ||
+      (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+    ) {
       setShowConfirmWarningModal(true);
     } else {
       await handleAddToCart();
@@ -371,6 +383,7 @@ export const AmendPermitReview = () => {
           amendmentApplication?.permitData?.icbcInsuranceCertificate
         }
         policyWarnings={policyWarnings}
+        axleCalculationResults={axleCalculationResults}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
