@@ -257,7 +257,7 @@ export class DgenService {
       generatedDocument.buffer = Buffer.from(
         await page.pdf({
           timeout: 0, // Set to 0 for indefinite wait
-          format: 'letter',
+          format: 'legal',
           displayHeaderFooter: true,
           printBackground: true,
           landscape: true,
