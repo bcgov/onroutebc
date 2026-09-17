@@ -3,7 +3,7 @@ import "./ErrorPage.scss";
 export const ErrorPage = ({
   errorTitle,
   msgNode,
-  imgSrc = "/Error_Screen_Graphic.svg",
+  imgSrc = "/app/Error_Screen_Graphic.svg",
 }: {
   errorTitle: string;
   msgNode: React.ReactNode;
