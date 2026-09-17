@@ -637,7 +637,7 @@ scheduler:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/pbi-{{.Values.global.vault.zone}} && mkdir ~/.ssh/ && echo $PBI_PRIVATE > ~/.ssh/id_ed25519 && echo $PBI_PUBLIC > ~/.ssh/id_ed25519.pub && source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && source /vault/secrets/service-accounts-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
@@ -732,6 +732,7 @@ scheduler:
       - "tps-{{tpl $.Values.vault.zone $}}"
       - "garms-{{tpl $.Values.vault.zone $}}"
       - "service-accounts-{{tpl $.Values.vault.zone $}}"
+      - "pbi-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   pvc:
     enabled: false
