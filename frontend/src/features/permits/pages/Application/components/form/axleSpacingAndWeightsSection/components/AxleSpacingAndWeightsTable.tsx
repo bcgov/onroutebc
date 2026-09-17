@@ -136,21 +136,41 @@ export const AxleSpacingAndWeightsTable = ({
   const [axleCalculationResults, setAxleCalculationResults] =
     useState<AxleCalculationResult>();
 
+  const getFailedAxleCalculationResults = (
+    axleCalculationResults?: Nullable<AxleCalculationResult>,
+  ) =>
+    axleCalculationResults?.results.filter(
+      (result) =>
+        result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
+        DISPLAYABLE_POLICY_CHECK_IDS.has(result.id as PolicyCheckIdType),
+    );
+
+  const failedAxleCalculationResults = getFailedAxleCalculationResults(
+    axleCalculationResults,
+  );
+
+  const failedAxleCalculationResultsFromValidation =
+    getFailedAxleCalculationResults(axleCalculationResultsFromValidation);
+
   useEffect(() => {
     if (axleCalculationResultsFromValidation) {
       setAxleCalculationResults(axleCalculationResultsFromValidation);
       onAxleCalculationResultsChange(axleCalculationResultsFromValidation);
       onValidationBannerChange(false);
-
-      // Scroll to table if new validation results are different from current
-      if (
-        !readOnly &&
-        axleCalculationResultsFromValidation !== axleCalculationResults
-      ) {
-        ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
-      }
     }
   }, [axleCalculationResultsFromValidation]);
+
+  useEffect(() => {
+    if (!readOnly && failedAxleCalculationResultsFromValidation?.length) {
+      /**
+       * Scroll to ASW table if there are ASW violations arising from hitting the "Continue" button
+       * We do not wish to scroll to the table if there are ASW violations arising from hitting the "Calculate" button as the user will already be viewing the ASW table in this case
+       */
+      ASWTableRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [readOnly, failedAxleCalculationResultsFromValidation]);
 
   useEffect(() => {
     if (showASWRequiredFieldsBanner) {
@@ -160,12 +180,6 @@ export const AxleSpacingAndWeightsTable = ({
       ASWTableRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [showASWRequiredFieldsBanner]);
-
-  const failedAxleCalculationResults = axleCalculationResults?.results.filter(
-    (result) =>
-      result.result === POLICY_CHECK_RESULT_TYPES.FAIL &&
-      DISPLAYABLE_POLICY_CHECK_IDS.has(result.id as PolicyCheckIdType),
-  );
 
   const handleCalculate = () => {
     onValidationBannerChange(false);
