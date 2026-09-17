@@ -138,7 +138,7 @@ export const ApplicationInQueueReview = ({
 
   useEffect(() => {
     if (isSuccess(updateApplicationResponseStatus)) {
-      navigate(IDIR_ROUTES.STAFF_HOME);
+      navigate(IDIR_ROUTES.QUEUE);
     }
   }, [updateApplicationResponseStatus, navigate]);
 

@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { isNull, isUndefined } from "../../../common/types/common";
+import { isNull } from "../../../common/types/common";
 import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/constants";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 

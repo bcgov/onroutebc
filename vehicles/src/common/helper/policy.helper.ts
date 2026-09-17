@@ -15,8 +15,10 @@ import {
 import {
   DEFAULT_STAFF_MAX_ALLOWED_START_DATE,
   MAX_HC_ALLOWED_PAST_DAYS,
+  STGVWI_MAX_ALLOWED_DURATION_AMEND,
   STOS_MAX_ALLOWED_DURATION_AMEND,
   STOW_MAX_ALLOWED_DURATION_AMEND,
+  STWSE_MAX_ALLOWED_DURATION_AMEND,
 } from '../constants/permit.constant';
 
 import {
@@ -55,6 +57,9 @@ export const evaluatePolicyValidationResult = (
 
   const isSTOS = permitType === PermitType.SINGLE_TRIP_OVERSIZE;
   const isSTOW = permitType === PermitType.SINGLE_TRIP_OVERWEIGHT;
+  const isSTWSE =
+    permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY;
+  const isSTGVWI = permitType === PermitType.SINGLE_TRIP_GVW_INCREASE;
 
   // CV clients: generally reject if any policy validation violations exist.
   // Special handling for STOW (single-trip overweight) permits:
@@ -160,6 +165,18 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STOW_MAX_ALLOWED_DURATION_AMEND);
 
+  // Function to check if there is an STWSE duration violation which can be excluded
+  const isSTWSEDurationViolationAllowed = (violation: ValidationResult) =>
+    isSTWSE &&
+    isDurationViolation(violation) &&
+    isAllowedDuration(STWSE_MAX_ALLOWED_DURATION_AMEND);
+
+  // Function to check if there is an STGVWI duration violation which can be excluded
+  const isSTGVWIDurationViolationAllowed = (violation: ValidationResult) =>
+    isSTGVWI &&
+    isDurationViolation(violation) &&
+    isAllowedDuration(STGVWI_MAX_ALLOWED_DURATION_AMEND);
+
   // Function to check if there is an STOW axle weight spacing violation which can be excluded
   const isSTOWAxleWeightSpacingViolationAllowed = (
     violation: ValidationResult,
@@ -173,6 +190,8 @@ export const evaluatePolicyValidationResult = (
         (
           isSTOSDurationViolationAllowed(violation) ||
           isSTOWDurationViolationAllowed(violation) ||
+          isSTWSEDurationViolationAllowed(violation) ||
+          isSTGVWIDurationViolationAllowed(violation) ||
           isSTOWAxleWeightSpacingViolationAllowed(violation) ||
           isStartDateViolationAllowed(violation, permitType)
         )

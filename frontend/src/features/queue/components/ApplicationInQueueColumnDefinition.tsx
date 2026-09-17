@@ -12,7 +12,7 @@ export const getApplicationInQueueColumnDefinition = (
     accessorKey: "applicationNumber",
     id: "applicationNumber",
     enableSorting: false,
-    header: "Application #",
+    header: "Application No.",
     accessorFn: (row) => row.applicationNumber,
     Cell: (props: { cell: any; row: any }) => {
       const application = props.row.original;
@@ -75,5 +75,12 @@ export const getApplicationInQueueColumnDefinition = (
     id: "caseOpenedDateTime",
     header: "Time in Queue (hh:mm)",
     size: 200,
+  },
+  {
+    accessorKey: "elApprovalNumber",
+    enableSorting: false,
+    id: "elApprovalNumber",
+    header: "Approval No.",
+    size: 100,
   },
 ];
