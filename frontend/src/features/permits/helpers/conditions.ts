@@ -15,6 +15,7 @@ import {
   MANDATORY_STWSE_CONDITIONS,
   STWSE_CONDITIONS,
 } from "../constants/stwse";
+
 import {
   MANDATORY_NRSCV_CONDITIONS,
   NRSCV_CONDITIONS,
@@ -29,6 +30,7 @@ import {
   STGVWI_CONDITIONS,
   MANDATORY_STGVWI_CONDITIONS,
 } from "../constants/stgvwi";
+import { EPTOP_CONDITIONS, MANDATORY_EPTOP_CONDITIONS } from "../constants/eptop";
 
 /**
  * Determine whether or not a permit with given permit type can have LCV conditions attached to it.
@@ -84,6 +86,8 @@ export const getMandatoryConditions = (
       return MANDATORY_STWSE_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STGVWI:
       return MANDATORY_STGVWI_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.EPTOP:
+      return MANDATORY_EPTOP_CONDITIONS.concat(additionalConditions);
     default:
       return additionalConditions;
   }
@@ -123,6 +127,8 @@ const getConditionsByPermitType = (
       return STWSE_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STGVWI:
       return STGVWI_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.EPTOP:
+      return EPTOP_CONDITIONS.concat(additionalConditions);
     default:
       return additionalConditions;
   }

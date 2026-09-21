@@ -42,6 +42,7 @@ export const TripOriginDestination = ({
   ) => void;
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
+  const showEntryPoint = permitType === PERMIT_TYPES.EPTOP;
 
   const showTotalDistance =
     permitType === PERMIT_TYPES.MFP ||
@@ -67,59 +68,78 @@ export const TripOriginDestination = ({
 
   return (
     <div className="trip-origin-destination">
-      <Controller
-        name="permitData.permittedRoute.manualRoute.origin"
-        rules={{
-          required: { value: true, message: requiredMessage() },
-        }}
-        render={({ fieldState: { error } }) => (
-          <GeocoderInput
-            label={{
-              id: "trip-origin-label",
-              component: "Origin",
-            }}
-            classes={{
-              root: "trip-origin-destination__input trip-origin-destination__input--origin",
-            }}
-            selectedAddress={origin}
-            onSelectAddress={onUpdateTripOrigin}
-            helperText={
-              error?.message
-                ? {
-                    errors: [error.message],
-                  }
-                : undefined
-            }
-          />
-        )}
-      />
+      {!showEntryPoint ? (
+        <Controller
+          name="permitData.permittedRoute.manualRoute.origin"
+          rules={{
+            required: { value: true, message: requiredMessage() },
+          }}
+          render={({ fieldState: { error } }) => (
+            <GeocoderInput
+              label={{
+                id: "trip-origin-label",
+                component: "Origin",
+              }}
+              classes={{
+                root: "trip-origin-destination__input trip-origin-destination__input--origin",
+              }}
+              selectedAddress={origin}
+              onSelectAddress={onUpdateTripOrigin}
+              helperText={
+                error?.message
+                  ? {
+                      errors: [error.message],
+                    }
+                  : undefined
+              }
+            />
+          )}
+        />
+      ) : null}
 
-      <Controller
-        name="permitData.permittedRoute.manualRoute.destination"
-        rules={{
-          required: { value: true, message: requiredMessage() },
-        }}
-        render={({ fieldState: { error } }) => (
-          <GeocoderInput
-            label={{
-              id: "trip-destionation-label",
-              component: "Destination",
-            }}
-            classes={{
-              root: "trip-origin-destination__input trip-origin-destination__input--destination",
-            }}
-            selectedAddress={tripDestination}
-            onSelectAddress={onUpdateTripDestination}
-            helperText={
-              error?.message
-                ? {
-                    errors: [error.message],
-                  }
-                : undefined
-            }
-          />
-        )}
-      />
+      {!showEntryPoint ? (
+        <Controller
+          name="permitData.permittedRoute.manualRoute.destination"
+          rules={{
+            required: { value: true, message: requiredMessage() },
+          }}
+          render={({ fieldState: { error } }) => (
+            <GeocoderInput
+              label={{
+                id: "trip-destionation-label",
+                component: "Destination",
+              }}
+              classes={{
+                root: "trip-origin-destination__input trip-origin-destination__input--destination",
+              }}
+              selectedAddress={tripDestination}
+              onSelectAddress={onUpdateTripDestination}
+              helperText={
+                error?.message
+                  ? {
+                      errors: [error.message],
+                    }
+                  : undefined
+              }
+            />
+          )}
+        />
+      ) : null}
+
+      {showEntryPoint ? (
+        <CustomFormComponent
+          className="trip-origin-destination__input"
+          type="input"
+          feature={feature}
+          options={{
+            name: "permitData.permittedRoute.manualRoute.entryPoint",
+            rules: {
+              required: true,
+            },
+            label: "Point of Entry",
+          }}
+        />
+      ) : null}
 
       {showExitPoint ? (
         <CustomFormComponent
