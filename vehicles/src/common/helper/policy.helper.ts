@@ -61,7 +61,8 @@ export const evaluatePolicyValidationResult = (
   const isSTWSE =
     permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY;
   const isSTGVWI = permitType === PermitType.SINGLE_TRIP_GVW_INCREASE;
-  const isEPTOP = permitType === PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING;
+  const isEPTOP =
+    permitType === PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING;
 
   // CV clients: generally reject if any policy validation violations exist.
   // Special handling for STOW (single-trip overweight) permits:
