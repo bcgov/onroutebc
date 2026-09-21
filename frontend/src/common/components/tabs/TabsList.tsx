@@ -1,4 +1,4 @@
-import { Tab, Tabs } from "@mui/material";
+import { Chip, Tab, Tabs } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 import "./TabsList.scss";
@@ -37,33 +37,21 @@ export const TabsList = ({
         ),
       }}
     >
-      {componentList.map(
-        (
-          {
-            label,
-            // TODO remove this if we no longer need tab counters
-            // count
-          },
-          index,
-        ) => {
-          return (
-            <Tab
-              key={label}
-              className="tabs-list__tab"
-              label={
-                <div className="tab">
-                  <div className="tab__label">{label}</div>
-                  {
-                    // TODO remove this if we no longer need tab counters
-                    /* {count ? <Chip className="tab__count" label={count} /> : null} */
-                  }
-                </div>
-              }
-              {...TabProps(index)}
-            />
-          );
-        },
-      )}
+      {componentList.map(({ label, count }, index) => {
+        return (
+          <Tab
+            key={label}
+            className="tabs-list__tab"
+            label={
+              <div className="tab">
+                <div className="tab__label">{label}</div>
+                {count ? <Chip className="tab__count" label={count} /> : null}
+              </div>
+            }
+            {...TabProps(index)}
+          />
+        );
+      })}
     </Tabs>
   );
 };

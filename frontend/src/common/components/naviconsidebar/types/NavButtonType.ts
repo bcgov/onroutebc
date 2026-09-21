@@ -3,12 +3,14 @@ import {
   faFileLines,
   faHome,
   faTruckMoving,
+  faList,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const NAV_BUTTON_TYPES = {
   HOME: "home",
   REPORT: "report",
   BFCT: "bfct",
+  QUEUE: "queue",
 } as const;
 
 export type NavButtonType =
@@ -17,6 +19,10 @@ export type NavButtonType =
 export const getNavButtonTitle = (type: NavButtonType): string => {
   if (type === NAV_BUTTON_TYPES.HOME) {
     return "Home";
+  }
+
+  if (type === NAV_BUTTON_TYPES.QUEUE) {
+    return "Queue";
   }
 
   if (type === NAV_BUTTON_TYPES.REPORT) {
@@ -29,6 +35,10 @@ export const getNavButtonTitle = (type: NavButtonType): string => {
 export const getIcon = (type: NavButtonType): IconDefinition => {
   if (type === NAV_BUTTON_TYPES.HOME) {
     return faHome;
+  }
+
+  if (type === NAV_BUTTON_TYPES.QUEUE) {
+    return faList;
   }
 
   if (type === NAV_BUTTON_TYPES.REPORT) {

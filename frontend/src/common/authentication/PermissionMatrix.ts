@@ -350,10 +350,10 @@ const MANAGE_SETTINGS = {
 
 const STICKY_SIDE_BAR = {
   VIEW_STICKY_SIDE_BAR: {
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA, EO],
   },
   HOME_BUTTON: {
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA, EO],
   },
   REPORTS_BUTTON: {
     allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
@@ -362,7 +362,10 @@ const STICKY_SIDE_BAR = {
     allowedIDIRRoles: [SA],
   },
   BRIDGE_FORMULA_CALCULATION_TOOL_BUTTON: {
-    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
+    allowedIDIRRoles: [SA, PC, CTPO, HQA, EO],
+  },
+  QUEUE_BUTTON: {
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
 } as const;
 
@@ -427,7 +430,7 @@ const GLOBAL_SEARCH = {
 /**
  * Application review queue on staff home screen
  */
-const STAFF_HOME_SCREEN = {
+const QUEUE = {
   VIEW_QUEUE: { allowedIDIRRoles: [PC, SA, CTPO] },
   MANAGE_QUEUE: { allowedIDIRRoles: [PC, SA, CTPO] },
 } as const;
@@ -484,7 +487,7 @@ export const PERMISSIONS_MATRIX = {
   MANAGE_PPC_USERS: MANAGE_PPC_USERS,
   REPORTS: REPORTS,
   GLOBAL_SEARCH: GLOBAL_SEARCH,
-  STAFF_HOME_SCREEN: STAFF_HOME_SCREEN,
+  QUEUE: QUEUE,
   MISCELLANEOUS: MISCELLANEOUS,
 } as const;
 

@@ -33,12 +33,11 @@ import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
-import { StaffDashboard } from "../features/idir/StaffDashboard";
 import { BFCTDashboard } from "../features/bridgeFormulaCalculationTool/BFCTDashboard";
 import { ClaimProfileUnauthorized } from "../common/pages/ClaimProfileUnauthorized";
 import { ServiceUnavailable } from "../common/pages/ServiceUnavailable";
 import { VersionMismatchErrorPage } from "../common/pages/VersionMismatchErrorPage";
-// import { ReviewApplicationInQueue } from "../features/queue/pages/ReviewApplicationInQueue";
+import { ApplicationQueueLists } from "../features/queue/components/ApplicationQueueLists";
 
 export const AppRoutes = () => {
   return (
@@ -133,15 +132,15 @@ export const AppRoutes = () => {
         element={
           <IDIRAuthWall
             permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+              permissionMatrixFeatureKey: "QUEUE",
               permissionMatrixFunctionKey: "VIEW_QUEUE",
             }}
           />
         }
       >
         <Route
-          path={routes.IDIR_ROUTES.STAFF_HOME}
-          element={<StaffDashboard />}
+          path={routes.IDIR_ROUTES.QUEUE}
+          element={<ApplicationQueueLists />}
         />
 
         <Route

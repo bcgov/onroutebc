@@ -7,20 +7,20 @@ import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 
 /**
- * Displays the navigation icon for Home on the NavIconSideBar
+ * Displays the navigation icon for Queue on the NavIconSideBar
  */
-export const NavIconHomeButton = () => {
+export const NavIconQueueButton = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isActive = pathname === IDIR_ROUTES.WELCOME;
+  const isActive = pathname === IDIR_ROUTES.QUEUE;
   const { clearCompanyContext } = useContext(OnRouteBCContext);
 
   return (
     <NavButton
-      type={NAV_BUTTON_TYPES.HOME}
+      type={NAV_BUTTON_TYPES.QUEUE}
       onClick={() => {
         clearCompanyContext?.();
-        navigate(IDIR_ROUTES.WELCOME);
+        navigate(IDIR_ROUTES.QUEUE);
       }}
       isActive={isActive}
     />

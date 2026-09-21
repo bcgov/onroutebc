@@ -286,13 +286,12 @@ export const LoginRedirect = () => {
       } else if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
-        // only IDIR users with PC, SA, CTPO or TRAIN should redirect to STAFF_HOME
         if (
           canViewApplicationQueue(
             userContextData?.user?.userRole as IDIRUserRoleType,
           )
         ) {
-          navigate(IDIR_ROUTES.STAFF_HOME);
+          navigate(IDIR_ROUTES.QUEUE);
         } else if (userContextData?.user?.userGUID) {
           navigate(IDIR_ROUTES.WELCOME);
         } else {

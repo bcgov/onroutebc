@@ -28,10 +28,13 @@
         padding: 0.875rem 0;
       }
       &__count {
+        border-radius: .25rem;
         font-size: 0.875rem;
-        color: $bc-black;
-        background-color: $bc-border-grey;
+        font-weight: normal;
+        color: $white;
+        background-color: $bc-black;
         margin-left: 1rem;
+        padding: .25rem;
       }
     }
 

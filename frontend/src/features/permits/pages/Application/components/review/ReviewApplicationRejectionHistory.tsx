@@ -14,7 +14,7 @@ export const ReviewApplicationRejectionHistory = ({
 }) => {
   const canViewApplicationQueue = usePermissionMatrix({
     permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFeatureKey: "QUEUE",
       permissionMatrixFunctionKey: "VIEW_QUEUE",
     },
   });

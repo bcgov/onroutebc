@@ -386,7 +386,7 @@ export const ApplicationReview = ({
   const updateApplicationResponseStatus = updateApplicationResponse?.status;
 
   const handleCloseApplication = () => {
-    navigate(IDIR_ROUTES.STAFF_HOME);
+    navigate(IDIR_ROUTES.QUEUE);
   };
 
   const handleCloseUnavailableApplicationModal = () => {
@@ -398,7 +398,7 @@ export const ApplicationReview = ({
 
   useEffect(() => {
     if (updateApplicationResponseStatus === 201) {
-      navigate(IDIR_ROUTES.STAFF_HOME);
+      navigate(IDIR_ROUTES.QUEUE);
     }
   }, [updateApplicationResponse, updateApplicationResponseStatus, navigate]);
 
