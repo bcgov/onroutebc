@@ -128,13 +128,13 @@ export const TripOriginDestination = ({
 
       {showEntryPoint ? (
         <CustomFormComponent
-          className="trip-origin-destination__input"
+          className="trip-origin-destination__input trip-origin-destination__input--entry-point"
           type="input"
           feature={feature}
           options={{
             name: "permitData.permittedRoute.manualRoute.entryPoint",
             rules: {
-              required: true,
+              required: { value: true, message: requiredMessage() },
             },
             label: "Point of Entry",
           }}
