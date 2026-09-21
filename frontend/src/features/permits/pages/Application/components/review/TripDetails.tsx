@@ -139,7 +139,9 @@ export const TripDetails = ({
             {entryPoint ? (
               <div className="manual-route__entry">
                 <Typography className="manual-route__label">
-                  <span className="manual-route__label-text">Point of Entry</span>
+                  <span className="manual-route__label-text">
+                    Point of Entry
+                  </span>
 
                   {showDiffChip(changedFields.entryPoint)}
                 </Typography>

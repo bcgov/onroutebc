@@ -44,7 +44,7 @@ export const StartApplicationAction = () => {
 
   const showSingleTrip =
     enableSTOS || enableSTOW || enableSTWSE || enableSTGVWI;
-  
+
   const showNonResident =
     enableSTFR || enableQRFR || enableNRSCV || enableNRQCV || enableEPTOP;
 

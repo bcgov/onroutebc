@@ -30,7 +30,10 @@ import {
   STGVWI_CONDITIONS,
   MANDATORY_STGVWI_CONDITIONS,
 } from "../constants/stgvwi";
-import { EPTOP_CONDITIONS, MANDATORY_EPTOP_CONDITIONS } from "../constants/eptop";
+import {
+  EPTOP_CONDITIONS,
+  MANDATORY_EPTOP_CONDITIONS,
+} from "../constants/eptop";
 
 /**
  * Determine whether or not a permit with given permit type can have LCV conditions attached to it.
