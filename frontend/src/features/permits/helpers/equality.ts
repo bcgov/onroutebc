@@ -220,6 +220,8 @@ export const areManualRoutesEqual = (
       getDefaultRequiredVal("", manualRoute2?.exitPoint) &&
     getDefaultRequiredVal(0, manualRoute1?.totalDistance) ===
       getDefaultRequiredVal(0, manualRoute2?.totalDistance) &&
+    getDefaultRequiredVal("", manualRoute1?.entryPoint) ===
+      getDefaultRequiredVal("", manualRoute2?.entryPoint) &&
     areOrderedSequencesEqual(
       manualRoute1?.highwaySequence,
       manualRoute2?.highwaySequence,
