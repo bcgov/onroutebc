@@ -62,7 +62,12 @@ export const ReviewVehicleInfo = ({
   const showLicensedGVW =
     Boolean(permitType) &&
     (
-      [PERMIT_TYPES.STOS, PERMIT_TYPES.STGVWI, PERMIT_TYPES.MFP] as PermitType[]
+      [
+        PERMIT_TYPES.STOS,
+        PERMIT_TYPES.STGVWI,
+        PERMIT_TYPES.STOW,
+        PERMIT_TYPES.MFP,
+      ] as PermitType[]
     ).includes(permitType as PermitType) &&
     vehicleType === VEHICLE_TYPES.POWER_UNIT;
 
@@ -326,6 +331,16 @@ export const ReviewVehicleInfo = ({
                   This vehicle has been added/updated to your Vehicle Inventory.
                 </span>
               </Typography>
+            ) : null}
+
+            {permitType === PERMIT_TYPES.STOW ? (
+              <Box className="selected-trailers">
+                <Typography variant="h4">Trailer(s)</Typography>
+
+                <SelectedVehicleSubtypeList
+                  selectedSubtypesDisplay={selectedSubtypesDisplay}
+                />
+              </Box>
             ) : null}
           </Box>
         ) : (
