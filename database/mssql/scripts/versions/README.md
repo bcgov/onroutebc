@@ -534,3 +534,7 @@
 ### Version 110:
 
 - Update the STOW policy configuration to calculate permit fees using the selected OCD overload (ORV2-5692).
+
+### Version 112:
+
+- Insert a new policy snapshot based on v110, changing only the sizePermittable property for POLETRL (ORV2-6026)
