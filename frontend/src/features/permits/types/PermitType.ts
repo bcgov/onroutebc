@@ -12,8 +12,6 @@ export const PERMIT_TYPES = {
   // Axle Overweight
 
   /* SINGLE TRIP */
-  // Extra Provincial Temp Operating Permit
-  EPTOP: "EPTOP",
   // Single Trip Overweight
   STOW: "STOW",
   // Single Trip Oversize
@@ -38,6 +36,8 @@ export const PERMIT_TYPES = {
   STFR: "STFR",
   // Single Trip Non-Resident
   NRSCV: "NRSCV",
+  // Extra-Provincial Temp Operating Permit
+  EPTOP: "EPTOP",
 
   /* MOTIVE FUEL USER PERMIT */
   MFP: "MFP",
@@ -70,6 +70,7 @@ export const NON_RESIDENT_PERMIT_LIST: PermitType[] = [
   PERMIT_TYPES.QRFR,
   PERMIT_TYPES.NRSCV,
   PERMIT_TYPES.STFR,
+  PERMIT_TYPES.EPTOP,
 ];
 
 /**
@@ -96,8 +97,6 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Single Trip Overweight";
     case PERMIT_TYPES.STGVWI:
       return "Single Trip GVW Increase";
-    case PERMIT_TYPES.EPTOP:
-      return "Extra-Provincial Temporary Operating";
     case PERMIT_TYPES.STWSE:
       return "Single Trip Overweight Oversize Empty - Length over 27.5m";
     case PERMIT_TYPES.RIG:
@@ -114,6 +113,8 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Quarterly ICBC Basic Insurance (FR)";
     case PERMIT_TYPES.STFR:
       return "Single Trip ICBC Basic Insurance (FR)";
+    case PERMIT_TYPES.EPTOP:
+      return "Extra-Provincial Temporary Operating Permit";
 
     /* MOTIVE FUEL USER PERMIT */
     case PERMIT_TYPES.MFP:
@@ -140,8 +141,6 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Highway Crossing";
 
     /* SINGLE TRIP */
-    case PERMIT_TYPES.EPTOP:
-      return "Extra-Provincial Temporary Operating Permit";
     case PERMIT_TYPES.STOW:
       return "Overweight";
     case PERMIT_TYPES.STOS:
@@ -166,6 +165,8 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Single Trip ICBC Basic Insurance (FR)";
     case PERMIT_TYPES.NRSCV:
       return "Single Trip Licensing";
+    case PERMIT_TYPES.EPTOP:
+      return "Extra-Provincial Temporary Operating Permit";
 
     /* MOTIVE FUEL USER PERMIT */
     case PERMIT_TYPES.MFP:

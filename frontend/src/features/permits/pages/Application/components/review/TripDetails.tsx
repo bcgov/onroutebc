@@ -24,6 +24,10 @@ export const TripDetails = ({
     "",
     routeDetails?.manualRoute?.destination,
   );
+  const entryPoint = getDefaultRequiredVal(
+    "",
+    routeDetails?.manualRoute?.entryPoint,
+  );
   const exitPoint = getDefaultRequiredVal(
     "",
     routeDetails?.manualRoute?.exitPoint,
@@ -47,6 +51,10 @@ export const TripDetails = ({
         destination: areValuesDifferent(
           routeDetails?.manualRoute?.destination,
           oldRouteDetails?.manualRoute?.destination,
+        ),
+        entryPoint: areValuesDifferent(
+          routeDetails?.manualRoute?.entryPoint,
+          oldRouteDetails?.manualRoute?.entryPoint,
         ),
         exitPoint: areValuesDifferent(
           routeDetails?.manualRoute?.exitPoint,
@@ -72,6 +80,7 @@ export const TripDetails = ({
     : {
         origin: false,
         destination: false,
+        entryPoint: false,
         exitPoint: false,
         totalDistance: false,
         highwaySequences: false,
@@ -123,6 +132,25 @@ export const TripDetails = ({
                   data-testid="permit-route-destination"
                 >
                   {destination}
+                </Typography>
+              </div>
+            ) : null}
+
+            {entryPoint ? (
+              <div className="manual-route__entry">
+                <Typography className="manual-route__label">
+                  <span className="manual-route__label-text">
+                    Point of Entry
+                  </span>
+
+                  {showDiffChip(changedFields.entryPoint)}
+                </Typography>
+
+                <Typography
+                  className="manual-route__data"
+                  data-testid="permit-route-entry"
+                >
+                  {entryPoint}
                 </Typography>
               </div>
             ) : null}

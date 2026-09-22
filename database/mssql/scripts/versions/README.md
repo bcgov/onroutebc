@@ -534,3 +534,7 @@
 ### Version 110:
 
 - Update the STOW policy configuration to calculate permit fees using the selected OCD overload (ORV2-5692).
+
+### Version 111:
+
+- Update to the policy configuration to add EPTOP permit type.
