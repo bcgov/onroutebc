@@ -89,6 +89,14 @@ import {
   STWSE_DURATION_INTERVAL_DAYS,
   STWSE_STAFF_DURATION_OPTIONS,
 } from "../constants/stwse";
+import {
+  EPTOP_CV_DURATION_OPTIONS,
+  EPTOP_DURATION_INTERVAL_DAYS,
+  EPTOP_STAFF_DURATION_OPTIONS,
+  MAX_EPTOP_CV_DURATION,
+  MAX_EPTOP_STAFF_DURATION,
+  MIN_EPTOP_DURATION,
+} from "../constants/eptop";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -117,6 +125,8 @@ export const durationOptionsForPermitType = (
       return isStaff
         ? STGVWI_STAFF_DURATION_OPTIONS
         : STGVWI_CV_DURATION_OPTIONS;
+    case PERMIT_TYPES.EPTOP:
+      return isStaff ? EPTOP_STAFF_DURATION_OPTIONS : EPTOP_CV_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_OPTIONS;
     case PERMIT_TYPES.TROS:
@@ -150,6 +160,8 @@ export const minDurationForPermitType = (permitType: PermitType) => {
       return MIN_STWSE_DURATION;
     case PERMIT_TYPES.STGVWI:
       return MIN_STGVWI_DURATION;
+    case PERMIT_TYPES.EPTOP:
+      return MIN_EPTOP_DURATION;
     case PERMIT_TYPES.TROW:
       return MIN_TROW_DURATION;
     case PERMIT_TYPES.TROS:
@@ -185,6 +197,8 @@ export const maxDurationForPermitType = (
       return isStaff ? MAX_STWSE_STAFF_DURATION : MAX_STWSE_CV_DURATION;
     case PERMIT_TYPES.STGVWI:
       return isStaff ? MAX_STGVWI_STAFF_DURATION : MAX_STGVWI_CV_DURATION;
+    case PERMIT_TYPES.EPTOP:
+      return isStaff ? MAX_EPTOP_STAFF_DURATION : MAX_EPTOP_CV_DURATION;
     case PERMIT_TYPES.TROW:
       return MAX_TROW_DURATION;
     case PERMIT_TYPES.TROS:
@@ -217,6 +231,8 @@ export const getDurationIntervalDays = (permitType: PermitType) => {
       return TROS_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.STGVWI:
       return STGVWI_DURATION_INTERVAL_DAYS;
+    case PERMIT_TYPES.EPTOP:
+      return EPTOP_DURATION_INTERVAL_DAYS;
     default:
       return TERM_DURATION_INTERVAL_DAYS; // This needs to be updated once more permit types are added
   }
