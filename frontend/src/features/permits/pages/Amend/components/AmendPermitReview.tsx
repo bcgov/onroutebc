@@ -43,6 +43,8 @@ import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import { usePolicyWarnings } from "../../../hooks/usePolicyWarnings";
 import { PermitReviewConfirmWarningDialog } from "../../../components/dialog/PermitReviewConfirmWarningDialog";
+import { now } from "../../../../../common/helpers/formatDate";
+import { getRevisionHistory } from "./helpers/getRevisionHistory";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -310,6 +312,7 @@ export const AmendPermitReview = () => {
 
   const isFollowUpActionContinue = amountToRefund >= 0;
   const continueBtnText = isFollowUpActionContinue ? "Continue" : undefined;
+  const revisionHistory = getRevisionHistory(permitHistory, now());
 
   return (
     <div className="amend-permit-review">
@@ -384,6 +387,7 @@ export const AmendPermitReview = () => {
         }
         policyWarnings={policyWarnings}
         axleCalculationResults={axleCalculationResults}
+        revisionHistory={revisionHistory}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />

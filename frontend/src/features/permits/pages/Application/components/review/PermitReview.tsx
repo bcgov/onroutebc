@@ -52,6 +52,7 @@ import {
 import { AxleSpacingAndWeightsSection } from "../form/axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ReviewExtraordinaryLoadRequest } from "./ReviewExtraordinaryLoadRequest";
 import { ExtraordinaryLoadRequest } from "../../../../types/ExtraordinaryLoadRequest";
+import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -106,6 +107,12 @@ interface PermitReviewProps {
   axleCalculationResults?: ValidationResults["axleCalculationResults"];
   tireSizeOptions?: StandardTireSize[];
   extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
+  revisionHistory?: {
+    permitId: number;
+    name: string;
+    revisionDateTime: string;
+    comment: string;
+  }[];
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -339,6 +346,10 @@ export const PermitReview = (props: PermitReviewProps) => {
           reviewContext={props.reviewContext}
           companyId={props.companyId}
         />
+
+        {props.isAmendAction && props.revisionHistory ? (
+          <AmendRevisionHistory revisionHistory={props.revisionHistory} />
+        ) : null}
 
         {props.children}
 
