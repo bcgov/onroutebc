@@ -31,6 +31,8 @@ RUN npm cache clean --force
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
+RUN mkdir ~/.ssh/ && chmod 777 ~/.ssh/
+
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
 
