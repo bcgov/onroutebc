@@ -198,9 +198,12 @@ export class DgenService {
     createGeneratedReportDto: CreateGeneratedReportDto,
     res: Response,
   ) {
+    const reportName = createGeneratedReportDto.reportTemplate;
+    const isPaymentAndRefundDetailedReport =
+      reportName === ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT;
     const template = await getFromCache(
       this.cacheManager,
-      this.getCacheKeyforReport(createGeneratedReportDto.reportTemplate),
+      this.getCacheKeyforReport(reportName),
     );
 
     if (!template?.length) {
@@ -257,7 +260,7 @@ export class DgenService {
       generatedDocument.buffer = Buffer.from(
         await page.pdf({
           timeout: 0, // Set to 0 for indefinite wait
-          format: 'legal',
+          format: isPaymentAndRefundDetailedReport ? 'legal' : 'letter',
           displayHeaderFooter: true,
           printBackground: true,
           landscape: true,
