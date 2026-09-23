@@ -388,7 +388,6 @@ export const AmendPermitReview = () => {
         }
         policyWarnings={policyWarnings}
         axleCalculationResults={axleCalculationResults}
-        revisionHistory={revisionHistory}
       >
         <>
           <AmendRevisionHistory revisionHistory={revisionHistory} />
