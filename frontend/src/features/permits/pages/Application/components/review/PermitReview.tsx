@@ -106,12 +106,6 @@ interface PermitReviewProps {
   axleCalculationResults?: ValidationResults["axleCalculationResults"];
   tireSizeOptions?: StandardTireSize[];
   extraordinaryLoadRequest?: Nullable<ExtraordinaryLoadRequest>;
-  revisionHistory?: {
-    permitId: number;
-    name: string;
-    revisionDateTime: string;
-    comment: string;
-  }[];
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
