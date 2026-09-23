@@ -199,7 +199,6 @@ export class DgenService {
     currentUser: IUserJWT,
     createGeneratedReportDto: CreateGeneratedReportDto,
     res: Response,
-    correlationId: string,
   ) {
     const reportName = createGeneratedReportDto.reportTemplate;
     const isPaymentAndRefundDetailedReport =
@@ -231,7 +230,7 @@ export class DgenService {
     let browser: Browser;
     let page: Page;
     const pdfFilePath =
-      REPORT_GEN_LOCAL_FILE_PATH + reportName + '_' + Date.now() + '.pdf';
+      REPORT_GEN_LOCAL_FILE_PATH + uuidv4() + '_' + Date.now() + '.pdf';
 
     try {
       browser = await puppeteer.launch({
