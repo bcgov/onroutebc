@@ -25,5 +25,9 @@ export const getDefaultManualRoute = (
       permitType === PERMIT_TYPES.STGVWI
         ? getDefaultRequiredVal(null, manualRoute?.totalDistance)
         : null,
+    entryPoint:
+      permitType === PERMIT_TYPES.EPTOP
+        ? getDefaultRequiredVal(null, manualRoute?.entryPoint)
+        : null,
   };
 };
