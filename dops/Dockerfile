@@ -53,7 +53,8 @@ RUN chmod +x /usr/local/bin/dumb-init
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
+    && mkdir -p /tmp/report /home/pptruser/Downloads /app \
+    && chown -R pptruser:pptruser /tmp/report \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /app
 

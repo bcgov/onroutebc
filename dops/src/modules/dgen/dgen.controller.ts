@@ -102,10 +102,12 @@ export class DgenController {
     @Body() createGeneratedReportDto: CreateGeneratedReportDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    const correlationId = request?.headers['x-correlation-id']?.toString();
     await this.dgenService.generateReport(
       currentUser,
       createGeneratedReportDto,
       res,
+      correlationId,
     );
     res.status(201);
   }
