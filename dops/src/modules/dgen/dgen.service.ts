@@ -233,9 +233,7 @@ export class DgenService {
       REPORT_GEN_LOCAL_FILE_PATH +
       reportName +
       '_' +
-      Date.now() +
-      '_' +
-      correlationId +
+      Date.now() +      
       '.pdf';
 
     try {
