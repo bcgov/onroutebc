@@ -45,6 +45,7 @@ import { usePolicyWarnings } from "../../../hooks/usePolicyWarnings";
 import { PermitReviewConfirmWarningDialog } from "../../../components/dialog/PermitReviewConfirmWarningDialog";
 import { now } from "../../../../../common/helpers/formatDate";
 import { getRevisionHistory } from "./helpers/getRevisionHistory";
+import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -389,9 +390,13 @@ export const AmendPermitReview = () => {
         axleCalculationResults={axleCalculationResults}
         revisionHistory={revisionHistory}
       >
-        {amendmentApplication?.comment ? (
-          <ReviewReason reason={amendmentApplication.comment} />
-        ) : null}
+        <>
+          <AmendRevisionHistory revisionHistory={revisionHistory} />
+
+          {amendmentApplication?.comment ? (
+            <ReviewReason reason={amendmentApplication.comment} />
+          ) : null}
+        </>
       </PermitReview>
 
       <AuthorizationRequiredModal

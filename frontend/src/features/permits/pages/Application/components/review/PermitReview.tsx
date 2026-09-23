@@ -52,7 +52,6 @@ import {
 import { AxleSpacingAndWeightsSection } from "../form/axleSpacingAndWeightsSection/AxleSpacingAndWeightsSection";
 import { ReviewExtraordinaryLoadRequest } from "./ReviewExtraordinaryLoadRequest";
 import { ExtraordinaryLoadRequest } from "../../../../types/ExtraordinaryLoadRequest";
-import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -346,10 +345,6 @@ export const PermitReview = (props: PermitReviewProps) => {
           reviewContext={props.reviewContext}
           companyId={props.companyId}
         />
-
-        {props.isAmendAction && props.revisionHistory ? (
-          <AmendRevisionHistory revisionHistory={props.revisionHistory} />
-        ) : null}
 
         {props.children}
 
