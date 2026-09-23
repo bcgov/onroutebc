@@ -33,6 +33,7 @@ import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execut
 import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { REPORT_GEN_LOCAL_FILE_PATH } from '../../constants/dops.constant';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class DgenService {
@@ -230,11 +231,7 @@ export class DgenService {
     let browser: Browser;
     let page: Page;
     const pdfFilePath =
-      REPORT_GEN_LOCAL_FILE_PATH +
-      reportName +
-      '_' +
-      Date.now() +      
-      '.pdf';
+      REPORT_GEN_LOCAL_FILE_PATH + reportName + '_' + Date.now() + '.pdf';
 
     try {
       browser = await puppeteer.launch({
