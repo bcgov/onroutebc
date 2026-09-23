@@ -29,6 +29,7 @@ export class CreateGeneratedReportDto {
       payments: [
         {
           issuedOn: '2023-11-11T23:26:51.170Z',
+          clientNumber: 'B3-000005-722',
           providerTransactionId: '73582422238',
           orbcTransactionId: 'OR-678904512857',
           paymentMethod: 'Cash',
@@ -42,6 +43,7 @@ export class CreateGeneratedReportDto {
       refunds: [
         {
           issuedOn: '2023-11-11T23:26:51.170Z',
+          clientNumber: 'B3-000005-722',
           providerTransactionId: '73582422238',
           orbcTransactionId: 'OR-678904512857',
           paymentMethod: 'Cheque',

@@ -46,6 +46,7 @@ export class PaymentReportService {
         'paymentMethod',
       )
       .addSelect('permit.permitIssueDateTime', 'issuedOn')
+      .addSelect('company.clientNumber', 'clientNumber')
       .addSelect('trans.transactionOrderNumber', 'orbcTransactionId')
       .addSelect('trans.pgTransactionId', 'providerTransactionId')
       .addSelect('receipt.receiptNumber', 'receiptNo')
@@ -106,7 +107,8 @@ export class PaymentReportService {
       .leftJoin('permit.issuer', 'issuer', 'issuer.directory = :directory', {
         directory: Directory.IDIR,
       })
-      .leftJoin('trans.creditAccount', 'creditAccount');
+      .leftJoin('trans.creditAccount', 'creditAccount')
+      .leftJoin('permit.company', 'company');
   }
 
   private getCondtionQueryBuilderForDetailedReports(
@@ -209,6 +211,7 @@ export class PaymentReportService {
 
     interface IPaymentReportDataDetails {
       paymentMethod: string;
+      clientNumber: string;
       orbcTransactionId: string;
       providerTransactionId: string;
       amount: number; //To be changed to Decimal.js
