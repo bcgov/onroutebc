@@ -273,9 +273,9 @@ export class DgenService {
         path: pdfFilePath,
         timeout: 0,
         format: isPaymentAndRefundDetailedReport ? 'legal' : 'letter',
-        preferCSSPageSize: true,
-        printBackground: true,
         landscape: true,
+        printBackground: true,
+        preferCSSPageSize: true,
         margin: {
           top: '12mm',
           right: '12mm',
