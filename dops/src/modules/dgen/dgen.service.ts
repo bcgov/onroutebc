@@ -254,12 +254,13 @@ export class DgenService {
         ],
         pipe: true,
         headless: true,
+        protocolTimeout: 360_000,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
       page = await browser.newPage();
-      await page.setContent(htmlBody);
+      await page.setContent(htmlBody, { waitUntil: 'networkidle0' });
       await page.emulateMediaType('print');
 
       await page.pdf({
