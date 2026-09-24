@@ -254,14 +254,16 @@ export class DgenService {
         ],
         pipe: true,
         headless: true,
-        protocolTimeout: 360_000,
+        protocolTimeout: 700_000,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
       page = await browser.newPage();
+      this.logger.log(` before html page`);
       await page.setContent(htmlBody, { waitUntil: 'networkidle0' });
       await page.emulateMediaType('print');
+      this.logger.log(` after html page`);
 
       await page.pdf({
         path: pdfFilePath,
@@ -276,6 +278,8 @@ export class DgenService {
         </div>
        `,
       });
+
+      this.logger.log(` after page.pdf`);
 
       const fileStats = await fs.promises.stat(pdfFilePath);
       generatedDocument.size = fileStats.size;
