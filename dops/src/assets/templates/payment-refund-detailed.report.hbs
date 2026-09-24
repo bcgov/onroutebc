@@ -19,8 +19,57 @@
       /* Print styles */
       @media print {
         @page {
-          size: 1008pt 612pt;
-          margin: 14.15pt 42.51pt 19.85pt 42.51pt;
+          size: letter landscape;
+          margin: 12mm 10mm;
+        }
+
+        html,
+        body {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+
+        table,
+        thead,
+        tbody,
+        tr,
+        th,
+        td,
+        div {
+          max-width: 100%;
+        }
+
+        .table {
+          width: 100% !important;
+          max-width: 100% !important;
+          table-layout: fixed;
+        }
+
+        .header-col-1,
+        .header-col-2,
+        .header-col-3,
+        .issued-on,
+        .client-number,
+        .provider-transaction-id,
+        .orbc-transaction-id,
+        .payment-method,
+        .receipt-number,
+        .permit-number,
+        .permit-type,
+        .user,
+        .amount,
+        .summary-payment-payment-method,
+        .summary-payment-payment,
+        .summary-payment-refund,
+        .summary-payment-deposit,
+        .summary-permit-permit-type,
+        .summary-permit-count {
+          width: auto !important;
+        }
+
+        tr {
+          page-break-inside: auto;
         }
       }
 
@@ -78,7 +127,7 @@
 
       .table-row {
         height: 13.7pt;
-        page-break-inside: avoid;
+        page-break-inside: auto;
         page-break-after: auto;
       }
 

@@ -13,7 +13,7 @@ import { DmsService } from '../dms/dms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { Response } from 'express';
-import { Readable } from 'stream';
+import * as fs from 'node:fs';
 import { ExternalDocument } from './entities/external-document.entity';
 import * as ExternalDocumentEnum from '../../enum/external-document.enum';
 import { HttpService } from '@nestjs/axios';
@@ -32,6 +32,8 @@ import { convertUtcToPt } from '../../helper/date-time.helper';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { REPORT_GEN_LOCAL_FILE_PATH } from '../../constants/dops.constant';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class DgenService {
@@ -227,6 +229,9 @@ export class DgenService {
 
     let browser: Browser;
     let page: Page;
+    const pdfFilePath =
+      REPORT_GEN_LOCAL_FILE_PATH + uuidv4() + '_' + Date.now() + '.pdf';
+
     try {
       browser = await puppeteer.launch({
         args: [
@@ -249,29 +254,38 @@ export class DgenService {
         ],
         pipe: true,
         headless: true,
+        protocolTimeout: 700_000,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
+
       page = await browser.newPage();
-      await page.setContent(htmlBody);
+      await page.setViewport({
+        width: 1280,
+        height: 2000,
+        deviceScaleFactor: 1,
+      });
+      await page.setContent(htmlBody, { waitUntil: 'load' });
       await page.emulateMediaType('print');
 
-      generatedDocument.buffer = Buffer.from(
-        await page.pdf({
-          timeout: 0, // Set to 0 for indefinite wait
-          format: isPaymentAndRefundDetailedReport ? 'legal' : 'letter',
-          displayHeaderFooter: true,
-          printBackground: true,
-          landscape: true,
-          footerTemplate: `
-        <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
-          <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
-        </div>
-       `,
-        }),
-      );
-      generatedDocument.size = generatedDocument.buffer.length;
+      await page.pdf({
+        path: pdfFilePath,
+        timeout: 0,
+        format: isPaymentAndRefundDetailedReport ? 'legal' : 'letter',
+        landscape: true,
+        printBackground: true,
+        preferCSSPageSize: true,
+        margin: {
+          top: '12mm',
+          right: '12mm',
+          bottom: '12mm',
+          left: '12mm',
+        },
+      });
+
+      const fileStats = await fs.promises.stat(pdfFilePath);
+      generatedDocument.size = fileStats.size;
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -292,20 +306,23 @@ export class DgenService {
     );
     res.setHeader('Content-Length', generatedDocument.size);
     res.setHeader('Content-Type', generatedDocument.mimetype);
-    const stream = new Readable();
-    stream.push(generatedDocument.buffer);
-    stream.push(null); // indicates end-of-file basically - the end of the stream
-    stream.pipe(res);
-    /*Wait for the stream to end before sending the response status and
-        headers. This ensures that the client receives a complete response and
-        prevents any issues with partial responses or response headers being
-        sent prematurely.*/
-    stream.on('end', () => {
-      return null;
-    });
-    stream.on('error', () => {
+
+    const fileStream = fs.createReadStream(pdfFilePath);
+
+    fileStream.on('error', () => {
+      void fs.promises.unlink(pdfFilePath).catch(() => {
+        this.logger.warn(`Unable to delete temporary file: ${pdfFilePath}`);
+      });
       throw new Error('An error occurred while reading the file.');
     });
+
+    fileStream.on('close', () => {
+      void fs.promises.unlink(pdfFilePath).catch(() => {
+        this.logger.warn(`Unable to delete temporary file: ${pdfFilePath}`);
+      });
+    });
+
+    fileStream.pipe(res);
   }
 
   private registerHandleBarsHelpers() {

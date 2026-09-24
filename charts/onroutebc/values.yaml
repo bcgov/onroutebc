@@ -293,7 +293,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
-      haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/timeout: 5m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -496,6 +496,9 @@ dops:
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
+      volumeMounts:
+       - name: dshm
+         mountPath: /dev/shm      
       tag: "{{tpl .Values.global.tag .}}"
       env:
         fromLocalConfigmap:
@@ -543,6 +546,10 @@ dops:
         requests:
           cpu: 1000m
           memory: 2000Mi
+  volumes:
+    - name: dshm
+      emptyDir:
+      medium: Memory # Maps /dev/shm directly to the Pod's RAM
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -577,7 +584,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
-      haproxy.router.openshift.io/timeout: 2m
+      haproxy.router.openshift.io/timeout: 30m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
