@@ -260,26 +260,28 @@ export class DgenService {
         },
       });
       page = await browser.newPage();
-      this.logger.log(` before html page`);
-      await page.setContent(htmlBody, { waitUntil: 'networkidle0' });
+      await page.setViewport({
+        width: 1280,
+        height: 2000,
+        deviceScaleFactor: 1,
+      });
+      await page.setContent(htmlBody, { waitUntil: 'load' });
       await page.emulateMediaType('print');
-      this.logger.log(` after html page`);
 
       await page.pdf({
         path: pdfFilePath,
-        timeout: 0, // Set to 0 for indefinite wait
+        timeout: 0,
         format: isPaymentAndRefundDetailedReport ? 'legal' : 'letter',
-        displayHeaderFooter: true,
+        preferCSSPageSize: true,
         printBackground: true,
         landscape: true,
-        footerTemplate: `
-        <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
-          <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
-        </div>
-       `,
+        margin: {
+          top: '12mm',
+          right: '12mm',
+          bottom: '12mm',
+          left: '12mm',
+        },
       });
-
-      this.logger.log(` after page.pdf`);
 
       const fileStats = await fs.promises.stat(pdfFilePath);
       generatedDocument.size = fileStats.size;
