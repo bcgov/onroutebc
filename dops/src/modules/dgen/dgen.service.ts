@@ -259,6 +259,7 @@ export class DgenService {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
+
       page = await browser.newPage();
       await page.setViewport({
         width: 1280,
