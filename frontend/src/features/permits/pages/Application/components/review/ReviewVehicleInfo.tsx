@@ -62,7 +62,12 @@ export const ReviewVehicleInfo = ({
   const showLicensedGVW =
     Boolean(permitType) &&
     (
-      [PERMIT_TYPES.STOS, PERMIT_TYPES.STGVWI, PERMIT_TYPES.MFP] as PermitType[]
+      [
+        PERMIT_TYPES.STOS,
+        PERMIT_TYPES.STGVWI,
+        PERMIT_TYPES.STOW,
+        PERMIT_TYPES.MFP,
+      ] as PermitType[]
     ).includes(permitType as PermitType) &&
     vehicleType === VEHICLE_TYPES.POWER_UNIT;
 
@@ -144,7 +149,8 @@ export const ReviewVehicleInfo = ({
       </Box>
 
       <Box className="review-vehicle-info__body">
-        {permitType !== PERMIT_TYPES.STOS ? (
+        {permitType !== PERMIT_TYPES.STOS &&
+        permitType !== PERMIT_TYPES.STOW ? (
           <Box className="info-section">
             <div className="info-section__info info-section__info--unit">
               <Typography className="info-section__label">

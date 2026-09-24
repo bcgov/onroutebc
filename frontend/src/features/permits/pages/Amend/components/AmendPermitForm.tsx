@@ -39,11 +39,7 @@ import { serializePermitVehicleDetails } from "../../../helpers/serialize/serial
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
 import { isTermPermitType, PERMIT_TYPES } from "../../../types/PermitType";
-import {
-  dayjsToUtcStr,
-  getStartOfDate,
-  now,
-} from "../../../../../common/helpers/formatDate";
+import { getStartOfDate, now } from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,
@@ -65,6 +61,7 @@ import {
 } from "../../../helpers/axleUnitHelper";
 import { isStowPermitRequired } from "../../../helpers/policy/isStowPermitRequired";
 import { PermitNotRequiredModal } from "../../Application/components/form/PermitNotRequiredModal";
+import { getRevisionHistory } from "./helpers/getRevisionHistory";
 
 const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
@@ -340,17 +337,7 @@ export const AmendPermitForm = () => {
 
   const currentDate = now();
 
-  const revisionHistory = permitHistory
-    .filter((history) => history.comment && history.transactionSubmitDate)
-    .map((history) => ({
-      permitId: history.permitId,
-      comment: getDefaultRequiredVal("", history.comment),
-      name: history.commentUsername,
-      revisionDateTime: getDefaultRequiredVal(
-        dayjsToUtcStr(currentDate),
-        history.transactionSubmitDate,
-      ),
-    }));
+  const revisionHistory = getRevisionHistory(permitHistory, currentDate);
 
   const oldPermitStartDate: Dayjs = applyWhenNotNullable(
     (dateStr) => getStartOfDate(dateStr),
