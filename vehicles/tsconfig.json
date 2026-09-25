@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "CommonJS",   
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
+    "types": ["node","jest","multer"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

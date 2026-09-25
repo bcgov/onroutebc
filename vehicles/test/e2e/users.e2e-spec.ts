@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import  request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -36,7 +36,6 @@ import { PendingIdirUser } from '@modules/company-user-management/pending-idir-u
 import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersProfile } from '@modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { readRedCompanyMetadataDtoMock } from '../util/mocks/data/company.mock';
-import { App } from 'supertest/types';
 import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '@modules/company-user-management/users/entities/login.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -54,7 +53,7 @@ let companyServiceMock: DeepMocked<CompanyService>;
 let cacheManager: DeepMocked<Cache>;
 
 describe('Users (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -141,14 +140,14 @@ describe('Users (e2e)', () => {
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      await request(app.getHttpServer() as unknown as App)
+      await request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/users/user-context')
         .expect(201);
     });
     it('should return the  ORBC IDIR userContext.', async () => {
       TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
       repo.findOne.mockResolvedValue(sysAdminStaffUserEntityMock);
-      await request(app.getHttpServer() as unknown as App)
+      await request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/users/user-context')
         .expect(201);
     });
@@ -163,7 +162,7 @@ describe('Users (e2e)', () => {
         { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/users/claims?companyId=1')
         .expect(200);
       expect(response.body).toContainEqual(Claim.READ_SELF);
@@ -198,7 +197,7 @@ describe('Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 

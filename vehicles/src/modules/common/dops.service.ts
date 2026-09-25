@@ -22,7 +22,7 @@ import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-exec
 import { LogMethodExecution } from '@common/decorator/log-method-execution.decorator';
 import { INotificationDocument } from '@common/interface/notification-document.interface';
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import { Readable } from 'stream';
 import { Nullable } from '@common/types/common';
 

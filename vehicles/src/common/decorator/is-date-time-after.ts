@@ -10,7 +10,7 @@ import { MaxDifferenceType } from '@common/interface/duration-difference.interfa
  * @param validationOptions Validation options, if any.
  * @returns A function that validates the input to the class.
  */
-export function IsDateTimeAfter<T>(
+export function IsDateTimeAfter<T extends object>(
   propertyToCompareAgainst: string,
   additionalConstraints?: MaxDifferenceType,
   validationOptions?: ValidationOptions,

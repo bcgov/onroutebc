@@ -1,8 +1,8 @@
-import * as dayjs from 'dayjs';
-import * as utc from 'dayjs/plugin/utc';
-import * as timezone from 'dayjs/plugin/timezone';
-import * as duration from 'dayjs/plugin/duration';
-import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import duration from 'dayjs/plugin/duration';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DurationDifference } from '@common/interface/duration-difference.interface';
 import { Nullable } from '@common/types/common';
 

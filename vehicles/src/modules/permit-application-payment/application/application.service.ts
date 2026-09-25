@@ -1002,8 +1002,7 @@ export class ApplicationService {
     const applicationsToBeDeleted = applicationsBeforeDelete.map(
       (application) => {
         return (
-          applicationIds.includes(application.permitId) &&
-          ({
+          applicationIds.includes(application.permitId) && {
             ...application,
             permitStatus: doesUserHaveRole(
               currentUser.orbcUserRole,
@@ -1015,7 +1014,7 @@ export class ApplicationService {
             updatedUser: currentUser.userName,
             updatedUserDirectory: currentUser.orbcUserDirectory,
             updatedUserGuid: currentUser.userGUID,
-          } as Permit)
+          }
         );
       },
     );
@@ -1233,7 +1232,7 @@ export class ApplicationService {
               applicationNumber: application?.applicationNumber,
               companyName: application?.company?.legalName,
               plate: permitData?.vehicleDetails?.plate,
-            } as ApplicationApprovedNotification;
+            };
           } else {
             notificationTemplate = NotificationTemplate.APPLICATION_REJECTED;
             subject = `onRouteBC Permit Application ${application?.applicationNumber} for Plate ${permitData?.vehicleDetails?.plate} Rejected`;
@@ -1243,7 +1242,7 @@ export class ApplicationService {
                 'MMM. D, YYYY, hh:mm a Z',
               ),
               rejectedReason: comment,
-            } as ApplicationRejectedNotification;
+            };
           }
 
           const emailList = [
