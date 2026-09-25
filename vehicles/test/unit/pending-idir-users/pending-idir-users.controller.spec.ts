@@ -8,7 +8,10 @@ import { PendingIdirUsersService } from '../../../src/modules/company-user-manag
 import { PendingIdirUsersController } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.controller';
 
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-import { createPendingIdirUserMock, readPendingIdirUserMock } from '../../util/mocks/data/pending-idir-user.mock';
+import {
+  createPendingIdirUserMock,
+  readPendingIdirUserMock,
+} from '../../util/mocks/data/pending-idir-user.mock';
 
 let pendingIdirUserService: DeepMocked<PendingIdirUsersService>;
 
