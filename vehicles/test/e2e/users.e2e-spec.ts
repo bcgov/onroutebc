@@ -1,4 +1,4 @@
-import  request from 'supertest';
+import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -162,7 +162,9 @@ describe('Users (e2e)', () => {
         { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
-      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/users/claims?companyId=1')
         .expect(200);
       expect(response.body).toContainEqual(Claim.READ_SELF);
@@ -197,7 +199,9 @@ describe('Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 

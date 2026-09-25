@@ -1,4 +1,4 @@
-import  request from 'supertest';
+import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -128,7 +128,9 @@ describe('Company Users (e2e)', () => {
       jest
         .spyOn(companyServiceMock, 'findOneByCompanyGuid')
         .mockReturnValue(Promise.resolve(redCompanyEntityMock));
-      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
@@ -151,7 +153,9 @@ describe('Company Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A')
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
