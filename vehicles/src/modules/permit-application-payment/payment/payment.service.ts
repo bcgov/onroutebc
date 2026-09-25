@@ -14,15 +14,15 @@ import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   callDatabaseSequence,
   setBaseEntityProperties,
-} from '../../../common/helper/database.helper';
-import { Permit } from '../permit/entities/permit.entity';
-import { ApplicationStatus } from '../../../common/enum/application-status.enum';
-import { PaymentMethodType as PaymentMethodTypeEnum } from '../../../common/enum/payment-method-type.enum';
-import { TransactionType } from '../../../common/enum/transaction-type.enum';
+} from '@common/helper/database.helper';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PaymentMethodType as PaymentMethodTypeEnum } from '@common/enum/payment-method-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
 
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
@@ -33,51 +33,48 @@ import {
   CRYPTO_ALGORITHM_MD5,
   GL_PROJ_CODE_PLACEHOLDER,
   PPC_FULL_TEXT,
-} from '../../../common/constants/api.constant';
-import { convertToHash } from '../../../common/helper/crypto.helper';
+} from '@common/constants/api.constant';
+import { convertToHash } from '@common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
-import { CfsFileStatus } from '../../../common/enum/cfs-file-status.enum';
+import { CfsFileStatus } from '@common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
   isApplicationInCart,
   isVoidorRevoked,
-} from '../../../common/helper/permit-application.helper';
+} from '@common/helper/permit-application.helper';
 import {
   isCfsPaymentMethodType,
   isTransactionPurchase,
   isWebTransactionPurchase,
-} from '../../../common/helper/payment.helper';
+} from '@common/helper/payment.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../../../common/enum/cache-key.enum';
-import {
-  getFromCache,
-  getMapFromCache,
-} from '../../../common/helper/cache.helper';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { getFromCache, getMapFromCache } from '@common/helper/cache.helper';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
 import {
   throwBadRequestException,
   throwUnprocessableEntityException,
-} from '../../../common/helper/exception.helper';
-import { isFeatureEnabled } from '../../../common/helper/common.helper';
+} from '@common/helper/exception.helper';
+import { isFeatureEnabled } from '@common/helper/common.helper';
 import { PaymentTransactionDto } from './dto/common/payment-transaction.dto';
-import { Nullable } from '../../../common/types/common';
-import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
-import { PolicyService } from '../../policy/policy.service';
-import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
-import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
-import { evaluatePolicyValidationResult } from '../../../common/helper/policy.helper';
-import { CreditAccountService } from '../../credit-account/credit-account.service';
-import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
+import { Nullable } from '@common/types/common';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { PolicyService } from '@modules/policy/policy.service';
+import { validatePaymentReceived } from '@common/helper/permit-fee.helper';
+import { ReadPolicyValidationDto } from '@modules/policy/dto/Response/read-policy-validation.dto';
+import { evaluatePolicyValidationResult } from '@common/helper/policy.helper';
+import { CreditAccountService } from '@modules/credit-account/credit-account.service';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
 import {
   convertUtcToPt,
   getCurrentPacificDateTime,
-} from '../../../common/helper/date-time.helper';
+} from '@common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {

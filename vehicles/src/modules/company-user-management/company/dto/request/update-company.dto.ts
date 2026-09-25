@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UpdateAddressDto } from '../../../../common/dto/request/update-address.dto';
-import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
+import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
+import { UpdateContactDto } from '@modules/common/dto/request/update-contact.dto';
 import {
   IsEmail,
   IsOptional,

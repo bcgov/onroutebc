@@ -18,20 +18,20 @@ import {
   ApiCreatedResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../exception/exception.dto';
+import { ExceptionDto } from '@app/exception/exception.dto';
 import { Request, Response } from 'express';
-import { IUserJWT } from '../../interface/user-jwt.interface';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
-import { IDP } from '../../enum/idp.enum';
-import { Permissions } from '../../decorator/permissions.decorator';
+import { IDP } from '@app/enum/idp.enum';
+import { Permissions } from '@app/decorator/permissions.decorator';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
-import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
+import { JwtOneOfAuthGuard } from '@app/guard/jwt-one-of-auth.guard';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-} from '../../enum/user-role.enum';
+} from '@app/enum/user-role.enum';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({

@@ -8,14 +8,14 @@ import {
   ApiNotFoundResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { PendingIdirUsersService } from './pending-idir-users.service';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { IDIRUserRole } from '../../../common/enum/user-role.enum';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
 
 @ApiTags('User Management - Pending IDIR User')
 @ApiBadRequestResponse({

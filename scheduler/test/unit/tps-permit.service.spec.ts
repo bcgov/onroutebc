@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TpsPermitService } from '../../src/modules/tps-permit/tps-permit.service';
-import { TpsPermit } from '../../src/modules/tps-permit/entities/tps-permit.entity';
-import { Permit } from '../../src/modules/common/entities/permit.entity';
-import { S3Service } from '../../src/modules/tps-permit/s3.service';
+import { TpsPermitService } from '@modules/tps-permit/tps-permit.service';
+import { TpsPermit } from '@modules/tps-permit/entities/tps-permit.entity';
+import { Permit } from '@modules/common/entities/permit.entity';
+import { S3Service } from '@modules/tps-permit/s3.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { Document } from '../../src/modules/tps-permit/entities/document.entity';
+import { Document } from '@modules/tps-permit/entities/document.entity';
 
 describe('TpsPermitService', () => {
   let service: TpsPermitService;

@@ -3,8 +3,8 @@ import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as duration from 'dayjs/plugin/duration';
 import * as quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { DurationDifference } from '../interface/duration-difference.interface';
-import { Nullable } from '../types/common';
+import { DurationDifference } from '@common/interface/duration-difference.interface';
+import { Nullable } from '@common/types/common';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

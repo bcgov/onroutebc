@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { TrailersController } from '../../../src/modules/vehicles/trailers/trailers.controller';
-import { TrailersService } from '../../../src/modules/vehicles/trailers/trailers.service';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { TrailersController } from '@modules/vehicles/trailers/trailers.controller';
+import { TrailersService } from '@modules/vehicles/trailers/trailers.service';
 import {
   createTrailerDtoMock,
   deleteTrailersMock,
@@ -13,7 +13,7 @@ import { deleteDtoMock } from '../../util/mocks/data/delete-dto.mock';
 import { createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 
 const TRAILER_ID_1 = '1';
 const TRAILER_ID_2 = '2';

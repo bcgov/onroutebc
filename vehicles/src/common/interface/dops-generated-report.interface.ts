@@ -1,4 +1,4 @@
-import { ReportTemplate } from '../enum/report-template.enum';
+import { ReportTemplate } from '@common/enum/report-template.enum';
 
 export interface DopsGeneratedReport {
   reportTemplate: ReportTemplate;

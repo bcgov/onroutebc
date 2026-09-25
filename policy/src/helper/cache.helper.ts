@@ -1,5 +1,5 @@
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../enum/cache-key.enum';
+import { CacheKey } from '@app/enum/cache-key.enum';
 
 export const createCacheMap = <T extends object>(
   dataArray: T[],

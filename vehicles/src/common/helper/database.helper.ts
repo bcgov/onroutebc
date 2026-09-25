@@ -1,7 +1,7 @@
 import { DataSource, QueryRunner, SelectQueryBuilder } from 'typeorm';
-import { IUserJWT } from '../interface/user-jwt.interface';
-import { Base } from '../../modules/common/entities/base.entity';
-import { Nullable } from '../types/common';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { Base } from '@modules/common/entities/base.entity';
+import { Nullable } from '@common/types/common';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export const callDatabaseSequence = async (

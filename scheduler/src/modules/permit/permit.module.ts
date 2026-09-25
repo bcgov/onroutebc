@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Permit } from '../common/entities/permit.entity';
-import { PermitTransaction } from '../common/entities/permit-transaction.entity';
-import { Transaction } from '../common/entities/transaction.entity';
-import { Receipt } from '../common/entities/receipt.entity';
+import { Permit } from '@modules/common/entities/permit.entity';
+import { PermitTransaction } from '@modules/common/entities/permit-transaction.entity';
+import { Transaction } from '@modules/common/entities/transaction.entity';
+import { Receipt } from '@modules/common/entities/receipt.entity';
 
 @Module({
   imports: [

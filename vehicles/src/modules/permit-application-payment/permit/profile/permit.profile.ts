@@ -7,16 +7,13 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Permit } from '../entities/permit.entity';
-import { ReadPermitDto } from '../dto/response/read-permit.dto';
-import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
-import { Directory } from '../../../../common/enum/directory.enum';
-import {
-  UserRole,
-  IDIR_USER_ROLE_LIST,
-} from '../../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
-import { ReadPermitMetadataDto } from '../dto/response/read-permit-metadata.dto';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { ReadPermitDto } from '@modules/permit-application-payment/permit/dto/response/read-permit.dto';
+import { PPC_FULL_TEXT } from '@common/constants/api.constant';
+import { Directory } from '@common/enum/directory.enum';
+import { UserRole, IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { ReadPermitMetadataDto } from '@modules/permit-application-payment/permit/dto/response/read-permit-metadata.dto';
 
 @Injectable()
 export class PermitProfile extends AutomapperProfile {

@@ -7,7 +7,7 @@ import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { DeleteResult, Repository } from 'typeorm';
 import { TrailerType } from './entities/trailer-type.entity';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class TrailerTypesService {

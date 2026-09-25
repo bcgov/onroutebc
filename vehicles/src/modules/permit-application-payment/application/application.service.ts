@@ -19,84 +19,81 @@ import {
 } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
-import { Permit } from '../permit/entities/permit.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
-import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../../common/enum/permit-application-origin.enum';
-import { PermitApprovalSource as PermitApprovalSourceEnum } from '../../../common/enum/permit-approval-source.enum';
+import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '@common/enum/permit-application-origin.enum';
+import { PermitApprovalSource as PermitApprovalSourceEnum } from '@common/enum/permit-approval-source.enum';
 import {
   getQueryRunner,
   paginate,
   setBaseEntityProperties,
   sortQuery,
-} from '../../../common/helper/database.helper';
+} from '@common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { DopsService } from '../../common/dops.service';
-import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
-import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { DopsService } from '@modules/common/dops.service';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { PageMetaDto } from '@common/dto/paginate/page-meta';
+import { PaginationDto } from '@common/dto/paginate/pagination';
 
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../../common/enum/user-role.enum';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
+} from '@common/enum/user-role.enum';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
-import {
-  doesUserHaveRole,
-  isIdirOrSAUser,
-} from '../../../common/helper/auth.helper';
+import { doesUserHaveRole, isIdirOrSAUser } from '@common/helper/auth.helper';
 import {
   ACTIVE_APPLICATION_STATUS,
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
   ALL_APPLICATION_STATUS,
   ApplicationStatus,
-} from '../../../common/enum/application-status.enum';
-import { IDP } from '../../../common/enum/idp.enum';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+} from '@common/enum/application-status.enum';
+import { IDP } from '@common/enum/idp.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   generateApplicationNumber,
   generatePermitNumber,
   isPermitTypeEligibleForQueue,
-} from '../../../common/helper/permit-application.helper';
-import { PaymentService } from '../payment/payment.service';
-import { CaseManagementService } from '../../case-management/case-management.service';
-import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
-import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';
-import { Nullable } from '../../../common/types/common';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
-import { ApplicationSearch } from '../../../common/enum/application-search.enum';
+} from '@common/helper/permit-application.helper';
+import { PaymentService } from '@modules/permit-application-payment/payment/payment.service';
+import { CaseManagementService } from '@modules/case-management/case-management.service';
+import { ReadCaseEvenDto } from '@modules/case-management/dto/response/read-case-event.dto';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
+import { Nullable } from '@common/types/common';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { throwUnprocessableEntityException } from '@common/helper/exception.helper';
+import { ApplicationSearch } from '@common/enum/application-search.enum';
 
-import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
-import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { validateEmailList } from '../../../common/helper/notification.helper';
-import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
-import { PermitData } from '../../../common/interface/permit.template.interface';
-import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
-import { ApplicationRejectedNotification } from '../../../common/interface/application-rejected.notification.interface';
+import { CaseStatusType } from '@common/enum/case-status-type.enum';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
+import { validateEmailList } from '@common/helper/notification.helper';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
+import { PermitData } from '@common/interface/permit.template.interface';
+import { ApplicationApprovedNotification } from '@common/interface/application-approved.notification.interface';
+import { ApplicationRejectedNotification } from '@common/interface/application-rejected.notification.interface';
 import {
   convertUtcToPt,
   differenceBetween,
   getCurrentPacificDateTime,
-} from '../../../common/helper/date-time.helper';
-import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
+} from '@common/helper/date-time.helper';
+import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-case-activity.dto';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { PermitLoa } from './entities/permit-loa.entity';
-import { LoaDetail } from '../../special-auth/entities/loa-detail.entity';
-import { getFromCache } from '../../../common/helper/cache.helper';
-import { CacheKey } from '../../../common/enum/cache-key.enum';
-import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
-import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
-import { isCVClient } from '../../../common/helper/common.helper';
-import { Case } from '../../case-management/entities/case.entity';
-import { PermitType } from '../../../common/enum/permit-type.enum';
-import { PolicyService } from '../../policy/policy.service';
+import { LoaDetail } from '@modules/special-auth/entities/loa-detail.entity';
+import { getFromCache } from '@common/helper/cache.helper';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { ReadCaseMetaDto } from '@modules/case-management/dto/response/read-case-meta.dto';
+import { isCVClient } from '@common/helper/common.helper';
+import { Case } from '@modules/case-management/entities/case.entity';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { PolicyService } from '@modules/policy/policy.service';
 
 @Injectable()
 export class ApplicationService {

@@ -12,38 +12,38 @@ import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { Company } from '../company/entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
-import { UserStatus } from '../../../common/enum/user-status.enum';
-import { PendingUser } from '../pending-users/entities/pending-user.entity';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { UserStatus } from '@common/enum/user-status.enum';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
-import { PendingUsersService } from '../pending-users/pending-users.service';
-import { CompanyService } from '../company/company.service';
-import { Claim } from '../../../common/enum/claims.enum';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
+import { Claim } from '@common/enum/claims.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   ClientUserRole,
   GenericUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../../common/enum/user-role.enum';
-import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
-import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
-import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
-import { IDP } from '../../../common/enum/idp.enum';
-import { Contact } from '../../common/entities/contact.entity';
-import { getProvinceId } from '../../../common/helper/province-country.helper';
-import { Base } from '../../common/entities/base.entity';
-import { AccountSource } from '../../../common/enum/account-source.enum';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
-import { Directory } from '../../../common/enum/directory.enum';
+} from '@common/enum/user-role.enum';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { ReadPendingUserDto } from '@modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
+import { BadRequestExceptionDto } from '@common/exception/badRequestException.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { IDP } from '@common/enum/idp.enum';
+import { Contact } from '@modules/common/entities/contact.entity';
+import { getProvinceId } from '@common/helper/province-country.helper';
+import { Base } from '@modules/common/entities/base.entity';
+import { AccountSource } from '@common/enum/account-source.enum';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { Directory } from '@common/enum/directory.enum';
 import { Login } from './entities/login.entity';
-import { setBaseEntityProperties } from '../../../common/helper/database.helper';
+import { setBaseEntityProperties } from '@common/helper/database.helper';
 
 @Injectable()
 export class UsersService {

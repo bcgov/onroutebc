@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { LoaDetail } from './loa-detail.entity';
 
 @Entity({ name: 'permit.ORBC_LOA_VEHICLES' })

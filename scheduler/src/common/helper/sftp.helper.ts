@@ -1,6 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import * as Client from 'ssh2-sftp-client';
-import { GARMS_LOCAL_FILE_PATH } from '../constants/garms.constant';
+import { GARMS_LOCAL_FILE_PATH } from '@common/constants/garms.constant';
 
 export const getCgiSFTPConnectionInfo = () => {
   const host = process.env.CFS_SFTP_HOST;

@@ -5,23 +5,23 @@ import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
-import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
 import { DataSource, Repository } from 'typeorm';
-import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
-import { User } from '../../../src/modules/company-user-management/users/entities/user.entity';
-import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
-import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
+import { AddressProfile } from '@modules/common/profiles/address.profile';
+import { ContactProfile } from '@modules/common/profiles/contact.profile';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { UsersProfile } from '@modules/company-user-management/users/profiles/user.profile';
+import { UsersService } from '@modules/company-user-management/users/users.service';
 import {
   MockQueryRunnerManager,
   createQueryBuilderMock,
 } from '../../util/mocks/factory/dataSource.factory.mock';
 
-import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 
 import { BadRequestException } from '@nestjs/common';
-import { Claim } from '../../../src/common/enum/claims.enum';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
+import { Claim } from '@common/enum/claims.enum';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
   readRedCompanyMetadataDtoMock,
@@ -42,13 +42,13 @@ import {
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
-import { PendingIdirUser } from '../../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { readPendingIdirUserMock } from '../../util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
-import { Login } from '../../../src/modules/company-user-management/users/entities/login.entity';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '@modules/company-user-management/users/entities/login.entity';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;

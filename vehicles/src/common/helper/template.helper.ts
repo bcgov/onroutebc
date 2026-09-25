@@ -1,10 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ApplicationStatus } from '../enum/application-status.enum';
-import { PermitType } from '../enum/permit-type.enum';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
 import {
   PermitTemplateMapping,
   TemplateName,
-} from '../enum/template-name.enum';
+} from '@common/enum/template-name.enum';
 
 /**
  * Returns the appropriate template name based on the provided application status and permit type.

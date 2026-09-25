@@ -23,36 +23,36 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { ResultDto } from './dto/response/result.dto';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
-import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { PaginationDto } from '@common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
-import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
-import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
+import { ApiPaginatedResponse } from '@common/decorator/api-paginate-response';
+import { PermitReceiptDocumentService } from '@modules/permit-application-payment/permit-receipt-document/permit-receipt-document.service';
 import {
   ApplicationQueueStatus,
   convertApplicationQueueStatus,
-} from '../../../common/enum/case-status-type.enum';
+} from '@common/enum/case-status-type.enum';
 import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';

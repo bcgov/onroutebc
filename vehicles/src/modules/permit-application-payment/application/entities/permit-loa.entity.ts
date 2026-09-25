@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { LoaDetail } from '../../../special-auth/entities/loa-detail.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { LoaDetail } from '@modules/special-auth/entities/loa-detail.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT_LOA' })
 export class PermitLoa extends Base {

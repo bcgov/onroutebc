@@ -6,13 +6,13 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { PendingIdirUser } from '../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import {
   createPendingIdirUserMock,
   pendingIdirUserEntityMock,
   readPendingIdirUserMock,
 } from '../util/mocks/data/pending-idir-user.mock';
-import { PendingIdirUsersModule } from '../../src/modules/company-user-management/pending-idir-users/pending-idir-users.module';
+import { PendingIdirUsersModule } from '@modules/company-user-management/pending-idir-users/pending-idir-users.module';
 import { TestUserMiddleware } from './test-user.middleware';
 import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { App } from 'supertest/types';

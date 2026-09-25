@@ -7,32 +7,29 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { CreateApplicationDto } from '../dto/request/create-application.dto';
-import { ReadApplicationDto } from '../dto/response/read-application.dto';
-import { UpdateApplicationDto } from '../dto/request/update-application.dto';
-import { ReadApplicationMetadataDto } from '../dto/response/read-application-metadata.dto';
-import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
-import { Directory } from '../../../../common/enum/directory.enum';
-import {
-  UserRole,
-  IDIR_USER_ROLE_LIST,
-} from '../../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
-import { Permit } from '../../permit/entities/permit.entity';
+import { CreateApplicationDto } from '@modules/permit-application-payment/application/dto/request/create-application.dto';
+import { ReadApplicationDto } from '@modules/permit-application-payment/application/dto/response/read-application.dto';
+import { UpdateApplicationDto } from '@modules/permit-application-payment/application/dto/request/update-application.dto';
+import { ReadApplicationMetadataDto } from '@modules/permit-application-payment/application/dto/response/read-application-metadata.dto';
+import { PPC_FULL_TEXT } from '@common/constants/api.constant';
+import { Directory } from '@common/enum/directory.enum';
+import { UserRole, IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 
-import { differenceBetween } from '../../../../common/helper/date-time.helper';
-import { Nullable } from '../../../../common/types/common';
+import { differenceBetween } from '@common/helper/date-time.helper';
+import { Nullable } from '@common/types/common';
 import {
   CaseStatusType,
   convertCaseStatus,
-} from '../../../../common/enum/case-status-type.enum';
-import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
-import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
-import { PermitLoa } from '../entities/permit-loa.entity';
-import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
+} from '@common/enum/case-status-type.enum';
+import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-case-activity.dto';
+import { CreatePermitLoaDto } from '@modules/permit-application-payment/application/dto/request/create-permit-loa.dto';
+import { PermitLoa } from '@modules/permit-application-payment/application/entities/permit-loa.entity';
+import { ReadPermitLoaDto } from '@modules/permit-application-payment/application/dto/response/read-permit-loa.dto';
 import * as dayjs from 'dayjs';
-import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
-import { CaseActivityType } from '../../../../common/enum/case-activity-type.enum';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {

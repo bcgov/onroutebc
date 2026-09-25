@@ -25,22 +25,22 @@ import {
   ApiCreatedResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../exception/exception.dto';
+import { ExceptionDto } from '@app/exception/exception.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto } from './dto/request/create-file.dto';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
-import { FileDownloadModes } from '../../enum/file-download-modes.enum';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
+import { FileDownloadModes } from '@app/enum/file-download-modes.enum';
 import { Request, Response } from 'express';
 import { UpdateFileDto } from './dto/request/update-file.dto';
-import { IUserJWT } from '../../interface/user-jwt.interface';
-import { IDP } from '../../enum/idp.enum';
-import { Permissions } from '../../decorator/permissions.decorator';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
+import { IDP } from '@app/enum/idp.enum';
+import { Permissions } from '@app/decorator/permissions.decorator';
 import { GetDocumentQueryParamsDto } from './dto/request/queryParam/getDocument.query-params.dto';
-import { setResHeaderCorrelationId } from '../../helper/response-header.helper';
+import { setResHeaderCorrelationId } from '@app/helper/response-header.helper';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-} from '../../enum/user-role.enum';
+} from '@app/enum/user-role.enum';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({

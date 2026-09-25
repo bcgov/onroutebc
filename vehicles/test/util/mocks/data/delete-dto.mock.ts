@@ -1,4 +1,4 @@
-import { DeleteDto } from '../../../../src/modules/common/dto/response/delete.dto';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 
 const ID_1 = '1';
 

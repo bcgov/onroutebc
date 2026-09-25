@@ -1,4 +1,4 @@
-import { NotificationTemplate } from '../enum/notification-template.enum';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
 import { ApplicationApprovedNotification } from './application-approved.notification.interface';
 import { ApplicationRejectedNotification } from './application-rejected.notification.interface';
 import { CompanyDataNotification } from './company-data.notification.interface';

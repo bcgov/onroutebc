@@ -16,29 +16,29 @@ import {
   sysAdminStaffUserJWTMock,
 } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
-import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
+import { AddressProfile } from '@modules/common/profiles/address.profile';
+import { ContactProfile } from '@modules/common/profiles/contact.profile';
+import { UsersProfile } from '@modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
-import { User } from '../../src/modules/company-user-management/users/entities/user.entity';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 
-import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
-import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 import {
   sysAdminStaffUserEntityMock,
   redCompanyAdminUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
-import { UsersService } from '../../src/modules/company-user-management/users/users.service';
-import { UsersController } from '../../src/modules/company-user-management/users/users.controller';
-import { Claim } from '../../src/common/enum/claims.enum';
-import { PendingIdirUser } from '../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from '../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
-import { PendingIdirUsersProfile } from '../../src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
+import { UsersService } from '@modules/company-user-management/users/users.service';
+import { UsersController } from '@modules/company-user-management/users/users.controller';
+import { Claim } from '@common/enum/claims.enum';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUsersProfile } from '@modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { readRedCompanyMetadataDtoMock } from '../util/mocks/data/company.mock';
 import { App } from 'supertest/types';
-import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
-import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '@modules/company-user-management/users/entities/login.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';

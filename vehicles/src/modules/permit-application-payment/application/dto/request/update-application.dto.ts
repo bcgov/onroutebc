@@ -7,7 +7,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { PermitType } from '../../../../../common/enum/permit-type.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
   @AutoMap()

@@ -3,9 +3,9 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { Nullable } from '../types/common';
-import { ApplicationSearch } from '../enum/application-search.enum';
-import { ApplicationQueueStatus } from '../enum/case-status-type.enum';
+import { Nullable } from '@common/types/common';
+import { ApplicationSearch } from '@common/enum/application-search.enum';
+import { ApplicationQueueStatus } from '@common/enum/case-status-type.enum';
 
 @ValidatorConstraint({ name: 'ApplicationSearch', async: false })
 export class ApplicationSearchConstraint implements ValidatorConstraintInterface {

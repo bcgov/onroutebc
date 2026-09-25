@@ -6,13 +6,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
 import { Repository } from 'typeorm';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { PendingIdirUser } from '../../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import {
   createPendingIdirUserMock,
   pendingIdirUserEntityMock,
 } from '../../util/mocks/data/pending-idir-user.mock';
-import { PendingIdirUsersProfile } from '../../../src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
+import { PendingIdirUsersProfile } from '@modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { sysAdminStaffUserJWTMock } from '../../util/mocks/data/jwt.mock';
 
 let repo: DeepMocked<Repository<PendingIdirUser>>;

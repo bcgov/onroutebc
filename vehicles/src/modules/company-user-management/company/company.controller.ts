@@ -23,19 +23,19 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { PaginationDto } from '../../../common/dto/paginate/pagination';
-import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { AuthOnly } from '@common/decorator/auth-only.decorator';
+import { PaginationDto } from '@common/dto/paginate/pagination';
+import { ApiPaginatedResponse } from '@common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
 
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
@@ -45,8 +45,8 @@ import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+} from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({

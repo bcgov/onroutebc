@@ -5,17 +5,17 @@ import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
-import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
-import { CompanyProfile } from '../../../src/modules/company-user-management/company/profiles/company.profile';
-import { Company } from '../../../src/modules/company-user-management/company/entities/company.entity';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
+import { CompanyProfile } from '@modules/company-user-management/company/profiles/company.profile';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { DataSource, Repository } from 'typeorm';
 import {
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
-import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
-import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
+import { UsersProfile } from '@modules/company-user-management/users/profiles/user.profile';
+import { AddressProfile } from '@modules/common/profiles/address.profile';
+import { ContactProfile } from '@modules/common/profiles/contact.profile';
 import {
   COMPANY_LIST,
   blueCompanyEntityMock,
@@ -25,19 +25,19 @@ import {
   updateRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
 
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
   blueCompanyAdminUserJWTMock,
   redCompanyAdminUserJWTMock,
   redCompanyCvClientUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
-import * as databaseHelper from '../../../src/common/helper/database.helper';
+import * as databaseHelper from '@common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { BadRequestException } from '@nestjs/common';
-import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
-import { DopsService } from '../../../src/modules/common/dops.service';
+import { GetCompanyQueryParamsDto } from '@modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
+import { DopsService } from '@modules/common/dops.service';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;

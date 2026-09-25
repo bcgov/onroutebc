@@ -25,19 +25,19 @@ import {
 } from '@nestjs/swagger';
 
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 
 @ApiTags('Vehicles - Power Units')
 @ApiBadRequestResponse({

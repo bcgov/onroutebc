@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationStatus } from '../../../../common/enum/application-status.enum';
-import { PermitType } from '../../../../common/enum/permit-type.enum';
-import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
 import { ValidationResults } from 'onroute-policy-engine';
 
 export class ReadShoppingCartDto {

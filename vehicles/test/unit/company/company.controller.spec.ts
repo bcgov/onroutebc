@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { CompanyController } from '../../../src/modules/company-user-management/company/company.controller';
-import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { CompanyController } from '@modules/company-user-management/company/company.controller';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   redCompanyAdminUserJWTMock,
   sysAdminStaffUserJWTMock,
@@ -19,7 +19,7 @@ import {
   updateRedCompanyDtoMock,
   paginationReadRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
-import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
+import { GetCompanyQueryParamsDto } from '@modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
 
 const COMPANY_ID_99 = 99;
 let companyService: DeepMocked<CompanyService>;

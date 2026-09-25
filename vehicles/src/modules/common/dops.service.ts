@@ -8,23 +8,23 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
-import { IFile } from '../../common/interface/file.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { DopsGeneratedDocument } from '@common/interface/dops-generated-document.interface';
+import { IFile } from '@common/interface/file.interface';
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { Response } from 'express';
-import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
+import { FileDownloadModes } from '@common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
-import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
-import { ExceptionDto } from '../../common/exception/exception.dto';
+import { DopsGeneratedReport } from '@common/interface/dops-generated-report.interface';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { ClsService } from 'nestjs-cls';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
-import { INotificationDocument } from '../../common/interface/notification-document.interface';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '@common/decorator/log-method-execution.decorator';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
-import { Nullable } from '../../common/types/common';
+import { Nullable } from '@common/types/common';
 
 @Injectable()
 export class DopsService {

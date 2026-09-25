@@ -1,12 +1,12 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppController } from '../../src/app.controller';
-import { AppService } from '../../src/app.service';
+import { AppController } from '@app/app.controller';
+import { AppService } from '@app/app.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { App } from 'supertest/types';
-import { FeatureFlagsService } from '../../src/modules/feature-flags/feature-flags.service';
+import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 
 let featureFlagsService: DeepMocked<FeatureFlagsService>;
 

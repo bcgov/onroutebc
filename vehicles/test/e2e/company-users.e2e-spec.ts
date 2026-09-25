@@ -14,29 +14,29 @@ import {
 } from '../util/mocks/factory/dataSource.factory.mock';
 import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
-import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
-import { User } from '../../src/modules/company-user-management/users/entities/user.entity';
+import { AddressProfile } from '@modules/common/profiles/address.profile';
+import { ContactProfile } from '@modules/common/profiles/contact.profile';
+import { UsersProfile } from '@modules/company-user-management/users/profiles/user.profile';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 
-import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
-import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 
 import { createMapper } from '@automapper/core';
-import { UsersService } from '../../src/modules/company-user-management/users/users.service';
-import { CompanyUsersController } from '../../src/modules/company-user-management/users/company-users.controller';
+import { UsersService } from '@modules/company-user-management/users/users.service';
+import { CompanyUsersController } from '@modules/company-user-management/users/company-users.controller';
 import {
   createRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../util/mocks/data/user.mock';
-import { PendingIdirUser } from '../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from '../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
 import { App } from 'supertest/types';
 import * as constants from '../util/mocks/data/test-data.constants';
-import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
-import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
+import { Login } from '@modules/company-user-management/users/entities/login.entity';
 import { readRedCompanyPendingUserDtoMock } from '../util/mocks/data/pending-user.mock';
 
 let repo: DeepMocked<Repository<User>>;

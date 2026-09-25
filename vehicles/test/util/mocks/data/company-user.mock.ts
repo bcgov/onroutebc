@@ -1,4 +1,4 @@
-import { CompanyUser } from '../../../../src/modules/company-user-management/users/entities/company-user.entity';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { baseEntityMock } from './base.mock';
 import { redCompanyEntityMock, blueCompanyEntityMock } from './company.mock';
 import * as constants from './test-data.constants';

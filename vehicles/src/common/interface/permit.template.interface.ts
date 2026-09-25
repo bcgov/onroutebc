@@ -1,8 +1,8 @@
-import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
-import { PermitType } from '../enum/permit-type.enum';
-import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
-import { VehicleType } from '../enum/vehicle-type.enum';
-import { Nullable } from '../types/common';
+import { ConditionalLicensingFee } from '@common/enum/conditional-licensing-fee.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { ThirdPartyLiability } from '@common/enum/third-party-liability.enum';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
+import { Nullable } from '@common/types/common';
 
 // Data used to populate a .docx template
 export interface PermitTemplateData {

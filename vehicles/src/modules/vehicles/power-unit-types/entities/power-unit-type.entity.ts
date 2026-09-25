@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
-import { PowerUnit } from '../../power-units/entities/power-unit.entity';
+import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
 
 @Entity({ name: 'ORBC_POWER_UNIT_TYPE' })
 export class PowerUnitType {

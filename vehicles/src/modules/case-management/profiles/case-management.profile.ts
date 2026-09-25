@@ -7,15 +7,15 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { CaseEvent } from '../entities/case-event.entity';
-import { ReadCaseEvenDto } from '../dto/response/read-case-event.dto';
-import { CaseActivity } from '../entities/case-activity.entity';
-import { ReadCaseActivityDto } from '../dto/response/read-case-activity.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
-import { Case } from '../entities/case.entity';
-import { ReadCaseMetaDto } from '../dto/response/read-case-meta.dto';
+import { CaseEvent } from '@modules/case-management/entities/case-event.entity';
+import { ReadCaseEvenDto } from '@modules/case-management/dto/response/read-case-event.dto';
+import { CaseActivity } from '@modules/case-management/entities/case-activity.entity';
+import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-case-activity.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
+import { Case } from '@modules/case-management/entities/case.entity';
+import { ReadCaseMetaDto } from '@modules/case-management/dto/response/read-case-meta.dto';
 
 @Injectable()
 export class CaseManagementProfile extends AutomapperProfile {

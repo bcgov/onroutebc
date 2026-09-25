@@ -8,11 +8,11 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { PermitTypeReport } from '../../../../../common/enum/permit-type.enum';
+import { PermitTypeReport } from '@common/enum/permit-type.enum';
 import { Type } from 'class-transformer';
-import { PaymentCodesDto } from '../common/payment-codes.dto';
-import { PermitIssuedBy } from '../../../../../common/enum/permit-issued-by.enum';
-import { IsDateTimeAfter } from '../../../../../common/decorator/is-date-time-after';
+import { PaymentCodesDto } from '@modules/permit-application-payment/payment/dto/common/payment-codes.dto';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { IsDateTimeAfter } from '@common/decorator/is-date-time-after';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()

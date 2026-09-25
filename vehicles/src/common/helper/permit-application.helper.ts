@@ -1,33 +1,33 @@
-import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import {
   PermitData,
   VehicleDetails,
-} from '../interface/permit.template.interface';
+} from '@common/interface/permit.template.interface';
 import { getFromCache } from './cache.helper';
-import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
+import { FullNamesForDgen } from '@common/interface/full-names-for-dgen.interface';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../enum/cache-key.enum';
+import { CacheKey } from '@common/enum/cache-key.enum';
 import { DataSource, QueryRunner } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { callDatabaseSequence } from './database.helper';
-import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
-import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
+import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '@common/enum/permit-application-origin.enum';
+import { PermitApprovalSource as PermitApprovalSourceEnum } from '@common/enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
-import { Directory } from '../enum/directory.enum';
+import { Directory } from '@common/enum/directory.enum';
 import { doesUserHaveRole } from './auth.helper';
-import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-role.enum';
-import { PPC_FULL_TEXT } from '../constants/api.constant';
-import { User } from '../../modules/company-user-management/users/entities/user.entity';
-import { ApplicationStatus } from '../enum/application-status.enum';
-import { PermitType } from '../enum/permit-type.enum';
-import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
+import { IDIR_USER_ROLE_LIST, UserRole } from '@common/enum/user-role.enum';
+import { PPC_FULL_TEXT } from '@common/constants/api.constant';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { PERMIT_TYPES_FOR_QUEUE } from '@common/constants/permit.constant';
 import * as dayjs from 'dayjs';
-import { PermitHistoryDto } from '../../modules/permit-application-payment/permit/dto/response/permit-history.dto';
+import { PermitHistoryDto } from '@modules/permit-application-payment/permit/dto/response/permit-history.dto';
 import {
   OTHER_VEHICLE_TYPE,
   OTHER_VEHICLE_TYPE_NAME,
-} from '../constants/vehicle.constant';
-import { EMPTY_VALUE } from '../constants/template.constant';
+} from '@common/constants/vehicle.constant';
+import { EMPTY_VALUE } from '@common/constants/template.constant';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.

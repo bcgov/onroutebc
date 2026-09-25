@@ -6,10 +6,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { TrailerType } from '../../trailer-types/entities/trailer-type.entity';
+import { TrailerType } from '@modules/vehicles/trailer-types/entities/trailer-type.entity';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { Province } from '../../../common/entities/province.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { Province } from '@modules/common/entities/province.entity';
 
 @Entity({ name: 'ORBC_TRAILER' })
 export class Trailer extends Base {

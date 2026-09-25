@@ -84,6 +84,7 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "@dword-design/eslint-plugin-import-alias": "^8.1.8",
     "@golevelup/ts-jest": "^1.2.1",
     "@types/cache-manager": "^5.0.0",
     "@types/crypto-js": "^4.2.2",
@@ -128,13 +129,14 @@
       "<rootDir>/test"
     ],
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/src/$1",
-      "^test/(.*)$": "<rootDir>/test/$1"
+      "^@app/(.*)$": "<rootDir>/src/$1",
+      "^@modules/(.*)$": "<rootDir>/src/modules/$1",
+      "^@common/(.*)$": "<rootDir>/src/common/$1"
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
-    },       
+    },
     "transformIgnorePatterns": [
       "/node_modules/(?!(uuid)/)"
     ],

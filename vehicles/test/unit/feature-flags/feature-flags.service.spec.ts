@@ -2,8 +2,8 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { TestingModule, Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FeatureFlag } from '../../../src/modules/feature-flags/entities/feature-flag.entity';
-import { FeatureFlagsService } from '../../../src/modules/feature-flags/feature-flags.service';
+import { FeatureFlag } from '@modules/feature-flags/entities/feature-flag.entity';
+import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 import { dataSourceMockFactory } from '../../util/mocks/factory/dataSource.factory.mock';
 import { Repository, DataSource } from 'typeorm';
 

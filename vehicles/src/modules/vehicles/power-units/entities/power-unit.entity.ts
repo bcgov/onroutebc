@@ -6,10 +6,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { PowerUnitType } from '../../power-unit-types/entities/power-unit-type.entity';
+import { PowerUnitType } from '@modules/vehicles/power-unit-types/entities/power-unit-type.entity';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { Province } from '../../../common/entities/province.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { Province } from '@modules/common/entities/province.entity';
 
 @Entity({ name: 'ORBC_POWER_UNIT' })
 export class PowerUnit extends Base {

@@ -1,9 +1,9 @@
-import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
-import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
-import { ReadCompanyMetadataDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-metadata.dto';
-import { ReadCompanyUserDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-user.dto';
-import { ReadCompanyDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company.dto';
-import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
+import { CreateCompanyDto } from '@modules/company-user-management/company/dto/request/create-company.dto';
+import { UpdateCompanyDto } from '@modules/company-user-management/company/dto/request/update-company.dto';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
+import { ReadCompanyUserDto } from '@modules/company-user-management/company/dto/response/read-company-user.dto';
+import { ReadCompanyDto } from '@modules/company-user-management/company/dto/response/read-company.dto';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import {
   redCompanyAddressEntityMock,
   createRedCompanyAddressDtoMock,
@@ -38,7 +38,7 @@ import {
   readBlueCompanyAdminUserDtoMock,
   readRedCompanyAdminUserDtoMock,
 } from './user.mock';
-import { PaginationDto } from '../../../../src/common/dto/paginate/pagination';
+import { PaginationDto } from '@common/dto/paginate/pagination';
 
 export const redCompanyEntityMock: Company = {
   companyId: constants.RED_COMPANY_ID,

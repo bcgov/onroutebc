@@ -8,9 +8,9 @@ import {
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { User } from '../../company-user-management/users/entities/user.entity';
-import { CreditAccountActivityType } from '../../../common/enum/credit-account-activity-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { CreditAccountActivityType } from '@common/enum/credit-account-activity-type.enum';
 import { CreditAccount } from './credit-account.entity';
 
 @Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT_ACTIVITY' })

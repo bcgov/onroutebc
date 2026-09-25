@@ -8,10 +8,10 @@ import {
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { UserRole } from '../../../common/enum/user-role.enum';
-import { getApplicantDisplay } from '../../../common/helper/permit-application.helper';
-import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
-import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
+import { UserRole } from '@common/enum/user-role.enum';
+import { getApplicantDisplay } from '@common/helper/permit-application.helper';
+import { Permit as Application } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { ReadShoppingCartDto } from '@modules/shopping-cart/dto/response/read-shopping-cart.dto';
 import { ValidationResults } from 'onroute-policy-engine';
 
 @Injectable()

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
 import { DgenController } from './dgen.controller';
-import { DmsModule } from '../dms/dms.module';
+import { DmsModule } from '@modules/dms/dms.module';
 import { ExternalDocument } from './entities/external-document.entity';
 import { DgenService } from './dgen.service';
 

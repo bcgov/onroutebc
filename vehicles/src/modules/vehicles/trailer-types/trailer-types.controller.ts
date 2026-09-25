@@ -21,11 +21,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { IDIRUserRole } from '../../../common/enum/user-role.enum';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { AuthOnly } from '@common/decorator/auth-only.decorator';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
 
 @ApiTags('Vehicles - Trailer Types')
 @ApiBadRequestResponse({

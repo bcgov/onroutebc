@@ -6,10 +6,10 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { CreatePendingUserDto } from '../dto/request/create-pending-user.dto';
-import { UpdatePendingUserDto } from '../dto/request/update-pending-user.dto';
-import { ReadPendingUserDto } from '../dto/response/read-pending-user.dto';
-import { PendingUser } from '../entities/pending-user.entity';
+import { CreatePendingUserDto } from '@modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
+import { UpdatePendingUserDto } from '@modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
+import { ReadPendingUserDto } from '@modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
 
 @Injectable()
 export class PendingUsersProfile extends AutomapperProfile {

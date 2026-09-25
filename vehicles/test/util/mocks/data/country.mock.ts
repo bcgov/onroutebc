@@ -1,5 +1,5 @@
-import { CountryDto } from '../../../../src/modules/common/dto/country.dto';
-import { Country } from '../../../../src/modules/common/entities/country.entity';
+import { CountryDto } from '@modules/common/dto/country.dto';
+import { Country } from '@modules/common/entities/country.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 import * as constants from './test-data.constants';
 

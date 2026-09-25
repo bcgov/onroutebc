@@ -7,14 +7,14 @@ import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
-import { User } from '../users/entities/user.entity';
-import { UserStatus } from '../../../common/enum/user-status.enum';
-import { Company } from '../company/entities/company.entity';
-import { ClientUserRole } from '../../../common/enum/user-role.enum';
-import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { UserStatus } from '@common/enum/user-status.enum';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { ClientUserRole } from '@common/enum/user-role.enum';
+import { throwUnprocessableEntityException } from '@common/helper/exception.helper';
 
 @Injectable()
 export class PendingUsersService {

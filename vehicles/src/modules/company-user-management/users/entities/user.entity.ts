@@ -6,16 +6,13 @@ import {
   PrimaryColumn,
   OneToMany,
 } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Contact } from '../../../common/entities/contact.entity';
+import { Contact } from '@modules/common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
-import { Directory } from '../../../../common/enum/directory.enum';
-import {
-  GenericUserRole,
-  IDIRUserRole,
-} from '../../../../common/enum/user-role.enum';
-import { UserStatus } from '../../../../common/enum/user-status.enum';
+import { Directory } from '@common/enum/directory.enum';
+import { GenericUserRole, IDIRUserRole } from '@common/enum/user-role.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {

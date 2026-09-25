@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import * as ExternalDocumentEnum from '../../../enum/external-document.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import * as ExternalDocumentEnum from '@app/enum/external-document.enum';
 
 @Entity({ name: 'dops.ORBC_EXTERNAL_DOCUMENT' })
 export class ExternalDocument extends Base {

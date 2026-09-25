@@ -21,25 +21,25 @@ import {
   ApiTags,
   ApiOperation,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { UsersService } from './users.service';
-import { Claim } from '../../../common/enum/claims.enum';
+import { Claim } from '@common/enum/claims.enum';
 import { Request } from 'express';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { AuthOnly } from '@common/decorator/auth-only.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
-import { IDP } from '../../../common/enum/idp.enum';
+import { IDP } from '@common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-} from '../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { isFeatureEnabled } from '../../../common/helper/common.helper';
+} from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { isFeatureEnabled } from '@common/helper/common.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ThrottlerGuard } from '@nestjs/throttler';

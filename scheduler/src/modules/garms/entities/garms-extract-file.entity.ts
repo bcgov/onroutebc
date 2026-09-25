@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Base } from '../../common/entities/base.entity';
-import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'permit.ORBC_GARMS_EXTRACT_FILE' })

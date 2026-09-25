@@ -7,21 +7,21 @@ import {
 } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Claim } from '../../common/enum/claims.enum';
-import { IDP } from '../../common/enum/idp.enum';
+import { Claim } from '@common/enum/claims.enum';
+import { IDP } from '@common/enum/idp.enum';
 import {
   getDirectory,
   matchCompanies,
   validateUserCompanyAndRoleContext,
-} from '../../common/helper/auth.helper';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
+} from '@common/helper/auth.helper';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import {
   ClientUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

@@ -12,5 +12,9 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "paths": {
+      "@app/*": ["./src/*"],
+      "@modules/*": ["./src/modules/*"]
+    }
   }
 }

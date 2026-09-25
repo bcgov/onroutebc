@@ -4,10 +4,10 @@ import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
-import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 import { DataSource, Repository } from 'typeorm';
-import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
-import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
+import { PendingUsersProfile } from '@modules/company-user-management/pending-users/profiles/pending-user.profile';
 import {
   PENDING_USER_LIST,
   createRedCompanyPendingUserDtoMock,
@@ -18,7 +18,7 @@ import {
   MockQueryRunnerManager,
   createQueryBuilderMock,
 } from '../../util/mocks/factory/dataSource.factory.mock';
-import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
+import { ClientUserRole } from '@common/enum/user-role.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import { redCompanyEntityMock } from '../../util/mocks/data/company.mock';

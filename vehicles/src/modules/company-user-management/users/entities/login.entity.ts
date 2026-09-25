@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Directory } from '../../../../common/enum/directory.enum';
+import { Directory } from '@common/enum/directory.enum';
 
 @Entity({ name: 'ORBC_LOGIN' })
 export class Login extends Base {

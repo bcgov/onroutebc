@@ -1,19 +1,19 @@
-import { CreditAccount } from '../../modules/credit-account/entities/credit-account.entity';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
 import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
   EGARMS_CREDIT_ACCOUNT_CLOSED,
   EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
   EGARMS_CREDIT_ACCOUNT_HOLD,
-} from '../constants/api.constant';
-import { CreditAccountActivityType } from '../enum/credit-account-activity-type.enum';
+} from '@common/constants/api.constant';
+import { CreditAccountActivityType } from '@common/enum/credit-account-activity-type.enum';
 import {
   CreditAccountStatus,
   CreditAccountStatusType,
   CreditAccountStatusValid,
-} from '../enum/credit-account-status-type.enum';
-import { IDIRUserRole } from '../enum/user-role.enum';
-import { IEGARMSResponse } from '../interface/egarms-response.interface';
-import { IUserJWT } from '../interface/user-jwt.interface';
+} from '@common/enum/credit-account-status-type.enum';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
+import { IEGARMSResponse } from '@common/interface/egarms-response.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { doesUserHaveRole } from './auth.helper';
 
 export const isActiveCreditAccount = (creditAccount: CreditAccount) => {

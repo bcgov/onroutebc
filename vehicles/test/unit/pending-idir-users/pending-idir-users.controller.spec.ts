@@ -4,10 +4,10 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 import { sysAdminStaffUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { PendingIdirUsersService } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
-import { PendingIdirUsersController } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.controller';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUsersController } from '@modules/company-user-management/pending-idir-users/pending-idir-users.controller';
 
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
   createPendingIdirUserMock,
   readPendingIdirUserMock,

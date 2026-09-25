@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CompanySuspendService } from './company-suspend.service';
 import { CompanySuspendController } from './company-suspend.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyModule } from '../company/company.module';
+import { CompanyModule } from '@modules/company-user-management/company/company.module';
 import { CompanySuspendProfile } from './profiles/company-suspend.profile';
 import { CompanySuspendActivity } from './entities/company-suspend-activity.entity';
 

@@ -1,5 +1,5 @@
-import { ProvinceDto } from '../../../../src/modules/common/dto/province.dto';
-import { Province } from '../../../../src/modules/common/entities/province.entity';
+import { ProvinceDto } from '@modules/common/dto/province.dto';
+import { Province } from '@modules/common/entities/province.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 import {
   countryCADtoMock,

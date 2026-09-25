@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from '../../src/app.controller';
-import { AppService } from '../../src/app.service';
-import { FeatureFlagsService } from '../../src/modules/feature-flags/feature-flags.service';
+import { AppController } from '@app/app.controller';
+import { AppService } from '@app/app.service';
+import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 

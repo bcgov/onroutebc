@@ -7,8 +7,8 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { PermitType } from '../../../common/enum/permit-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { PermitType } from '@common/enum/permit-type.enum';
 import { LoaDetail } from './loa-detail.entity';
 
 @Entity({ name: 'permit.ORBC_LOA_PERMIT_TYPE_DETAILS' })

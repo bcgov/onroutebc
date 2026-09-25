@@ -8,18 +8,18 @@ import {
   Validate,
   IsEnum,
 } from 'class-validator';
-import { OrderByConstraint } from '../../../../../../common/constraint/orderby.constraint';
-import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
-import { ApplicationOrderBy } from '../../../../../../common/enum/orderBy.enum';
-import { Nullable } from '../../../../../../common/types/common';
-import { ApplicationSearch } from '../../../../../../common/enum/application-search.enum';
+import { OrderByConstraint } from '@common/constraint/orderby.constraint';
+import { PageOptionsDto } from '@common/dto/paginate/page-options';
+import { ApplicationOrderBy } from '@common/enum/orderBy.enum';
+import { Nullable } from '@common/types/common';
+import { ApplicationSearch } from '@common/enum/application-search.enum';
 import {
   ACTIVE_APPLICATION_STATUS,
   ALL_APPLICATION_STATUS,
-} from '../../../../../../common/enum/application-status.enum';
-import { ApplicationSearchConstraint } from '../../../../../../common/constraint/application-search.constraint';
-import { ACTIVE_APPLICATION_QUEUE_STATUS } from '../../../../../../common/enum/case-status-type.enum';
-import { QueryParamListConstraint } from '../../../../../../common/constraint/query-param-list.constraint';
+} from '@common/enum/application-status.enum';
+import { ApplicationSearchConstraint } from '@common/constraint/application-search.constraint';
+import { ACTIVE_APPLICATION_QUEUE_STATUS } from '@common/enum/case-status-type.enum';
+import { QueryParamListConstraint } from '@common/constraint/query-param-list.constraint';
 
 export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @ApiProperty({

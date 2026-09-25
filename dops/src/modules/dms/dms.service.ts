@@ -8,15 +8,15 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
-import { IUserJWT } from '../../interface/user-jwt.interface';
-import { FileDownloadModes } from '../../enum/file-download-modes.enum';
-import { IFile } from '../../interface/file.interface';
-import { S3Service } from '../common/s3.service';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
+import { FileDownloadModes } from '@app/enum/file-download-modes.enum';
+import { IFile } from '@app/interface/file.interface';
+import { S3Service } from '@modules/common/s3.service';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { IDP } from '../../enum/idp.enum';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
+import { IDP } from '@app/enum/idp.enum';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class DmsService {

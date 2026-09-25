@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CreditAccountStatusValid,
   CreditAccountStatusValidType,
-} from '../../../../common/enum/credit-account-status-type.enum';
+} from '@common/enum/credit-account-status-type.enum';
 import { AutoMap } from '@automapper/classes';
 import {
   IsEnum,
@@ -11,7 +11,7 @@ import {
   Length,
   Validate,
 } from 'class-validator';
-import { CreditAccountStatusCommentConstraint } from '../../../../common/constraint/credit-account-status-comment.constraint';
+import { CreditAccountStatusCommentConstraint } from '@common/constraint/credit-account-status-comment.constraint';
 
 export class UpdateCreditAccountStatusDto {
   @AutoMap()

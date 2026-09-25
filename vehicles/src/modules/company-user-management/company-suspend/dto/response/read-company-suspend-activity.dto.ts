@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateCompanySuspendDto } from '../request/create-company-suspend.dto';
+import { CreateCompanySuspendDto } from '@modules/company-user-management/company-suspend/dto/request/create-company-suspend.dto';
 
 /**
  * JSON representation of response object when retrieving a company suspend acitivty.

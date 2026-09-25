@@ -8,7 +8,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
-import { Nullable } from '../../../common/types/common';
+import { Nullable } from '@common/types/common';
 import { Transaction } from './transaction.entity';
 import { Company } from './company.entity';
 

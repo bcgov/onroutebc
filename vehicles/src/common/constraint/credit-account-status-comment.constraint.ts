@@ -6,7 +6,7 @@ import {
 import {
   CreditAccountStatus,
   CreditAccountStatusValidType,
-} from '../enum/credit-account-status-type.enum';
+} from '@common/enum/credit-account-status-type.enum';
 
 @ValidatorConstraint({
   name: 'CreditAccountStatusCommentConstraint',

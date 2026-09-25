@@ -12,58 +12,58 @@ import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
-import { DopsService } from '../../common/dops.service';
-import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { DopsService } from '@modules/common/dops.service';
+import { FileDownloadModes } from '@common/enum/file-download-modes.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Response } from 'express';
-import { PermitStatus } from '../../../common/enum/permit-status.enum';
-import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { PermitStatus } from '@common/enum/permit-status.enum';
+import { PaginationDto } from '@common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import {
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
   ApplicationStatus,
-} from '../../../common/enum/application-status.enum';
-import { DopsGeneratedDocument } from '../../../common/interface/dops-generated-document.interface';
-import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
+} from '@common/enum/application-status.enum';
+import { DopsGeneratedDocument } from '@common/interface/dops-generated-document.interface';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
-import { PaymentService } from '../payment/payment.service';
-import { CreateTransactionDto } from '../payment/dto/request/create-transaction.dto';
-import { Directory } from '../../../common/enum/directory.enum';
+import { PaymentService } from '@modules/permit-application-payment/payment/payment.service';
+import { CreateTransactionDto } from '@modules/permit-application-payment/payment/dto/request/create-transaction.dto';
+import { Directory } from '@common/enum/directory.enum';
 import { PermitData } from './entities/permit-data.entity';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CacheKey } from '../../../common/enum/cache-key.enum';
-import { getMapFromCache } from '../../../common/helper/cache.helper';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { getMapFromCache } from '@common/helper/cache.helper';
 import { Cache } from 'cache-manager';
-import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
-import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
-import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
-import { PermitSearch } from '../../../common/enum/permit-search.enum';
-import { paginate, sortQuery } from '../../../common/helper/database.helper';
-import { User } from '../../company-user-management/users/entities/user.entity';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
+import { PageMetaDto } from '@common/dto/paginate/page-meta';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
+import { PermitSearch } from '@common/enum/permit-search.enum';
+import { paginate, sortQuery } from '@common/helper/database.helper';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import {
   generateApplicationNumber,
   generatePermitNumber,
-} from '../../../common/helper/permit-application.helper';
-import { IDP } from '../../../common/enum/idp.enum';
-import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../../common/enum/permit-application-origin.enum';
-import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
-import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { NotificationType } from '../../../common/enum/notification-type.enum';
-import { TransactionType } from '../../../common/enum/transaction-type.enum';
-import { validateEmailList } from '../../../common/helper/notification.helper';
-import { convertUtcToPt } from '../../../common/helper/date-time.helper';
-import { CreditAccountService } from '../../credit-account/credit-account.service';
-import { Nullable } from '../../../common/types/common';
-import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
-import { EGARMSCreditAccountService } from '../../common/egarms.credit-account.service';
-import { EGARMS_CREDIT_ACCOUNT_ERROR } from '../../../common/constants/api.constant';
+} from '@common/helper/permit-application.helper';
+import { IDP } from '@common/enum/idp.enum';
+import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '@common/enum/permit-application-origin.enum';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
+import { CreateNotificationDto } from '@modules/common/dto/request/create-notification.dto';
+import { ReadNotificationDto } from '@modules/common/dto/response/read-notification.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { NotificationType } from '@common/enum/notification-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { validateEmailList } from '@common/helper/notification.helper';
+import { convertUtcToPt } from '@common/helper/date-time.helper';
+import { CreditAccountService } from '@modules/credit-account/credit-account.service';
+import { Nullable } from '@common/types/common';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
+import { EGARMSCreditAccountService } from '@modules/common/egarms.credit-account.service';
+import { EGARMS_CREDIT_ACCOUNT_ERROR } from '@common/constants/api.constant';
 
 @Injectable()
 export class PermitService {

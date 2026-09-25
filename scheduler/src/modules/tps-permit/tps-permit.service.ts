@@ -6,15 +6,15 @@ import {
 import { TpsPermit } from './entities/tps-permit.entity';
 import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
+import { S3uploadStatus } from '@modules/common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
-import { Permit } from '../common/entities/permit.entity';
+import { Permit } from '@modules/common/entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { shouldRunOnCluster } from '../../common/helper/cron.helper';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { shouldRunOnCluster } from '@common/helper/cron.helper';
 
 @Injectable()
 export class TpsPermitService {
