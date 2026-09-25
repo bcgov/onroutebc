@@ -28,7 +28,7 @@ import {
   callDatabaseSequence,
   paginate,
   sortQuery,
-} from 'src/common/helper/database.helper';
+} from '../../../common/helper/database.helper';
 import { randomInt } from 'crypto';
 import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
 import { ProfileRegistrationDataNotification } from '../../../common/interface/profile-registration-data.notification.interface';
@@ -39,15 +39,15 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
+import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
 import { IDP } from '../../../common/enum/idp.enum';
 import { Directory } from '../../../common/enum/directory.enum';
 import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
-import { UserStatus } from 'src/common/enum/user-status.enum';
+import { UserStatus } from '../../../common/enum/user-status.enum';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';

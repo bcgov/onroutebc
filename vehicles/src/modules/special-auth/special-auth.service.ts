@@ -1,10 +1,10 @@
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { SpecialAuth } from './entities/special-auth.entity';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
 import { Company } from '../company-user-management/company/entities/company.entity';

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { Repository } from 'typeorm';
 import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';

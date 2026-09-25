@@ -9,22 +9,22 @@ import { PERMIT_STATUS } from '../common/enum/application-status.enum';
 import {
   GARMS_CASH_FILE_TRANSACTION_TYPE,
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
-} from 'src/common/enum/payment-method-type.enum';
+} from '../../common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
 import {
   createGarmsCashFile,
   createGarmsCreditFile,
-} from 'src/common/helper/garms.helper';
+} from '../../common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
   GARMS_LOCAL_FILE_PATH,
   GARMS_CREDIT_FILE_LOCATION,
   GARMS_CREDIT_FILE_LRECL,
-} from 'src/common/constants/garms.constant';
+} from '../../common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
-import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import { Nullable } from 'src/common/types/common';
+import { getToDateForGarms } from '../../common/helper/date-time.helper';
+import { Nullable } from '../../common/types/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getFromCache } from '../../common/helper/cache.helper';

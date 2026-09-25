@@ -9,9 +9,9 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { ExceptionDto } from 'src/common/exception/exception.dto';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 import { FeatureFlagsService } from './feature-flags.service';
-import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
+import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 
 @ApiTags('Configuration - Feature Flags')
 @ApiBadRequestResponse({

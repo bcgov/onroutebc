@@ -3,9 +3,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { IDP } from 'src/common/enum/idp.enum';
-import { Directory } from 'src/common/enum/directory.enum';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { IDP } from '../../common/enum/idp.enum';
+import { Directory } from '../../common/enum/directory.enum';
 import { Request } from 'express';
 
 @Injectable()

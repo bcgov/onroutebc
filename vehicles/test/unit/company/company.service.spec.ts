@@ -32,7 +32,7 @@ import {
   redCompanyAdminUserJWTMock,
   redCompanyCvClientUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
-import * as databaseHelper from 'src/common/helper/database.helper';
+import * as databaseHelper from '../../../src/common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { BadRequestException } from '@nestjs/common';

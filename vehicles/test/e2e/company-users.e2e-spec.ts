@@ -30,14 +30,14 @@ import {
   redCompanyAdminUserEntityMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../util/mocks/data/user.mock';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
-import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-user.mock';
-import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
+import { PendingIdirUser } from '../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
 import { App } from 'supertest/types';
 import * as constants from '../util/mocks/data/test-data.constants';
 import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '../../src/modules/company-user-management/users/entities/login.entity';
+import { readRedCompanyPendingUserDtoMock } from '../util/mocks/data/pending-user.mock';
 
 let repo: DeepMocked<Repository<User>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;

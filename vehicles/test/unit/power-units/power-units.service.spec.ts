@@ -13,7 +13,7 @@ import {
   powerUnitEntityMock,
   updatePowerUnitDtoMock,
 } from '../../util/mocks/data/power-unit.mock';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 
 const COMPANY_ID_1 = 1;
 const POWER_UNIT_ID_1 = '1';

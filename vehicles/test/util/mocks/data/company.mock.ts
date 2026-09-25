@@ -38,7 +38,7 @@ import {
   readBlueCompanyAdminUserDtoMock,
   readRedCompanyAdminUserDtoMock,
 } from './user.mock';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { PaginationDto } from '../../../../src/common/dto/paginate/pagination';
 
 export const redCompanyEntityMock: Company = {
   companyId: constants.RED_COMPANY_ID,

@@ -29,7 +29,7 @@ import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { DeleteDto } from '../../common/dto/response/delete.dto';

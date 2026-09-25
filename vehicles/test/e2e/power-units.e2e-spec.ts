@@ -16,9 +16,9 @@ import {
   readPowerUnitDtoMock,
   updatePowerUnitDtoMock,
 } from '../util/mocks/data/power-unit.mock';
-import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from '../util/mocks/data/delete-dto.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { App } from 'supertest/types';
 
 describe('Power Units (e2e)', () => {

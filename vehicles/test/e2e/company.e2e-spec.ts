@@ -26,7 +26,7 @@ import { ContactProfile } from '../../src/modules/common/profiles/contact.profil
 import { CompanyProfile } from '../../src/modules/company-user-management/company/profiles/company.profile';
 import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
-import * as databaseHelper from 'src/common/helper/database.helper';
+import * as databaseHelper from '../../src/common/helper/database.helper';
 import { Cache } from 'cache-manager';
 import { App } from 'supertest/types';
 import { INestApplication } from '@nestjs/common';

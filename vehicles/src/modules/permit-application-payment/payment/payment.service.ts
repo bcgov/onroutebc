@@ -14,11 +14,11 @@ import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
   callDatabaseSequence,
   setBaseEntityProperties,
-} from 'src/common/helper/database.helper';
+} from '../../../common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
 import { PaymentMethodType as PaymentMethodTypeEnum } from '../../../common/enum/payment-method-type.enum';
@@ -34,13 +34,13 @@ import {
   GL_PROJ_CODE_PLACEHOLDER,
   PPC_FULL_TEXT,
 } from '../../../common/constants/api.constant';
-import { convertToHash } from 'src/common/helper/crypto.helper';
+import { convertToHash } from '../../../common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
-import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { CfsFileStatus } from '../../../common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
   isApplicationInCart,
@@ -50,10 +50,10 @@ import {
   isCfsPaymentMethodType,
   isTransactionPurchase,
   isWebTransactionPurchase,
-} from 'src/common/helper/payment.helper';
+} from '../../../common/helper/payment.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { CacheKey } from '../../../common/enum/cache-key.enum';
 import {
   getFromCache,
   getMapFromCache,
@@ -71,7 +71,7 @@ import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { PolicyService } from '../../policy/policy.service';
 import { validatePaymentReceived } from '../../../common/helper/permit-fee.helper';
 import { ReadPolicyValidationDto } from '../../policy/dto/Response/read-policy-validation.dto';
-import { evaluatePolicyValidationResult } from 'src/common/helper/policy.helper';
+import { evaluatePolicyValidationResult } from '../../../common/helper/policy.helper';
 import { CreditAccountService } from '../../credit-account/credit-account.service';
 import { CreditAccount } from '../../credit-account/entities/credit-account.entity';
 import {

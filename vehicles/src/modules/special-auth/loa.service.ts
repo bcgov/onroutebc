@@ -4,9 +4,9 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { CreateLoaDto } from './dto/request/create-loa.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,7 +15,7 @@ import { Brackets, DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
-import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
+import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
@@ -24,7 +24,7 @@ import {
   getQueryRunner,
   setBaseEntityProperties,
 } from '../../common/helper/database.helper';
-import { convertUtcToPt } from 'src/common/helper/date-time.helper';
+import { convertUtcToPt } from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class LoaService {

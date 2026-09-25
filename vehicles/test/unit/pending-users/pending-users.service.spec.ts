@@ -20,7 +20,7 @@ import {
 } from '../../util/mocks/factory/dataSource.factory.mock';
 import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import { redCompanyEntityMock } from '../../util/mocks/data/company.mock';
 
 interface SelectQueryBuilderParameters {

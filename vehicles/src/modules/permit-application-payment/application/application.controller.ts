@@ -15,13 +15,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
-import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { JwtServiceAccountAuthGuard } from '../../../common/guard/jwt-sa-auth.guard';
+import { PermitIdDto } from '../permit/dto/request/permit-id.dto';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';

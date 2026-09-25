@@ -14,7 +14,7 @@ import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
 import { PermitType } from '../enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { Company } from './company.entity';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 

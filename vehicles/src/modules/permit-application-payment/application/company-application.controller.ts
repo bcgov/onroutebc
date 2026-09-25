@@ -23,31 +23,31 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
-import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ResultDto } from './dto/response/result.dto';
-import { Permissions } from 'src/common/decorator/permissions.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from 'src/common/enum/user-role.enum';
+} from '../../../common/enum/user-role.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
-import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import {
   ApplicationQueueStatus,

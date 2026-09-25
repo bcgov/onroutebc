@@ -1,4 +1,4 @@
-import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
+import { FeatureFlagValue } from '../../../../src/common/enum/feature-flag-value.enum';
 import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
 import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';

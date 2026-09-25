@@ -1,7 +1,7 @@
-import { ReadLoaDto } from 'src/modules/special-auth/dto/response/read-loa.dto';
+import { ReadLoaDto } from '../../modules/special-auth/dto/response/read-loa.dto';
 import { PermitType } from '../enum/permit-type.enum';
 import { Loas, PermitData } from '../interface/permit.template.interface';
-import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
+import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';

@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { PendingIdirUser } from './entities/pending-idir-user.entity';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()

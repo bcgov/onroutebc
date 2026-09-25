@@ -34,7 +34,7 @@ import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
 

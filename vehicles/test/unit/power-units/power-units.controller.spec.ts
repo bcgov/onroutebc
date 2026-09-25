@@ -12,8 +12,8 @@ import { powerUnitsServiceMock } from '../../util/mocks/service/power-units.serv
 import { deleteDtoMock } from '../../util/mocks/data/delete-dto.mock';
 import { createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
+import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';

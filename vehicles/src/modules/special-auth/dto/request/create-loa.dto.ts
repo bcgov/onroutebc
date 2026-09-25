@@ -9,7 +9,7 @@ import {
   IsDateString,
   Length,
 } from 'class-validator';
-import { PermitType } from 'src/common/enum/permit-type.enum';
+import { PermitType } from '../../../../common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
 import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
 

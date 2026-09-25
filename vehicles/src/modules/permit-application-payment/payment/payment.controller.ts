@@ -24,7 +24,7 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { PaymentService } from './payment.service';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request, Response } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';

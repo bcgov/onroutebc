@@ -9,21 +9,21 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ExceptionDto } from 'src/common/exception/exception.dto';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { SpecialAuthService } from './special-auth.service';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Permissions } from '../../common/decorator/permissions.decorator';
-import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from 'src/common/enum/user-role.enum';
+} from '../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')

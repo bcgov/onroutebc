@@ -29,9 +29,9 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,

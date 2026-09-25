@@ -6,16 +6,16 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
-import { shouldRunOnCluster } from 'src/common/helper/cron.helper';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { shouldRunOnCluster } from '../../common/helper/cron.helper';
 import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom, map } from 'rxjs';
-import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
-import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
+import { getAccessToken } from '../../common/helper/gov-common-services.helper';
+import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permit } from 'src/modules/common/entities/permit.entity';
+import { Permit } from '../common/entities/permit.entity';
 import { Repository } from 'typeorm';
 import {
   ApplicationStatus,
@@ -26,7 +26,7 @@ import * as dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
-} from 'src/common/constants/permit.constant';
+} from '../../common/constants/permit.constant';
 
 @Injectable()
 export class PermitService {

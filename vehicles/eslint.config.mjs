@@ -13,6 +13,17 @@ export default tseslint.config(
       // Disable the prefer-nullish-coalescing rule temporarily. To be enabled when strictNullChecks enabled and resolved.
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/no-base-to-string": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["src/*", "src/**","test/*", "test/**"],
+              message: "Use relative imports instead of alias imports from src.",
+            },
+          ],
+        },
+      ],
     },
  },
   { files: ["**/*.ts"],

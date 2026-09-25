@@ -4,7 +4,7 @@ import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { PaymentMethodTypeReport } from '../../../common/enum/payment-method-type.enum';
 import { PaymentCardType as PaymentCardTypeEnum } from '../../../common/enum/payment-card-type.enum';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';

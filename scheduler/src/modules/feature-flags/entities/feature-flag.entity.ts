@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
-import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
-import { Base } from 'src/modules/common/entities/base.entity';
+import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
+import { Base } from '../../common/entities/base.entity';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'ORBC_FEATURE_FLAG' })

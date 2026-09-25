@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { S3uploadStatus } from 'src/modules/common/enum/s3-upload-status.enum';
+import { S3uploadStatus } from '../../common/enum/s3-upload-status.enum';
 
 export class TpsPermitDto {
   @AutoMap()

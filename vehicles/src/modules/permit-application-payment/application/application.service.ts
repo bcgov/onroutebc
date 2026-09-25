@@ -88,13 +88,13 @@ import { ReadCaseActivityDto } from '../../case-management/dto/response/read-cas
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { PermitLoa } from './entities/permit-loa.entity';
-import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import { LoaDetail } from '../../special-auth/entities/loa-detail.entity';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 import { isCVClient } from '../../../common/helper/common.helper';
-import { Case } from 'src/modules/case-management/entities/case.entity';
+import { Case } from '../../case-management/entities/case.entity';
 import { PermitType } from '../../../common/enum/permit-type.enum';
 import { PolicyService } from '../../policy/policy.service';
 

@@ -18,16 +18,16 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
-import { Permissions } from 'src/common/decorator/permissions.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 
 import {
   CLIENT_USER_ROLE_LIST,
   IDIRUserRole,
-} from 'src/common/enum/user-role.enum';
+} from '../../../common/enum/user-role.enum';
 
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';

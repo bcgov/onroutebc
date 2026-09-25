@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
-import { IDP } from 'src/enum/idp.enum';
+import { IDP } from '../enum/idp.enum';
 import { IPermissions } from '../interface/permissions.interface';
 import { PERMISSIONS_KEY } from '../constants/policy.constants';
 

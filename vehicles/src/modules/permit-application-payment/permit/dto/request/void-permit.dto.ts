@@ -10,7 +10,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { ApplicationStatus } from '../../../../../common/enum/application-status.enum';
 import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
 import { PaymentTransactionDto } from '../../../payment/dto/common/payment-transaction.dto';
 import { Type } from 'class-transformer';

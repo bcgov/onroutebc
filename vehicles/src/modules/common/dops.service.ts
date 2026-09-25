@@ -24,7 +24,7 @@ import { INotificationDocument } from '../../common/interface/notification-docum
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
-import { Nullable } from 'src/common/types/common';
+import { Nullable } from '../../common/types/common';
 
 @Injectable()
 export class DopsService {

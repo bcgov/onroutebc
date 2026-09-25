@@ -1,4 +1,4 @@
-import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
+import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
 import { PermitData } from '../interface/permit.template.interface';
 import { PolicyApplication } from '../interface/policy-application.interface';
 import { ValidationResult, ValidationResults } from 'onroute-policy-engine';

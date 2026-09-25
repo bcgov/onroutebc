@@ -13,7 +13,7 @@ import {
   trailerEntityMock,
   updateTrailerDtoMock,
 } from '../../util/mocks/data/trailer.mock';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 
 const COMPANY_ID_1 = 1;
 const TRAILER_ID_1 = '1';

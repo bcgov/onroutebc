@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
-import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
-import { PaymentCardType } from 'src/common/enum/payment-card-type.enum';
+import { PaymentMethodType } from '../../../../../common/enum/payment-method-type.enum';
+import { PaymentCardType } from '../../../../../common/enum/payment-card-type.enum';
 import {
   CreditAccountStatus,
   CreditAccountStatusType,

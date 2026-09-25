@@ -7,7 +7,7 @@ import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { User } from '../users/entities/user.entity';

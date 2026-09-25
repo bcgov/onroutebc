@@ -24,14 +24,14 @@ import { Request, Response } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
-import { Permissions } from 'src/common/decorator/permissions.decorator';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-} from 'src/common/enum/user-role.enum';
+} from '../../../common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';

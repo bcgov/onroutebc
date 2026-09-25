@@ -6,10 +6,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from 'src/modules/common/entities/base.entity';
-import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 import { IsOptional } from 'class-validator';
-import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+import { NoFeeType } from '../../../common/enum/no-fee-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'permit.ORBC_SPECIAL_AUTH' })

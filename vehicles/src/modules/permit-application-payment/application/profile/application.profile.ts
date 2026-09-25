@@ -32,7 +32,7 @@ import { PermitLoa } from '../entities/permit-loa.entity';
 import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
 import * as dayjs from 'dayjs';
 import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
-import { CaseActivityType } from 'src/common/enum/case-activity-type.enum';
+import { CaseActivityType } from '../../../../common/enum/case-activity-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {

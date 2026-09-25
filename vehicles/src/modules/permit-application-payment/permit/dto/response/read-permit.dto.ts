@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PermitType } from '../../../../../common/enum/permit-type.enum';
 import { PermitApprovalSource } from '../../../../../common/enum/permit-approval-source.enum';
 import { PermitApplicationOrigin } from '../../../../../common/enum/permit-application-origin.enum';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
+import { PermitStatus } from '../../../../../common/enum/permit-status.enum';
 
 export class ReadPermitDto {
   @AutoMap()

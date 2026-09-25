@@ -15,9 +15,9 @@ import {
   trailerEntityMock,
   updateTrailerDtoMock,
 } from '../util/mocks/data/trailer.mock';
-import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from '../util/mocks/data/delete-dto.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { App } from 'supertest/types';
 
 describe('Trailers (e2e)', () => {

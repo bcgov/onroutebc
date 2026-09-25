@@ -42,9 +42,9 @@ import {
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
-import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
-import { readPendingIdirUserMock } from 'test/util/mocks/data/pending-idir-user.mock';
+import { PendingIdirUser } from '../../../src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from '../../../src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { readPendingIdirUserMock } from '../../util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
