@@ -4,9 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CreditAccountStatus,
   CreditAccountStatusType,
-} from '../../../../common/enum/credit-account-status-type.enum';
+} from '@common/enum/credit-account-status-type.enum';
 
-import { CreditAccountType } from '../../../../common/enum/credit-account-type.enum';
+import { CreditAccountType } from '@common/enum/credit-account-type.enum';
 
 export class ReadCreditAccountDto {
   @AutoMap()

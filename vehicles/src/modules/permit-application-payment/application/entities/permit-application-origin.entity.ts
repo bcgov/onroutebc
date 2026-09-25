@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
+import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '@common/enum/permit-application-origin.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT_APPLICATION_ORIGIN_TYPE' })
 export class PermitApplicationOrigin {

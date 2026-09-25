@@ -7,10 +7,10 @@ import { PermitProfile } from './profile/permit.profile';
 import { PermitData } from './entities/permit-data.entity';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
-import { PaymentModule } from '../payment/payment.module';
+import { PaymentModule } from '@modules/permit-application-payment/payment/payment.module';
 import { CompanyPermitController } from './company-permit.controller';
-import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
-import { CreditAccountModule } from '../../credit-account/credit-account.module';
+import { PermitReceiptDocumentModule } from '@modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
+import { CreditAccountModule } from '@modules/credit-account/credit-account.module';
 
 @Module({
   imports: [

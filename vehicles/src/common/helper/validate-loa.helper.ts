@@ -1,11 +1,11 @@
-import { ReadLoaDto } from 'src/modules/special-auth/dto/response/read-loa.dto';
-import { PermitType } from '../enum/permit-type.enum';
-import { Loas, PermitData } from '../interface/permit.template.interface';
-import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
+import { ReadLoaDto } from '@modules/special-auth/dto/response/read-loa.dto';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { Loas, PermitData } from '@common/interface/permit.template.interface';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import { VehicleType } from '../enum/vehicle-type.enum';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
 import { ValidationResult } from 'onroute-policy-engine';
 import { getPacificDateTime } from './date-time.helper';
 

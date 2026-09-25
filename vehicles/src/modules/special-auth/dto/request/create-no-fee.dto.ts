@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
-import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+import { NoFeeType } from '@common/enum/no-fee-type.enum';
 
 export class CreateNoFeeDto {
   @ApiProperty({

@@ -8,52 +8,49 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import {
-  ClientUserRole,
-  GenericUserRole,
-} from '../../../common/enum/user-role.enum';
-import { ReadUserDto } from '../users/dto/response/read-user.dto';
+import { ClientUserRole, GenericUserRole } from '@common/enum/user-role.enum';
+import { ReadUserDto } from '@modules/company-user-management/users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { CreateUserDto } from '../users/dto/request/create-user.dto';
-import { User } from '../users/entities/user.entity';
-import { CompanyUser } from '../users/entities/company-user.entity';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { CreateUserDto } from '@modules/company-user-management/users/dto/request/create-user.dto';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import {
   callDatabaseSequence,
   paginate,
   sortQuery,
-} from 'src/common/helper/database.helper';
+} from '@common/helper/database.helper';
 import { randomInt } from 'crypto';
-import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
-import { ProfileRegistrationDataNotification } from '../../../common/interface/profile-registration-data.notification.interface';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
+import { ProfileRegistrationDataNotification } from '@common/interface/profile-registration-data.notification.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { getFromCache } from '../../../common/helper/cache.helper';
-import { CacheKey } from '../../../common/enum/cache-key.enum';
-import { AccountSource } from '../../../common/enum/account-source.enum';
-import { PendingUser } from '../pending-users/entities/pending-user.entity';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
-import { IDP } from '../../../common/enum/idp.enum';
-import { Directory } from '../../../common/enum/directory.enum';
-import { getDirectory } from '../../../common/helper/auth.helper';
-import { convertToHash } from '../../../common/helper/crypto.helper';
-import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
+import { getFromCache } from '@common/helper/cache.helper';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { AccountSource } from '@common/enum/account-source.enum';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { PaginationDto } from '@common/dto/paginate/pagination';
+import { PageMetaDto } from '@common/dto/paginate/page-meta';
+import { IDP } from '@common/enum/idp.enum';
+import { Directory } from '@common/enum/directory.enum';
+import { getDirectory } from '@common/helper/auth.helper';
+import { convertToHash } from '@common/helper/crypto.helper';
+import { CRYPTO_ALGORITHM_SHA256 } from '@common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
-import { UserStatus } from 'src/common/enum/user-status.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
-import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
-import { DopsService } from '../../common/dops.service';
-import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { DopsService } from '@modules/common/dops.service';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
+import { throwUnprocessableEntityException } from '@common/helper/exception.helper';
 
 @Injectable()
 export class CompanyService {

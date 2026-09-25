@@ -7,16 +7,16 @@ import {
 } from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
-import { CreateLoaDto } from '../dto/request/create-loa.dto';
-import { LoaDetail } from '../entities/loa-detail.entity';
-import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
-import { LoaVehicle } from '../entities/loa-vehicles.entity';
+import { CreateLoaDto } from '@modules/special-auth/dto/request/create-loa.dto';
+import { LoaDetail } from '@modules/special-auth/entities/loa-detail.entity';
+import { LoaPermitType } from '@modules/special-auth/entities/loa-permit-type-details.entity';
+import { LoaVehicle } from '@modules/special-auth/entities/loa-vehicles.entity';
 import * as dayjs from 'dayjs';
-import { UpdateLoaDto } from '../dto/request/update-loa.dto';
-import { ReadLoaDto } from '../dto/response/read-loa.dto';
-import { VehicleType } from '../../../common/enum/vehicle-type.enum';
-import { setBaseEntityProperties } from '../../../common/helper/database.helper';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { UpdateLoaDto } from '@modules/special-auth/dto/request/update-loa.dto';
+import { ReadLoaDto } from '@modules/special-auth/dto/response/read-loa.dto';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
+import { setBaseEntityProperties } from '@common/helper/database.helper';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {

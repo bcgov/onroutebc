@@ -9,9 +9,12 @@
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "paths": {
+      "@app/*": ["./src/*"],
+      "@modules/*": ["./src/modules/*"]
+    }
   }
 }

@@ -13,19 +13,19 @@ import {
 import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
 import * as constants from '../util/mocks/data/test-data.constants';
-import { PendingUser } from '../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
 import {
   PENDING_USER_LIST,
   createRedCompanyPendingUserDtoMock,
   readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../util/mocks/data/pending-user.mock';
-import { ClientUserRole } from '../../src/common/enum/user-role.enum';
+import { ClientUserRole } from '@common/enum/user-role.enum';
 import { App } from 'supertest/types';
-import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 import { createMapper } from '@automapper/core';
-import { PendingUsersController } from '../../src/modules/company-user-management/pending-users/pending-users.controller';
-import { PendingUsersProfile } from '../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
+import { PendingUsersController } from '@modules/company-user-management/pending-users/pending-users.controller';
+import { PendingUsersProfile } from '@modules/company-user-management/pending-users/profiles/pending-user.profile';
 import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
 
 interface SelectQueryBuilderParameters {

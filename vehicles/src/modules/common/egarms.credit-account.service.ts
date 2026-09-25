@@ -6,11 +6,11 @@ import {
   Logger,
 } from '@nestjs/common';
 import { AxiosError, AxiosRequestConfig } from 'axios';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { EGARMS_CREDIT_API_SYSTEM_ID } from '../../common/constants/api.constant';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { EGARMS_CREDIT_API_SYSTEM_ID } from '@common/constants/api.constant';
 import { lastValueFrom } from 'rxjs';
 import { XMLParser } from 'fast-xml-parser';
-import { IEGARMSResponse } from '../../common/interface/egarms-response.interface';
+import { IEGARMSResponse } from '@common/interface/egarms-response.interface';
 import * as CircuitBreaker from 'opossum';
 
 @Injectable()

@@ -3,8 +3,11 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { differenceBetween, getDuration } from '../helper/date-time.helper';
-import { MaxDifferenceType } from '../interface/duration-difference.interface';
+import {
+  differenceBetween,
+  getDuration,
+} from '@common/helper/date-time.helper';
+import { MaxDifferenceType } from '@common/interface/duration-difference.interface';
 /**
  * The constraint implementation for checking if a datetime is after
  * another datetime and within the allowable difference.

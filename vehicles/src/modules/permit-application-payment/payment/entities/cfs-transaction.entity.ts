@@ -8,7 +8,7 @@ import {
 import { AutoMap } from '@automapper/classes';
 import { Transaction } from './transaction.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { CfsFileStatus } from '@common/enum/cfs-file-status.enum';
 
 @Entity({ name: 'permit.ORBC_CFS_TRANSACTION_DETAIL' })
 export class CfsTransactionDetail {

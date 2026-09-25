@@ -1,8 +1,8 @@
 import { provinceBCEntityMock, provinceWAEntityMock } from './province.mock';
-import { Contact } from '../../../../src/modules/common/entities/contact.entity';
-import { CreateContactDto } from '../../../../src/modules/common/dto/request/create-contact.dto';
-import { UpdateContactDto } from '../../../../src/modules/common/dto/request/update-contact.dto';
-import { ReadContactDto } from '../../../../src/modules/common/dto/response/read-contact.dto';
+import { Contact } from '@modules/common/entities/contact.entity';
+import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto';
+import { UpdateContactDto } from '@modules/common/dto/request/update-contact.dto';
+import { ReadContactDto } from '@modules/common/dto/response/read-contact.dto';
 import { baseEntityMock } from './base.mock';
 import * as constants from './test-data.constants';
 

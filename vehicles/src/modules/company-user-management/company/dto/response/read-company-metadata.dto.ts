@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Directory } from '../../../../../common/enum/directory.enum';
+import { Directory } from '@common/enum/directory.enum';
 
 /**
  * JSON representation of response object when retrieving a company metadata.

@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { TemplateName } from '../../../enum/template-name.enum';
-import { Base } from '../../common/entities/base.entity';
+import { TemplateName } from '@app/enum/template-name.enum';
+import { Base } from '@modules/common/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'dops.ORBC_DOCUMENT_TEMPLATE' })

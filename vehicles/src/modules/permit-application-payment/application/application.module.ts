@@ -5,17 +5,17 @@ import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
-import { PaymentModule } from '../payment/payment.module';
-import { PermitData } from '../permit/entities/permit-data.entity';
-import { PermitType } from '../permit/entities/permit-type.entity';
-import { Permit } from '../permit/entities/permit.entity';
-import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
+import { PaymentModule } from '@modules/permit-application-payment/payment/payment.module';
+import { PermitData } from '@modules/permit-application-payment/permit/entities/permit-data.entity';
+import { PermitType } from '@modules/permit-application-payment/permit/entities/permit-type.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { PermitReceiptDocumentModule } from '@modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
 import { ApplicationController } from './application.controller';
-import { CaseManagementModule } from '../../case-management/case-management.module';
+import { CaseManagementModule } from '@modules/case-management/case-management.module';
 import { CompanyApplicationQueueController } from './company-application-queue.controller';
 import { PermitLoa } from './entities/permit-loa.entity';
-import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
-import { PolicyModule } from '../../policy/policy.module';
+import { LoaDetail } from '@modules/special-auth/entities/loa-detail.entity';
+import { PolicyModule } from '@modules/policy/policy.module';
 
 @Module({
   imports: [

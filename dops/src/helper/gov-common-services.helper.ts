@@ -1,12 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { GovCommonServices } from '../enum/gov-common-services.enum';
+import { GovCommonServices } from '@app/enum/gov-common-services.enum';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
-import { CacheKey } from '../enum/cache-key.enum';
-import { TOKEN_EXPIRY_BUFFER } from 'src/constants/dops.constant';
+import { GovCommonServicesToken } from '@app/interface/gov-common-services-token.interface';
+import { CacheKey } from '@app/enum/cache-key.enum';
+import { TOKEN_EXPIRY_BUFFER } from '@app/constants/dops.constant';
 
 const logger = new Logger('GocCommonServicesHelper');
 

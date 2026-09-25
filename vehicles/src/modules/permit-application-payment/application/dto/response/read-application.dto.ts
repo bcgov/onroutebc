@@ -1,11 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
-import { PermitType } from 'src/common/enum/permit-type.enum';
-import { ReadCaseActivityDto } from '../../../../case-management/dto/response/read-case-activity.dto';
-import { Nullable } from '../../../../../common/types/common';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
+import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-case-activity.dto';
+import { Nullable } from '@common/types/common';
 
 export class ReadApplicationDto {
   @AutoMap()

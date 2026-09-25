@@ -3,36 +3,36 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
-import { GarmsExtractType } from '../common/enum/garms-extract-type.enum';
-import { Transaction } from '../common/entities/transaction.entity';
-import { PERMIT_STATUS } from '../common/enum/application-status.enum';
+import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { Transaction } from '@modules/common/entities/transaction.entity';
+import { PERMIT_STATUS } from '@modules/common/enum/application-status.enum';
 import {
   GARMS_CASH_FILE_TRANSACTION_TYPE,
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
-} from 'src/common/enum/payment-method-type.enum';
-import { PermitType } from '../common/entities/permit-type.entity';
+} from '@common/enum/payment-method-type.enum';
+import { PermitType } from '@modules/common/entities/permit-type.entity';
 import {
   createGarmsCashFile,
   createGarmsCreditFile,
-} from 'src/common/helper/garms.helper';
+} from '@common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
   GARMS_LOCAL_FILE_PATH,
   GARMS_CREDIT_FILE_LOCATION,
   GARMS_CREDIT_FILE_LRECL,
-} from 'src/common/constants/garms.constant';
+} from '@common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
-import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import { Nullable } from 'src/common/types/common';
+import { getToDateForGarms } from '@common/helper/date-time.helper';
+import { Nullable } from '@common/types/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { getFromCache } from '../../common/helper/cache.helper';
-import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
-import { CacheKey } from '../../common/enum/cache-key.enum';
+import { getFromCache } from '@common/helper/cache.helper';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { CacheKey } from '@common/enum/cache-key.enum';
 import { execSync } from 'child_process';
-import { uploadToGarms } from '../../common/helper/sftp.helper';
-import { shouldRunOnCluster } from '../../common/helper/cron.helper';
+import { uploadToGarms } from '@common/helper/sftp.helper';
+import { shouldRunOnCluster } from '@common/helper/cron.helper';
 
 @Injectable()
 export class GarmsService {

@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Cache } from 'cache-manager';
-import { IsFeatureFlagEnabled } from '../decorator/is-feature-flag-enabled.decorator';
-import { CacheKey } from '../enum/cache-key.enum';
-import { FeatureFlagValue } from '../enum/feature-flag-value.enum';
-import { getMapFromCache } from '../helper/cache.helper';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { getMapFromCache } from '@common/helper/cache.helper';
 
 /**
  * @class FeatureFlagGuard

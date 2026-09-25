@@ -1,4 +1,4 @@
-import { PageOptionsDto } from '../dto/paginate/page-options';
+import { PageOptionsDto } from '@common/dto/paginate/page-options';
 
 export interface PageMetaDtoParameters {
   pageOptionsDto: PageOptionsDto;

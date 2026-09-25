@@ -8,11 +8,11 @@ import {
   OneToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from 'src/modules/common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { LoaPermitType } from './loa-permit-type-details.entity';
 import { LoaVehicle } from './loa-vehicles.entity';
 import { IsOptional } from 'class-validator';
-import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 
 @Entity({ name: 'permit.ORBC_LOA_DETAILS' })
 export class LoaDetail extends Base {

@@ -7,19 +7,19 @@ import {
 } from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
-import { Transaction } from '../entities/transaction.entity';
-import { ReadTransactionDto } from '../dto/response/read-transaction.dto';
-import { CreateTransactionDto } from '../dto/request/create-transaction.dto';
-import { PermitTransaction } from '../entities/permit-transaction.entity';
-import { ReadApplicationTransactionDto } from '../dto/response/read-application-transaction.dto';
-import { UpdatePaymentGatewayTransactionDto } from '../dto/request/update-payment-gateway-transaction.dto';
-import { ReadPaymentGatewayTransactionDto } from '../dto/response/read-payment-gateway-transaction.dto';
-import { Directory } from 'src/common/enum/directory.enum';
-import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
-import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
-import { isWebTransactionPurchase } from '../../../../common/helper/payment.helper';
-import { TransactionType } from '../../../../common/enum/transaction-type.enum';
-import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
+import { Transaction } from '@modules/permit-application-payment/payment/entities/transaction.entity';
+import { ReadTransactionDto } from '@modules/permit-application-payment/payment/dto/response/read-transaction.dto';
+import { CreateTransactionDto } from '@modules/permit-application-payment/payment/dto/request/create-transaction.dto';
+import { PermitTransaction } from '@modules/permit-application-payment/payment/entities/permit-transaction.entity';
+import { ReadApplicationTransactionDto } from '@modules/permit-application-payment/payment/dto/response/read-application-transaction.dto';
+import { UpdatePaymentGatewayTransactionDto } from '@modules/permit-application-payment/payment/dto/request/update-payment-gateway-transaction.dto';
+import { ReadPaymentGatewayTransactionDto } from '@modules/permit-application-payment/payment/dto/response/read-payment-gateway-transaction.dto';
+import { Directory } from '@common/enum/directory.enum';
+import { PPC_FULL_TEXT } from '@common/constants/api.constant';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
+import { isWebTransactionPurchase } from '@common/helper/payment.helper';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {

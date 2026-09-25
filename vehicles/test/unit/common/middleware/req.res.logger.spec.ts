@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { Request, Response } from 'express';
 import { Logger } from '@nestjs/common';
-import { HTTPLoggerMiddleware } from '../../../../src/common/middleware/req.res.logger';
+import { HTTPLoggerMiddleware } from '@common/middleware/req.res.logger';
 
 describe('HTTPLoggerMiddleware', () => {
   let middleware: HTTPLoggerMiddleware;

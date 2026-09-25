@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
@@ -11,14 +11,14 @@ import {
 } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
 
-import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
+import { UsersService } from '@modules/company-user-management/users/users.service';
 import {
   createRedCompanyCvClientUserDtoMock,
   readRedCompanyCvClientUserDtoMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-import { CompanyUsersController } from '../../../src/modules/company-user-management/users/company-users.controller';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { CompanyUsersController } from '@modules/company-user-management/users/company-users.controller';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;

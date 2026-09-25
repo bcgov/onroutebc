@@ -7,9 +7,9 @@ import { PowerUnit } from './entities/power-unit.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
-import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PowerUnitsService {

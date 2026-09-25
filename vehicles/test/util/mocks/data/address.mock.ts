@@ -1,9 +1,9 @@
 import { provinceBCEntityMock, provinceWAEntityMock } from './province.mock';
 import { baseEntityMock } from './base.mock';
-import { Address } from '../../../../src/modules/common/entities/address.entity';
-import { CreateAddressDto } from '../../../../src/modules/common/dto/request/create-address.dto';
-import { UpdateAddressDto } from '../../../../src/modules/common/dto/request/update-address.dto';
-import { ReadAddressDto } from '../../../../src/modules/common/dto/response/read-address.dto';
+import { Address } from '@modules/common/entities/address.entity';
+import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
+import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
+import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
 import * as constants from './test-data.constants';
 
 export const redCompanyAddressEntityMock: Address = {

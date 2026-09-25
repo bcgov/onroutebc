@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { CaseActivityType } from '../enum/case-activity-type.enum';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
 @ValidatorConstraint({ name: 'SuspendComment', async: false })
 export class CaseActivityCommentConstraint implements ValidatorConstraintInterface {

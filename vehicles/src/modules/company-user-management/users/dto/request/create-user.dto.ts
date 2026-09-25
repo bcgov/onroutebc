@@ -1,4 +1,4 @@
-import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
+import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto';
 
 /**
  * JSON representation of the request object for creating a user.

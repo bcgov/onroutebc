@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { PaymentTransactionDto } from '../common/payment-transaction.dto';
+import { PaymentTransactionDto } from '@modules/permit-application-payment/payment/dto/common/payment-transaction.dto';
 import { Type } from 'class-transformer';
 
 export class CreateRefundTransactionDto {

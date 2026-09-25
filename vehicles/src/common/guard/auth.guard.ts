@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
-import { IS_AUTH_ONLY_KEY } from '../decorator/auth-only.decorator';
+import { IS_PUBLIC_KEY } from '@common/decorator/public.decorator';
+import { IS_AUTH_ONLY_KEY } from '@common/decorator/auth-only.decorator';
 import { Request } from 'express';
 
 @Injectable()

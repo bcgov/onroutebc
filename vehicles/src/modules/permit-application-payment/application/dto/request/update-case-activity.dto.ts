@@ -7,9 +7,9 @@ import {
   Length,
   Validate,
 } from 'class-validator';
-import { CaseActivityType } from '../../../../../common/enum/case-activity-type.enum';
-import { CaseActivityCommentConstraint } from '../../../../../common/constraint/case-activity-comment.constraint';
-import { Nullable } from '../../../../../common/types/common';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
+import { CaseActivityCommentConstraint } from '@common/constraint/case-activity-comment.constraint';
+import { Nullable } from '@common/types/common';
 
 export class UpdateCaseActivity {
   @AutoMap()

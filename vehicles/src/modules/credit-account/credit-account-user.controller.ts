@@ -19,18 +19,18 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Permissions } from '../../common/decorator/permissions.decorator';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { DeleteDto } from '../common/dto/response/delete.dto';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
 import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
-import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
-import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { ClientUserRole, IDIRUserRole } from '@common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')

@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadCompanyMetadataDto } from '../../../company/dto/response/read-company-metadata.dto';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
 import { ReadUserDto } from './read-user.dto';
-import { ReadCompanyDto } from '../../../company/dto/response/read-company.dto';
+import { ReadCompanyDto } from '@modules/company-user-management/company/dto/response/read-company.dto';
 
 /**
  * JSON representation of response object when retrieving user information and

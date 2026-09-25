@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { throwNotAcceptableException } from '../helper/exception.helper';
+import { throwNotAcceptableException } from '@common/helper/exception.helper';
 
 /**
  * Middleware to check the version of the API.

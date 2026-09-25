@@ -9,18 +9,18 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { PermitType } from '../../../../common/enum/permit-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { PermitType } from '@common/enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
-import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
-import { PermitApprovalSource } from '../../../../common/enum/permit-approval-source.enum';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
-import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
-import { User } from '../../../company-user-management/users/entities/user.entity';
-import { Company } from '../../../company-user-management/company/entities/company.entity';
-import { Case } from '../../../case-management/entities/case.entity';
-import { Nullable } from '../../../../common/types/common';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
+import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitTransaction } from '@modules/permit-application-payment/payment/entities/permit-transaction.entity';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { Case } from '@modules/case-management/entities/case.entity';
+import { Nullable } from '@common/types/common';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {

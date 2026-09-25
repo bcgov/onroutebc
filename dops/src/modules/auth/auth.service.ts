@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { ClsService } from 'nestjs-cls';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class AuthService {

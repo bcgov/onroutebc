@@ -18,24 +18,24 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
-import { Permissions } from 'src/common/decorator/permissions.decorator';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { Permissions } from '@common/decorator/permissions.decorator';
 
 import {
   CLIENT_USER_ROLE_LIST,
   IDIRUserRole,
-} from 'src/common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 import { UpdateCaseActivity } from './dto/request/update-case-activity.dto';
-import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
+import { ReadCaseEvenDto } from '@modules/case-management/dto/response/read-case-event.dto';
 import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
-import { IsFeatureFlagEnabled } from '../../../common/decorator/is-feature-flag-enabled.decorator';
-import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { ReadCaseMetaDto } from '@modules/case-management/dto/response/read-case-meta.dto';
 @ApiBearerAuth()
 @ApiTags('Company Application Queue')
 @IsFeatureFlagEnabled('APPLICATION-QUEUE')

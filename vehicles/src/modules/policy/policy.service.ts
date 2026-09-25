@@ -15,36 +15,36 @@ import { Cache } from 'cache-manager';
 import { HttpService } from '@nestjs/axios';
 import { ClsService } from 'nestjs-cls';
 import { SpecialAuthorizations } from 'onroute-policy-engine/types';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { Nullable } from '../../common/types/common';
-import { SpecialAuth } from '../special-auth/entities/special-auth.entity';
-import { Permit } from '../permit-application-payment/permit/entities/permit.entity';
-import { PolicyConfiguration } from '../../common/interface/policy-configuration-report.interface';
-import { CacheKey } from '../../common/enum/cache-key.enum';
-import { addToCache, getMapFromCache } from '../../common/helper/cache.helper';
-import { convertToPolicyApplication } from '../../common/helper/policy.helper';
-import { getAccessToken } from '../../common/helper/gov-common-services.helper';
-import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import { calculatePermitAmount } from '../../common/helper/permit-fee.helper';
-import { SpecialAuthService } from '../special-auth/special-auth.service';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { Nullable } from '@common/types/common';
+import { SpecialAuth } from '@modules/special-auth/entities/special-auth.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { PolicyConfiguration } from '@common/interface/policy-configuration-report.interface';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { addToCache, getMapFromCache } from '@common/helper/cache.helper';
+import { convertToPolicyApplication } from '@common/helper/policy.helper';
+import { getAccessToken } from '@common/helper/gov-common-services.helper';
+import { GovCommonServices } from '@common/enum/gov-common-services.enum';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { calculatePermitAmount } from '@common/helper/permit-fee.helper';
+import { SpecialAuthService } from '@modules/special-auth/special-auth.service';
 import { DataSource, QueryRunner } from 'typeorm';
 import {
   findApplicationForPE,
   findPermitHistory,
   isVoidorRevoked,
-} from '../../common/helper/permit-application.helper';
-import { getQueryRunner } from '../../common/helper/database.helper';
-import { PermitData } from '../../common/interface/permit.template.interface';
-import { LoaService } from '../special-auth/loa.service';
-import { validateLoas } from '../../common/helper/validate-loa.helper';
+} from '@common/helper/permit-application.helper';
+import { getQueryRunner } from '@common/helper/database.helper';
+import { PermitData } from '@common/interface/permit.template.interface';
+import { LoaService } from '@modules/special-auth/loa.service';
+import { validateLoas } from '@common/helper/validate-loa.helper';
 import {
   PE_FIELD_REFERENCE_START_DATE,
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
-} from '../../common/constants/policy-engine.constant';
-import { PermitType } from '../../common/enum/permit-type.enum';
-import { isBeforeCalendarQuarter } from '../../common/helper/date-time.helper';
+} from '@common/constants/policy-engine.constant';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { isBeforeCalendarQuarter } from '@common/helper/date-time.helper';
 
 @Injectable()
 export class PolicyService {

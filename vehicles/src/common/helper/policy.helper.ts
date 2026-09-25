@@ -1,10 +1,10 @@
-import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
-import { PermitData } from '../interface/permit.template.interface';
-import { PolicyApplication } from '../interface/policy-application.interface';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { PermitData } from '@common/interface/permit.template.interface';
+import { PolicyApplication } from '@common/interface/policy-application.interface';
 import { ValidationResult, ValidationResults } from 'onroute-policy-engine';
-import { IUserJWT } from '../interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { isCVClient } from './common.helper';
-import { PermitType } from '../enum/permit-type.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
 import {
   addDaysToDate,
   differenceBetween,
@@ -19,14 +19,14 @@ import {
   STOS_MAX_ALLOWED_DURATION_AMEND,
   STOW_MAX_ALLOWED_DURATION_AMEND,
   STWSE_MAX_ALLOWED_DURATION_AMEND,
-} from '../constants/permit.constant';
+} from '@common/constants/permit.constant';
 
 import {
   PE_FIELD_REFERENCE_PERMIT_DURATION,
   PE_FIELD_REFERENCE_START_DATE,
   PE_ID_AXLE_WEIGHT_SPACING,
   PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
-} from '../constants/policy-engine.constant';
+} from '@common/constants/policy-engine.constant';
 
 export const convertToPolicyApplication = (
   application: Permit,

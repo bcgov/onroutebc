@@ -7,7 +7,7 @@ import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { PowerUnitType } from './entities/power-unit-type.entity';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PowerUnitTypesService {

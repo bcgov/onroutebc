@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Nullable } from '../../../../common/types/common';
-import { CaseActivityType } from '../../../../common/enum/case-activity-type.enum';
+import { Nullable } from '@common/types/common';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
 export class ReadCaseActivityDto {
   @AutoMap()

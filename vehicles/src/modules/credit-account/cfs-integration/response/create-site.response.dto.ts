@@ -1,4 +1,4 @@
-import { Nullable } from '../../../../common/types/common';
+import { Nullable } from '@common/types/common';
 
 export interface CreateSiteResponseDto {
   site_number: string;

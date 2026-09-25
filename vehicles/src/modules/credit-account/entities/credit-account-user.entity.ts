@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { Company } from '../../company-user-management/company/entities/company.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { CreditAccount } from './credit-account.entity';
 
 @Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT_USER' })

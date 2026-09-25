@@ -20,27 +20,27 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { AuthOnly } from '@common/decorator/auth-only.decorator';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+} from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({

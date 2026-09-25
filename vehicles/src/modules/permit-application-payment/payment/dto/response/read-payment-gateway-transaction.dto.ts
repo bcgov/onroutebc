@@ -1,5 +1,5 @@
 import { AutoMap } from '@automapper/classes';
-import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
+import { PaymentGatewayTransactionDto } from '@modules/permit-application-payment/payment/dto/common/payment-gateway-transaction.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ReadPaymentGatewayTransactionDto extends PaymentGatewayTransactionDto {

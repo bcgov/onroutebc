@@ -20,23 +20,23 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { PaymentService } from './payment.service';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Request, Response } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
-import { ReadFileDto } from '../../common/dto/response/read-file.dto';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PaymentReportService } from './payment-report.service';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 import { CreateRefundTransactionDto } from './dto/request/create-refund-transaction.dto';
 
 @ApiBearerAuth()

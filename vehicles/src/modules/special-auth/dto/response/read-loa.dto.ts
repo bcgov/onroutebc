@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { PermitType } from 'src/common/enum/permit-type.enum';
-import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
 
 export class ReadLoaDto {
   @AutoMap()

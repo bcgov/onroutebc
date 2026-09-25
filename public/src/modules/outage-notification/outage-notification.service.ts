@@ -7,9 +7,9 @@ import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { CacheKey } from '../../common/enum/cache-key.enum';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { CacheKey } from '@common/enum/cache-key.enum';
 
 @Injectable()
 export class OutageNotificationService {

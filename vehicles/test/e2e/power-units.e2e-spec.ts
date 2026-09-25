@@ -7,8 +7,8 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { PowerUnit } from '../../src/modules/vehicles/power-units/entities/power-unit.entity';
-import { PowerUnitsModule } from '../../src/modules/vehicles/power-units/power-units.module';
+import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
+import { PowerUnitsModule } from '@modules/vehicles/power-units/power-units.module';
 import {
   createPowerUnitDtoMock,
   deletePowerUnitMock,
@@ -16,9 +16,9 @@ import {
   readPowerUnitDtoMock,
   updatePowerUnitDtoMock,
 } from '../util/mocks/data/power-unit.mock';
-import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from '../util/mocks/data/delete-dto.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { App } from 'supertest/types';
 
 describe('Power Units (e2e)', () => {

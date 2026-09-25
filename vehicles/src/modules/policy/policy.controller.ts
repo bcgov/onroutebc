@@ -9,10 +9,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { ApplicationIdIdPathParamDto } from '../permit-application-payment/application/dto/request/pathParam/applicationId.path-params.dto';
-import { Permissions } from '../../common/decorator/permissions.decorator';
-import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { ApplicationIdIdPathParamDto } from '@modules/permit-application-payment/application/dto/request/pathParam/applicationId.path-params.dto';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { ClientUserRole, IDIRUserRole } from '@common/enum/user-role.enum';
 import { ValidationResults } from 'onroute-policy-engine';
 
 @ApiBearerAuth()

@@ -7,13 +7,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { Case } from './case.entity';
-import { CaseEventType } from '../../../common/enum/case-event-type.enum';
-import { User } from '../../company-user-management/users/entities/user.entity';
+import { CaseEventType } from '@common/enum/case-event-type.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 import { CaseNotes } from './case-notes.entity';
 import { CaseActivity } from './case-activity.entity';
-import { Nullable } from '../../../common/types/common';
+import { Nullable } from '@common/types/common';
 import { CaseDocument } from './case-document.entity';
 
 @Entity({ name: 'case.ORBC_CASE_EVENT' })

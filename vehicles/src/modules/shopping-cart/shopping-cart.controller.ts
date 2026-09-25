@@ -19,16 +19,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Permissions } from '../../common/decorator/permissions.decorator';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetApplicationInCartQueryParams } from './dto/request/queryParam/getApplicationsInCart.query-param.dto';
-import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
-import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
+import { ClientUserRole, IDIRUserRole } from '@common/enum/user-role.enum';
+import { CompanyIdPathParamDto } from '@modules/common/dto/request/pathParam/companyId.path-param.dto';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 
 @ApiBearerAuth()

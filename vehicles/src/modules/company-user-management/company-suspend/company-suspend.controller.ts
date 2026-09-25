@@ -10,13 +10,13 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { IDIRUserRole } from '../../../common/enum/user-role.enum';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
 
 @ApiTags('Company and User Management - Company Suspend')
 @ApiBadRequestResponse({

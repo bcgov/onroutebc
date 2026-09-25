@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CaseEventType } from '../../../../common/enum/case-event-type.enum';
+import { CaseEventType } from '@common/enum/case-event-type.enum';
 
 export class ReadCaseEvenDto {
   @AutoMap()

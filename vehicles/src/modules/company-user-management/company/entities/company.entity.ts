@@ -6,14 +6,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Address } from '../../../common/entities/address.entity';
-import { Contact } from '../../../common/entities/contact.entity';
-import { CompanyUser } from '../../users/entities/company-user.entity';
-import { Directory } from '../../../../common/enum/directory.enum';
-import { AccountRegion } from '../../../../common/enum/account-region.enum';
-import { AccountSource } from '../../../../common/enum/account-source.enum';
+import { Address } from '@modules/common/entities/address.entity';
+import { Contact } from '@modules/common/entities/contact.entity';
+import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
+import { Directory } from '@common/enum/directory.enum';
+import { AccountRegion } from '@common/enum/account-region.enum';
+import { AccountSource } from '@common/enum/account-source.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {

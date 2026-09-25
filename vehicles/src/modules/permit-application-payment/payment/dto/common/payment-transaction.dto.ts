@@ -9,8 +9,8 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { PaymentCardType } from '../../../../../common/enum/payment-card-type.enum';
-import { PaymentMethodType } from '../../../../../common/enum/payment-method-type.enum';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
 
 export class PaymentTransactionDto {
   @AutoMap()

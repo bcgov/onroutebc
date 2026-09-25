@@ -7,15 +7,15 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Trailer } from '../entities/trailer.entity';
-import { ReadTrailerDto } from '../dto/response/read-trailer.dto';
-import { UpdateTrailerDto } from '../dto/request/update-trailer.dto';
-import { CreateTrailerDto } from '../dto/request/create-trailer.dto';
+import { Trailer } from '@modules/vehicles/trailers/entities/trailer.entity';
+import { ReadTrailerDto } from '@modules/vehicles/trailers/dto/response/read-trailer.dto';
+import { UpdateTrailerDto } from '@modules/vehicles/trailers/dto/request/update-trailer.dto';
+import { CreateTrailerDto } from '@modules/vehicles/trailers/dto/request/create-trailer.dto';
 import {
   getCountryCode,
   getProvinceCode,
   getProvinceId,
-} from '../../../../common/helper/province-country.helper';
+} from '@common/helper/province-country.helper';
 
 @Injectable()
 export class TrailersProfile extends AutomapperProfile {

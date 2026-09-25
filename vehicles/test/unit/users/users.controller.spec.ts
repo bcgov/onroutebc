@@ -8,16 +8,16 @@ import {
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { UsersController } from '../../../src/modules/company-user-management/users/users.controller';
-import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
+import { UsersController } from '@modules/company-user-management/users/users.controller';
+import { UsersService } from '@modules/company-user-management/users/users.service';
 import {
   USER_DTO_LIST,
   readRedAdminUserOrbcStatusDtoMock,
   readSysAdminStaffUserDtoMock,
 } from '../../util/mocks/data/user.mock';
-import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
-import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { GetStaffUserQueryParamsDto } from '@modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';

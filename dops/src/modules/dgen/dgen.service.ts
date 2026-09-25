@@ -7,31 +7,31 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
-import { TemplateName } from '../../enum/template-name.enum';
-import { CdogsService } from '../common/cdogs.service';
-import { DmsService } from '../dms/dms.service';
-import { IUserJWT } from '../../interface/user-jwt.interface';
+import { TemplateName } from '@app/enum/template-name.enum';
+import { CdogsService } from '@modules/common/cdogs.service';
+import { DmsService } from '@modules/dms/dms.service';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { Response } from 'express';
 import { Readable } from 'stream';
 import { ExternalDocument } from './entities/external-document.entity';
-import * as ExternalDocumentEnum from '../../enum/external-document.enum';
+import * as ExternalDocumentEnum from '@app/enum/external-document.enum';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PDFDocument } from 'pdf-lib';
-import { getFromCache } from '../../helper/cache.helper';
+import { getFromCache } from '@app/helper/cache.helper';
 import * as Handlebars from 'handlebars';
-import { CacheKey } from '../../enum/cache-key.enum';
+import { CacheKey } from '@app/enum/cache-key.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import puppeteer, { Browser, Page } from 'puppeteer';
-import { IFile } from '../../interface/file.interface';
-import { ReportTemplate } from '../../enum/report-template.enum';
-import { convertUtcToPt } from '../../helper/date-time.helper';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
-import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { IFile } from '@app/interface/file.interface';
+import { ReportTemplate } from '@app/enum/report-template.enum';
+import { convertUtcToPt } from '@app/helper/date-time.helper';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '@app/decorator/log-method-execution.decorator';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
 
 @Injectable()
 export class DgenService {

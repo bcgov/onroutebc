@@ -11,21 +11,21 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { IUserJWT } from '../../interface/user-jwt.interface';
-import { CreateGeneratedDocumentDto } from '../dgen/dto/request/create-generated-document.dto';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
+import { CreateGeneratedDocumentDto } from '@modules/dgen/dto/request/create-generated-document.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../../enum/cache-key.enum';
-import { TemplateFile } from '../../interface/template-file.interface';
-import { getAccessToken } from '../../helper/gov-common-services.helper';
-import { GovCommonServices } from '../../enum/gov-common-services.enum';
-import { IFile } from '../../interface/file.interface';
+import { CacheKey } from '@app/enum/cache-key.enum';
+import { TemplateFile } from '@app/interface/template-file.interface';
+import { getAccessToken } from '@app/helper/gov-common-services.helper';
+import { GovCommonServices } from '@app/enum/gov-common-services.enum';
+import { IFile } from '@app/interface/file.interface';
 import {
   FILE_ENCODING_TYPE,
   FILE_TYPE_DOCX,
   FILE_TYPE_PDF,
-} from '../../constants/dops.constant';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
+} from '@app/constants/dops.constant';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class CdogsService {

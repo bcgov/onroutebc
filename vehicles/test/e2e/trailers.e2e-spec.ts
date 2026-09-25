@@ -6,8 +6,8 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { Trailer } from '../../src/modules/vehicles/trailers/entities/trailer.entity';
-import { TrailersModule } from '../../src/modules/vehicles/trailers/trailers.module';
+import { Trailer } from '@modules/vehicles/trailers/entities/trailer.entity';
+import { TrailersModule } from '@modules/vehicles/trailers/trailers.module';
 import {
   createTrailerDtoMock,
   deleteTrailersMock,
@@ -15,9 +15,9 @@ import {
   trailerEntityMock,
   updateTrailerDtoMock,
 } from '../util/mocks/data/trailer.mock';
-import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from '../util/mocks/data/delete-dto.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { App } from 'supertest/types';
 
 describe('Trailers (e2e)', () => {

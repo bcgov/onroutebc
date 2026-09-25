@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AutoMap } from '@automapper/classes';
 import { Allow, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TemplateName } from '../../../../enum/template-name.enum';
-import { ExternalDocument } from '../../../../enum/external-document.enum';
+import { TemplateName } from '@app/enum/template-name.enum';
+import { ExternalDocument } from '@app/enum/external-document.enum';
 
 export class CreateGeneratedDocumentDto {
   @AutoMap()

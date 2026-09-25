@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreditAccountUserType } from '../../../../common/enum/credit-accounts.enum';
+import { CreditAccountUserType } from '@common/enum/credit-accounts.enum';
 
 export class ReadCreditAccountUserDto {
   @AutoMap()

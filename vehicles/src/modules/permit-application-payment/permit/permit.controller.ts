@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import {
   ApiTags,
   ApiNotFoundResponse,
@@ -20,26 +20,23 @@ import {
   ApiBearerAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
+import { AuthOnly } from '@common/decorator/auth-only.decorator';
 import { Request } from 'express';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { Permissions } from 'src/common/decorator/permissions.decorator';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { PaginationDto } from '@common/dto/paginate/pagination';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
-import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { ApiPaginatedResponse } from '@common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import {
-  IDIR_USER_ROLE_LIST,
-  IDIRUserRole,
-} from 'src/common/enum/user-role.enum';
+import { IDIR_USER_ROLE_LIST, IDIRUserRole } from '@common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
-import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
-import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
-import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
-import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { CreateNotificationDto } from '@modules/common/dto/request/create-notification.dto';
+import { ReadNotificationDto } from '@modules/common/dto/response/read-notification.dto';
+import { PermitReceiptDocumentService } from '@modules/permit-application-payment/permit-receipt-document/permit-receipt-document.service';
+import { JwtServiceAccountAuthGuard } from '@common/guard/jwt-sa-auth.guard';
+import { PermitIdDto } from './dto/request/permit-id.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')

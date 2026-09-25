@@ -1,9 +1,9 @@
 import { baseDtoMock, baseEntityMock } from './base.mock';
-import { ClientUserRole } from '../../../../src/common/enum/user-role.enum';
-import { PendingUser } from '../../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
-import { UpdatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
-import { CreatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
-import { ReadPendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
+import { ClientUserRole } from '@common/enum/user-role.enum';
+import { PendingUser } from '@modules/company-user-management/pending-users/entities/pending-user.entity';
+import { UpdatePendingUserDto } from '@modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
+import { CreatePendingUserDto } from '@modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
+import { ReadPendingUserDto } from '@modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
 import * as constants from './test-data.constants';
 
 export const redCompanyPendingUserEntityMock: PendingUser = {
