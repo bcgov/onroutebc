@@ -31,6 +31,10 @@ RUN npm cache clean --force
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
+# Ensure the runtime user has a valid SSH home directory for PBI key injection
+RUN mkdir -p /home/node/.ssh && chown -R node:node /home/node/.ssh && chmod 700 /home/node/.ssh
+ENV HOME=/home/node
+
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
 
