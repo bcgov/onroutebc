@@ -1,17 +1,16 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppController } from '@app/app.controller';
 import { AppService } from '@app/app.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { App } from 'supertest/types';
 import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 
 let featureFlagsService: DeepMocked<FeatureFlagsService>;
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     featureFlagsService = createMock<FeatureFlagsService>();
@@ -31,9 +30,8 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () =>
-    request(app.getHttpServer() as unknown as App)
-      .get('/')
-      .expect(200)
-      .expect('Policy Healthcheck!'));
+  it('/ (GET)', () => {
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    return request(server).get('/').expect(200).expect('Policy Healthcheck!');
+  });
 });
