@@ -22,7 +22,7 @@ import {
   PERMIT_STATUS_FOR_DOC_GENERATION,
 } from '@modules/common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
@@ -72,7 +72,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in Permit Issuance Job ${error}`);
+      this.logger.error(`Error in Permit Issuance Job ${String(error)}`);
       throw new Error('Error in Permit Issuance Job');
     } finally {
       this.runningIssuePermit = false;
@@ -105,7 +105,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
+      this.logger.error(`Error in GeneratePermitDocument Job ${String(error)}`);
       throw new Error('Error in GeneratePermitDocument cron job');
     }
   }
@@ -138,7 +138,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in GenerateReceipt Job ${error}`);
+      this.logger.error(`Error in GenerateReceipt Job ${String(error)}`);
       throw new Error('Error in GenerateReceipt cron job');
     }
   }
@@ -164,7 +164,7 @@ export class PermitService {
           .pipe(map((response) => response.data as JSON)),
       );
     } catch (error) {
-      this.logger.error(`Error in calling ${url}: ${error}`);
+      this.logger.error(`Error in calling ${url}: ${String(error)}`);
       throw new InternalServerErrorException('Unable to call Access API.');
     }
   }
