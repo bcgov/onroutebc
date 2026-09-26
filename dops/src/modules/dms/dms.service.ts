@@ -38,7 +38,7 @@ export class DmsService {
 
     const dmsVersionId = 1;
 
-    const dmsRecord = {
+    const dmsRecord: Partial<Document> = {
       documentId: undefined,
       s3ObjectId: s3ObjectId,
       s3VersionId: s3Object.VersionId,
@@ -85,7 +85,7 @@ export class DmsService {
       dmsObject.s3ObjectId,
     );
 
-    const dmsRecord = {
+    const dmsRecord: Partial<Document> = {
       documentId: undefined,
       s3ObjectId: dmsObject.s3ObjectId,
       s3VersionId: s3Object.VersionId,

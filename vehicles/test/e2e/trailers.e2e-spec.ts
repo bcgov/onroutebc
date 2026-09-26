@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -18,10 +18,9 @@ import {
 import { deleteDtoFailureMock } from '../util/mocks/data/delete-dto.mock';
 import { TestUserMiddleware } from './test-user.middleware';
 import { redCompanyCvClientUserJWTMock } from '../util/mocks/data/jwt.mock';
-import { App } from 'supertest/types';
 
 describe('Trailers (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
   const repo = createMock<Repository<Trailer>>();
 
   beforeAll(async () => {
@@ -46,7 +45,7 @@ describe('Trailers (e2e)', () => {
   describe('/companies/1/vehicles/trailers CREATE', () => {
     it('should create a new trailer.', () => {
       repo.save.mockResolvedValue(trailerEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/companies/1/vehicles/trailers')
         .send(createTrailerDtoMock)
         .expect(201)
@@ -57,7 +56,7 @@ describe('Trailers (e2e)', () => {
   describe('/companies/1/vehicles/trailers GETALL', () => {
     it('should return an array of trailers', () => {
       repo.find.mockResolvedValue([trailerEntityMock]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/companies/1/vehicles/trailers')
         .expect(200)
         .expect([readTrailerDtoMock]);
@@ -67,7 +66,7 @@ describe('Trailers (e2e)', () => {
   describe('/companies/1/vehicles/trailers/1 GET', () => {
     it('should return a trailer with trailerId as 1.', () => {
       repo.findOne.mockResolvedValue(trailerEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/companies/1/vehicles/trailers/1')
         .expect(200)
         .expect(readTrailerDtoMock);
@@ -80,7 +79,7 @@ describe('Trailers (e2e)', () => {
         ...trailerEntityMock,
         unitNumber: 'KEN2',
       });
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .put('/companies/1/vehicles/trailers/1')
         .send(updateTrailerDtoMock)
         .expect(200)
@@ -90,7 +89,7 @@ describe('Trailers (e2e)', () => {
 
   describe('/companies/1/vehicles/trailers/1 DELETE', () => {
     it('should delete the trailer.', () => {
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .delete('/companies/1/vehicles/trailers/1')
         .expect(200)
         .expect({ deleted: true });
@@ -100,7 +99,7 @@ describe('Trailers (e2e)', () => {
   describe('/companies/1/vehicles/trailers/delete-requests DELETE', () => {
     it('should delete the trailer.', () => {
       repo.findBy.mockResolvedValue([]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/companies/1/vehicles/trailers/delete-requests')
         .send(deleteTrailersMock)
         .expect(200)

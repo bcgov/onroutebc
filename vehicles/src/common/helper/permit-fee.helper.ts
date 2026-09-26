@@ -1,7 +1,7 @@
 import { TransactionType } from '@common/enum/transaction-type.enum';
 import { PermitHistoryDto } from '@modules/permit-application-payment/permit/dto/response/permit-history.dto';
 import { NotAcceptableException } from '@nestjs/common';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { ValidationResult } from 'onroute-policy-engine';
 
 export const leapYear = (
@@ -58,6 +58,6 @@ export const validatePaymentReceived = (
       code: 'cost-validation-error',
       message: `Transaction amount mismatch`,
       cost: cost,
-    } as ValidationResult;
+    };
   }
 };

@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -16,10 +16,9 @@ import {
   trailerTypeEntityMock,
   updateTrailerTypeDtoMock,
 } from '../util/mocks/data/trailer-type.mock';
-import { App } from 'supertest/types';
 
 describe('Trailer Types (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
   const repo = createMock<Repository<TrailerType>>();
 
   beforeAll(async () => {
@@ -42,7 +41,7 @@ describe('Trailer Types (e2e)', () => {
   describe('/vehicles/trailer-types CREATE', () => {
     it('should create a new trailer type.', () => {
       repo.findOne.mockResolvedValue(trailerTypeEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/vehicles/trailer-types')
         .send(createTrailerTypeDtoMock)
         .expect(201)
@@ -53,7 +52,7 @@ describe('Trailer Types (e2e)', () => {
   describe('/vehicles/trailer-types GETALL', () => {
     it('should return an array of trailer types', () => {
       repo.find.mockResolvedValue([trailerTypeEntityMock]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/vehicles/trailer-types')
         .expect(200)
         .expect([readTrailerTypeDtoMock]);
@@ -63,7 +62,7 @@ describe('Trailer Types (e2e)', () => {
   describe('/vehicles/trailer-types/CONCRET GET', () => {
     it('should return a trailer type with trailerId as 1.', () => {
       repo.findOne.mockResolvedValue(trailerTypeEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/vehicles/trailer-types/CONCRET')
         .expect(200)
         .expect(readTrailerTypeDtoMock);
@@ -76,7 +75,7 @@ describe('Trailer Types (e2e)', () => {
         ...trailerTypeEntityMock,
         description: 'updated',
       });
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .put('/vehicles/trailer-types/CONCRET')
         .send(updateTrailerTypeDtoMock)
         .expect(200)
@@ -86,7 +85,7 @@ describe('Trailer Types (e2e)', () => {
 
   describe('/vehicles/trailer-types/CONCRET DELETE', () => {
     it('should delete the trailer type.', () => {
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .delete('/vehicles/trailer-types/CONCRET')
         .expect(200)
         .expect({ deleted: true });

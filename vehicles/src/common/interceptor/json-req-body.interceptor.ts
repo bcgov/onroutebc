@@ -20,8 +20,9 @@ export class JsonReqBodyInterceptor implements NestInterceptor {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       request.body.body = parsedBody;
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      throw new BadRequestException(err.message);
+      const message =
+        err instanceof Error ? err.message : 'Invalid JSON request body';
+      throw new BadRequestException(message);
     }
     return next.handle();
   }
