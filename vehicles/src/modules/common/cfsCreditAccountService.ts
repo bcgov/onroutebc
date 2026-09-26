@@ -36,9 +36,10 @@ export class CFSCreditAccountService {
    * otherwise, returns `false`.
    */
   private static isSuccess(status: number) {
+    const httpStatus = Number(status);
     return (
-      (status as HttpStatus) === HttpStatus.OK ||
-      (status as HttpStatus) === HttpStatus.CREATED
+      httpStatus === Number(HttpStatus.OK) ||
+      httpStatus === Number(HttpStatus.CREATED)
     );
   }
 
@@ -71,7 +72,7 @@ export class CFSCreditAccountService {
       url,
       data: {
         customer_name: clientNumber,
-      } as CreatePartyRequestDto,
+      },
     });
     if (
       CFSCreditAccountService.isSuccess(partyResponse.status) &&
@@ -117,7 +118,7 @@ export class CFSCreditAccountService {
       data: {
         account_number: creditAccountNumber,
         account_description: `OnRouteBC Credit Account for ${clientNumber}`,
-      } as CreateAccountRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.account_number) {
       return data;
@@ -165,7 +166,7 @@ export class CFSCreditAccountService {
         province: mailingAddress.province.provinceCode,
         country: mailingAddress.province.country.countryCode,
         customer_profile_class: 'CAS_IND_DEFAULT',
-      } as CreateSiteRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.site_number) {
       return data;
@@ -208,7 +209,7 @@ export class CFSCreditAccountService {
         last_name: companyInfo.primaryContact.lastName,
         phone_number: companyInfo.phone,
         email_address: companyInfo.email,
-      } as CreateSiteContactRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.contact_number) {
       return true;

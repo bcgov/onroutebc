@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -33,7 +33,6 @@ import {
 import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
-import { App } from 'supertest/types';
 import * as constants from '../util/mocks/data/test-data.constants';
 import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '@modules/company-user-management/users/entities/login.entity';
@@ -48,7 +47,7 @@ let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Company Users (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -129,7 +128,9 @@ describe('Company Users (e2e)', () => {
       jest
         .spyOn(companyServiceMock, 'findOneByCompanyGuid')
         .mockReturnValue(Promise.resolve(redCompanyEntityMock));
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
@@ -152,7 +153,9 @@ describe('Company Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A')
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);

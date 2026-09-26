@@ -47,9 +47,11 @@ export class TransactionProfile extends AutomapperProfile {
         ReadTransactionDto,
         forMember(
           (d) => d.url,
-          mapWithArguments((source, { url }) => {
-            return url;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.url;
+            },
+          ),
         ),
         forMember(
           (d) => d.applicationDetails,
@@ -69,22 +71,14 @@ export class TransactionProfile extends AutomapperProfile {
         Transaction,
         forMember(
           (transaction) => transaction.payerName,
-
           mapWithArguments(
-            (
-              source,
-              {
-                directory,
-                firstName,
-                lastName,
-                creditAccount,
-              }: {
-                directory: Directory;
-                firstName: string;
-                lastName: string;
-                creditAccount: CreditAccount;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const directory = extraArguments.directory as Directory;
+              const firstName = extraArguments.firstName as string;
+              const lastName = extraArguments.lastName as string;
+              const creditAccount =
+                extraArguments.creditAccount as CreditAccount;
+
               const payerName = (() => {
                 // Check if the directory is IDIR or SERVICE_ACCOUNT
                 if (
@@ -116,91 +110,119 @@ export class TransactionProfile extends AutomapperProfile {
         ),
         forMember(
           (transaction) => transaction.transactionApprovedDate,
-          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
-            if (
-              !isWebTransactionPurchase(
-                source.paymentMethodTypeCode,
-                source.transactionTypeId,
-              )
-            ) {
-              return timestamp;
-            }
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              const timestamp = extraArguments.timestamp as Date;
+              if (
+                !isWebTransactionPurchase(
+                  source.paymentMethodTypeCode,
+                  source.transactionTypeId,
+                )
+              ) {
+                return timestamp;
+              }
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.transactionSubmitDate,
-          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
-            return timestamp;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.timestamp as Date;
+            },
+          ),
         ),
         forMember(
           (d) => d.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userGUID;
+            },
+          ),
         ),
         forMember(
           (d) => d.createdUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userName;
+            },
+          ),
         ),
         forMember(
           (d) => d.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.directory;
+            },
+          ),
         ),
 
         forMember(
           (d) => d.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.timestamp;
+            },
+          ),
         ),
 
         forMember(
           (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userGUID;
+            },
+          ),
         ),
         forMember(
           (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userName;
+            },
+          ),
         ),
         forMember(
           (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.directory;
+            },
+          ),
         ),
 
         forMember(
           (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.timestamp;
+            },
+          ),
         ),
         forMember(
           (d) => d.transactionOrderNumber,
-          mapWithArguments((source, { transactionOrderNumber }) => {
-            return transactionOrderNumber;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.transactionOrderNumber;
+            },
+          ),
         ),
         forMember(
           (d) => d.totalTransactionAmount,
-          mapWithArguments((source, { totalTransactionAmount }) => {
-            return totalTransactionAmount;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.totalTransactionAmount;
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction?.creditAccount?.creditAccountId,
           mapWithArguments(
-            (source, { creditAccount }: { creditAccount: CreditAccount }) =>
-              creditAccount?.creditAccountId,
+            (source, extraArguments: Record<string, unknown>) => {
+              const creditAccount =
+                extraArguments.creditAccount as CreditAccount;
+              return creditAccount?.creditAccountId;
+            },
           ),
         ),
       );
@@ -218,47 +240,63 @@ export class TransactionProfile extends AutomapperProfile {
         ),
         forMember(
           (transaction) => transaction.transactionApprovedDate,
-          mapWithArguments((source, { timestamp }: { timestamp: Date }) => {
-            if (source.pgApproved === 1) {
-              return timestamp;
-            }
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              const timestamp = extraArguments.timestamp as Date;
+              if (source.pgApproved === 1) {
+                return timestamp;
+              }
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userGUID;
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.payerName,
-          mapWithArguments((source, { directory, firstName, lastName }) => {
-            if (
-              directory === Directory.IDIR ||
-              directory === Directory.SERVICE_ACCOUNT
-            )
-              return PPC_FULL_TEXT;
-            else return String(firstName) + ' ' + String(lastName);
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              const directory = extraArguments.directory as Directory;
+              const firstName = extraArguments.firstName as string;
+              const lastName = extraArguments.lastName as string;
+              if (
+                directory === Directory.IDIR ||
+                directory === Directory.SERVICE_ACCOUNT
+              )
+                return PPC_FULL_TEXT;
+              else return String(firstName) + ' ' + String(lastName);
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.updatedUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.userName;
+            },
+          ),
         ),
         forMember(
           (transaction) => transaction.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.directory;
+            },
+          ),
         ),
 
         forMember(
           (transaction) => transaction.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
+          mapWithArguments(
+            (source, extraArguments: Record<string, unknown>) => {
+              return extraArguments.timestamp;
+            },
+          ),
         ),
       );
 

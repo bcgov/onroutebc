@@ -109,7 +109,8 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditAccountNumber,
           mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
               if (
                 !source?.isVerified &&
                 doesUserHaveRole(
@@ -133,18 +134,11 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditLimit,
           mapWithArguments(
-            (
-              source,
-              {
-                currentUser,
-                egarmsCreditAccountDetails,
-                mapBasedonRole,
-              }: {
-                currentUser: IUserJWT;
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                mapBasedonRole: boolean;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const mapBasedonRole = extraArguments.mapBasedonRole as boolean;
               if (
                 isHideLimitDetails(
                   mapBasedonRole,
@@ -161,20 +155,13 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditBalance,
           mapWithArguments(
-            (
-              source,
-              {
-                currentUser,
-                egarmsCreditAccountDetails,
-                orbcAmountToAdjust,
-                mapBasedonRole,
-              }: {
-                currentUser: IUserJWT;
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                orbcAmountToAdjust: number;
-                mapBasedonRole: boolean;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const orbcAmountToAdjust =
+                extraArguments.orbcAmountToAdjust as number;
+              const mapBasedonRole = extraArguments.mapBasedonRole as boolean;
               if (
                 isHideLimitDetails(
                   mapBasedonRole,
@@ -197,16 +184,11 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.availableCredit,
           mapWithArguments(
-            (
-              source,
-              {
-                egarmsCreditAccountDetails,
-                orbcAmountToAdjust,
-              }: {
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                orbcAmountToAdjust: number;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const orbcAmountToAdjust =
+                extraArguments.orbcAmountToAdjust as number;
               if (
                 !validEgarmsReturnCodesToDisplayCreditDetails(
                   egarmsCreditAccountDetails,
@@ -226,14 +208,9 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.egarmsReturnCode,
           mapWithArguments(
-            (
-              source,
-              {
-                egarmsCreditAccountDetails,
-              }: {
-                egarmsCreditAccountDetails: IEGARMSResponse;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
               return egarmsCreditAccountDetails?.PPABalance?.return_code;
             },
           ),

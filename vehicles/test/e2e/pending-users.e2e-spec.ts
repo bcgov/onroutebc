@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -21,7 +21,6 @@ import {
   updateRedCompanyPendingUserDtoMock,
 } from '../util/mocks/data/pending-user.mock';
 import { ClientUserRole } from '@common/enum/user-role.enum';
-import { App } from 'supertest/types';
 import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 import { createMapper } from '@automapper/core';
 import { PendingUsersController } from '@modules/company-user-management/pending-users/pending-users.controller';
@@ -36,7 +35,7 @@ interface SelectQueryBuilderParameters {
 let repo: DeepMocked<Repository<PendingUser>>;
 
 describe('PendingUsers (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
   const mockQueryRunnerManager: MockQueryRunnerManager = {
     delete: jest.fn(),
     update: jest.fn(),
@@ -99,7 +98,9 @@ describe('PendingUsers (e2e)', () => {
       mockQueryRunnerManager.save.mockResolvedValue(
         readRedCompanyPendingUserDtoMock,
       );
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/companies/1/pending-users')
         .send(createRedCompanyPendingUserDtoMock)
         .expect(201);
@@ -114,7 +115,9 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/companies/1/pending-users')
         .expect(200);
 
@@ -130,7 +133,9 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,
@@ -149,7 +154,9 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .put(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,

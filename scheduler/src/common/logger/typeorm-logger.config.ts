@@ -77,7 +77,7 @@ export class TypeormCustomLogger extends AbstractLogger {
       this.logger.error(`${message.prefix} : ${message.message?.toString()}`);
       this.logger.debug(message.parameters); // Mask sensitive information before logging if needed
     } else {
-      this.logger.error(new CustomError(message.message));
+      this.logger.error(new CustomError(String(message.message)));
     }
   }
 }

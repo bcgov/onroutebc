@@ -44,5 +44,5 @@ export class GetCompanyQueryParamsDto extends PageOptionsDto {
   @Validate(OrderByConstraint, [CompanyOrderBy])
   @IsString()
   @Length(1, 150)
-  readonly orderBy?: string;
+  declare readonly orderBy?: string;
 }

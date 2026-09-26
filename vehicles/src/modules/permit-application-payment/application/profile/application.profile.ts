@@ -27,7 +27,7 @@ import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-
 import { CreatePermitLoaDto } from '@modules/permit-application-payment/application/dto/request/create-permit-loa.dto';
 import { PermitLoa } from '@modules/permit-application-payment/application/entities/permit-loa.entity';
 import { ReadPermitLoaDto } from '@modules/permit-application-payment/application/dto/response/read-permit-loa.dto';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { VehicleType } from '@common/enum/vehicle-type.enum';
 import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
@@ -213,31 +213,19 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.isRejectedApplication,
-          mapWithArguments(
-            (
-              s,
-              {
-                isRejectedApplication,
-              }: { isRejectedApplication: Nullable<boolean> },
-            ) => {
-              return isRejectedApplication;
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.isRejectedApplication as Nullable<boolean>;
+          }),
         ),
         forMember(
           (d) => d.rejectionHistory,
-          mapWithArguments(
-            (
-              s,
-              {
-                readCaseActivityList,
-              }: { readCaseActivityList: ReadCaseActivityDto[] },
-            ) => {
-              if (readCaseActivityList?.length) {
-                return readCaseActivityList;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const readCaseActivityList =
+              extraArguments.readCaseActivityList as ReadCaseActivityDto[];
+            if (readCaseActivityList?.length) {
+              return readCaseActivityList;
+            }
+          }),
         ),
       );
 
@@ -305,20 +293,15 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicationQueueStatus,
-          mapWithArguments(
-            (
-              s,
-              {
-                applicationQueueStatus,
-              }: { applicationQueueStatus?: Nullable<CaseStatusType[]> },
-            ) => {
-              if (applicationQueueStatus?.length && s.cases?.length) {
-                return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(
-                  0,
-                );
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (applicationQueueStatus?.length && s.cases?.length) {
+              return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(0);
+            }
+          }),
         ),
         forMember(
           (d) => d.isRejectedApplication,
@@ -353,60 +336,47 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.timeInQueue,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUserRole,
-                currentDateTime,
-                applicationQueueStatus,
-              }: {
-                currentUserRole: UserRole;
-                currentDateTime: Date;
-                applicationQueueStatus?: Nullable<CaseStatusType[]>;
-              },
-            ) => {
-              if (
-                applicationQueueStatus?.length &&
-                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
-              ) {
-                const diff = differenceBetween(
-                  s?.cases?.at(0)?.caseOpenedDateTime?.toUTCString(),
-                  currentDateTime.toUTCString(),
-                  'minutes',
-                );
-                const hours = Math.floor(Math.abs(diff) / 60);
-                const minutes = Math.floor(Math.abs(diff) % 60);
-                // Format the output
-                const formattedHours = String(hours).padStart(2, '0');
-                const formattedMinutes = String(minutes).padStart(2, '0');
-                return `${formattedHours}:${formattedMinutes}`;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUserRole = extraArguments.currentUserRole as UserRole;
+            const currentDateTime = extraArguments.currentDateTime as Date;
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (
+              applicationQueueStatus?.length &&
+              doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
+            ) {
+              const diff = differenceBetween(
+                s?.cases?.at(0)?.caseOpenedDateTime?.toUTCString(),
+                currentDateTime.toUTCString(),
+                'minutes',
+              );
+              const hours = Math.floor(Math.abs(diff) / 60);
+              const minutes = Math.floor(Math.abs(diff) % 60);
+              // Format the output
+              const formattedHours = String(hours).padStart(2, '0');
+              const formattedMinutes = String(minutes).padStart(2, '0');
+              return `${formattedHours}:${formattedMinutes}`;
+            }
+          }),
         ),
         forMember(
           (d) => d.claimedBy,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUserRole,
-                applicationQueueStatus,
-              }: {
-                currentUserRole: UserRole;
-                applicationQueueStatus?: Nullable<CaseStatusType[]>;
-              },
-            ) => {
-              if (
-                applicationQueueStatus?.length &&
-                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
-                s.cases?.length
-              ) {
-                return s.cases?.at(0)?.assignedUser?.userName;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUserRole = extraArguments.currentUserRole as UserRole;
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (
+              applicationQueueStatus?.length &&
+              doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
+              s.cases?.length
+            ) {
+              return s.cases?.at(0)?.assignedUser?.userName;
+            }
+          }),
         ),
       );
 

@@ -5,8 +5,7 @@ import { AbstractLogger, LogLevel, LogMessage } from 'typeorm';
  * To prevent sensitive information being printed onto logs
  */
 class CustomError extends Error {
-  constructor(message, printStack = false) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  constructor(message: string, printStack = false) {
     super(message);
     if (!printStack) {
       this.stack = '';
@@ -77,7 +76,7 @@ export class TypeormCustomLogger extends AbstractLogger {
       this.logger.error(`${message.prefix} : ${message.message?.toString()}`);
       this.logger.debug(message.parameters); // Mask sensitive information before logging if needed
     } else {
-      this.logger.error(new CustomError(message.message));
+      this.logger.error(new CustomError(String(message.message)));
     }
   }
 }

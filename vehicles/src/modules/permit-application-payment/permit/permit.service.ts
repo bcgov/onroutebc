@@ -542,7 +542,7 @@ export class PermitService {
           ? egarmsReturnCode
           : undefined,
       })),
-    ) as PermitHistoryDto[];
+    );
   }
 
   @LogAsyncMethodExecution()
@@ -744,9 +744,7 @@ export class PermitService {
       this.cacheManager,
       CacheKey.PERMIT_TYPE,
     );
-    return permitTypeMap?.size
-      ? (Object.fromEntries(permitTypeMap) as Record<string, string>)
-      : undefined;
+    return permitTypeMap?.size ? Object.fromEntries(permitTypeMap) : undefined;
   }
 
   @LogAsyncMethodExecution()

@@ -143,11 +143,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ? this.authService.getCompaniesForUser(access_token)
         : undefined,
     ]);
+
+    const userDetailsStatus = Number(
+      accessApiResponse.at(0)?.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+    const userStatus = (
+      accessApiResponse.at(0)?.data as { statusCode?: UserStatus } | undefined
+    )?.statusCode;
+
     if (
-      (accessApiResponse?.at(0)?.status as HttpStatus) !== HttpStatus.OK ||
-      ((accessApiResponse?.at(0)?.status as HttpStatus) === HttpStatus.OK &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        accessApiResponse?.at(0)?.data?.statusCode !== UserStatus.ACTIVE)
+      userDetailsStatus !== Number(HttpStatus.OK) ||
+      (userDetailsStatus === Number(HttpStatus.OK) &&
+        userStatus !== UserStatus.ACTIVE)
     ) {
       throw new UnauthorizedException();
     }
