@@ -11,6 +11,8 @@ import { ReadPowerUnitDto } from '@modules/vehicles/power-units/dto/response/rea
 import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
 import { CreatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/update-power-unit.dto';
+import { Province } from '@modules/common/entities/province.entity';
+import { PowerUnitType } from '@modules/vehicles/power-unit-types/entities/power-unit-type.entity';
 import {
   getCountryCode,
   getProvinceCode,
@@ -98,12 +100,22 @@ export class PowerUnitsProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
-          (d) => d.powerUnitType.typeCode,
-          mapFrom((s) => s.powerUnitTypeCode),
+          (d) => d.powerUnitType,
+          mapFrom(
+            (s) =>
+              ({
+                typeCode: s.powerUnitTypeCode,
+              }) as PowerUnitType,
+          ),
         ),
         forMember(
           (d) => d.companyId,
@@ -142,12 +154,22 @@ export class PowerUnitsProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
-          (d) => d.powerUnitType.typeCode,
-          mapFrom((s) => s.powerUnitTypeCode),
+          (d) => d.powerUnitType,
+          mapFrom(
+            (s) =>
+              ({
+                typeCode: s.powerUnitTypeCode,
+              }) as PowerUnitType,
+          ),
         ),
       );
     };

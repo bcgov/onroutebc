@@ -11,6 +11,8 @@ import { Trailer } from '@modules/vehicles/trailers/entities/trailer.entity';
 import { ReadTrailerDto } from '@modules/vehicles/trailers/dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from '@modules/vehicles/trailers/dto/request/update-trailer.dto';
 import { CreateTrailerDto } from '@modules/vehicles/trailers/dto/request/create-trailer.dto';
+import { Province } from '@modules/common/entities/province.entity';
+import { TrailerType } from '@modules/vehicles/trailer-types/entities/trailer-type.entity';
 import {
   getCountryCode,
   getProvinceCode,
@@ -98,12 +100,22 @@ export class TrailersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
-          (d) => d.trailerType.typeCode,
-          mapFrom((s) => s.trailerTypeCode),
+          (d) => d.trailerType,
+          mapFrom(
+            (s) =>
+              ({
+                typeCode: s.trailerTypeCode,
+              }) as TrailerType,
+          ),
         ),
         forMember(
           (d) => d.companyId,
@@ -142,12 +154,22 @@ export class TrailersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
-          (d) => d.trailerType.typeCode,
-          mapFrom((s) => s.trailerTypeCode),
+          (d) => d.trailerType,
+          mapFrom(
+            (s) =>
+              ({
+                typeCode: s.trailerTypeCode,
+              }) as TrailerType,
+          ),
         ),
       );
     };
