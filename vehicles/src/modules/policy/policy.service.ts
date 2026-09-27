@@ -448,7 +448,7 @@ export class PolicyService {
           type: 'information',
           code: 'loa',
           message: `Policy validation allowing loa vehicle permitting for client ${companyId}`,
-        } as ValidationResult);
+        });
       }
     }
   }
@@ -495,7 +495,7 @@ export class PolicyService {
           code: 'field-validation-error',
           fieldReference: PE_FIELD_REFERENCE_START_DATE,
           message: PE_MESSAGE_CALENDAR_QTR_START_DATE_VIOLATION,
-        } as ValidationResult);
+        });
       }
     }
   }

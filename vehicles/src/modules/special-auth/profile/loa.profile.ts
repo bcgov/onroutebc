@@ -11,7 +11,7 @@ import { CreateLoaDto } from '@modules/special-auth/dto/request/create-loa.dto';
 import { LoaDetail } from '@modules/special-auth/entities/loa-detail.entity';
 import { LoaPermitType } from '@modules/special-auth/entities/loa-permit-type-details.entity';
 import { LoaVehicle } from '@modules/special-auth/entities/loa-vehicles.entity';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { UpdateLoaDto } from '@modules/special-auth/dto/request/update-loa.dto';
 import { ReadLoaDto } from '@modules/special-auth/dto/response/read-loa.dto';
 import { VehicleType } from '@common/enum/vehicle-type.enum';
@@ -62,61 +62,42 @@ export class LoaProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.loaPermitTypes,
-          mapWithArguments(
-            (
-              s,
-              {
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUser = extraArguments.currentUser as IUserJWT;
+            const dbActivitydate = extraArguments.dbActivitydate as Date;
+            const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
+            for (const permitType of s.loaPermitType) {
+              const loaPermitType: LoaPermitType = new LoaPermitType();
+              loaPermitType.permitType = permitType;
+              setBaseEntityProperties({
+                entity: loaPermitType,
                 currentUser,
-                dbActivitydate,
-              }: {
-                currentUser: IUserJWT;
-                dbActivitydate: Date;
-              },
-            ) => {
-              const loaPermitTypes: LoaPermitType[] =
-                new Array<LoaPermitType>();
-              for (const permitType of s.loaPermitType) {
-                const loaPermitType: LoaPermitType = new LoaPermitType();
-                loaPermitType.permitType = permitType;
-                setBaseEntityProperties({
-                  entity: loaPermitType,
-                  currentUser,
-                  date: dbActivitydate,
-                });
-                loaPermitTypes.push(loaPermitType);
-              }
-              return loaPermitTypes;
-            },
-          ),
+                date: dbActivitydate,
+              });
+              loaPermitTypes.push(loaPermitType);
+            }
+            return loaPermitTypes;
+          }),
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
           (d) => d.loaVehicle,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUser,
-                dbActivitydate,
-              }: {
-                currentUser: IUserJWT;
-                dbActivitydate: Date;
-              },
-            ) => {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              if (s.vehicleType === VehicleType.POWER_UNIT) {
-                loaVehicle.powerUnitType = s.vehicleSubType;
-              } else {
-                loaVehicle.trailerType = s.vehicleSubType;
-              }
-              setBaseEntityProperties({
-                entity: loaVehicle,
-                currentUser,
-                date: dbActivitydate,
-              });
-              return loaVehicle;
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUser = extraArguments.currentUser as IUserJWT;
+            const dbActivitydate = extraArguments.dbActivitydate as Date;
+            const loaVehicle: LoaVehicle = new LoaVehicle();
+            if (s.vehicleType === VehicleType.POWER_UNIT) {
+              loaVehicle.powerUnitType = s.vehicleSubType;
+            } else {
+              loaVehicle.trailerType = s.vehicleSubType;
+            }
+            setBaseEntityProperties({
+              entity: loaVehicle,
+              currentUser,
+              date: dbActivitydate,
+            });
+            return loaVehicle;
+          }),
         ),
       );
       createMap(
@@ -161,61 +142,42 @@ export class LoaProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.loaPermitTypes,
-          mapWithArguments(
-            (
-              s,
-              {
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUser = extraArguments.currentUser as IUserJWT;
+            const dbActivitydate = extraArguments.dbActivitydate as Date;
+            const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
+            for (const permitType of s.loaPermitType) {
+              const loaPermitType: LoaPermitType = new LoaPermitType();
+              loaPermitType.permitType = permitType;
+              setBaseEntityProperties({
+                entity: loaPermitType,
                 currentUser,
-                dbActivitydate,
-              }: {
-                currentUser: IUserJWT;
-                dbActivitydate: Date;
-              },
-            ) => {
-              const loaPermitTypes: LoaPermitType[] =
-                new Array<LoaPermitType>();
-              for (const permitType of s.loaPermitType) {
-                const loaPermitType: LoaPermitType = new LoaPermitType();
-                loaPermitType.permitType = permitType;
-                setBaseEntityProperties({
-                  entity: loaPermitType,
-                  currentUser,
-                  date: dbActivitydate,
-                });
-                loaPermitTypes.push(loaPermitType);
-              }
-              return loaPermitTypes;
-            },
-          ),
+                date: dbActivitydate,
+              });
+              loaPermitTypes.push(loaPermitType);
+            }
+            return loaPermitTypes;
+          }),
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
           (d) => d.loaVehicle,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUser,
-                dbActivitydate,
-              }: {
-                currentUser: IUserJWT;
-                dbActivitydate: Date;
-              },
-            ) => {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              if (s.vehicleType === VehicleType.POWER_UNIT) {
-                loaVehicle.powerUnitType = s.vehicleSubType;
-              } else {
-                loaVehicle.trailerType = s.vehicleSubType;
-              }
-              setBaseEntityProperties({
-                entity: loaVehicle,
-                currentUser,
-                date: dbActivitydate,
-              });
-              return loaVehicle;
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUser = extraArguments.currentUser as IUserJWT;
+            const dbActivitydate = extraArguments.dbActivitydate as Date;
+            const loaVehicle: LoaVehicle = new LoaVehicle();
+            if (s.vehicleType === VehicleType.POWER_UNIT) {
+              loaVehicle.powerUnitType = s.vehicleSubType;
+            } else {
+              loaVehicle.trailerType = s.vehicleSubType;
+            }
+            setBaseEntityProperties({
+              entity: loaVehicle,
+              currentUser,
+              date: dbActivitydate,
+            });
+            return loaVehicle;
+          }),
         ),
       );
       createMap(

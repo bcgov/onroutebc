@@ -28,16 +28,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ReadShoppingCartDto,
         forMember(
           (d) => d.companyId,
-          mapWithArguments((_s, { companyId }) => companyId),
+          mapWithArguments((_s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.companyId;
+          }),
         ),
         forMember(
           (d) => d.validationResults,
-          mapWithArguments(
-            (
-              _s,
-              { validationResults }: { validationResults: ValidationResults },
-            ) => validationResults,
-          ),
+          mapWithArguments((_s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.validationResults as ValidationResults;
+          }),
         ),
         // permitId
         forMember(
@@ -46,10 +45,10 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserRole }) => {
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
             return getApplicantDisplay(
               s.applicationOwner,
-              currentUserRole as UserRole,
+              extraArguments.currentUserRole as UserRole,
             );
           }),
         ),

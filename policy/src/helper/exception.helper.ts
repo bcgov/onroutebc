@@ -4,7 +4,6 @@ import {
   NotAcceptableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { ExceptionDto } from '@app/exception/exception.dto';
 import { BadRequestExceptionDto } from '@app/exception/badRequestException.dto';
 import { ValidationExceptionDto } from '@app/exception/validation.exception.dto';
 
@@ -23,7 +22,7 @@ export const throwUnprocessableEntityException = (
         errorCode: errorCode,
       },
     ] as ValidationExceptionDto[],
-  } as ExceptionDto);
+  });
 };
 
 export const throwBadRequestException = (field: string, message: string[]) => {
@@ -36,7 +35,7 @@ export const throwBadRequestException = (field: string, message: string[]) => {
         message: message,
       },
     ] as BadRequestExceptionDto[],
-  } as ExceptionDto);
+  });
 };
 
 export const throwNotAcceptableException = (

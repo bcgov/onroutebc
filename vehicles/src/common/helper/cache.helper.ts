@@ -8,13 +8,14 @@ export const createCacheMap = <T extends object>(
 ): Map<string, string> => {
   const cacheMap = new Map<string, string>();
   dataArray.forEach((element) => {
-    if (!(keyProperty in element)) {
+    const record = element as Record<string, unknown>;
+    if (!(keyProperty in record)) {
       throw new Error(`keyProperty '${keyProperty}' not found in element.`);
-    } else if (!(valueProperty in element)) {
+    } else if (!(valueProperty in record)) {
       throw new Error(`valueProperty '${valueProperty}' not found in element.`);
     }
-    const key = element[keyProperty] as string;
-    const value = element[valueProperty] as string;
+    const key = String(record[keyProperty]);
+    const value = String(record[valueProperty]);
     cacheMap.set(key, value);
   });
   return cacheMap;

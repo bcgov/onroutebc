@@ -6,7 +6,7 @@ import { FallbackExceptionFilter } from './common/filters/fallback.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
-import * as responseTime from 'response-time';
+import responseTime from 'response-time';
 import { CustomValidationPipe } from './common/pipe/custom-validation.pipe';
 
 const allowedOrigins = [

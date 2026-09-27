@@ -56,7 +56,8 @@ export class CaseManagementProfile extends AutomapperProfile {
         forMember(
           (d) => d.userName,
           mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
               if (
                 doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
               ) {

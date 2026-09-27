@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
@@ -15,10 +15,9 @@ import {
   readPowerUnitTypeDtoMock,
   updatePowerUnitTypeDtoMock,
 } from '../util/mocks/data/power-unit-type.mock';
-import { App } from 'supertest/types';
 
 describe('Power Unit Types (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
   const repo = createMock<Repository<PowerUnitType>>();
 
   beforeAll(async () => {
@@ -41,7 +40,7 @@ describe('Power Unit Types (e2e)', () => {
   describe('/vehicles/power-unit-types CREATE', () => {
     it('should create a new power unit type.', () => {
       repo.findOne.mockResolvedValue(powerUnitTypeEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .post('/vehicles/power-unit-types')
         .send(createPowerUnitTypeDtoMock)
         .expect(201)
@@ -52,7 +51,7 @@ describe('Power Unit Types (e2e)', () => {
   describe('/vehicles/power-unit-types GETALL', () => {
     it('should return an array of power unit types', () => {
       repo.find.mockResolvedValue([powerUnitTypeEntityMock]);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/vehicles/power-unit-types')
         .expect(200)
         .expect([readPowerUnitTypeDtoMock]);
@@ -62,7 +61,7 @@ describe('Power Unit Types (e2e)', () => {
   describe('/vehicles/power-unit-types/CONCRET GET', () => {
     it('should return a power unit type with powerUnitId as 1.', () => {
       repo.findOne.mockResolvedValue(powerUnitTypeEntityMock);
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .get('/vehicles/power-unit-types/CONCRET')
         .expect(200)
         .expect(readPowerUnitTypeDtoMock);
@@ -75,7 +74,7 @@ describe('Power Unit Types (e2e)', () => {
         ...powerUnitTypeEntityMock,
         description: 'updated',
       });
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .put('/vehicles/power-unit-types/CONCRET')
         .send(updatePowerUnitTypeDtoMock)
         .expect(200)
@@ -85,7 +84,7 @@ describe('Power Unit Types (e2e)', () => {
 
   describe('/vehicles/power-unit-types/CONCRET DELETE', () => {
     it('should delete the power unit type.', () => {
-      return request(app.getHttpServer() as unknown as App)
+      return request(app.getHttpServer() as Parameters<typeof request>[0])
         .delete('/vehicles/power-unit-types/CONCRET')
         .expect(200)
         .expect({ deleted: true });

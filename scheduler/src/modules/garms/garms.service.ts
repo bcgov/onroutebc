@@ -413,7 +413,7 @@ export class GarmsService {
       this.logger.log(result);
       return result;
     } catch (error) {
-      this.logger.error(`Execution Error: ${error}`);
+      this.logger.error(`Execution Error: ${String(error)}`);
       throw error;
     }
   }

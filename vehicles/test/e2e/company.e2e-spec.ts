@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -28,7 +28,6 @@ import { UsersProfile } from '@modules/company-user-management/users/profiles/us
 import * as constants from '../util/mocks/data/test-data.constants';
 import * as databaseHelper from '@common/helper/database.helper';
 import { Cache } from 'cache-manager';
-import { App } from 'supertest/types';
 import { INestApplication } from '@nestjs/common';
 import { DopsService } from '@modules/common/dops.service';
 import { createMapper } from '@automapper/core';
@@ -41,7 +40,7 @@ let dopsService: DeepMocked<DopsService>;
 let cacheManager: DeepMocked<Cache>;
 
 describe('Company (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -105,7 +104,9 @@ describe('Company (e2e)', () => {
         .mockImplementation(async () => {
           return Promise.resolve('000005');
         });
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
@@ -123,7 +124,9 @@ describe('Company (e2e)', () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/companies/meta-data')
         .expect(200);
 
@@ -137,7 +140,9 @@ describe('Company (e2e)', () => {
         ...redCompanyEntityMock,
         extension: null,
       });
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .put('/companies/1')
         .send(updateRedCompanyDtoMock)
         .expect(200);
@@ -152,7 +157,9 @@ describe('Company (e2e)', () => {
   describe('/companies/1 GET', () => {
     it('should return a company with companyId as 1.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/companies/1')
         .expect(200);
 

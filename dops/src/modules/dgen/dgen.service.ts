@@ -312,7 +312,7 @@ export class DgenService {
     /* eslint-disable */
     Handlebars.registerHelper(
       'displayPaymentMethodSubTotal',
-      function (transactionType: string, options) {
+      function (this: any, transactionType: string, options: any) {
         const obj = options.data.root;
         const current = this;
         const index = options.data.index;
@@ -340,7 +340,7 @@ export class DgenService {
 
     Handlebars.registerHelper(
       'formatAmount',
-      function (amount: number, amountType?: string) {
+      function (this: any, amount: number, amountType?: string) {
         if (!amount) {
           amount = 0;
         }
