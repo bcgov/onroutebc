@@ -61,21 +61,6 @@ export class CreditAccount {
   cfsSiteNumber?: number;
 
   @AutoMap()
-  @ApiProperty({
-    example: '30.00',
-    description:
-      'External adjustment dollar amount, currently will only be used for TPS migrations to store the unposted credit value',
-  })
-  @Column({
-    type: 'decimal',
-    precision: 9,
-    scale: 2,
-    name: 'EXTERNAL_ADJUSTMENT_AMT',
-    nullable: true,
-  })
-  totalTransactionAmount?: number;
-
-  @AutoMap()
   @Column({
     type: 'decimal',
     precision: 9,
