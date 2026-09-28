@@ -42,13 +42,13 @@ export class CreditAccountProfile extends AutomapperProfile {
         CreateCreditAccountUserDto,
         CreditAccountUser,
         forMember(
-          (d) => d.company?.companyId,
-          mapFrom((s) => s.companyId),
+          (d) => d.company,
+          mapFrom((s) => ({ companyId: s.companyId })),
         ),
         forMember(
-          (d) => d.creditAccount?.creditAccountId,
+          (d) => d.creditAccount,
           mapWithArguments((source, { creditAccountId }) => {
-            return creditAccountId;
+            return { creditAccountId };
           }),
         ),
         forMember((d) => d.isActive, fromValue(true)),

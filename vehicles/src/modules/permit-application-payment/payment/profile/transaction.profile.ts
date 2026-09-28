@@ -216,12 +216,12 @@ export class TransactionProfile extends AutomapperProfile {
           ),
         ),
         forMember(
-          (transaction) => transaction?.creditAccount?.creditAccountId,
+          (transaction) => transaction.creditAccount,
           mapWithArguments(
             (source, extraArguments: Record<string, unknown>) => {
               const creditAccount =
                 extraArguments.creditAccount as CreditAccount;
-              return creditAccount?.creditAccountId;
+              return { creditAccountId: creditAccount?.creditAccountId };
             },
           ),
         ),
