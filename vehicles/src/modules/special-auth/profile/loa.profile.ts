@@ -31,9 +31,9 @@ export class LoaProfile extends AutomapperProfile {
         CreateLoaDto,
         LoaDetail,
         forMember(
-          (d) => d.company.companyId,
+          (d) => d.company,
           mapWithArguments((_, { companyId }) => {
-            return companyId;
+            return { companyId };
           }),
         ),
         forMember(
@@ -105,9 +105,9 @@ export class LoaProfile extends AutomapperProfile {
         UpdateLoaDto,
         LoaDetail,
         forMember(
-          (d) => d.company.companyId,
+          (d) => d.company,
           mapWithArguments((_, { companyId }) => {
-            return companyId;
+            return { companyId };
           }),
         ),
         forMember(
