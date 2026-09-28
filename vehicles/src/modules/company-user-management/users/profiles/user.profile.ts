@@ -168,20 +168,18 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userContact,
-          mapWithArguments(
-            (source, { userName, timestamp, directory, userGUID }) => {
-              return {
-                createdUser: userName,
-                createdDateTime: timestamp,
-                createdUserDirectory: directory,
-                createdUserGuid: userGUID,
-                updatedUser: userName,
-                updatedDateTime: timestamp,
-                updatedUserDirectory: directory,
-                updatedUserGuid: userGUID,
-              };
-            },
-          ),
+          mapWithArguments((source, { userName, timestamp, directory, userGUID }) => {
+            return {
+              createdUser: userName,
+              createdDateTime: timestamp,
+              createdUserDirectory: directory,
+              createdUserGuid: userGUID,
+              updatedUser: userName,
+              updatedDateTime: timestamp,
+              updatedUserDirectory: directory,
+              updatedUserGuid: userGUID,
+            };
+          }),
         ),
         forMember((d) => d.userRole, ignore()),
       );
