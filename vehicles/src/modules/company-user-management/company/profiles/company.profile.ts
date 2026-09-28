@@ -180,9 +180,9 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.mailingAddress.addressId,
+          (d) => d.mailingAddress,
           mapWithArguments((source, { mailingAddressId }) => {
-            return mailingAddressId;
+            return { addressId: mailingAddressId };
           }),
         ),
         forMember(
@@ -192,9 +192,9 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.primaryContact.contactId,
+          (d) => d.primaryContact,
           mapWithArguments((source, { contactId }) => {
-            return contactId;
+            return { contactId };
           }),
         ),
         forMember(
