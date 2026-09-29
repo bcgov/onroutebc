@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 import { Repository } from 'typeorm';
 import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../../common/enum/cache-key.enum';
-import { getMapFromCache } from '../../common/helper/cache.helper';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { getMapFromCache } from '@common/helper/cache.helper';
 
 @Injectable()
 export class FeatureFlagsService {
@@ -41,7 +41,7 @@ export class FeatureFlagsService {
       CacheKey.FEATURE_FLAG_TYPE,
     );
     return featureFlagMap?.size
-      ? (Object.fromEntries(featureFlagMap) as Record<string, string>)
+      ? Object.fromEntries(featureFlagMap)
       : undefined;
   }
 }

@@ -4,9 +4,9 @@ import {
   ClientUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../../../../common/enum/user-role.enum';
-import { UserStatus } from '../../../../../common/enum/user-status.enum';
-import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
+} from '@common/enum/user-role.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
+import { ReadContactDto } from '@modules/common/dto/response/read-contact.dto';
 
 /**
  * JSON representation of response object when retrieving user information from the server.

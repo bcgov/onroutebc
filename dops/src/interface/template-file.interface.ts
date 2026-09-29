@@ -1,4 +1,4 @@
-import { TemplateName } from '../enum/template-name.enum';
+import { TemplateName } from '@app/enum/template-name.enum';
 
 export interface TemplateFile {
   templateId: number;

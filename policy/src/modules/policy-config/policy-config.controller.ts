@@ -10,14 +10,14 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../exception/exception.dto';
-import { IsFeatureFlagEnabled } from '../../decorator/is-feature-flag-enabled.decorator';
+import { ExceptionDto } from '@app/exception/exception.dto';
+import { IsFeatureFlagEnabled } from '@app/decorator/is-feature-flag-enabled.decorator';
 import { GetPolicyConfigQueryParamsDto } from './dto/request/queryParam/get-policy-config.query-params.dto';
-import { Permissions } from '../../decorator/permissions.decorator';
+import { Permissions } from '@app/decorator/permissions.decorator';
 import { PolicyConfigIdPathParamDto } from './dto/request/pathParam/policy-config.path-params.dto';
-import { Claim } from '../../enum/claims.enum';
+import { Claim } from '@app/enum/claims.enum';
 import { ReadPolicyConfigDto } from './dto/response/read-policy-config.dto';
-import { AuthOnly } from '../../decorator/auth-only.decorator';
+import { AuthOnly } from '@app/decorator/auth-only.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Policy Configuration')

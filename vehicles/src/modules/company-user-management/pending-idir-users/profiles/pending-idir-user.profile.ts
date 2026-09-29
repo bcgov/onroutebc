@@ -6,10 +6,10 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { ReadPendingIdirUserDto } from '../dto/response/read-pending-idir-user.dto';
-import { CreatePendingIdirUserDto } from '../dto/request/create-pending-idir-user.dto';
-import { PendingIdirUser } from '../entities/pending-idir-user.entity';
-import { UpdatePendingIdirUserDto } from '../dto/request/update-pending-idir-user.dto';
+import { ReadPendingIdirUserDto } from '@modules/company-user-management/pending-idir-users/dto/response/read-pending-idir-user.dto';
+import { CreatePendingIdirUserDto } from '@modules/company-user-management/pending-idir-users/dto/request/create-pending-idir-user.dto';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { UpdatePendingIdirUserDto } from '@modules/company-user-management/pending-idir-users/dto/request/update-pending-idir-user.dto';
 
 @Injectable()
 export class PendingIdirUsersProfile extends AutomapperProfile {

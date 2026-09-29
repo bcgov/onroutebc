@@ -8,10 +8,10 @@ import {
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { UserRole } from '../../../common/enum/user-role.enum';
-import { getApplicantDisplay } from '../../../common/helper/permit-application.helper';
-import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
-import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
+import { UserRole } from '@common/enum/user-role.enum';
+import { getApplicantDisplay } from '@common/helper/permit-application.helper';
+import { Permit as Application } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { ReadShoppingCartDto } from '@modules/shopping-cart/dto/response/read-shopping-cart.dto';
 import { ValidationResults } from 'onroute-policy-engine';
 
 @Injectable()
@@ -28,16 +28,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ReadShoppingCartDto,
         forMember(
           (d) => d.companyId,
-          mapWithArguments((_s, { companyId }) => companyId),
+          mapWithArguments((_s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.companyId;
+          }),
         ),
         forMember(
           (d) => d.validationResults,
-          mapWithArguments(
-            (
-              _s,
-              { validationResults }: { validationResults: ValidationResults },
-            ) => validationResults,
-          ),
+          mapWithArguments((_s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.validationResults as ValidationResults;
+          }),
         ),
         // permitId
         forMember(
@@ -46,10 +45,10 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserRole }) => {
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
             return getApplicantDisplay(
               s.applicationOwner,
-              currentUserRole as UserRole,
+              extraArguments.currentUserRole as UserRole,
             );
           }),
         ),

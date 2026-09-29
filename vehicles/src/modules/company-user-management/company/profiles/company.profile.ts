@@ -9,18 +9,18 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Company } from '../entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 
-import { CreateAddressDto } from '../../../common/dto/request/create-address.dto';
-import { Address } from '../../../common/entities/address.entity';
-import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
-import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
-import { CreateCompanyDto } from '../dto/request/create-company.dto';
-import { UpdateCompanyDto } from '../dto/request/update-company.dto';
-import { ReadCompanyDto } from '../dto/response/read-company.dto';
-import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
-import { AccountRegion } from '../../../../common/enum/account-region.enum';
-import { ReadCompanyMetadataDto } from '../dto/response/read-company-metadata.dto';
+import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
+import { Address } from '@modules/common/entities/address.entity';
+import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
+import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
+import { CreateCompanyDto } from '@modules/company-user-management/company/dto/request/create-company.dto';
+import { UpdateCompanyDto } from '@modules/company-user-management/company/dto/request/update-company.dto';
+import { ReadCompanyDto } from '@modules/company-user-management/company/dto/response/read-company.dto';
+import { ReadCompanyUserDto } from '@modules/company-user-management/company/dto/response/read-company-user.dto';
+import { AccountRegion } from '@common/enum/account-region.enum';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {

@@ -8,31 +8,31 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, IsNull, QueryRunner, Repository } from 'typeorm';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
   CreditAccountLimitType,
-} from '../../common/enum/credit-account-limit.enum';
+} from '@common/enum/credit-account-limit.enum';
 import {
   CreditAccountStatus,
   CreditAccountStatusType,
   CreditAccountStatusValid,
   CreditAccountStatusValidType,
-} from '../../common/enum/credit-account-status-type.enum';
-import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
-import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
+} from '@common/enum/credit-account-status-type.enum';
+import { CreditAccountType } from '@common/enum/credit-account-type.enum';
+import { CreditAccountUserType } from '@common/enum/credit-accounts.enum';
 import {
   getCreditAccountActivityType,
   getCreditAccountStatusFromEGARMS,
   isActiveCreditAccount,
   isClosedCreditAccount,
-} from '../../common/helper/credit-account.helper';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { Nullable } from '../../common/types/common';
-import { CFSCreditAccountService } from '../common/cfsCreditAccountService';
-import { DeleteDto } from '../common/dto/response/delete.dto';
-import { CompanyService } from '../company-user-management/company/company.service';
-import { Company } from '../company-user-management/company/entities/company.entity';
+} from '@common/helper/credit-account.helper';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { Nullable } from '@common/types/common';
+import { CFSCreditAccountService } from '@modules/common/cfsCreditAccountService';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
@@ -42,35 +42,35 @@ import { CreditAccount } from './entities/credit-account.entity';
 import {
   callDatabaseSequence,
   setBaseEntityProperties,
-} from '../../common/helper/database.helper';
+} from '@common/helper/database.helper';
 import { CreditAccountActivity } from './entities/credit-account-activity.entity';
-import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
-import { User } from '../company-user-management/users/entities/user.entity';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { PaymentMethodType as PaymentMethodTypeEnum } from '../../common/enum/payment-method-type.enum';
-import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
+import { CreditAccountActivityType } from '@common/enum/credit-account-activity-type.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { PaymentMethodType as PaymentMethodTypeEnum } from '@common/enum/payment-method-type.enum';
+import { throwUnprocessableEntityException } from '@common/helper/exception.helper';
 import {
   ClientUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
-import { doesUserHaveRole } from '../../common/helper/auth.helper';
-import { EGARMSCreditAccountService } from '../common/egarms.credit-account.service';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { EGARMSCreditAccountService } from '@modules/common/egarms.credit-account.service';
 import {
   EGARMS_CREDIT_ACCOUNT_ACTIVE,
   EGARMS_CREDIT_ACCOUNT_CLOSED,
   EGARMS_CREDIT_ACCOUNT_EXCEED_LIMIT,
   EGARMS_CREDIT_ACCOUNT_HOLD,
   EGARMS_CREDIT_ACCOUNT_NOT_FOUND,
-} from '../../common/constants/api.constant';
+} from '@common/constants/api.constant';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
-import { GarmsExtractType } from '../../common/enum/garms-extract-type.enum';
-import { getToDateForGarms } from '../../common/helper/garms.helper';
-import { TransactionType } from '../../common/enum/transaction-type.enum';
+import { GarmsExtractType } from '@common/enum/garms-extract-type.enum';
+import { getToDateForGarms } from '@common/helper/garms.helper';
+import { TransactionType } from '@common/enum/transaction-type.enum';
 import { ReadCreditAccountDetailsDto } from './dto/response/read-credit-account-details.dto';
 
 /**

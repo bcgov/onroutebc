@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Button,
   FormControl,
@@ -45,10 +45,23 @@ export const AddTrailer = ({
     DEFAULT_EMPTY_SELECT_VALUE,
   );
 
-  const trailersFieldRef = "permitData.vehicleConfiguration.trailers";
+  const trailersFieldnameRef = "permitData.vehicleConfiguration.trailers";
+  const addTrailerRef = useRef<HTMLDivElement | null>(null);
+
   const { policyViolations, clearViolation } = useContext(
     ApplicationFormContext,
   );
+
+  const trailerViolation = policyViolations[trailersFieldnameRef];
+
+  useEffect(() => {
+    if (trailerViolation) {
+      addTrailerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [trailerViolation]);
 
   const subtypeOptions = useMemoizedArray(
     DEFAULT_SELECT_OPTIONS.concat(trailerSubtypeOptions),
@@ -60,7 +73,9 @@ export const AddTrailer = ({
   const selectedSubtypesDisplay = useMemoizedSequence(
     selectedTrailers.map(({ vehicleSubType }) => {
       const subtype = vehicleSubType;
+
       if (isTrailerSubtypeNone(subtype)) return "None";
+
       return getDefaultRequiredVal(
         subtype,
         trailerSubtypeNamesMap.get(subtype),
@@ -86,18 +101,18 @@ export const AddTrailer = ({
       );
 
       setTrailerSelection(DEFAULT_EMPTY_SELECT_VALUE);
-      clearViolation(trailersFieldRef);
+      clearViolation(trailersFieldnameRef);
     }
   };
 
   const handleResetTrailerConfig = () => {
     onUpdateVehicleConfigTrailers([]);
-    clearViolation(trailersFieldRef);
+    clearViolation(trailersFieldnameRef);
   };
 
   return selectedSubtypesDisplay.length > 0 ||
     trailerSubtypeOptions.length > 0 ? (
-    <div className="add-trailer">
+    <div className="add-trailer" ref={addTrailerRef}>
       <h4 className="add-trailer__title">Add Trailer(s)</h4>
 
       {selectedSubtypesDisplay.length > 0 ? (
@@ -136,8 +151,8 @@ export const AddTrailer = ({
           </FormLabel>
 
           <Select
-            aria-labelledby={`add-trailer-form-control-label`}
-            className={`form-control__select`}
+            aria-labelledby="add-trailer-form-control-label"
+            className={`form-control__select ${trailerViolation && "form-control__select--error"}`}
             inputProps={{
               "aria-label": "Add Trailer",
             }}
@@ -149,7 +164,7 @@ export const AddTrailer = ({
             }}
             SelectDisplayProps={
               {
-                "data-testid": `trailer-subtype-input-container`,
+                "data-testid": "trailer-subtype-input-container",
                 className: "form-control__input-container",
               } as CustomSelectDisplayProps
             }
@@ -167,10 +182,8 @@ export const AddTrailer = ({
         </FormControl>
       ) : null}
 
-      {trailersFieldRef in policyViolations ? (
-        <p className="add-trailer__error">
-          {policyViolations[trailersFieldRef]}
-        </p>
+      {trailerViolation ? (
+        <p className="add-trailer__error">{trailerViolation}</p>
       ) : null}
     </div>
   ) : null;

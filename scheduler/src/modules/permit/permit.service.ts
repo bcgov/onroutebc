@@ -6,27 +6,27 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
-import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
-import { shouldRunOnCluster } from 'src/common/helper/cron.helper';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { shouldRunOnCluster } from '@common/helper/cron.helper';
 import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom, map } from 'rxjs';
-import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
-import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
+import { getAccessToken } from '@common/helper/gov-common-services.helper';
+import { GovCommonServices } from '@common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permit } from 'src/modules/common/entities/permit.entity';
+import { Permit } from '@modules/common/entities/permit.entity';
 import { Repository } from 'typeorm';
 import {
   ApplicationStatus,
   PERMIT_STATUS_FOR_DOC_GENERATION,
-} from '../common/enum/application-status.enum';
+} from '@modules/common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
-} from 'src/common/constants/permit.constant';
+} from '@common/constants/permit.constant';
 
 @Injectable()
 export class PermitService {
@@ -72,7 +72,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in Permit Issuance Job ${error}`);
+      this.logger.error(`Error in Permit Issuance Job ${String(error)}`);
       throw new Error('Error in Permit Issuance Job');
     } finally {
       this.runningIssuePermit = false;
@@ -105,7 +105,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
+      this.logger.error(`Error in GeneratePermitDocument Job ${String(error)}`);
       throw new Error('Error in GeneratePermitDocument cron job');
     }
   }
@@ -138,7 +138,7 @@ export class PermitService {
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in GenerateReceipt Job ${error}`);
+      this.logger.error(`Error in GenerateReceipt Job ${String(error)}`);
       throw new Error('Error in GenerateReceipt cron job');
     }
   }
@@ -164,7 +164,7 @@ export class PermitService {
           .pipe(map((response) => response.data as JSON)),
       );
     } catch (error) {
-      this.logger.error(`Error in calling ${url}: ${error}`);
+      this.logger.error(`Error in calling ${url}: ${String(error)}`);
       throw new InternalServerErrorException('Unable to call Access API.');
     }
   }

@@ -23,24 +23,24 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
+} from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { TPS_MIGRATED_USER } from '@common/constants/api.constant';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({

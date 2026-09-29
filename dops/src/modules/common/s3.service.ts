@@ -11,9 +11,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Response } from 'express';
-import { IFile } from '../../interface/file.interface';
+import { IFile } from '@app/interface/file.interface';
 import { Upload } from '@aws-sdk/lib-storage';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
 @Injectable()
 export class S3Service {
   private readonly logger = new Logger(S3Service.name);

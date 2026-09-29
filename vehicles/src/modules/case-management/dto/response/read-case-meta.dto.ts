@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CaseType } from '../../../../common/enum/case-type.enum';
-import { CaseStatusType } from '../../../../common/enum/case-status-type.enum';
+import { CaseType } from '@common/enum/case-type.enum';
+import { CaseStatusType } from '@common/enum/case-status-type.enum';
 
 export class ReadCaseMetaDto {
   @AutoMap()

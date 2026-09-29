@@ -7,9 +7,9 @@ import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
-import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { DeleteDto } from '@modules/common/dto/response/delete.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class TrailersService {

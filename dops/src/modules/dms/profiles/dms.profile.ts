@@ -1,8 +1,8 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Document } from '../entities/document.entity';
-import { ReadFileDto } from '../../common/dto/response/read-file.dto';
+import { Document } from '@modules/dms/entities/document.entity';
+import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
 
 @Injectable()
 export class DmsProfile extends AutomapperProfile {

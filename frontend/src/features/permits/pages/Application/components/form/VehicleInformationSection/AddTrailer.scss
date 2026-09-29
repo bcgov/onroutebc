@@ -30,6 +30,12 @@
           border: 2px solid orbcStyles.$bc-text-box-border-grey;
         }
 
+        &--error {
+          fieldset {
+            border: 2px solid orbcStyles.$bc-red;
+          }
+        }
+
         &:focus-within {
           fieldset {
             border: 2px solid orbcStyles.$focus-blue;

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 
 @Entity({ name: 'dops.ORBC_DOCUMENT' })
 export class Document extends Base {

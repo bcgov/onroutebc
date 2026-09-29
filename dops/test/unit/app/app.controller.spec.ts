@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from '../../../src/app.controller';
-import { AppService } from '../../../src/app.service';
+import { AppController } from '@app/app.controller';
+import { AppService } from '@app/app.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { DmsService } from '../../../src/modules/dms/dms.service';
+import { DmsService } from '@modules/dms/dms.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { S3Service } from '../../../src/modules/common/s3.service';
-import { DgenService } from '../../../src/modules/dgen/dgen.service';
-import { FeatureFlagsService } from '../../../src/modules/feature-flags/feature-flags.service';
+import { S3Service } from '@modules/common/s3.service';
+import { DgenService } from '@modules/dgen/dgen.service';
+import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 
 describe('AppController', () => {
   let appController: AppController;

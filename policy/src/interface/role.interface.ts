@@ -1,5 +1,5 @@
-import { Claim } from '../enum/claims.enum';
-import { UserRole } from '../enum/user-role.enum';
+import { Claim } from '@app/enum/claims.enum';
+import { UserRole } from '@app/enum/user-role.enum';
 
 /**
  * Evaluates role criteria against a user's roles and authorization group.

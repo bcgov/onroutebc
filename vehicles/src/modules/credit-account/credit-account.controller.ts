@@ -10,12 +10,12 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
-import { Permissions } from '../../common/decorator/permissions.decorator';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { CreditAccountService } from './credit-account.service';
-import { IDIRUserRole } from '../../common/enum/user-role.enum';
+import { IDIRUserRole } from '@common/enum/user-role.enum';
 import { CreditAccountNumberPathParamDto } from './dto/request/pathParam/creditAccountNumber.path-params.dto';
 import { ReadCreditAccountDetailsDto } from './dto/response/read-credit-account-details.dto';
 

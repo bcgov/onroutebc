@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
@@ -43,6 +43,9 @@ import { AuthorizationRequiredModal } from "./modal/AuthorizationRequiredModal";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import { usePolicyWarnings } from "../../../hooks/usePolicyWarnings";
 import { PermitReviewConfirmWarningDialog } from "../../../components/dialog/PermitReviewConfirmWarningDialog";
+import { now } from "../../../../../common/helpers/formatDate";
+import { getRevisionHistory } from "./helpers/getRevisionHistory";
+import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -153,7 +156,10 @@ export const AmendPermitReview = () => {
   };
 
   const handleClickContinue = async () => {
-    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+    if (
+      (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) ||
+      (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+    ) {
       setShowConfirmWarningModal(true);
     } else {
       await onSubmit();
@@ -166,12 +172,15 @@ export const AmendPermitReview = () => {
 
   const oldFields = getDefaultFormDataFromPermit(companyInfo, permit);
 
-  const serializedPermit = {
-    permitType,
-    permitData: amendmentApplication?.permitData
-      ? serializePermitData(amendmentApplication.permitData)
-      : {},
-  };
+  const serializedPermit = useMemo(
+    () => ({
+      permitType,
+      permitData: amendmentApplication?.permitData
+        ? serializePermitData(amendmentApplication.permitData)
+        : {},
+    }),
+    [permitType, amendmentApplication?.permitData],
+  );
 
   const amountToRefund = useCalculateRefundAmount(
     validTransactionHistory,
@@ -179,7 +188,10 @@ export const AmendPermitReview = () => {
     policyEngine,
   );
 
-  const { policyWarnings } = usePolicyWarnings(serializedPermit, policyEngine);
+  const { policyWarnings, hasPolicyIssues, axleCalculationResults } =
+    usePolicyWarnings(serializedPermit, policyEngine, {
+      includeAxleCalculationResults: true,
+    });
 
   const { setSnackBar } = useContext(SnackBarContext);
   const addToCartMutation = useAddToCart();
@@ -285,7 +297,10 @@ export const AmendPermitReview = () => {
   };
 
   const handleClickAddToCart = async () => {
-    if (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) {
+    if (
+      (permitType === PERMIT_TYPES.STWSE && policyWarnings.length > 0) ||
+      (permitType === PERMIT_TYPES.STOW && hasPolicyIssues)
+    ) {
       setShowConfirmWarningModal(true);
     } else {
       await handleAddToCart();
@@ -298,6 +313,7 @@ export const AmendPermitReview = () => {
 
   const isFollowUpActionContinue = amountToRefund >= 0;
   const continueBtnText = isFollowUpActionContinue ? "Continue" : undefined;
+  const revisionHistory = getRevisionHistory(permitHistory, now());
 
   return (
     <div className="amend-permit-review">
@@ -371,10 +387,15 @@ export const AmendPermitReview = () => {
           amendmentApplication?.permitData?.icbcInsuranceCertificate
         }
         policyWarnings={policyWarnings}
+        axleCalculationResults={axleCalculationResults}
       >
-        {amendmentApplication?.comment ? (
-          <ReviewReason reason={amendmentApplication.comment} />
-        ) : null}
+        <>
+          <AmendRevisionHistory revisionHistory={revisionHistory} />
+
+          {amendmentApplication?.comment ? (
+            <ReviewReason reason={amendmentApplication.comment} />
+          ) : null}
+        </>
       </PermitReview>
 
       <AuthorizationRequiredModal

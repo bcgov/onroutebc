@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -6,7 +6,7 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { DataSource, Repository } from 'typeorm';
-import { Company } from '../../src/modules/company-user-management/company/entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import {
   COMPANY_LIST,
   createRedCompanyDtoMock,
@@ -21,19 +21,18 @@ import {
 } from '../util/mocks/factory/dataSource.factory.mock';
 import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
-import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
-import { CompanyProfile } from '../../src/modules/company-user-management/company/profiles/company.profile';
-import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
+import { AddressProfile } from '@modules/common/profiles/address.profile';
+import { ContactProfile } from '@modules/common/profiles/contact.profile';
+import { CompanyProfile } from '@modules/company-user-management/company/profiles/company.profile';
+import { UsersProfile } from '@modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
-import * as databaseHelper from 'src/common/helper/database.helper';
+import * as databaseHelper from '@common/helper/database.helper';
 import { Cache } from 'cache-manager';
-import { App } from 'supertest/types';
 import { INestApplication } from '@nestjs/common';
-import { DopsService } from '../../src/modules/common/dops.service';
+import { DopsService } from '@modules/common/dops.service';
 import { createMapper } from '@automapper/core';
-import { CompanyController } from '../../src/modules/company-user-management/company/company.controller';
-import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
+import { CompanyController } from '@modules/company-user-management/company/company.controller';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 let repo: DeepMocked<Repository<Company>>;
@@ -41,7 +40,7 @@ let dopsService: DeepMocked<DopsService>;
 let cacheManager: DeepMocked<Cache>;
 
 describe('Company (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -105,7 +104,9 @@ describe('Company (e2e)', () => {
         .mockImplementation(async () => {
           return Promise.resolve('000005');
         });
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
@@ -123,7 +124,9 @@ describe('Company (e2e)', () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/companies/meta-data')
         .expect(200);
 
@@ -137,7 +140,9 @@ describe('Company (e2e)', () => {
         ...redCompanyEntityMock,
         extension: null,
       });
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .put('/companies/1')
         .send(updateRedCompanyDtoMock)
         .expect(200);
@@ -152,7 +157,9 @@ describe('Company (e2e)', () => {
   describe('/companies/1 GET', () => {
     it('should return a company with companyId as 1.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .get('/companies/1')
         .expect(200);
 

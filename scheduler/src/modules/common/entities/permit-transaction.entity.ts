@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from './base.entity';
 import { Permit } from './permit.entity';
 import { Transaction } from './transaction.entity';
 import { ApiProperty } from '@nestjs/swagger';

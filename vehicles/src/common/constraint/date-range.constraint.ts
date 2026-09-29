@@ -3,14 +3,19 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { differenceBetween, getDuration } from '../helper/date-time.helper';
-import { MaxDifferenceType } from '../interface/duration-difference.interface';
+import {
+  differenceBetween,
+  getDuration,
+} from '@common/helper/date-time.helper';
+import { MaxDifferenceType } from '@common/interface/duration-difference.interface';
 /**
  * The constraint implementation for checking if a datetime is after
  * another datetime and within the allowable difference.
  */
 @ValidatorConstraint({ name: 'DateRange', async: false })
-export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
+export class DateRangeConstraint<
+  T extends object,
+> implements ValidatorConstraintInterface {
   validate(toDateTime: string, args: ValidationArguments) {
     // Some destructuring
     const { constraints, object } = args;
@@ -18,7 +23,9 @@ export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
       string,
       MaxDifferenceType,
     ];
-    const fromDateTime = (object as T)[propertyToCompareAgainst] as string;
+    const fromDateTime = (object as T)[
+      propertyToCompareAgainst as keyof T
+    ] as string;
 
     const difference = differenceBetween(
       fromDateTime,

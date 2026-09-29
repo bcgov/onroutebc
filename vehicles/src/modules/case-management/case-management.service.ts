@@ -2,23 +2,23 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Case } from './entities/case.entity';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { Nullable } from '../../common/types/common';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { CaseType } from '../../common/enum/case-type.enum';
-import { CaseStatusType } from '../../common/enum/case-status-type.enum';
-import { Permit } from '../permit-application-payment/permit/entities/permit.entity';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { Nullable } from '@common/types/common';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { CaseType } from '@common/enum/case-type.enum';
+import { CaseStatusType } from '@common/enum/case-status-type.enum';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import { CaseEvent } from './entities/case-event.entity';
-import { CaseEventType } from '../../common/enum/case-event-type.enum';
-import { User } from '../company-user-management/users/entities/user.entity';
-import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
+import { CaseEventType } from '@common/enum/case-event-type.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { throwUnprocessableEntityException } from '@common/helper/exception.helper';
 import {
   getQueryRunner,
   setBaseEntityProperties,
-} from '../../common/helper/database.helper';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
+} from '@common/helper/database.helper';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { CaseActivity } from './entities/case-activity.entity';
-import { CaseActivityType } from '../../common/enum/case-activity-type.enum';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 import { CaseNotes } from './entities/case-notes.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';

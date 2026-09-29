@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
-import { GovCommonServices } from '../../enum/gov-common-services.enum';
-import { getAccessToken } from '../../helper/gov-common-services.helper';
-import { NotificationTemplate } from '../../enum/notification-template.enum';
-import { IChesAttachment } from '../../interface/attachment.ches.interface';
-import { renderTemplate } from '../../helper/notification.helper';
+import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
+import { GovCommonServices } from '@app/enum/gov-common-services.enum';
+import { getAccessToken } from '@app/helper/gov-common-services.helper';
+import { NotificationTemplate } from '@app/enum/notification-template.enum';
+import { IChesAttachment } from '@app/interface/attachment.ches.interface';
+import { renderTemplate } from '@app/helper/notification.helper';
 
 @Injectable()
 export class NotificationService {

@@ -1,26 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository, SelectQueryBuilder } from 'typeorm';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   UserRole,
-} from '../../common/enum/user-role.enum';
-import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
+} from '@common/enum/user-role.enum';
+import { Permit as Application } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { doesUserHaveRole } from '../../common/helper/auth.helper';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
-import { isPermitTypeEligibleForQueue } from '../../common/helper/permit-application.helper';
-import { PolicyService } from '../policy/policy.service';
-import { PermitType } from '../../common/enum/permit-type.enum';
+import { isPermitTypeEligibleForQueue } from '@common/helper/permit-application.helper';
+import { PolicyService } from '@modules/policy/policy.service';
+import { PermitType } from '@common/enum/permit-type.enum';
 
 @Injectable()
 export class ShoppingCartService {

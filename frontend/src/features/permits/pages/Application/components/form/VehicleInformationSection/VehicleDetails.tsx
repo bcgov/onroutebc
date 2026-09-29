@@ -110,6 +110,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.STOW,
       PERMIT_TYPES.STWSE,
       PERMIT_TYPES.STGVWI,
+      PERMIT_TYPES.EPTOP,
     ] as PermitType[]
   ).includes(permitType);
 
@@ -130,6 +131,7 @@ export const VehicleDetails = ({
       PERMIT_TYPES.QRFR,
       PERMIT_TYPES.NRSCV,
       PERMIT_TYPES.NRQCV,
+      PERMIT_TYPES.EPTOP,
     ] as PermitType[]
   ).includes(permitType);
 

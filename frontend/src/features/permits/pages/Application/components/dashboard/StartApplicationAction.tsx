@@ -40,11 +40,13 @@ export const StartApplicationAction = () => {
   const enableHC = featureFlags?.["HC"] === "ENABLED";
   const enableSTWSE = featureFlags?.["STWSE"] === "ENABLED";
   const enableSTGVWI = featureFlags?.["STGVWI"] === "ENABLED";
+  const enableEPTOP = featureFlags?.["EPTOP"] === "ENABLED";
 
   const showSingleTrip =
     enableSTOS || enableSTOW || enableSTWSE || enableSTGVWI;
+
   const showNonResident =
-    enableSTFR || enableQRFR || enableNRSCV || enableNRQCV;
+    enableSTFR || enableQRFR || enableNRSCV || enableNRQCV || enableEPTOP;
 
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
@@ -95,7 +97,8 @@ export const StartApplicationAction = () => {
               (nestedItem.value === PERMIT_TYPES.STFR && enableSTFR) ||
               (nestedItem.value === PERMIT_TYPES.QRFR && enableQRFR) ||
               (nestedItem.value === PERMIT_TYPES.NRSCV && enableNRSCV) ||
-              (nestedItem.value === PERMIT_TYPES.NRQCV && enableNRQCV)
+              (nestedItem.value === PERMIT_TYPES.NRQCV && enableNRQCV) ||
+              (nestedItem.value === PERMIT_TYPES.EPTOP && enableEPTOP)
             );
           }
           return true;

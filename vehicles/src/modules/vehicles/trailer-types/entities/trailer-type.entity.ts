@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
-import { Trailer } from '../../trailers/entities/trailer.entity';
+import { Trailer } from '@modules/vehicles/trailers/entities/trailer.entity';
 
 @Entity({ name: 'ORBC_TRAILER_TYPE' })
 export class TrailerType {

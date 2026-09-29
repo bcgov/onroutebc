@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
 import { redCompanyAdminUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { PendingUsersController } from '../../../src/modules/company-user-management/pending-users/pending-users.controller';
-import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
+import { PendingUsersController } from '@modules/company-user-management/pending-users/pending-users.controller';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
 import {
   createRedCompanyPendingUserDtoMock,
   readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
-import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
+import { ClientUserRole } from '@common/enum/user-role.enum';
 
 const COMPANY_ID_99 = 99;
 let pendingUserService: DeepMocked<PendingUsersService>;

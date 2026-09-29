@@ -2,15 +2,15 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 
-import { ReadAddressDto } from '../dto/response/read-address.dto';
-import { CreateAddressDto } from '../dto/request/create-address.dto';
-import { UpdateAddressDto } from '../dto/request/update-address.dto';
-import { Address } from '../entities/address.entity';
+import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
+import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
+import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
+import { Address } from '@modules/common/entities/address.entity';
 import {
   getCountryCode,
   getProvinceCode,
   getProvinceId,
-} from '../../../common/helper/province-country.helper';
+} from '@common/helper/province-country.helper';
 
 @Injectable()
 export class AddressProfile extends AutomapperProfile {

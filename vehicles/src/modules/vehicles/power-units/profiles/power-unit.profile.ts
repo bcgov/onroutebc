@@ -7,15 +7,15 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { ReadPowerUnitDto } from '../dto/response/read-power-unit.dto';
-import { PowerUnit } from '../entities/power-unit.entity';
-import { CreatePowerUnitDto } from '../dto/request/create-power-unit.dto';
-import { UpdatePowerUnitDto } from '../dto/request/update-power-unit.dto';
+import { ReadPowerUnitDto } from '@modules/vehicles/power-units/dto/response/read-power-unit.dto';
+import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
+import { CreatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/update-power-unit.dto';
 import {
   getCountryCode,
   getProvinceCode,
   getProvinceId,
-} from '../../../../common/helper/province-country.helper';
+} from '@common/helper/province-country.helper';
 
 @Injectable()
 export class PowerUnitsProfile extends AutomapperProfile {

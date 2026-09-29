@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadUserDto } from '../../../users/dto/response/read-user.dto';
+import { ReadUserDto } from '@modules/company-user-management/users/dto/response/read-user.dto';
 import { ReadCompanyDto } from './read-company.dto';
 
 /**

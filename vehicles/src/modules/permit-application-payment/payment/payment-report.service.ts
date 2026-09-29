@@ -4,27 +4,27 @@ import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { PaymentMethodTypeReport } from '../../../common/enum/payment-method-type.enum';
-import { PaymentCardType as PaymentCardTypeEnum } from '../../../common/enum/payment-card-type.enum';
-import { TransactionType } from '../../../common/enum/transaction-type.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { PaymentMethodTypeReport } from '@common/enum/payment-method-type.enum';
+import { PaymentCardType as PaymentCardTypeEnum } from '@common/enum/payment-card-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
 import { Response } from 'express';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
-import { DopsService } from '../../common/dops.service';
-import { DopsGeneratedReport } from '../../../common/interface/dops-generated-report.interface';
-import { ReportTemplate } from '../../../common/enum/report-template.enum';
-import { convertUtcToPt } from '../../../common/helper/date-time.helper';
+import { DopsService } from '@modules/common/dops.service';
+import { DopsGeneratedReport } from '@common/interface/dops-generated-report.interface';
+import { ReportTemplate } from '@common/enum/report-template.enum';
+import { convertUtcToPt } from '@common/helper/date-time.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { IPaymentCode } from '../../../common/interface/payment-code.interface';
-import { PermitTypeReport } from '../../../common/enum/permit-type.enum';
+import { IPaymentCode } from '@common/interface/payment-code.interface';
+import { PermitTypeReport } from '@common/enum/permit-type.enum';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
-import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
-import { getPaymentCodeFromCache } from '../../../common/helper/payment.helper';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { Directory } from '../../../common/enum/directory.enum';
+import { getPaymentCodeFromCache } from '@common/helper/payment.helper';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { Directory } from '@common/enum/directory.enum';
 
 @Injectable()
 export class PaymentReportService {
@@ -46,6 +46,7 @@ export class PaymentReportService {
         'paymentMethod',
       )
       .addSelect('permit.permitIssueDateTime', 'issuedOn')
+      .addSelect('company.clientNumber', 'clientNumber')
       .addSelect('trans.transactionOrderNumber', 'orbcTransactionId')
       .addSelect('trans.pgTransactionId', 'providerTransactionId')
       .addSelect('receipt.receiptNumber', 'receiptNo')
@@ -106,7 +107,8 @@ export class PaymentReportService {
       .leftJoin('permit.issuer', 'issuer', 'issuer.directory = :directory', {
         directory: Directory.IDIR,
       })
-      .leftJoin('trans.creditAccount', 'creditAccount');
+      .leftJoin('trans.creditAccount', 'creditAccount')
+      .leftJoin('permit.company', 'company');
   }
 
   private getCondtionQueryBuilderForDetailedReports(
@@ -209,6 +211,7 @@ export class PaymentReportService {
 
     interface IPaymentReportDataDetails {
       paymentMethod: string;
+      clientNumber: string;
       orbcTransactionId: string;
       providerTransactionId: string;
       amount: number; //To be changed to Decimal.js
@@ -223,7 +226,7 @@ export class PaymentReportService {
       await queryBuilder.getRawMany();
 
     if (paymentReportDataCollection?.length) {
-      return paymentReportDataCollection as unknown;
+      return paymentReportDataCollection;
     }
   }
 
@@ -324,7 +327,7 @@ export class PaymentReportService {
     summaryPayments.push(total);
 
     if (summaryPayments?.length) {
-      return summaryPayments as unknown;
+      return summaryPayments;
     }
   }
 
@@ -381,7 +384,7 @@ export class PaymentReportService {
     });
 
     if (queryResult?.length) {
-      return queryResult as unknown;
+      return queryResult;
     }
   }
 
@@ -642,7 +645,7 @@ export class PaymentReportService {
       await queryBuilder.getRawMany();
 
     if (paymentReportDataCollection?.length) {
-      return paymentReportDataCollection as unknown;
+      return paymentReportDataCollection;
     }
   }
 }

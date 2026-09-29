@@ -4,7 +4,7 @@ import { Mapper } from '@automapper/core';
 import { Repository } from 'typeorm';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Nullable } from '../../types/common';
+import { Nullable } from '@app/types/common';
 import { ReadPolicyConfigDto } from './dto/response/read-policy-config.dto';
 
 @Injectable()

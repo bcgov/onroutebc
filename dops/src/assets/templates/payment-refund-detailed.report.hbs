@@ -19,7 +19,7 @@
       /* Print styles */
       @media print {
         @page {
-          size: 792pt 612pt;
+          size: 1008pt 612pt;
           margin: 14.15pt 42.51pt 19.85pt 42.51pt;
         }
       }
@@ -35,15 +35,15 @@
       }
 
       .header-col-1 {
-        width: 375.65pt;
+        width: 432.35pt;
       }
 
       .header-col-2 {
-        width: 177.2pt;
+        width: 120.5pt;
       }
 
       .header-col-3 {
-        width: 153.55pt;
+        width: 375.65pt;
       }
 
       .header-table-cell {
@@ -56,7 +56,7 @@
       }
 
       .table {
-        width: 706.55pt;
+        width: 928.55pt;
         border-collapse: collapse;
         border: none;
         text-align: start;
@@ -117,15 +117,19 @@
 
       /*Report Specific*/
       .issued-on {
-        width: 109.45pt;
+        width: 120.45pt;
+      }
+
+      .client-number {
+        width: 92.15pt;
       }
 
       .provider-transaction-id {
-        width: 80pt;
+        width: 106.5pt;
       }
 
       .orbc-transaction-id {
-        width: 80pt;
+        width: 113.35pt;
       }
 
       .payment-method {
@@ -133,23 +137,23 @@
       }
 
       .receipt-number {
-        width: 63.8pt;
+        width: 77.7pt;
       }
 
       .permit-number {
-        width: 77.95pt;
+        width: 99.45pt;
       }
 
       .permit-type {
-        width: 56.7pt;
+        width: 77.95pt;
       }
 
       .user {
-        width: 73.7pt;
+        width: 70.9pt;
       }
 
       .amount {
-        width: 58.75pt;
+        width: 63.8pt;
       }
 
       .summary-payment-payment-method {
@@ -157,23 +161,23 @@
       }
 
       .summary-payment-payment {
-        width: 181.2pt;
+        width: 106.3pt;
       }
 
       .summary-payment-refund {
-        width: 181.2pt;
+        width: 255.4pt;
       }
 
       .summary-payment-deposit {
-        width: 181.2pt;
+        width: 262.25pt;
       }
 
       .summary-permit-permit-type {
-        width: 539.65pt;
+        width: 666.25pt;
       }
 
       .summary-permit-count {
-        width: 170.1pt;
+        width: 262.25pt;
       }
     </style>
   </head>
@@ -267,6 +271,9 @@
                     <th class="table-cell issued-on bold">
                       <p>ISSUED ON</p>
                     </th>
+                    <th class="table-cell client-number bold">
+                      <p>CLIENT #</p>
+                    </th>
                     <th class="table-cell provider-transaction-id bold">
                       <p>PROVIDER TRAN ID</p>
                     </th>
@@ -297,37 +304,57 @@
                   {{#each payments}}
 
                   <tr class="table-row">
-                    <td class="table-cell issued-on">
+                    <td class="table-cell table-cell-bottom-border issued-on">
                       <p>{{defaultToPending (convertUtcToPt this.issuedOn)}}</p>
                     </td>
-                    <td class="table-cell provider-transaction-id">
+                    <td
+                      class="table-cell table-cell-bottom-border client-number"
+                    >
+                      <p>{{ this.clientNumber }}</p>
+                    </td>
+                    <td
+                      class="table-cell table-cell-bottom-border provider-transaction-id"
+                    >
                       <p>{{ this.providerTransactionId }}</p>
                     </td>
-                    <td class="table-cell orbc-transaction-id">
+                    <td
+                      class="table-cell table-cell-bottom-border orbc-transaction-id"
+                    >
                       <p>{{ this.orbcTransactionId }}</p>
                     </td>
-                    <td class="table-cell payment-method">
+                    <td
+                      class="table-cell table-cell-bottom-border payment-method"
+                    >
                       <p>{{ this.paymentMethod }}</p>
                     </td>
-                    <td class="table-cell receipt-number">
+                    <td
+                      class="table-cell table-cell-bottom-border receipt-number"
+                    >
                       <p>{{defaultToPending this.receiptNo }}</p>
                     </td>
-                    <td class="table-cell permit-number">
+                    <td
+                      class="table-cell table-cell-bottom-border permit-number"
+                    >
                       <p>{{defaultToPending this.permitNo }}</p>
                     </td>
-                    <td class="table-cell permit-type">
+                    <td class="table-cell table-cell-bottom-border permit-type">
                       <p>{{ this.permitType }}</p>
                     </td>
-                    <td class="table-cell user">
+                    <td class="table-cell table-cell-bottom-border user">
                       <p>{{ this.users }}</p>
                     </td>
-                    <td class="table-cell amount table-cell-right">
+                    <td
+                      class="table-cell table-cell-bottom-border amount table-cell-right"
+                    >
                       <p>{{formatAmount this.amount 'Payment'}}</p>
                     </td>
                   </tr>
                   {{#displayPaymentMethodSubTotal 'payment'}}
                   <tr class="table-row">
                     <td class="table-cell table-cell-background issued-on"></td>
+                    <td
+                      class="table-cell table-cell-background client-number"
+                    ></td>
                     <td
                       class="table-cell table-cell-background provider-transaction-id"
                     ></td>
@@ -363,6 +390,9 @@
                   <tr class="table-row">
                     <td class="table-cell table-cell-background issued-on"></td>
                     <td
+                      class="table-cell table-cell-background client-number"
+                    ></td>
+                    <td
                       class="table-cell table-cell-background provider-transaction-id"
                     ></td>
                     <td
@@ -371,7 +401,7 @@
                     <td
                       class="table-cell table-cell-background payment-method bold"
                     >
-                      <p style="font-size: 10pt">TOTAL AMOUNT</p>
+                      <p style="font-size: 10pt">TOTAL PAYMENTS</p>
                     </td>
                     <td
                       class="table-cell table-cell-background receipt-number"
@@ -415,6 +445,9 @@
                       <th class="table-cell issued-on bold">
                         <p>ISSUED ON</p>
                       </th>
+                      <th class="table-cell client-number bold">
+                        <p>CLIENT #</p>
+                      </th>
                       <th class="table-cell provider-transaction-id bold">
                         <p>PROVIDER TRAN ID</p>
                       </th>
@@ -444,33 +477,52 @@
                   <tbody>
                     {{#each refunds}}
                     <tr class="table-row">
-                      <td class="table-cell issued-on">
+                      <td class="table-cell table-cell-bottom-border issued-on">
                         <p>
                           {{defaultToPending (convertUtcToPt this.issuedOn)}}
                         </p>
                       </td>
-                      <td class="table-cell provider-transaction-id">
+                      <td
+                        class="table-cell table-cell-bottom-border client-number"
+                      >
+                        <p>{{ this.clientNumber }}</p>
+                      </td>
+                      <td
+                        class="table-cell table-cell-bottom-border provider-transaction-id"
+                      >
                         <p>{{ this.providerTransactionId }}</p>
                       </td>
-                      <td class="table-cell orbc-transaction-id">
+                      <td
+                        class="table-cell table-cell-bottom-border orbc-transaction-id"
+                      >
                         <p>{{ this.orbcTransactionId }}</p>
                       </td>
-                      <td class="table-cell payment-method">
+                      <td
+                        class="table-cell table-cell-bottom-border payment-method"
+                      >
                         <p>{{ this.paymentMethod }}</p>
                       </td>
-                      <td class="table-cell receipt-number">
+                      <td
+                        class="table-cell table-cell-bottom-border receipt-number"
+                      >
                         <p>{{defaultToPending this.receiptNo }}</p>
                       </td>
-                      <td class="table-cell permit-number">
+                      <td
+                        class="table-cell table-cell-bottom-border permit-number"
+                      >
                         <p>{{defaultToPending this.permitNo }}</p>
                       </td>
-                      <td class="table-cell permit-type">
+                      <td
+                        class="table-cell table-cell-bottom-border permit-type"
+                      >
                         <p>{{ this.permitType }}</p>
                       </td>
-                      <td class="table-cell user">
+                      <td class="table-cell table-cell-bottom-border user">
                         <p>{{ this.users }}</p>
                       </td>
-                      <td class="table-cell amount table-cell-right">
+                      <td
+                        class="table-cell table-cell-bottom-border amount table-cell-right"
+                      >
                         <p>{{formatAmount this.amount 'Refund'}}</p>
                       </td>
                     </tr>
@@ -479,6 +531,9 @@
                     <tr class="table-row">
                       <td
                         class="table-cell table-cell-background issued-on"
+                      ></td>
+                      <td
+                        class="table-cell table-cell-background client-number"
                       ></td>
                       <td
                         class="table-cell table-cell-background provider-transaction-id"
@@ -517,6 +572,9 @@
                         class="table-cell table-cell-background issued-on"
                       ></td>
                       <td
+                        class="table-cell table-cell-background client-number"
+                      ></td>
+                      <td
                         class="table-cell table-cell-background provider-transaction-id"
                       ></td>
                       <td
@@ -525,7 +583,7 @@
                       <td
                         class="table-cell table-cell-background payment-method bold"
                       >
-                        <p style="font-size: 10pt">TOTAL AMOUNT</p>
+                        <p style="font-size: 10pt">TOTAL REFUNDS</p>
                       </td>
                       <td
                         class="table-cell table-cell-background receipt-number"

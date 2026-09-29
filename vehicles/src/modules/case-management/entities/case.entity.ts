@@ -7,13 +7,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
-import { User } from '../../company-user-management/users/entities/user.entity';
-import { CaseType } from '../../../common/enum/case-type.enum';
-import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { CaseType } from '@common/enum/case-type.enum';
+import { CaseStatusType } from '@common/enum/case-status-type.enum';
 import { CaseEvent } from './case-event.entity';
-import { Nullable } from '../../../common/types/common';
+import { Nullable } from '@common/types/common';
 import { CaseDocument } from './case-document.entity';
 import { CaseNotes } from './case-notes.entity';
 import { CaseActivity } from './case-activity.entity';

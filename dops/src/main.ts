@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './logger/logger.config';
 import { CorrelationIdInterceptor } from './interceptor/correlationId.interceptor';
-import * as responseTime from 'response-time';
+import responseTime from 'response-time';
 import { CustomValidationPipe } from './pipe/custom-validation.pipe';
 
 const allowedOrigins = [process.env.FRONTEND_URL];

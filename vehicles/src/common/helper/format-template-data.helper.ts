@@ -1,23 +1,23 @@
-import * as constants from '../constants/api.constant';
-import { convertUtcToPt, dateFormat } from '../helper/date-time.helper';
-import { ApplicationStatus } from '../enum/application-status.enum';
-import { PermitIssuedBy } from '../enum/permit-issued-by.enum';
-import { Company } from '../../modules/company-user-management/company/entities/company.entity';
-import { Permit } from '../../modules/permit-application-payment/permit/entities/permit.entity';
+import * as constants from '@common/constants/api.constant';
+import { convertUtcToPt, dateFormat } from './date-time.helper';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import {
   PermitData,
   PermitTemplateData,
-} from '../interface/permit.template.interface';
-import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
+} from '@common/interface/permit.template.interface';
+import { FullNamesForDgen } from '@common/interface/full-names-for-dgen.interface';
 import { formatAmount } from './payment.helper';
-import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import { ThirdPartyLiability } from '@common/enum/third-party-liability.enum';
 import {
   THIRD_PARTY_LIABILITY_DANGEROUS_GOODS,
   THIRD_PARTY_LIABILITY_GENERAL_GOODS,
-} from '../constants/api.constant';
-import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
-import { EMPTY_VALUE } from '../constants/template.constant';
-import { PermitType } from '../enum/permit-type.enum';
+} from '@common/constants/api.constant';
+import { ConditionalLicensingFee } from '@common/enum/conditional-licensing-fee.enum';
+import { EMPTY_VALUE } from '@common/constants/template.constant';
+import { PermitType } from '@common/enum/permit-type.enum';
 import { formatNumber } from './numeric.helper';
 
 /**

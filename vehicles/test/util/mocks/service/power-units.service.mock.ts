@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/update-power-unit.dto';
+import { UpdatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/update-power-unit.dto';
 import { deleteDtoMock } from '../data/delete-dto.mock';
 import { readPowerUnitDtoMock } from '../data/power-unit.mock';
 

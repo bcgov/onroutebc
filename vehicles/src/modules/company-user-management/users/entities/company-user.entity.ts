@@ -5,12 +5,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Company } from '../../company/entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { User } from './user.entity';
-import { ClientUserRole } from '../../../../common/enum/user-role.enum';
-import { UserStatus } from 'src/common/enum/user-status.enum';
+import { ClientUserRole } from '@common/enum/user-role.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })
 export class CompanyUser extends Base {

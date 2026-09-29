@@ -9,25 +9,25 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { CreditAccountUser } from '../entities/credit-account-user.entity';
-import { CreateCreditAccountUserDto } from '../dto/request/create-credit-account-user.dto';
-import { ReadCreditAccountUserDto } from '../dto/response/read-credit-account-user.dto';
-import { Company } from '../../company-user-management/company/entities/company.entity';
-import { CreditAccountUserType } from '../../../common/enum/credit-accounts.enum';
-import { CreditAccount } from '../entities/credit-account.entity';
-import { ReadCreditAccountDto } from '../dto/response/read-credit-account.dto';
-import { CreditAccountActivity } from '../entities/credit-account-activity.entity';
-import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
-import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-account-user-details.dto';
-import { ReadCreditAccountLimitDto } from '../dto/response/read-credit-account-limit.dto';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
-import { CLIENT_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
-import { IEGARMSResponse } from '../../../common/interface/egarms-response.interface';
+import { CreditAccountUser } from '@modules/credit-account/entities/credit-account-user.entity';
+import { CreateCreditAccountUserDto } from '@modules/credit-account/dto/request/create-credit-account-user.dto';
+import { ReadCreditAccountUserDto } from '@modules/credit-account/dto/response/read-credit-account-user.dto';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { CreditAccountUserType } from '@common/enum/credit-accounts.enum';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
+import { ReadCreditAccountDto } from '@modules/credit-account/dto/response/read-credit-account.dto';
+import { CreditAccountActivity } from '@modules/credit-account/entities/credit-account-activity.entity';
+import { ReadCreditAccountActivityDto } from '@modules/credit-account/dto/response/read-credit-account-activity.dto';
+import { ReadCreditAccountUserDetailsDto } from '@modules/credit-account/dto/response/read-credit-account-user-details.dto';
+import { ReadCreditAccountLimitDto } from '@modules/credit-account/dto/response/read-credit-account-limit.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { CLIENT_USER_ROLE_LIST } from '@common/enum/user-role.enum';
+import { IEGARMSResponse } from '@common/interface/egarms-response.interface';
 import {
   isHideLimitDetails,
   validEgarmsReturnCodesToDisplayCreditDetails,
-} from '../../../common/helper/credit-account.helper';
+} from '@common/helper/credit-account.helper';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -109,7 +109,8 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditAccountNumber,
           mapWithArguments(
-            (source, { currentUser }: { currentUser: IUserJWT }) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
               if (
                 !source?.isVerified &&
                 doesUserHaveRole(
@@ -133,18 +134,11 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditLimit,
           mapWithArguments(
-            (
-              source,
-              {
-                currentUser,
-                egarmsCreditAccountDetails,
-                mapBasedonRole,
-              }: {
-                currentUser: IUserJWT;
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                mapBasedonRole: boolean;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const mapBasedonRole = extraArguments.mapBasedonRole as boolean;
               if (
                 isHideLimitDetails(
                   mapBasedonRole,
@@ -161,20 +155,13 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.creditBalance,
           mapWithArguments(
-            (
-              source,
-              {
-                currentUser,
-                egarmsCreditAccountDetails,
-                orbcAmountToAdjust,
-                mapBasedonRole,
-              }: {
-                currentUser: IUserJWT;
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                orbcAmountToAdjust: number;
-                mapBasedonRole: boolean;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const currentUser = extraArguments.currentUser as IUserJWT;
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const orbcAmountToAdjust =
+                extraArguments.orbcAmountToAdjust as number;
+              const mapBasedonRole = extraArguments.mapBasedonRole as boolean;
               if (
                 isHideLimitDetails(
                   mapBasedonRole,
@@ -197,16 +184,11 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.availableCredit,
           mapWithArguments(
-            (
-              source,
-              {
-                egarmsCreditAccountDetails,
-                orbcAmountToAdjust,
-              }: {
-                egarmsCreditAccountDetails: IEGARMSResponse;
-                orbcAmountToAdjust: number;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
+              const orbcAmountToAdjust =
+                extraArguments.orbcAmountToAdjust as number;
               if (
                 !validEgarmsReturnCodesToDisplayCreditDetails(
                   egarmsCreditAccountDetails,
@@ -226,14 +208,9 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.egarmsReturnCode,
           mapWithArguments(
-            (
-              source,
-              {
-                egarmsCreditAccountDetails,
-              }: {
-                egarmsCreditAccountDetails: IEGARMSResponse;
-              },
-            ) => {
+            (source, extraArguments: Record<string, unknown>) => {
+              const egarmsCreditAccountDetails =
+                extraArguments.egarmsCreditAccountDetails as IEGARMSResponse;
               return egarmsCreditAccountDetails?.PPABalance?.return_code;
             },
           ),

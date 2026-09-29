@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadAddressDto } from '../../../../common/dto/response/read-address.dto';
-import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
-import { Directory } from '../../../../../common/enum/directory.enum';
+import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
+import { ReadContactDto } from '@modules/common/dto/response/read-contact.dto';
+import { Directory } from '@common/enum/directory.enum';
 
 /**
  * JSON representation of response object when retrieving a company.

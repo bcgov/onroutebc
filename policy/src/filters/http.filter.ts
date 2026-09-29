@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../exception/exception.dto';
+import { ExceptionDto } from '@app/exception/exception.dto';
 import { ClsServiceManager } from 'nestjs-cls';
 
 /*Catch all http exceptions */

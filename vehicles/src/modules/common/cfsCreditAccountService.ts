@@ -3,18 +3,18 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { Cache } from 'cache-manager';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
-import { getAccessToken } from '../../common/helper/gov-common-services.helper';
-import { Company } from '../company-user-management/company/entities/company.entity';
-import { CreateAccountRequestDto } from '../credit-account/cfs-integration/request/create-account.request.dto';
-import { CreatePartyRequestDto } from '../credit-account/cfs-integration/request/create-party.request.dto';
-import { CreateSiteContactRequestDto } from '../credit-account/cfs-integration/request/create-site-contact.request.dto';
-import { CreateSiteRequestDto } from '../credit-account/cfs-integration/request/create-site.request.dto';
-import { CreateAccountResponseDto } from '../credit-account/cfs-integration/response/create-account.response.dto';
-import { CreatePartyResponseDto } from '../credit-account/cfs-integration/response/create-party.response.dto';
-import { CreateSiteContactResponseDto } from '../credit-account/cfs-integration/response/create-site-contact.response.dto';
-import { CreateSiteResponseDto } from '../credit-account/cfs-integration/response/create-site.response.dto';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { GovCommonServices } from '@common/enum/gov-common-services.enum';
+import { getAccessToken } from '@common/helper/gov-common-services.helper';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { CreateAccountRequestDto } from '@modules/credit-account/cfs-integration/request/create-account.request.dto';
+import { CreatePartyRequestDto } from '@modules/credit-account/cfs-integration/request/create-party.request.dto';
+import { CreateSiteContactRequestDto } from '@modules/credit-account/cfs-integration/request/create-site-contact.request.dto';
+import { CreateSiteRequestDto } from '@modules/credit-account/cfs-integration/request/create-site.request.dto';
+import { CreateAccountResponseDto } from '@modules/credit-account/cfs-integration/response/create-account.response.dto';
+import { CreatePartyResponseDto } from '@modules/credit-account/cfs-integration/response/create-party.response.dto';
+import { CreateSiteContactResponseDto } from '@modules/credit-account/cfs-integration/response/create-site-contact.response.dto';
+import { CreateSiteResponseDto } from '@modules/credit-account/cfs-integration/response/create-site.response.dto';
 import { Address } from './entities/address.entity';
 
 @Injectable()
@@ -36,9 +36,10 @@ export class CFSCreditAccountService {
    * otherwise, returns `false`.
    */
   private static isSuccess(status: number) {
+    const httpStatus = Number(status);
     return (
-      (status as HttpStatus) === HttpStatus.OK ||
-      (status as HttpStatus) === HttpStatus.CREATED
+      httpStatus === Number(HttpStatus.OK) ||
+      httpStatus === Number(HttpStatus.CREATED)
     );
   }
 
@@ -71,7 +72,7 @@ export class CFSCreditAccountService {
       url,
       data: {
         customer_name: clientNumber,
-      } as CreatePartyRequestDto,
+      },
     });
     if (
       CFSCreditAccountService.isSuccess(partyResponse.status) &&
@@ -117,7 +118,7 @@ export class CFSCreditAccountService {
       data: {
         account_number: creditAccountNumber,
         account_description: `OnRouteBC Credit Account for ${clientNumber}`,
-      } as CreateAccountRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.account_number) {
       return data;
@@ -165,7 +166,7 @@ export class CFSCreditAccountService {
         province: mailingAddress.province.provinceCode,
         country: mailingAddress.province.country.countryCode,
         customer_profile_class: 'CAS_IND_DEFAULT',
-      } as CreateSiteRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.site_number) {
       return data;
@@ -208,7 +209,7 @@ export class CFSCreditAccountService {
         last_name: companyInfo.primaryContact.lastName,
         phone_number: companyInfo.phone,
         email_address: companyInfo.email,
-      } as CreateSiteContactRequestDto,
+      },
     });
     if (CFSCreditAccountService.isSuccess(status) && data.contact_number) {
       return true;

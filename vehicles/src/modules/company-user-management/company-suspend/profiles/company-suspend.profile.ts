@@ -1,8 +1,8 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { ReadCompanySuspendActivityDto } from '../dto/response/read-company-suspend-activity.dto';
-import { CompanySuspendActivity } from '../entities/company-suspend-activity.entity';
+import { ReadCompanySuspendActivityDto } from '@modules/company-user-management/company-suspend/dto/response/read-company-suspend-activity.dto';
+import { CompanySuspendActivity } from '@modules/company-user-management/company-suspend/entities/company-suspend-activity.entity';
 
 @Injectable()
 export class CompanySuspendProfile extends AutomapperProfile {

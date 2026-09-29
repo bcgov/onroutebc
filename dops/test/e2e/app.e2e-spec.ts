@@ -1,15 +1,14 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppController } from '../../src/app.controller';
-import { AppService } from '../../src/app.service';
+import { AppController } from '@app/app.controller';
+import { AppService } from '@app/app.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { DgenService } from '../../src/modules/dgen/dgen.service';
-import { DmsService } from '../../src/modules/dms/dms.service';
+import { DgenService } from '@modules/dgen/dgen.service';
+import { DmsService } from '@modules/dms/dms.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { S3Service } from '../../src/modules/common/s3.service';
-import { App } from 'supertest/types';
-import { FeatureFlagsService } from '../../src/modules/feature-flags/feature-flags.service';
+import { S3Service } from '@modules/common/s3.service';
+import { FeatureFlagsService } from '@modules/feature-flags/feature-flags.service';
 
 let dgenServiceMock: DeepMocked<DgenService>;
 let s3ServiceMock: DeepMocked<S3Service>;
@@ -17,7 +16,7 @@ let dmsServiceMock: DeepMocked<DmsService>;
 let featureFlagsService: DeepMocked<FeatureFlagsService>;
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     dgenServiceMock = createMock<DgenService>();
@@ -52,9 +51,8 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () =>
-    request(app.getHttpServer() as unknown as App)
-      .get('/')
-      .expect(200)
-      .expect('DOPS Healthcheck!'));
+  it('/ (GET)', () => {
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    return request(server).get('/').expect(200).expect('DOPS Healthcheck!');
+  });
 });

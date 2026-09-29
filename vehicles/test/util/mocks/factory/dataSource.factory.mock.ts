@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
-import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 import * as constants from '../data/test-data.constants';
 import {
   blueCompanyEntityMock,

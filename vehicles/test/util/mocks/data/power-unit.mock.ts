@@ -1,8 +1,8 @@
-import { DeletePowerUnitDto } from 'src/modules/vehicles/power-units/dto/request/delete-power-units.dto';
-import { CreatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/create-power-unit.dto';
-import { UpdatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/update-power-unit.dto';
-import { ReadPowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/response/read-power-unit.dto';
-import { PowerUnit } from '../../../../src/modules/vehicles/power-units/entities/power-unit.entity';
+import { DeletePowerUnitDto } from '@modules/vehicles/power-units/dto/request/delete-power-units.dto';
+import { CreatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from '@modules/vehicles/power-units/dto/request/update-power-unit.dto';
+import { ReadPowerUnitDto } from '@modules/vehicles/power-units/dto/response/read-power-unit.dto';
+import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 import { powerUnitTypeEntityMock } from './power-unit-type.mock';
 import { provinceEntityMock } from './province.mock';

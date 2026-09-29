@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Response } from 'express';
-import { setResHeaderCorrelationId } from '../helper/response-header.helper';
+import { setResHeaderCorrelationId } from '@app/helper/response-header.helper';
 
 @Injectable()
 export class CorrelationIdInterceptor implements NestInterceptor {

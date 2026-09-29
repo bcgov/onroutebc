@@ -9,14 +9,14 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { Base } from './base.entity';
+import { ApplicationStatus } from '@modules/common/enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
-import { PermitType } from '../enum/permit-type.enum';
+import { PermitType } from '@modules/common/enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
 import { Company } from './company.entity';
-import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {

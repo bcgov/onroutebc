@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -6,21 +6,20 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import {
   createPendingIdirUserMock,
   pendingIdirUserEntityMock,
   readPendingIdirUserMock,
-} from 'test/util/mocks/data/pending-idir-user.mock';
-import { PendingIdirUsersModule } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.module';
+} from '../util/mocks/data/pending-idir-user.mock';
+import { PendingIdirUsersModule } from '@modules/company-user-management/pending-idir-users/pending-idir-users.module';
 import { TestUserMiddleware } from './test-user.middleware';
-import { redCompanyAdminUserJWTMock } from 'test/util/mocks/data/jwt.mock';
-import { App } from 'supertest/types';
+import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 
 const repo = createMock<Repository<PendingIdirUser>>();
 
 describe('PendingUsers (e2e)', () => {
-  let app: INestApplication<Express.Application>;
+  let app: INestApplication;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -49,7 +48,9 @@ describe('PendingUsers (e2e)', () => {
   describe('pending-idir-users CREATE', () => {
     it('should create a new pending idir User.', async () => {
       repo.save.mockResolvedValue(pendingIdirUserEntityMock);
-      const response = await request(app.getHttpServer() as unknown as App)
+      const response = await request(
+        app.getHttpServer() as Parameters<typeof request>[0],
+      )
         .post('/pending-idir-users')
         .send(createPendingIdirUserMock)
         .expect(201);

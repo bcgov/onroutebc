@@ -10,37 +10,37 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
-import { TemplateName } from 'src/common/enum/template-name.enum';
-import { convertUtcToPt } from 'src/common/helper/date-time.helper';
-import { NotificationTemplate } from 'src/common/enum/notification-template.enum';
-import { Directory } from 'src/common/enum/directory.enum';
+import { TemplateName } from '@common/enum/template-name.enum';
+import { convertUtcToPt } from '@common/helper/date-time.helper';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
+import { Directory } from '@common/enum/directory.enum';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { getFromCache, getMapFromCache } from '@common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 
 import {
   formatAmount,
   getPaymentCodeFromCache,
-} from '../../../common/helper/payment.helper';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import * as constants from '../../../common/constants/api.constant';
-import { formatTemplateData } from '../../../common/helper/format-template-data.helper';
-import { fetchPermitDataDescriptionValuesFromCache } from '../../../common/helper/permit-application.helper';
-import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { Permit } from '../permit/entities/permit.entity';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { DopsService } from '../../common/dops.service';
-import { ResultDto } from '../permit/dto/response/result.dto';
-import { ApplicationStatus } from '../../../common/enum/application-status.enum';
-import { PaymentService } from '../payment/payment.service';
-import { validateEmailList } from '../../../common/helper/notification.helper';
-import { getPermitTemplateName } from '../../../common/helper/template.helper';
-import { TransactionType } from '../../../common/enum/transaction-type.enum';
-import { Nullable } from '../../../common/types/common';
-import { PolicyService } from '../../policy/policy.service';
-import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
+} from '@common/helper/payment.helper';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import * as constants from '@common/constants/api.constant';
+import { formatTemplateData } from '@common/helper/format-template-data.helper';
+import { fetchPermitDataDescriptionValuesFromCache } from '@common/helper/permit-application.helper';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { DopsService } from '@modules/common/dops.service';
+import { ResultDto } from '@modules/permit-application-payment/permit/dto/response/result.dto';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PaymentService } from '@modules/permit-application-payment/payment/payment.service';
+import { validateEmailList } from '@common/helper/notification.helper';
+import { getPermitTemplateName } from '@common/helper/template.helper';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { Nullable } from '@common/types/common';
+import { PolicyService } from '@modules/policy/policy.service';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
 
 @Injectable()
 export class PermitReceiptDocumentService {

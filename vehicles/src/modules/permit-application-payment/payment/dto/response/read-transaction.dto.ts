@@ -1,11 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
-import { PaymentMethodType } from '../../../../../common/enum/payment-method-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
 import { ReadApplicationTransactionDto } from './read-application-transaction.dto';
 import { Type } from 'class-transformer';
-import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
-import { PaymentCardType } from '../../../../../common/enum/payment-card-type.enum';
+import { PaymentGatewayTransactionDto } from '@modules/permit-application-payment/payment/dto/common/payment-gateway-transaction.dto';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
 
 export class ReadTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()

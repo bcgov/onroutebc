@@ -90,6 +90,12 @@ export const ReviewPermitDetails = ({
     }
   };
 
+  const numConditions = applyWhenNotNullable(
+    (conditionsArr) => conditionsArr.length,
+    conditions,
+    0,
+  );
+
   return (
     <Box className="review-permit-details">
       <Box className="review-permit-details__header">
@@ -156,13 +162,15 @@ export const ReviewPermitDetails = ({
           </Box>
         ) : null}
 
-        <Box className="permit-conditions">
-          <Typography variant="h4">
-            The following CVSE forms will be included in your permit.
-          </Typography>
+        {numConditions > 0 ? (
+          <Box className="permit-conditions">
+            <Typography variant="h4">
+              The following CVSE forms will be included in your permit.
+            </Typography>
 
-          <ReviewConditionsTable conditions={conditions} />
-        </Box>
+            <ReviewConditionsTable conditions={conditions} />
+          </Box>
+        ) : null}
       </Box>
     </Box>
   );

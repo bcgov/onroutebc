@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumberString } from 'class-validator';
-import { CompanyIdPathParamDto } from '../../../../../common/dto/request/pathParam/companyId.path-param.dto';
+import { CompanyIdPathParamDto } from '@modules/common/dto/request/pathParam/companyId.path-param.dto';
 
 export class ApplicationIdIdPathParamDto extends CompanyIdPathParamDto {
   @ApiProperty({

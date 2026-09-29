@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadCompanyDto } from '../../../company/dto/response/read-company.dto';
+import { ReadCompanyDto } from './read-company.dto';
 
 /**
  * JSON representation of response object when verifying client and permit information.

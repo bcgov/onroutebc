@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { Permit } from '../../permit/entities/permit.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import { Transaction } from './transaction.entity';
 import { ApiProperty } from '@nestjs/swagger';
 

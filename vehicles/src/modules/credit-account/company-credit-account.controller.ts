@@ -20,12 +20,12 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
-import { Permissions } from '../../common/decorator/permissions.decorator';
-import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { Permissions } from '@common/decorator/permissions.decorator';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { ExceptionDto } from '@common/exception/exception.dto';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { CompanyIdPathParamDto } from '@modules/common/dto/request/pathParam/companyId.path-param.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
@@ -36,7 +36,7 @@ import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../common/enum/user-role.enum';
+} from '@common/enum/user-role.enum';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 import { UpdateCreditAccountVerificationDto } from './dto/request/update-credit-account-verification.dto';
