@@ -2,29 +2,33 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import duration from 'dayjs/plugin/duration';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { TIMEZONE_PACIFIC } from '@common/constants/api.constant';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
-
-export const LOCAL_TIMEZONE_ID = 'Canada/Pacific';
+dayjs.extend(isSameOrAfter);
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
-  const formattedDate = dayjs
-    .utc(dateTime)
-    .tz(LOCAL_TIMEZONE_ID)
-    .format(format);
+  const pacificDateTime = dayjs.utc(dateTime).tz(TIMEZONE_PACIFIC);
+  const formattedDate = pacificDateTime.format(format);
   if (format.includes('Z')) {
     const tzOffset = formattedDate.slice(-6);
-    const label = tzOffset === '-08:00' ? 'PST' : 'PDT';
-    return `${formattedDate.slice(0, -6)} ${label}`;
+    let tzLabel = tzOffset === '-08:00' ? 'PST' : 'PDT';
+
+    const threshold = dayjs.tz('2026-11-01', TIMEZONE_PACIFIC).startOf('day');
+    if (tzLabel === 'PDT' && pacificDateTime.isSameOrAfter(threshold, 'day')) {
+      tzLabel = 'PCT';
+    }
+    return `${formattedDate.slice(0, -6)} ${tzLabel}`;
   }
   return formattedDate;
 };
 
 export const getToDateForGarms = () => {
   // Current timestamp in the target timezone
-  const currentTimeInTargetTimezone = dayjs().tz(LOCAL_TIMEZONE_ID);
+  const currentTimeInTargetTimezone = dayjs().tz(TIMEZONE_PACIFIC);
 
   // Today at 9:00 PM in the target timezone
   const todayAt9PmInTargetTimezone = currentTimeInTargetTimezone
