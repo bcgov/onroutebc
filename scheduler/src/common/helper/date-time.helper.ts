@@ -10,8 +10,6 @@ dayjs.extend(timezone);
 dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 
-
-
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   const pacificDateTime = dayjs.utc(dateTime).tz(TIMEZONE_PACIFIC);
   const formattedDate = pacificDateTime.format(format);
