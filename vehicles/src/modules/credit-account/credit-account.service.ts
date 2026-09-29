@@ -165,16 +165,14 @@ export class CreditAccountService {
     const egarmsCreditAccountDetails = await egarmsCreditAccountDetailsPromise;
 
     // Validate that the credit account status from EGARMS is in an acceptable state
-    if (
-      !(
-        egarmsCreditAccountDetails?.PPABalance?.return_code ===
-          EGARMS_CREDIT_ACCOUNT_ACTIVE ||
-        egarmsCreditAccountDetails?.PPABalance?.return_code ===
-          EGARMS_CREDIT_ACCOUNT_CLOSED ||
-        egarmsCreditAccountDetails?.PPABalance?.return_code ===
-          EGARMS_CREDIT_ACCOUNT_HOLD
-      )
-    ) {
+    if (!(
+      egarmsCreditAccountDetails?.PPABalance?.return_code ===
+        EGARMS_CREDIT_ACCOUNT_ACTIVE ||
+      egarmsCreditAccountDetails?.PPABalance?.return_code ===
+        EGARMS_CREDIT_ACCOUNT_CLOSED ||
+      egarmsCreditAccountDetails?.PPABalance?.return_code ===
+        EGARMS_CREDIT_ACCOUNT_HOLD
+    )) {
       this.logger.error(
         `Error: Invalid Credit Account Status in eGARMS. eGARMS Return Code: ${egarmsCreditAccountDetails?.PPABalance?.return_code}`,
       );

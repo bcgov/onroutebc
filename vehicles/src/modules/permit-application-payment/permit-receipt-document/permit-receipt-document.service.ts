@@ -190,8 +190,7 @@ export class PermitReceiptDocumentService {
 
   private emailDocument(
     notificationTemplate:
-      | NotificationTemplate.ISSUE_PERMIT
-      | NotificationTemplate.PAYMENT_RECEIPT,
+      NotificationTemplate.ISSUE_PERMIT | NotificationTemplate.PAYMENT_RECEIPT,
     to: string[],
     subject: string,
     documentId: string,

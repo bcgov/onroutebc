@@ -307,13 +307,11 @@ export class PaymentService {
         },
       );
 
-      if (
-        !(
-          isVoidorRevoked(existingApplication.permitStatus) ||
-          isApplicationInCart(existingApplication.permitStatus) ||
-          isAmendmentApplication(existingApplication)
-        )
-      ) {
+      if (!(
+        isVoidorRevoked(existingApplication.permitStatus) ||
+        isApplicationInCart(existingApplication.permitStatus) ||
+        isAmendmentApplication(existingApplication)
+      )) {
         throw new BadRequestException(
           'Application in its current status cannot be processed for payment.',
         );
@@ -582,13 +580,11 @@ export class PaymentService {
       let totalTransactionAmount = 0;
       const policyValidationDto: ReadPolicyValidationDto[] = [];
       for (const application of existingApplications) {
-        if (
-          !(
-            isVoidorRevoked(application.permitStatus) ||
-            isApplicationInCart(application.permitStatus) ||
-            isAmendmentApplication(application)
-          )
-        ) {
+        if (!(
+          isVoidorRevoked(application.permitStatus) ||
+          isApplicationInCart(application.permitStatus) ||
+          isAmendmentApplication(application)
+        )) {
           throwUnprocessableEntityException(
             `${application.applicationNumber} in its current status cannot be processed for payment.`,
             'TRANS_INVALID_APPLICATION_STATUS',

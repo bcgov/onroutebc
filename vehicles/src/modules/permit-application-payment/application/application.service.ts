@@ -1218,8 +1218,7 @@ export class ApplicationService {
           let notificationTemplate: NotificationTemplate;
           let subject: string;
           let notificationData:
-            | ApplicationApprovedNotification
-            | ApplicationRejectedNotification;
+            ApplicationApprovedNotification | ApplicationRejectedNotification;
 
           const permitData = JSON.parse(
             application.permitData.permitData,
