@@ -187,14 +187,12 @@ export const evaluatePolicyValidationResult = (
     (violation) =>
       !(
         //Add violations that need to be skipped
-        (
-          isSTOSDurationViolationAllowed(violation) ||
-          isSTOWDurationViolationAllowed(violation) ||
-          isSTWSEDurationViolationAllowed(violation) ||
-          isSTGVWIDurationViolationAllowed(violation) ||
-          isSTOWAxleWeightSpacingViolationAllowed(violation) ||
-          isStartDateViolationAllowed(violation, permitType)
-        )
+        isSTOSDurationViolationAllowed(violation) ||
+        isSTOWDurationViolationAllowed(violation) ||
+        isSTWSEDurationViolationAllowed(violation) ||
+        isSTGVWIDurationViolationAllowed(violation) ||
+        isSTOWAxleWeightSpacingViolationAllowed(violation) ||
+        isStartDateViolationAllowed(violation, permitType)
       ),
   );
 };

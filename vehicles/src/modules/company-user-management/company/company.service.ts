@@ -24,6 +24,7 @@ import { CompanyUser } from '@modules/company-user-management/users/entities/com
 import {
   callDatabaseSequence,
   paginate,
+  setBaseEntityProperties,
   sortQuery,
 } from '@common/helper/database.helper';
 import { randomInt } from 'crypto';
@@ -163,12 +164,24 @@ export class CompanyService {
             directory: companyDirectory,
             companyGUID: companyGUID,
             accountSource: accountSource,
-            userName: currentUser.userName,
-            userGUID: currentUser.userGUID,
-            timestamp: new Date(),
           }),
         },
       );
+
+      setBaseEntityProperties({
+        entity: newCompany,
+        currentUser,
+      });
+
+      setBaseEntityProperties({
+        entity: newCompany?.mailingAddress,
+        currentUser,
+      });
+
+      setBaseEntityProperties({
+        entity: newCompany?.primaryContact,
+        currentUser,
+      });
 
       if (!existingClient) {
         newCompany.clientNumber = await this.generateClientNumber(
@@ -771,15 +784,27 @@ export class CompanyService {
         extraArgs: () => ({
           companyId: company.companyId,
           clientNumber: company.clientNumber,
-          directory: company.directory,
           mailingAddressId: company.mailingAddress.addressId,
           contactId: company.primaryContact.contactId,
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
         }),
       },
     );
+
+    setBaseEntityProperties({
+      entity: newCompany,
+      currentUser,
+    });
+
+    setBaseEntityProperties({
+      entity: newCompany?.mailingAddress,
+      currentUser,
+    });
+
+    setBaseEntityProperties({
+      entity: newCompany?.primaryContact,
+      currentUser,
+    });
+
     const updatedCompany = await this.companyRepository.save(newCompany);
 
     return this.findOne(updatedCompany.companyId);

@@ -6,6 +6,7 @@ import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
 import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
 import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
 import { Address } from '@modules/common/entities/address.entity';
+import { Province } from '@modules/common/entities/province.entity';
 import {
   getCountryCode,
   getProvinceCode,
@@ -50,8 +51,13 @@ export class AddressProfile extends AutomapperProfile {
         CreateAddressDto,
         Address,
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
       );
 
@@ -65,8 +71,13 @@ export class AddressProfile extends AutomapperProfile {
         UpdateAddressDto,
         Address,
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
       );
     };

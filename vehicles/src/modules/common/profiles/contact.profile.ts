@@ -6,6 +6,7 @@ import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto
 import { UpdateContactDto } from '@modules/common/dto/request/update-contact.dto';
 import { ReadContactDto } from '@modules/common/dto/response/read-contact.dto';
 import { Contact } from '@modules/common/entities/contact.entity';
+import { Province } from '@modules/common/entities/province.entity';
 import {
   getCountryCode,
   getProvinceCode,
@@ -64,8 +65,13 @@ export class ContactProfile extends AutomapperProfile {
         CreateContactDto,
         Contact,
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
           (d) => d.extension1,
@@ -90,8 +96,13 @@ export class ContactProfile extends AutomapperProfile {
         UpdateContactDto,
         Contact,
         forMember(
-          (d) => d.province.provinceId,
-          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
+          (d) => d.province,
+          mapFrom(
+            (s) =>
+              ({
+                provinceId: getProvinceId(s.countryCode, s.provinceCode),
+              }) as Province,
+          ),
         ),
         forMember(
           (d) => d.extension1,
