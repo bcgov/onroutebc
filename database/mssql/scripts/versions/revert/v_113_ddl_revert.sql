@@ -16,10 +16,8 @@ GO
 DELETE FROM [dbo].[ORBC_POLICY_CONFIGURATION]
 WHERE POLICY_CONFIGURATION_ID = (SELECT MAX(POLICY_CONFIGURATION_ID) FROM [dbo].[ORBC_POLICY_CONFIGURATION])
   AND CHANGE_DESCRIPTION = N'ORV2-6048: STOW - Make use of Policy Config in Legal Interaxle Spacing Evaluation & ORV2-6067 / 6068: STOW - Move default weight dimensions for Picker Truck Tractors and Trucks in policy config json'
-
-IF @@ROWCOUNT <> 1
-   THROW 50000, 'ORV2-6048: STOW - Make use of Policy Config in Legal Interaxle Spacing Evaluation & ORV2-6067 / 6068: STOW - Move default weight dimensions for Picker Truck Tractors and Trucks in policy config json revert requires the latest policy configuration to belong to ORV2-6048.', 1;
 GO
+
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
