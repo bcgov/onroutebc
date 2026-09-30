@@ -15,7 +15,6 @@ import { IUserJWT } from '@app/interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from '@modules/dgen/dto/request/create-generated-document.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '@app/enum/cache-key.enum';
 import { TemplateFile } from '@app/interface/template-file.interface';
 import { getAccessToken } from '@app/helper/gov-common-services.helper';
 import { GovCommonServices } from '@app/enum/gov-common-services.enum';
@@ -50,18 +49,14 @@ export class CdogsService {
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
   ): Promise<IFile> {
     const documentTemplates: TemplateFile[] = await this.cacheManager.get(
-      CacheKey.DOCUMENT_TEMPLATE,
+      createGeneratedDocumentDto.templateName,
     );
 
     // The below implemenation is a fail proof version to always get the latest version --start
-    const filteredTemplateFiles = documentTemplates.filter((element) => {
-      return (
-        element.templateName === createGeneratedDocumentDto.templateName &&
-        (createGeneratedDocumentDto.templateVersion
-          ? element.templateVersion ===
-            createGeneratedDocumentDto.templateVersion
-          : true)
-      );
+    const filteredTemplateFiles = documentTemplates?.filter((element) => {
+      return createGeneratedDocumentDto.templateVersion
+        ? element.templateVersion === createGeneratedDocumentDto.templateVersion
+        : true;
     });
     if (!filteredTemplateFiles?.length) {
       throw new Error('Template not found!');

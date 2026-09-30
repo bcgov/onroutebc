@@ -32,6 +32,10 @@ import { convertUtcToPt } from '@app/helper/date-time.helper';
 import { LogAsyncMethodExecution } from '@app/decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '@app/decorator/log-method-execution.decorator';
 import { ReadFileDto } from '@modules/common/dto/response/read-file.dto';
+import { TemplateFile } from '@app/interface/template-file.interface';
+import { FILE_ENCODING_TYPE } from '@app/constants/dops.constant';
+import { S3Service } from '@modules/common/s3.service';
+import { createFile } from '@app/helper/file.helper';
 
 @Injectable()
 export class DgenService {
@@ -46,6 +50,7 @@ export class DgenService {
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly s3Service: S3Service,
   ) {}
 
   private readonly _dopsCVSEFormsCacheTTLms =
@@ -59,10 +64,21 @@ export class DgenService {
     return await this.documentTemplateRepository.find();
   }
 
+  /**
+   * Find the latest template from the ORBC database
+   * @param templateName template name, which equals the template name in the ORBC DB
+   * @param templateVersion template version
+   * @returns A list of templates of type {@link DocumentTemplate}
+   */
   @LogAsyncMethodExecution()
-  async getLatestTemplates(): Promise<DocumentTemplate[]> {
-    const latestTemplates = await this.documentTemplateRepository
-      .createQueryBuilder('documentTemplate')
+  async getLatestTemplates(
+    templateName?: TemplateName,
+    templateVersion?: number,
+  ): Promise<DocumentTemplate[]> {
+    const latestTemplatesQB =
+      this.documentTemplateRepository.createQueryBuilder('documentTemplate');
+
+    latestTemplatesQB
       .innerJoin(
         (query) =>
           query
@@ -74,17 +90,28 @@ export class DgenService {
         'documentTemplateLatest',
         'documentTemplate.templateName = documentTemplateLatest.template_name AND documentTemplate.templateVersion = documentTemplateLatest.max_version',
       )
-      .where('documentTemplate.isActive = :isActive', { isActive: 'Y' })
-      .getMany();
-
+      .where('documentTemplate.isActive = :isActive', { isActive: 'Y' });
+    if (templateName) {
+      latestTemplatesQB.andWhere(
+        'documentTemplate.templateName = :templateName',
+        { templateName },
+      );
+    }
+    if (templateVersion) {
+      latestTemplatesQB.andWhere(
+        'documentTemplate.templateVersion = :templateVersion',
+        { templateVersion },
+      );
+    }
+    const latestTemplates = await latestTemplatesQB.getMany();
     return latestTemplates;
   }
 
   /**
    * Find one template from the ORBC database
-   * @param permitType permit type, which equals the template name in the ORBC DB
+   * @param templateName template name, which equals the template name in the ORBC DB
    * @param templateVersion template version
-   * @returns
+   * @returns A list of templates of type {@link DocumentTemplate}
    */
   private async findTemplateEntity(
     templateName: TemplateName,
@@ -101,6 +128,8 @@ export class DgenService {
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
     companyId?: number,
   ): Promise<ReadFileDto> {
+    await this.loadTemplatesIntoCache(createGeneratedDocumentDto);
+
     const generatedDocument = await this.cdogsService.generateDocument(
       currentUser,
       createGeneratedDocumentDto,
@@ -136,6 +165,73 @@ export class DgenService {
     );
 
     return readFileDto;
+  }
+
+  /**
+   * Ensures the requested template is present in the cache entry keyed by its
+   * template name. Each cache entry is an array that can contain multiple
+   * versions of that template. If the requested version is not found, this
+   * loads the matching active template metadata, downloads the files from S3,
+   * and appends the resulting templates to the array.
+   *
+   * The append does not deduplicate entries. The cache read and write are not
+   * atomic, so concurrent misses for the same template name can add duplicate
+   * versions or overwrite each other's updates.
+   */
+  private async loadTemplatesIntoCache(
+    createGeneratedDocumentDto: CreateGeneratedDocumentDto,
+  ) {
+    // All versions of a template share one cache entry, keyed by template name.
+    // Treat a missing entry as an empty array for the lookup and append below.
+    const documentTemplates: TemplateFile[] =
+      (await this.cacheManager.get(createGeneratedDocumentDto.templateName)) ||
+      [];
+
+    // With an explicit version, skip loading only if that version is cached.
+    // Without one, any cached version satisfies this check and prevents a fetch.
+    const templateExists = documentTemplates?.some((element) =>
+      createGeneratedDocumentDto.templateVersion
+        ? element.templateVersion === createGeneratedDocumentDto.templateVersion
+        : true,
+    );
+
+    if (!templateExists) {
+      // Fetch the active record for this template name and optional version.
+      // If no version was requested, the query selects the latest active one.
+      const templates = await this.getLatestTemplates(
+        createGeneratedDocumentDto.templateName,
+        createGeneratedDocumentDto.templateVersion,
+      );
+
+      // Download the files concurrently and convert their contents to the
+      // string format expected by the document-generation service.
+      const templateFiles: TemplateFile[] = await Promise.all(
+        templates.map(async (template: DocumentTemplate) => {
+          const templatefile = await this.s3Service.getFile(template.fileName);
+
+          return {
+            ...template,
+            templatefile: (await createFile(templatefile)).toString(
+              FILE_ENCODING_TYPE,
+            ),
+          };
+        }),
+      );
+
+      if (!templateFiles.length) {
+        throw new InternalServerErrorException('Template not found');
+      }
+
+      // Append the fetched versions without replacing or filtering existing
+      // entries. Parallel cache misses can both append from stale snapshots.
+      documentTemplates.push(...templateFiles);
+
+      // Store the updated array under the template-name cache key.
+      await this.cacheManager.set(
+        createGeneratedDocumentDto.templateName,
+        documentTemplates,
+      );
+    }
   }
 
   private async mergeDocuments(
