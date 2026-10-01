@@ -1,10 +1,10 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { TrailerType } from '../entities/trailer-type.entity';
-import { ReadTrailerTypeDto } from '../dto/response/read-trailer-type.dto';
-import { CreateTrailerTypeDto } from '../dto/request/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from '../dto/request/update-trailer-type.dto';
+import { TrailerType } from '@modules/vehicles/trailer-types/entities/trailer-type.entity';
+import { ReadTrailerTypeDto } from '@modules/vehicles/trailer-types/dto/response/read-trailer-type.dto';
+import { CreateTrailerTypeDto } from '@modules/vehicles/trailer-types/dto/request/create-trailer-type.dto';
+import { UpdateTrailerTypeDto } from '@modules/vehicles/trailer-types/dto/request/update-trailer-type.dto';
 
 @Injectable()
 export class TrailerTypesProfile extends AutomapperProfile {

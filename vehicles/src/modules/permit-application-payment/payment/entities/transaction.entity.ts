@@ -8,14 +8,14 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { Receipt } from './receipt.entity';
-import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
-import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
 import { PermitTransaction } from './permit-transaction.entity';
-import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
-import { CreditAccount } from '../../../credit-account/entities/credit-account.entity';
-import { Nullable } from '../../../../common/types/common';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
+import { CreditAccount } from '@modules/credit-account/entities/credit-account.entity';
+import { Nullable } from '@common/types/common';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {

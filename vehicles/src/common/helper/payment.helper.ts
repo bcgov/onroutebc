@@ -1,14 +1,14 @@
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../enum/cache-key.enum';
-import { PaymentCardType } from '../enum/payment-card-type.enum';
+import { CacheKey } from '@common/enum/cache-key.enum';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
 import {
   CfsPaymentMethodType,
   ExtendedPaymentMethodType,
   PaymentMethodType,
-} from '../enum/payment-method-type.enum';
+} from '@common/enum/payment-method-type.enum';
 import { getFromCache } from './cache.helper';
-import { IPaymentCode } from '../interface/payment-code.interface';
-import { TransactionType } from '../enum/transaction-type.enum';
+import { IPaymentCode } from '@common/interface/payment-code.interface';
+import { TransactionType } from '@common/enum/transaction-type.enum';
 
 export const getPaymentCodeFromCache = async (
   cacheManager: Cache,

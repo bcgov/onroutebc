@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../company-user-management/users/users.service';
-import { ReadUserDto } from '../company-user-management/users/dto/response/read-user.dto';
-import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
-import { Claim } from '../../common/enum/claims.enum';
-import { IDP } from '../../common/enum/idp.enum';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { ReadCompanyMetadataDto } from '../company-user-management/company/dto/response/read-company-metadata.dto';
+import { UsersService } from '@modules/company-user-management/users/users.service';
+import { ReadUserDto } from '@modules/company-user-management/users/dto/response/read-user.dto';
+import { PendingUsersService } from '@modules/company-user-management/pending-users/pending-users.service';
+import { Claim } from '@common/enum/claims.enum';
+import { IDP } from '@common/enum/idp.enum';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class AuthService {

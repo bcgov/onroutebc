@@ -1,14 +1,14 @@
 import { baseDtoMock, baseEntityMock } from './base.mock';
-import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 import * as constants from './test-data.constants';
-import { ReadUserDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user.dto';
-import { ReadUserOrbcStatusDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user-orbc-status.dto';
+import { ReadUserDto } from '@modules/company-user-management/users/dto/response/read-user.dto';
+import { ReadUserOrbcStatusDto } from '@modules/company-user-management/users/dto/response/read-user-orbc-status.dto';
 import {
   readBlueCompanyMetadataDtoMock,
   readRedCompanyMetadataDtoMock,
 } from './company.mock';
-import { CreateUserDto } from '../../../../src/modules/company-user-management/users/dto/request/create-user.dto';
-import { UpdateUserDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user.dto';
+import { CreateUserDto } from '@modules/company-user-management/users/dto/request/create-user.dto';
+import { UpdateUserDto } from '@modules/company-user-management/users/dto/request/update-user.dto';
 import {
   blueCompanyAdminCompanyUserEntityMock,
   blueCompanyCvClientCompanyUserEntityMock,
@@ -36,7 +36,7 @@ import {
   readSysAdminStaffContactDtoMock,
   sysAdminStaffContactEntityMock,
 } from './contact.mock';
-import { UserStatus } from '../../../../src/common/enum/user-status.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
 
 //User list
 

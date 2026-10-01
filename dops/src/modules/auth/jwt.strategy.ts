@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
-import { IUserJWT } from '../../interface/user-jwt.interface';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
 import { Request } from 'express';
-import { IDP } from '../../enum/idp.enum';
-import { Claim } from '../../enum/claims.enum';
-import { UserStatus } from '../../enum/user-status.enum';
+import { IDP } from '@app/enum/idp.enum';
+import { Claim } from '@app/enum/claims.enum';
+import { UserStatus } from '@app/enum/user-status.enum';
 import { AxiosResponse } from 'axios';
-import { UserRole } from '../../enum/user-role.enum';
-import { getDirectory } from '../../helper/auth.helper';
-import { ICompanyMetadata } from '../../interface/company-metadata.interface';
+import { UserRole } from '@app/enum/user-role.enum';
+import { getDirectory } from '@app/helper/auth.helper';
+import { ICompanyMetadata } from '@app/interface/company-metadata.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -41,6 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
     const access_token = req.headers.authorization;
+    const identityProvider = payload.identity_provider;
     let userGUID: string,
       userName: string,
       claims: Claim[],
@@ -60,10 +61,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId = req.body.companyId as number;
     }
 
-    if (payload.identity_provider === IDP.IDIR) {
+    if (identityProvider === IDP.IDIR) {
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
-    } else if (payload.identity_provider === IDP.BCEID) {
+    } else if (identityProvider === IDP.BCEID) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;
     } else {
@@ -113,7 +114,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     payload: IUserJWT,
     associatedCompanies: number[],
   ) {
-    if (payload.identity_provider !== IDP.IDIR) {
+    const identityProvider = payload.identity_provider;
+
+    if (identityProvider !== IDP.IDIR) {
       const companiesForUsersResponse: AxiosResponse =
         await this.authService.getCompaniesForUser(access_token);
       const associatedCompanyMetadataList = companiesForUsersResponse.data as [
@@ -139,15 +142,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const accessApiResponse: AxiosResponse[] = await Promise.all([
       this.authService.getUserDetails(access_token, userGUID),
       this.authService.getClaimsForUser(access_token, companyId),
-      payload.identity_provider !== IDP.IDIR
+      identityProvider !== IDP.IDIR
         ? this.authService.getCompaniesForUser(access_token)
         : undefined,
     ]);
+
+    const userDetailsStatus = Number(
+      accessApiResponse.at(0)?.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+    const userStatus = (
+      accessApiResponse.at(0)?.data as { statusCode?: UserStatus } | undefined
+    )?.statusCode;
+
     if (
-      (accessApiResponse?.at(0)?.status as HttpStatus) !== HttpStatus.OK ||
-      ((accessApiResponse?.at(0)?.status as HttpStatus) === HttpStatus.OK &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        accessApiResponse?.at(0)?.data?.statusCode !== UserStatus.ACTIVE)
+      userDetailsStatus !== Number(HttpStatus.OK) ||
+      (userDetailsStatus === Number(HttpStatus.OK) &&
+        userStatus !== UserStatus.ACTIVE)
     ) {
       throw new UnauthorizedException();
     }

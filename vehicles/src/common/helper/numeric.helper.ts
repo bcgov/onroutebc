@@ -1,4 +1,4 @@
-import { Nullable } from '../types/common';
+import { Nullable } from '@common/types/common';
 
 export const formatNumber = (
   value?: Nullable<number>,

@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
-import { IUserJWT } from '../../interface/user-jwt.interface';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
 import { Request } from 'express';
-import { IDP } from '../../enum/idp.enum';
-import { Claim } from '../../enum/claims.enum';
-import { UserStatus } from '../../enum/user-status.enum';
+import { IDP } from '@app/enum/idp.enum';
+import { Claim } from '@app/enum/claims.enum';
+import { UserStatus } from '@app/enum/user-status.enum';
 import { AxiosResponse } from 'axios';
-import { UserRole } from '../../enum/user-role.enum';
-import { getDirectory } from '../../helper/auth.helper';
-import { ICompanyMetadata } from '../../interface/company-metadata.interface';
+import { UserRole } from '@app/enum/user-role.enum';
+import { getDirectory } from '@app/helper/auth.helper';
+import { ICompanyMetadata } from '@app/interface/company-metadata.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -143,11 +143,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ? this.authService.getCompaniesForUser(access_token)
         : undefined,
     ]);
+
+    const userDetailsStatus = Number(
+      accessApiResponse.at(0)?.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+    const userStatus = (
+      accessApiResponse.at(0)?.data as { statusCode?: UserStatus } | undefined
+    )?.statusCode;
+
     if (
-      (accessApiResponse?.at(0)?.status as HttpStatus) !== HttpStatus.OK ||
-      ((accessApiResponse?.at(0)?.status as HttpStatus) === HttpStatus.OK &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        accessApiResponse?.at(0)?.data?.statusCode !== UserStatus.ACTIVE)
+      userDetailsStatus !== Number(HttpStatus.OK) ||
+      (userDetailsStatus === Number(HttpStatus.OK) &&
+        userStatus !== UserStatus.ACTIVE)
     ) {
       throw new UnauthorizedException();
     }

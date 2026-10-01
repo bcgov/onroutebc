@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { PowerUnitTypesController } from '../../../src/modules/vehicles/power-unit-types/power-unit-types.controller';
-import { PowerUnitTypesService } from '../../../src/modules/vehicles/power-unit-types/power-unit-types.service';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { PowerUnitTypesController } from '@modules/vehicles/power-unit-types/power-unit-types.controller';
+import { PowerUnitTypesService } from '@modules/vehicles/power-unit-types/power-unit-types.service';
 import {
   createPowerUnitTypeDtoMock,
   readPowerUnitTypeDtoMock,

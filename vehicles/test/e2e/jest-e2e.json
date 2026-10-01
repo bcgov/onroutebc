@@ -14,7 +14,8 @@
     "/node_modules/(?!(uuid)/)"
   ], 
   "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/src/$1",
-    "^test/(.*)$": "<rootDir>/test/$1"
+    "^@app/(.*)$": "<rootDir>/src/$1",
+    "^@modules/(.*)$": "<rootDir>/src/modules/$1",
+    "^@common/(.*)$": "<rootDir>/src/common/$1"
   }
 }

@@ -1,14 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-
 import { CacheKey } from './enum/cache-key.enum';
-import { DocumentTemplate } from './modules/dgen/entities/document-template.entity';
 import { DmsService } from './modules/dms/dms.service';
-import { TemplateFile } from './interface/template-file.interface';
-import { FILE_ENCODING_TYPE } from './constants/dops.constant';
 import { S3Service } from './modules/common/s3.service';
-import { createFile } from './helper/file.helper';
 import { addToCache, createCacheMap } from './helper/cache.helper';
 import * as fs from 'fs';
 import { DgenService } from './modules/dgen/dgen.service';
@@ -35,21 +30,6 @@ export class AppService {
   @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
-    const templates = await this.dgenService.getLatestTemplates();
-    const templateFiles: TemplateFile[] = await Promise.all(
-      templates.map(async (template: DocumentTemplate) => {
-        const templatefile = await this.s3Service.getFile(template.fileName);
-
-        return {
-          ...template,
-          templatefile: (await createFile(templatefile)).toString(
-            FILE_ENCODING_TYPE,
-          ),
-        };
-      }),
-    );
-
-    await this.cacheManager.set(CacheKey.DOCUMENT_TEMPLATE, templateFiles);
 
     const assetsPath =
       process.env.NODE_ENV === 'local' ? './src/assets/' : './dist/assets/';

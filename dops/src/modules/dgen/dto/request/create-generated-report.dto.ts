@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AutoMap } from '@automapper/classes';
 import { Allow, IsEnum, IsString } from 'class-validator';
-import { ReportTemplate } from '../../../../enum/report-template.enum';
+import { ReportTemplate } from '@app/enum/report-template.enum';
 
 export class CreateGeneratedReportDto {
   @AutoMap()

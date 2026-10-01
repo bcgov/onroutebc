@@ -1,11 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { IUserJWT } from '../interface/user-jwt.interface';
-import { matchRoles } from '../helper/auth.helper';
-import { IDP } from '../enum/idp.enum';
-import { IPermissions } from '../interface/permissions.interface';
-import { PERMISSIONS_KEY } from '../constants/api.constant';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { matchRoles } from '@common/helper/auth.helper';
+import { IDP } from '@common/enum/idp.enum';
+import { IPermissions } from '@common/interface/permissions.interface';
+import { PERMISSIONS_KEY } from '@common/constants/api.constant';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { OrderBy } from '../enum/orderBy.enum';
+import { OrderBy } from '@common/enum/orderBy.enum';
 
 @ValidatorConstraint({ name: 'OrderBy', async: false })
 export class OrderByConstraint implements ValidatorConstraintInterface {

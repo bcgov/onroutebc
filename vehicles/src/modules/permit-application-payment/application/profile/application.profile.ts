@@ -7,32 +7,29 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { CreateApplicationDto } from '../dto/request/create-application.dto';
-import { ReadApplicationDto } from '../dto/response/read-application.dto';
-import { UpdateApplicationDto } from '../dto/request/update-application.dto';
-import { ReadApplicationMetadataDto } from '../dto/response/read-application-metadata.dto';
-import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
-import { Directory } from '../../../../common/enum/directory.enum';
-import {
-  UserRole,
-  IDIR_USER_ROLE_LIST,
-} from '../../../../common/enum/user-role.enum';
-import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
-import { Permit } from '../../permit/entities/permit.entity';
+import { CreateApplicationDto } from '@modules/permit-application-payment/application/dto/request/create-application.dto';
+import { ReadApplicationDto } from '@modules/permit-application-payment/application/dto/response/read-application.dto';
+import { UpdateApplicationDto } from '@modules/permit-application-payment/application/dto/request/update-application.dto';
+import { ReadApplicationMetadataDto } from '@modules/permit-application-payment/application/dto/response/read-application-metadata.dto';
+import { PPC_FULL_TEXT } from '@common/constants/api.constant';
+import { Directory } from '@common/enum/directory.enum';
+import { UserRole, IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
+import { doesUserHaveRole } from '@common/helper/auth.helper';
+import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 
-import { differenceBetween } from '../../../../common/helper/date-time.helper';
-import { Nullable } from '../../../../common/types/common';
+import { differenceBetween } from '@common/helper/date-time.helper';
+import { Nullable } from '@common/types/common';
 import {
   CaseStatusType,
   convertCaseStatus,
-} from '../../../../common/enum/case-status-type.enum';
-import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
-import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
-import { PermitLoa } from '../entities/permit-loa.entity';
-import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
-import * as dayjs from 'dayjs';
-import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
-import { CaseActivityType } from 'src/common/enum/case-activity-type.enum';
+} from '@common/enum/case-status-type.enum';
+import { ReadCaseActivityDto } from '@modules/case-management/dto/response/read-case-activity.dto';
+import { CreatePermitLoaDto } from '@modules/permit-application-payment/application/dto/request/create-permit-loa.dto';
+import { PermitLoa } from '@modules/permit-application-payment/application/entities/permit-loa.entity';
+import { ReadPermitLoaDto } from '@modules/permit-application-payment/application/dto/response/read-permit-loa.dto';
+import dayjs from 'dayjs';
+import { VehicleType } from '@common/enum/vehicle-type.enum';
+import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -47,9 +44,9 @@ export class ApplicationProfile extends AutomapperProfile {
         CreateApplicationDto,
         Permit,
         forMember(
-          (d) => d.company.companyId,
+          (d) => d.company,
           mapWithArguments((_, { companyId }) => {
-            return companyId;
+            return { companyId };
           }),
         ),
         forMember(
@@ -59,9 +56,9 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (permit) => permit.applicationOwner?.userGUID,
+          (permit) => permit.applicationOwner,
           mapWithArguments((_, { userGUID }) => {
-            return userGUID;
+            return { userGUID };
           }),
         ),
         forMember(
@@ -115,64 +112,25 @@ export class ApplicationProfile extends AutomapperProfile {
             return timestamp;
           }),
         ),
-
         forMember(
-          (permit) => permit.permitData.createdUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (permit) => permit.permitData.createdUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (permit) => permit.permitData.createdUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (permit) => permit.permitData.createdDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (permit) => permit.permitData.updatedUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (permit) => permit.permitData.updatedUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (permit) => permit.permitData.updatedUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (permit) => permit.permitData.updatedDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (permit) => permit.permitData?.permitData,
-          mapFrom((s) => {
-            return s.permitData ? JSON.stringify(s.permitData) : undefined;
-          }),
+          (permit) => permit.permitData,
+          mapWithArguments(
+            (source, { userName, timestamp, directory, userGUID }) => {
+              return {
+                createdUser: userName,
+                createdDateTime: timestamp,
+                createdUserDirectory: directory,
+                createdUserGuid: userGUID,
+                updatedUser: userName,
+                updatedDateTime: timestamp,
+                updatedUserDirectory: directory,
+                updatedUserGuid: userGUID,
+                permitData: source.permitData
+                  ? JSON.stringify(source.permitData)
+                  : undefined,
+              };
+            },
+          ),
         ),
       );
 
@@ -216,31 +174,19 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.isRejectedApplication,
-          mapWithArguments(
-            (
-              s,
-              {
-                isRejectedApplication,
-              }: { isRejectedApplication: Nullable<boolean> },
-            ) => {
-              return isRejectedApplication;
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            return extraArguments.isRejectedApplication as Nullable<boolean>;
+          }),
         ),
         forMember(
           (d) => d.rejectionHistory,
-          mapWithArguments(
-            (
-              s,
-              {
-                readCaseActivityList,
-              }: { readCaseActivityList: ReadCaseActivityDto[] },
-            ) => {
-              if (readCaseActivityList?.length) {
-                return readCaseActivityList;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const readCaseActivityList =
+              extraArguments.readCaseActivityList as ReadCaseActivityDto[];
+            if (readCaseActivityList?.length) {
+              return readCaseActivityList;
+            }
+          }),
         ),
       );
 
@@ -308,20 +254,15 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicationQueueStatus,
-          mapWithArguments(
-            (
-              s,
-              {
-                applicationQueueStatus,
-              }: { applicationQueueStatus?: Nullable<CaseStatusType[]> },
-            ) => {
-              if (applicationQueueStatus?.length && s.cases?.length) {
-                return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(
-                  0,
-                );
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (applicationQueueStatus?.length && s.cases?.length) {
+              return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(0);
+            }
+          }),
         ),
         forMember(
           (d) => d.isRejectedApplication,
@@ -356,60 +297,47 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.timeInQueue,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUserRole,
-                currentDateTime,
-                applicationQueueStatus,
-              }: {
-                currentUserRole: UserRole;
-                currentDateTime: Date;
-                applicationQueueStatus?: Nullable<CaseStatusType[]>;
-              },
-            ) => {
-              if (
-                applicationQueueStatus?.length &&
-                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
-              ) {
-                const diff = differenceBetween(
-                  s?.cases?.at(0)?.caseOpenedDateTime?.toUTCString(),
-                  currentDateTime.toUTCString(),
-                  'minutes',
-                );
-                const hours = Math.floor(Math.abs(diff) / 60);
-                const minutes = Math.floor(Math.abs(diff) % 60);
-                // Format the output
-                const formattedHours = String(hours).padStart(2, '0');
-                const formattedMinutes = String(minutes).padStart(2, '0');
-                return `${formattedHours}:${formattedMinutes}`;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUserRole = extraArguments.currentUserRole as UserRole;
+            const currentDateTime = extraArguments.currentDateTime as Date;
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (
+              applicationQueueStatus?.length &&
+              doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
+            ) {
+              const diff = differenceBetween(
+                s?.cases?.at(0)?.caseOpenedDateTime?.toUTCString(),
+                currentDateTime.toUTCString(),
+                'minutes',
+              );
+              const hours = Math.floor(Math.abs(diff) / 60);
+              const minutes = Math.floor(Math.abs(diff) % 60);
+              // Format the output
+              const formattedHours = String(hours).padStart(2, '0');
+              const formattedMinutes = String(minutes).padStart(2, '0');
+              return `${formattedHours}:${formattedMinutes}`;
+            }
+          }),
         ),
         forMember(
           (d) => d.claimedBy,
-          mapWithArguments(
-            (
-              s,
-              {
-                currentUserRole,
-                applicationQueueStatus,
-              }: {
-                currentUserRole: UserRole;
-                applicationQueueStatus?: Nullable<CaseStatusType[]>;
-              },
-            ) => {
-              if (
-                applicationQueueStatus?.length &&
-                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
-                s.cases?.length
-              ) {
-                return s.cases?.at(0)?.assignedUser?.userName;
-              }
-            },
-          ),
+          mapWithArguments((s, extraArguments: Record<string, unknown>) => {
+            const currentUserRole = extraArguments.currentUserRole as UserRole;
+            const applicationQueueStatus =
+              extraArguments.applicationQueueStatus as Nullable<
+                CaseStatusType[]
+              >;
+            if (
+              applicationQueueStatus?.length &&
+              doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
+              s.cases?.length
+            ) {
+              return s.cases?.at(0)?.assignedUser?.userName;
+            }
+          }),
         ),
       );
 
@@ -418,9 +346,9 @@ export class ApplicationProfile extends AutomapperProfile {
         UpdateApplicationDto,
         Permit,
         forMember(
-          (d) => d.company.companyId,
+          (d) => d.company,
           mapWithArguments((_, { companyId }) => {
-            return companyId;
+            return { companyId };
           }),
         ),
         forMember(
@@ -449,35 +377,24 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.permitData.updatedUserGuid,
-          mapWithArguments((updateApplicationDto, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.updatedUser,
-          mapWithArguments((updateApplicationDto, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.updatedUserDirectory,
-          mapWithArguments((updateApplicationDto, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData.updatedDateTime,
-          mapWithArguments((updateApplicationDto, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData?.permitData,
-          mapFrom((s) => {
-            return s.permitData ? JSON.stringify(s.permitData) : null;
-          }),
+          (permit) => permit.permitData,
+          mapWithArguments(
+            (
+              updateApplicationDto,
+              { userName, timestamp, directory, userGUID, permitDataId },
+            ) => {
+              return {
+                updatedUser: userName,
+                updatedDateTime: timestamp,
+                updatedUserDirectory: directory,
+                updatedUserGuid: userGUID,
+                permitDataId: permitDataId,
+                permitData: updateApplicationDto.permitData
+                  ? JSON.stringify(updateApplicationDto.permitData)
+                  : null,
+              };
+            },
+          ),
         ),
         forMember(
           (d) => d.permitId,
@@ -489,12 +406,6 @@ export class ApplicationProfile extends AutomapperProfile {
           (d) => d.previousRevision,
           mapWithArguments((updateApplicationDto, { previousRevision }) => {
             return previousRevision;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.permitDataId,
-          mapWithArguments((updateApplicationDto, { permitDataId }) => {
-            return permitDataId;
           }),
         ),
       );
@@ -509,9 +420,9 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.loa.loaId,
+          (d) => d.loa,
           mapFrom((s) => {
-            return s.loaIds[0];
+            return { loaId: s.loaIds[0] };
           }),
         ),
         forMember(

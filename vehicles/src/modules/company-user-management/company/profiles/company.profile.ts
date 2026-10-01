@@ -9,18 +9,21 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Company } from '../entities/company.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 
-import { CreateAddressDto } from '../../../common/dto/request/create-address.dto';
-import { Address } from '../../../common/entities/address.entity';
-import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
-import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
-import { CreateCompanyDto } from '../dto/request/create-company.dto';
-import { UpdateCompanyDto } from '../dto/request/update-company.dto';
-import { ReadCompanyDto } from '../dto/response/read-company.dto';
-import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
-import { AccountRegion } from '../../../../common/enum/account-region.enum';
-import { ReadCompanyMetadataDto } from '../dto/response/read-company-metadata.dto';
+import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
+import { Address } from '@modules/common/entities/address.entity';
+import { ReadAddressDto } from '@modules/common/dto/response/read-address.dto';
+import { UpdateAddressDto } from '@modules/common/dto/request/update-address.dto';
+import { CreateCompanyDto } from '@modules/company-user-management/company/dto/request/create-company.dto';
+import { UpdateCompanyDto } from '@modules/company-user-management/company/dto/request/update-company.dto';
+import { ReadCompanyDto } from '@modules/company-user-management/company/dto/response/read-company.dto';
+import { ReadCompanyUserDto } from '@modules/company-user-management/company/dto/response/read-company-user.dto';
+import { AccountRegion } from '@common/enum/account-region.enum';
+import { ReadCompanyMetadataDto } from '@modules/company-user-management/company/dto/response/read-company-metadata.dto';
+import { UpdateContactDto } from '@modules/common/dto/request/update-contact.dto';
+import { Contact } from '@modules/common/entities/contact.entity';
+import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -44,57 +47,6 @@ export class CompanyProfile extends AutomapperProfile {
         forMember((d) => d.clientNumber, ignore()),
         forMember((d) => d.migratedClientHash, ignore()),
         forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-        forMember(
           (d) => d.companyGUID,
           mapWithArguments((source, { companyGUID }) => {
             return companyGUID;
@@ -116,6 +68,12 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.mailingAddress,
           mapWith(Address, CreateAddressDto, (s) => {
             return s.mailingAddress;
+          }),
+        ),
+        forMember(
+          (d) => d.primaryContact,
+          mapWith(Contact, CreateContactDto, (s) => {
+            return s.primaryContact;
           }),
         ),
         forMember(
@@ -143,31 +101,6 @@ export class CompanyProfile extends AutomapperProfile {
         UpdateCompanyDto,
         Company,
         forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-        forMember(
           (d) => d.companyId,
           mapWithArguments((source, { companyId }) => {
             return companyId;
@@ -189,6 +122,12 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.clientNumber,
           mapWithArguments((source, { clientNumber }) => {
             return clientNumber;
+          }),
+        ),
+        forMember(
+          (d) => d.primaryContact,
+          mapWith(Contact, UpdateContactDto, (s) => {
+            return s.primaryContact;
           }),
         ),
         forMember(

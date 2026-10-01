@@ -3,9 +3,9 @@ import { classes } from '@automapper/classes';
 import { getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { PowerUnitsProfile } from '../../../src/modules/vehicles/power-units/profiles/power-unit.profile';
-import { PowerUnitsService } from '../../../src/modules/vehicles/power-units/power-units.service';
-import { PowerUnit } from '../../../src/modules/vehicles/power-units/entities/power-unit.entity';
+import { PowerUnitsProfile } from '@modules/vehicles/power-units/profiles/power-unit.profile';
+import { PowerUnitsService } from '@modules/vehicles/power-units/power-units.service';
+import { PowerUnit } from '@modules/vehicles/power-units/entities/power-unit.entity';
 import { Repository } from 'typeorm';
 import { createMapper } from '@automapper/core';
 import {
@@ -13,7 +13,7 @@ import {
   powerUnitEntityMock,
   updatePowerUnitDtoMock,
 } from '../../util/mocks/data/power-unit.mock';
-import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 
 const COMPANY_ID_1 = 1;
 const POWER_UNIT_ID_1 = '1';

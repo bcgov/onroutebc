@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { PermitSearch } from '../enum/permit-search.enum';
+import { PermitSearch } from '@common/enum/permit-search.enum';
 
 @ValidatorConstraint({ name: 'PermitSearchBy', async: false })
 export class PermitSearchByConstraint implements ValidatorConstraintInterface {

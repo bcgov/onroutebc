@@ -8,7 +8,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
-import { Nullable } from '../../../common/types/common';
+import { Nullable } from '@common/types/common';
 import { Transaction } from './transaction.entity';
 import { Company } from './company.entity';
 
@@ -59,21 +59,6 @@ export class CreditAccount {
 
   @Column({ name: 'CFS_SITE_NUMBER', type: 'int', nullable: true })
   cfsSiteNumber?: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '30.00',
-    description:
-      'External adjustment dollar amount, currently will only be used for TPS migrations to store the unposted credit value',
-  })
-  @Column({
-    type: 'decimal',
-    precision: 9,
-    scale: 2,
-    name: 'EXTERNAL_ADJUSTMENT_AMT',
-    nullable: true,
-  })
-  totalTransactionAmount?: number;
 
   @AutoMap()
   @Column({

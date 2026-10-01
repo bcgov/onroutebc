@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional } from 'class-validator';
-import { FileDownloadModes } from '../../../../../enum/file-download-modes.enum';
+import { FileDownloadModes } from '@app/enum/file-download-modes.enum';
 import { Type } from 'class-transformer';
 
 export class GetDocumentQueryParamsDto {

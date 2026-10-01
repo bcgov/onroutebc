@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
-import { PaymentMethodTypeReport } from '../../../../../common/enum/payment-method-type.enum';
-import { PaymentCardType } from '../../../../../common/enum/payment-card-type.enum';
+import { PaymentMethodTypeReport } from '@common/enum/payment-method-type.enum';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
 
 export class PaymentCodesDto {
   @AutoMap()

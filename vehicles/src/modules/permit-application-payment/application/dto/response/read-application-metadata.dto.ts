@@ -1,11 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitType } from 'src/common/enum/permit-type.enum';
-import { ApplicationQueueStatus } from '../../../../../common/enum/case-status-type.enum';
-import { Nullable } from '../../../../../common/types/common';
-import { IDIR_USER_ROLE_LIST } from '../../../../../common/enum/user-role.enum';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
+import { ApplicationQueueStatus } from '@common/enum/case-status-type.enum';
+import { Nullable } from '@common/types/common';
+import { IDIR_USER_ROLE_LIST } from '@common/enum/user-role.enum';
 
 export class ReadApplicationMetadataDto {
   @AutoMap()

@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreatePendingUserDto } from '../request/create-pending-user.dto';
+import { CreatePendingUserDto } from '@modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
 
 /**
  * JSON representation of response object when retrieving the details of a new

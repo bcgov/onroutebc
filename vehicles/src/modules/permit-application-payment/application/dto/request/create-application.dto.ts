@@ -9,11 +9,11 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
-import { PermitType } from 'src/common/enum/permit-type.enum';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { PermitApplicationOrigin } from '@common/enum/permit-application-origin.enum';
+import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
+import { PermitStatus } from '@common/enum/permit-status.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
 
 export class CreateApplicationDto {
   @AutoMap()

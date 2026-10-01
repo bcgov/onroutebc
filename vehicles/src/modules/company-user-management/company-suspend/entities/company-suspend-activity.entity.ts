@@ -7,9 +7,9 @@ import {
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { SuspendActivity } from '../../../../common/enum/suspend-activity.enum';
-import { User } from '../../users/entities/user.entity';
+import { Base } from '@modules/common/entities/base.entity';
+import { SuspendActivity } from '@common/enum/suspend-activity.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 
 @Entity({ name: 'ORBC_COMPANY_SUSPEND_ACTIVITY' })
 export class CompanySuspendActivity extends Base {

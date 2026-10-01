@@ -1,14 +1,14 @@
-import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
-import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
-import { AccountSource } from '../../../../src/common/enum/account-source.enum';
-import { Directory } from '../../../../src/common/enum/directory.enum';
-import { IDP } from '../../../../src/common/enum/idp.enum';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { AccountRegion } from '@common/enum/account-region.enum';
+import { AccountSource } from '@common/enum/account-source.enum';
+import { Directory } from '@common/enum/directory.enum';
+import { IDP } from '@common/enum/idp.enum';
 import {
   ClientUserRole,
   GenericUserRole,
   IDIRUserRole,
-} from '../../../../src/common/enum/user-role.enum';
-import { UserStatus } from '../../../../src/common/enum/user-status.enum';
+} from '@common/enum/user-role.enum';
+import { UserStatus } from '@common/enum/user-status.enum';
 
 export const SORT_ORDER_1 = '1';
 export const SORT_ORDER_2 = '2';

@@ -10,9 +10,9 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { TransactionType } from '../../../../../common/enum/transaction-type.enum';
-import { PaymentTransactionDto } from '../../../payment/dto/common/payment-transaction.dto';
+import { ApplicationStatus } from '@common/enum/application-status.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { PaymentTransactionDto } from '@modules/permit-application-payment/payment/dto/common/payment-transaction.dto';
 import { Type } from 'class-transformer';
 
 export class VoidPermitDto {

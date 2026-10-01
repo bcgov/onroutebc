@@ -6,12 +6,18 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2021",
+    "esModuleInterop": true,
+    "target": "es2022",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "types": ["node","jest","multer"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "paths": {
+      "@app/*": ["./src/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@common/*": ["./src/common/*"]
+    }
   }
 }

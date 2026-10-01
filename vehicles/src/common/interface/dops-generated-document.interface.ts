@@ -1,4 +1,4 @@
-import { TemplateName } from '../enum/template-name.enum';
+import { TemplateName } from '@common/enum/template-name.enum';
 
 export interface DopsGeneratedDocument {
   templateName: TemplateName;

@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateAddressDto } from '../../../../common/dto/request/create-address.dto';
-import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
-import { CreateUserDto } from '../../../users/dto/request/create-user.dto';
+import { CreateAddressDto } from '@modules/common/dto/request/create-address.dto';
+import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto';
+import { CreateUserDto } from '@modules/company-user-management/users/dto/request/create-user.dto';
 import {
   IsEmail,
   IsOptional,

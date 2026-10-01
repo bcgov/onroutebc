@@ -11,14 +11,14 @@ import { AutoMap } from '@automapper/classes';
 import {
   CreditAccountStatus,
   CreditAccountStatusType,
-} from '../../../common/enum/credit-account-status-type.enum';
-import { CreditAccountType } from '../../../common/enum/credit-account-type.enum';
-import { Base } from '../../common/entities/base.entity';
-import { Company } from '../../company-user-management/company/entities/company.entity';
+} from '@common/enum/credit-account-status-type.enum';
+import { CreditAccountType } from '@common/enum/credit-account-type.enum';
+import { Base } from '@modules/common/entities/base.entity';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { CreditAccountActivity } from './credit-account-activity.entity';
 import { CreditAccountUser } from './credit-account-user.entity';
-import { Transaction } from '../../permit-application-payment/payment/entities/transaction.entity';
-import { Nullable } from '../../../common/types/common';
+import { Transaction } from '@modules/permit-application-payment/payment/entities/transaction.entity';
+import { Nullable } from '@common/types/common';
 
 @Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {

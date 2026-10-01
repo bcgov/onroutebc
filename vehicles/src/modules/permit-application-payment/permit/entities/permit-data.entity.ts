@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
+import { Base } from '@modules/common/entities/base.entity';
 import { Permit } from './permit.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT_DATA' })

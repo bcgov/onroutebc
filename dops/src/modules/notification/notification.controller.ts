@@ -9,22 +9,22 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Permissions } from '../../decorator/permissions.decorator';
-import { DmsService } from '../dms/dms.service';
-import { IUserJWT } from '../../interface/user-jwt.interface';
-import { FileDownloadModes } from '../../enum/file-download-modes.enum';
-import { IChesAttachment } from '../../interface/attachment.ches.interface';
-import { createFile } from '../../helper/file.helper';
-import { FILE_ENCODING_TYPE } from '../../constants/dops.constant';
+import { Permissions } from '@app/decorator/permissions.decorator';
+import { DmsService } from '@modules/dms/dms.service';
+import { IUserJWT } from '@app/interface/user-jwt.interface';
+import { FileDownloadModes } from '@app/enum/file-download-modes.enum';
+import { IChesAttachment } from '@app/interface/attachment.ches.interface';
+import { createFile } from '@app/helper/file.helper';
+import { FILE_ENCODING_TYPE } from '@app/constants/dops.constant';
 import { NotificationService } from './notification.service';
-import { ExceptionDto } from '../../exception/exception.dto';
+import { ExceptionDto } from '@app/exception/exception.dto';
 import { NotificationDocumentDto } from './dto/request/notification-document.dto';
 import { NotificationDto } from './dto/request/notification.dto';
-import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
+import { JwtOneOfAuthGuard } from '@app/guard/jwt-one-of-auth.guard';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-} from '../../enum/user-role.enum';
+} from '@app/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiBadRequestResponse({

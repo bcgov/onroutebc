@@ -1,6 +1,6 @@
-import { IDP } from '../../../../src/common/enum/idp.enum';
-import { Claim } from '../../../../src/common/enum/claims.enum';
-import { IUserJWT } from '../../../../src/common/interface/user-jwt.interface';
+import { IDP } from '@common/enum/idp.enum';
+import { Claim } from '@common/enum/claims.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
 import * as constants from './test-data.constants';
 
 export const redCompanyAdminUserJWTMock: IUserJWT = {

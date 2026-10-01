@@ -7,8 +7,8 @@ import {
   Length,
   Validate,
 } from 'class-validator';
-import { SuspendActivity } from '../../../../../common/enum/suspend-activity.enum';
-import { SuspendCommentConstraint } from '../../../../../common/constraint/suspend-comment.constraint';
+import { SuspendActivity } from '@common/enum/suspend-activity.enum';
+import { SuspendCommentConstraint } from '@common/constraint/suspend-comment.constraint';
 
 /**
  * JSON representation of the request object for capturing a companies suspend

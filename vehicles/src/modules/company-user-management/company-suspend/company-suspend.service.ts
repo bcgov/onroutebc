@@ -4,20 +4,20 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { SuspendActivity } from '../../../common/enum/suspend-activity.enum';
-import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { Company } from '../company/entities/company.entity';
-import { CompanyService } from '../company/company.service';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { SuspendActivity } from '@common/enum/suspend-activity.enum';
+import { DataNotFoundException } from '@common/exception/data-not-found.exception';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import { Company } from '@modules/company-user-management/company/entities/company.entity';
+import { CompanyService } from '@modules/company-user-management/company/company.service';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { CompanySuspendActivity } from './entities/company-suspend-activity.entity';
-import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
-import { User } from '../users/entities/user.entity';
-import { DopsService } from '../../common/dops.service';
-import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { CompanyDataNotification } from '../../../common/interface/company-data.notification.interface';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { DopsService } from '@modules/common/dops.service';
+import { INotificationDocument } from '@common/interface/notification-document.interface';
+import { CompanyDataNotification } from '@common/interface/company-data.notification.interface';
 
 @Injectable()
 export class CompanySuspendService {

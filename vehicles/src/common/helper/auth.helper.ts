@@ -1,10 +1,14 @@
 import { ForbiddenException } from '@nestjs/common';
-import { Directory } from '../enum/directory.enum';
-import { IDP } from '../enum/idp.enum';
-import { Claim } from '../enum/claims.enum';
-import { IUserJWT } from '../interface/user-jwt.interface';
-import { UserRole, ClientUserRole, IDIRUserRole } from '../enum/user-role.enum';
-import { IPermissions } from '../interface/permissions.interface';
+import { Directory } from '@common/enum/directory.enum';
+import { IDP } from '@common/enum/idp.enum';
+import { Claim } from '@common/enum/claims.enum';
+import { IUserJWT } from '@common/interface/user-jwt.interface';
+import {
+  UserRole,
+  ClientUserRole,
+  IDIRUserRole,
+} from '@common/enum/user-role.enum';
+import { IPermissions } from '@common/interface/permissions.interface';
 
 /**
  * Determines the directory type based on the identity provider of the user.

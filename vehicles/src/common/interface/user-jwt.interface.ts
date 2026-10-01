@@ -1,7 +1,7 @@
-import { Directory } from '../enum/directory.enum';
-import { IDP } from '../enum/idp.enum';
-import { Claim } from '../enum/claims.enum';
-import { UserRole } from '../enum/user-role.enum';
+import { Directory } from '@common/enum/directory.enum';
+import { IDP } from '@common/enum/idp.enum';
+import { Claim } from '@common/enum/claims.enum';
+import { UserRole } from '@common/enum/user-role.enum';
 
 export interface IUserJWT {
   jti: string;

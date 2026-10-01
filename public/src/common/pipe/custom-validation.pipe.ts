@@ -4,8 +4,8 @@ import {
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
-import { BadRequestExceptionDto } from '../exception/badRequestException.dto';
-import { ExceptionDto } from '../exception/exception.dto';
+import { BadRequestExceptionDto } from '@common/exception/badRequestException.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 
 export function exceptionFactory(errors: ValidationError[]) {
   const badRequestExceptionList: BadRequestExceptionDto[] = [];

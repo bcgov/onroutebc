@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { NotificationTemplate } from '../../../../enum/notification-template.enum';
+import { NotificationTemplate } from '@app/enum/notification-template.enum';
 
 export class NotificationDto {
   @ApiProperty({

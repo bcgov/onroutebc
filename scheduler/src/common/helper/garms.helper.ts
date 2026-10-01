@@ -14,24 +14,24 @@ import {
   US_AMOUNT,
   US_EXC_AMOUNT,
   VOID_IND,
-} from 'src/common/constants/garms.constant';
-import { PaymentCardType } from 'src/common/enum/payment-card-type.enum';
-import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
-import { TransactionType } from 'src/common/enum/transaction-type.enum';
-import { Transaction } from 'src/modules/common/entities/transaction.entity';
-import { GarmsExtractType } from 'src/modules/common/enum/garms-extract-type.enum';
-import { DateTransaction } from 'src/modules/garms/dto/DateTransation.dto';
-import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
-import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
+} from '@common/constants/garms.constant';
+import { PaymentCardType } from '@common/enum/payment-card-type.enum';
+import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
+import { TransactionType } from '@common/enum/transaction-type.enum';
+import { Transaction } from '@modules/common/entities/transaction.entity';
+import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { DateTransaction } from '@modules/garms/dto/DateTransation.dto';
+import { GarmaCashDetail } from '@modules/garms/dto/garms-cash-details.dto';
+import { GarmaCashHeader } from '@modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
+import { PermitTransaction } from '@modules/common/entities/permit-transaction.entity';
 import * as fs from 'fs';
-import { GarmsCreditHeader } from 'src/modules/garms/dto/garms-credit-header.dto';
-import { GarmsCreditDetails } from 'src/modules/garms/dto/garms-credit-details.dto';
-import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
-import { PermitIssuedBy } from '../enum/permit-issued-by.enum';
-import { Nullable } from '../types/common';
+import { GarmsCreditHeader } from '@modules/garms/dto/garms-credit-header.dto';
+import { GarmsCreditDetails } from '@modules/garms/dto/garms-credit-details.dto';
+import { ApplicationStatus } from '@modules/common/enum/application-status.enum';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
+import { Nullable } from '@common/types/common';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.

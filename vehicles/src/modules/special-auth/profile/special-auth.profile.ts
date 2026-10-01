@@ -1,8 +1,8 @@
 import { Mapper, createMap, forMember, mapFrom } from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
-import { SpecialAuth } from '../entities/special-auth.entity';
-import { ReadSpecialAuthDto } from '../dto/response/read-special-auth.dto';
+import { SpecialAuth } from '@modules/special-auth/entities/special-auth.entity';
+import { ReadSpecialAuthDto } from '@modules/special-auth/dto/response/read-special-auth.dto';
 
 @Injectable()
 export class SpecialAuthProfile extends AutomapperProfile {

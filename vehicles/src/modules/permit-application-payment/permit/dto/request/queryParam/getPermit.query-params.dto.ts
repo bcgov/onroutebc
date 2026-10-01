@@ -8,11 +8,11 @@ import {
   Validate,
   IsEnum,
 } from 'class-validator';
-import { OrderByConstraint } from '../../../../../../common/constraint/orderby.constraint';
-import { PermitSearchByConstraint } from '../../../../../../common/constraint/permit-search.constraint';
-import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
-import { PermitOrderBy } from '../../../../../../common/enum/orderBy.enum';
-import { PermitSearch } from '../../../../../../common/enum/permit-search.enum';
+import { OrderByConstraint } from '@common/constraint/orderby.constraint';
+import { PermitSearchByConstraint } from '@common/constraint/permit-search.constraint';
+import { PageOptionsDto } from '@common/dto/paginate/page-options';
+import { PermitOrderBy } from '@common/enum/orderBy.enum';
+import { PermitSearch } from '@common/enum/permit-search.enum';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -71,5 +71,5 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   @Validate(OrderByConstraint, [PermitOrderBy])
   @IsString()
   @Length(1, 150)
-  readonly orderBy?: string;
+  declare readonly orderBy?: string;
 }

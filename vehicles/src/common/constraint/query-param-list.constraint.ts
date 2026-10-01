@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { Nullable } from '../types/common';
+import { Nullable } from '@common/types/common';
 
 @ValidatorConstraint({ name: 'QueryParamList', async: false })
 export class QueryParamListConstraint implements ValidatorConstraintInterface {

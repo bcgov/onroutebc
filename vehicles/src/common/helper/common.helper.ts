@@ -1,8 +1,8 @@
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../enum/cache-key.enum';
+import { CacheKey } from '@common/enum/cache-key.enum';
 import { getFromCache } from './cache.helper';
-import { FeatureFlagValue } from '../enum/feature-flag-value.enum';
-import { IDP } from '../enum/idp.enum';
+import { FeatureFlagValue } from '@common/enum/feature-flag-value.enum';
+import { IDP } from '@common/enum/idp.enum';
 
 /**
  * Evaluates the given predicate and returns the value if the predicate is true or the value is not null, otherwise returns undefined.

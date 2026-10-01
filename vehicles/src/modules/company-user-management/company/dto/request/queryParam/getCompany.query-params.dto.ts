@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length, Validate } from 'class-validator';
-import { OrderByConstraint } from '../../../../../../common/constraint/orderby.constraint';
-import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
-import { CompanyOrderBy } from '../../../../../../common/enum/orderBy.enum';
+import { OrderByConstraint } from '@common/constraint/orderby.constraint';
+import { PageOptionsDto } from '@common/dto/paginate/page-options';
+import { CompanyOrderBy } from '@common/enum/orderBy.enum';
 
 export class GetCompanyQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -44,5 +44,5 @@ export class GetCompanyQueryParamsDto extends PageOptionsDto {
   @Validate(OrderByConstraint, [CompanyOrderBy])
   @IsString()
   @Length(1, 150)
-  readonly orderBy?: string;
+  declare readonly orderBy?: string;
 }

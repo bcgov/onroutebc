@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { SuspendActivity } from '../enum/suspend-activity.enum';
+import { SuspendActivity } from '@common/enum/suspend-activity.enum';
 
 @ValidatorConstraint({ name: 'SuspendComment', async: false })
 export class SuspendCommentConstraint implements ValidatorConstraintInterface {

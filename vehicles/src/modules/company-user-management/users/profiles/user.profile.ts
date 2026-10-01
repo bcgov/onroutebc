@@ -4,20 +4,18 @@ import {
   forMember,
   forSelf,
   fromValue,
-  ignore,
   mapFrom,
   Mapper,
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { User } from '../entities/user.entity';
-import { CreateContactDto } from '../../../common/dto/request/create-contact.dto';
-import { Contact } from '../../../common/entities/contact.entity';
-import { CreateUserDto } from '../dto/request/create-user.dto';
-import { ReadUserDto } from '../dto/response/read-user.dto';
-import { UpdateUserDto } from '../dto/request/update-user.dto';
-import { ReadPendingUserDto } from '../../pending-users/dto/response/read-pending-user.dto';
-import { Directory } from '../../../../common/enum/directory.enum';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
+import { CreateContactDto } from '@modules/common/dto/request/create-contact.dto';
+import { Contact } from '@modules/common/entities/contact.entity';
+import { CreateUserDto } from '@modules/company-user-management/users/dto/request/create-user.dto';
+import { ReadUserDto } from '@modules/company-user-management/users/dto/response/read-user.dto';
+import { ReadPendingUserDto } from '@modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
+import { Directory } from '@common/enum/directory.enum';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -121,51 +119,6 @@ export class UsersProfile extends AutomapperProfile {
             return this.mapper.map(s, CreateContactDto, Contact);
           }),
         ),
-      );
-
-      /**
-       * The mapping is between UpdateUserDto to User mapping.
-       */
-      createMap(
-        mapper,
-        UpdateUserDto,
-        User,
-        forMember(
-          (d) => d.userGUID,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-        forMember(
-          (d) => d.userContact,
-          mapFrom((s) => {
-            return this.mapper.map(s, CreateContactDto, Contact);
-          }),
-        ),
         forMember(
           (d) => d.userContact.createdUser,
           mapWithArguments((source, { userName }) => {
@@ -214,7 +167,6 @@ export class UsersProfile extends AutomapperProfile {
             return userGUID;
           }),
         ),
-        forMember((d) => d.userRole, ignore()),
       );
 
       /**

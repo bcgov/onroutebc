@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { OutageNotificationService } from './outage-notification.service';
 import { ApiOperation, ApiNotFoundResponse } from '@nestjs/swagger';
 import { ReadOutageNotificationDto } from './dto/read-outage-notification.dto';
-import { ExceptionDto } from '../../common/exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 
 @Controller('outage-notification')
 @ApiNotFoundResponse({

@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CreditAccountLimit,
   CreditAccountLimitType,
-} from '../../../../common/enum/credit-account-limit.enum';
+} from '@common/enum/credit-account-limit.enum';
 
 export class ReadCreditAccountLimitDto {
   @AutoMap()

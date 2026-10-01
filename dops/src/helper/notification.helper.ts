@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { CacheKey } from '../enum/cache-key.enum';
-import { ImageType } from '../enum/image-type.enum';
-import { NotificationTemplate } from '../enum/notification-template.enum';
+import { CacheKey } from '@app/enum/cache-key.enum';
+import { ImageType } from '@app/enum/image-type.enum';
+import { NotificationTemplate } from '@app/enum/notification-template.enum';
 import { getFromCache } from './cache.helper';
 import { Cache } from 'cache-manager';
 import * as Handlebars from 'handlebars';

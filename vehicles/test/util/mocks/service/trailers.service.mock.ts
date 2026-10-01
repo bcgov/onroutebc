@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
+import { UpdateTrailerDto } from '@modules/vehicles/trailers/dto/request/update-trailer.dto';
 import { deleteDtoMock } from '../data/delete-dto.mock';
 import { readTrailerDtoMock } from '../data/trailer.mock';
 

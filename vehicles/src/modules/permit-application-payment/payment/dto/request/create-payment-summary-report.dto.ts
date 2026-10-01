@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsDateString, IsEnum } from 'class-validator';
-import { PermitIssuedBy } from '../../../../../common/enum/permit-issued-by.enum';
+import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()

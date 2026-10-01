@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
-import { IS_AUTH_ONLY_KEY } from '../decorator/auth-only.decorator';
+import { IS_PUBLIC_KEY } from '@app/decorator/public.decorator';
+import { IS_AUTH_ONLY_KEY } from '@app/decorator/auth-only.decorator';
 import { Request } from 'express';
 
 @Injectable()
@@ -38,12 +38,20 @@ export class JwtAuthGuard extends AuthGuard(['jwt', 'jwt-service-account']) {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user) {
-    // You can throw an exception based on either "info" or "err" arguments
+  handleRequest<TUser = unknown>(
+    err: unknown,
+    user: unknown,
+    info: unknown,
+    context: ExecutionContext,
+    status?: unknown,
+  ): TUser {
+    void info;
+    void context;
+    void status;
+
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw err instanceof Error ? err : new UnauthorizedException();
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return user;
+    return user as TUser;
   }
 }

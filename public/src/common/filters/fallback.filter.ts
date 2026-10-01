@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../exception/exception.dto';
+import { ExceptionDto } from '@common/exception/exception.dto';
 import { TypeORMError } from 'typeorm';
 import { ClsServiceManager } from 'nestjs-cls';
 
