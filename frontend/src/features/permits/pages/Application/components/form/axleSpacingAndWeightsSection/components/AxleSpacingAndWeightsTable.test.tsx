@@ -91,6 +91,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -190,6 +191,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -226,6 +228,15 @@ describe("AxleSpacingAndWeightsSection", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Calculate" }));
+
+    expect(runAxleCalculation).toHaveBeenCalledWith(
+      PERMIT_TYPES.STOW,
+      expect.any(Object),
+      expect.any(Object),
+      expect.any(Array),
+      40000,
+      "NONREDU",
+    );
 
     expect(await screen.findByText(loadEqualizationMessage)).toHaveClass(
       "axle-spacing-and-weights-results__text--fail",
@@ -269,6 +280,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -358,6 +370,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -429,6 +442,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -503,6 +517,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -568,6 +583,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={
           new Map([["PICKRTT", "Picker Truck Tractor"]])
         }
@@ -617,6 +633,7 @@ describe("AxleSpacingAndWeightsSection", () => {
     const { container } = render(
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         vehicleFormData={{
           vehicleId: "101",
@@ -663,4 +680,46 @@ describe("AxleSpacingAndWeightsSection", () => {
       screen.queryByRole("button", { name: "Reset" }),
     ).not.toBeInTheDocument();
   });
+  it.each([undefined, "-"])(
+    "waits for commodity selection (%s) before calculating",
+    async (commodity) => {
+      const user = userEvent.setup();
+      const calculate = vi.fn();
+      render(
+        <AxleSpacingAndWeightsSection
+          permitType={PERMIT_TYPES.STOW}
+          selectedCommodityType={commodity}
+          powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
+          trailerSubtypeNamesMap={new Map()}
+          vehicleFormData={{
+            vehicleId: "101",
+            vin: "654321",
+            plate: "ABC",
+            make: "Custom",
+            year: 2010,
+            countryCode: "CA",
+            provinceCode: "BC",
+            vehicleType: "powerUnit",
+            vehicleSubType: "TRKTRAC",
+            licensedGVW: 40000,
+          }}
+          vehicleConfiguration={{
+            axleConfiguration: powerUnitAxleConfiguration,
+            trailers: [],
+          }}
+          tireSizeOptions={[
+            { name: "330", size: 330 },
+            { name: "355", size: 355 },
+          ]}
+          runAxleCalculation={calculate}
+          combineAxleConfigurations={() =>
+            combinedAxleConfiguration.slice(0, 2)
+          }
+          showASWRequiredFieldsBanner={false}
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: "Calculate" }));
+      expect(calculate).not.toHaveBeenCalled();
+    },
+  );
 });

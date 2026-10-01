@@ -17,6 +17,7 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
           vehicleConfiguration: PermitVehicleConfiguration,
           axleConfiguration: AxleConfiguration[],
           licensedGVW: number,
+          commodityId: string,
         ): AxleCalculationResult => {
           const { getSimplifiedVehicleConfiguration } = policyEngine;
           const serializedVehicleConfiguration = getDefaultVehicleConfiguration(
@@ -33,6 +34,7 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
             simplifiedVehicleConfiguration,
             axleConfiguration,
             licensedGVW,
+            commodityId,
           );
 
           return results;
