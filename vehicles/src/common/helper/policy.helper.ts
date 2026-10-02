@@ -173,7 +173,7 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STWSE_MAX_ALLOWED_DURATION_AMEND);
 
-      // Function to check if there is an STWS duration violation which can be excluded
+  // Function to check if there is an STWS duration violation which can be excluded
   const isSTWSDurationViolationAllowed = (violation: ValidationResult) =>
     isSTWS &&
     isDurationViolation(violation) &&
