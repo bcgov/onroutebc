@@ -18,6 +18,7 @@ import {
   STGVWI_MAX_ALLOWED_DURATION_AMEND,
   STOS_MAX_ALLOWED_DURATION_AMEND,
   STOW_MAX_ALLOWED_DURATION_AMEND,
+  STWS_MAX_ALLOWED_DURATION_AMEND,
   STWSE_MAX_ALLOWED_DURATION_AMEND,
 } from '@common/constants/permit.constant';
 
@@ -59,6 +60,7 @@ export const evaluatePolicyValidationResult = (
   const isSTOW = permitType === PermitType.SINGLE_TRIP_OVERWEIGHT;
   const isSTWSE =
     permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE_EMPTY;
+  const isSTWS = permitType === PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE;
   const isSTGVWI = permitType === PermitType.SINGLE_TRIP_GVW_INCREASE;
 
   // CV clients: generally reject if any policy validation violations exist.
@@ -171,6 +173,12 @@ export const evaluatePolicyValidationResult = (
     isDurationViolation(violation) &&
     isAllowedDuration(STWSE_MAX_ALLOWED_DURATION_AMEND);
 
+      // Function to check if there is an STWS duration violation which can be excluded
+  const isSTWSDurationViolationAllowed = (violation: ValidationResult) =>
+    isSTWS &&
+    isDurationViolation(violation) &&
+    isAllowedDuration(STWS_MAX_ALLOWED_DURATION_AMEND);
+
   // Function to check if there is an STGVWI duration violation which can be excluded
   const isSTGVWIDurationViolationAllowed = (violation: ValidationResult) =>
     isSTGVWI &&
@@ -191,6 +199,7 @@ export const evaluatePolicyValidationResult = (
         isSTOWDurationViolationAllowed(violation) ||
         isSTWSEDurationViolationAllowed(violation) ||
         isSTGVWIDurationViolationAllowed(violation) ||
+        isSTWSDurationViolationAllowed(violation) ||
         isSTOWAxleWeightSpacingViolationAllowed(violation) ||
         isStartDateViolationAllowed(violation, permitType)
       ),
