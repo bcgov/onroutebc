@@ -116,7 +116,7 @@ VALUES (
     N'dops',
     GETUTCDATE(),
     N'Y',
-    N'eptop-additional-conditions.docx'
+    N'eptop-additional-conditions.pdf'
 )
 
 IF @@ERROR <> 0 SET NOEXEC ON
