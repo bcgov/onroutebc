@@ -37,6 +37,7 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STWSE,
       [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI,
       [PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING]: TemplateName.PERMIT_EPTOP,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE]: TemplateName.PERMIT_STWS,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
@@ -58,6 +59,8 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STWSE_VOID,
       [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI_VOID,
       [PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING]: TemplateName.PERMIT_EPTOP_VOID,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE]:
+        TemplateName.PERMIT_STWS_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
@@ -79,6 +82,8 @@ export const getPermitTemplateName = (
         TemplateName.PERMIT_STWSE_REVOKED,
       [PermitType.SINGLE_TRIP_GVW_INCREASE]: TemplateName.PERMIT_STGVWI_REVOKED,
       [PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING]: TemplateName.PERMIT_EPTOP_REVOKED,
+      [PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE]:
+        TemplateName.PERMIT_STWS_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };
