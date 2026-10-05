@@ -96,32 +96,6 @@ VALUES (
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
-INSERT [dops].[ORBC_DOCUMENT_TEMPLATE] ( 
-    [TEMPLATE_NAME], 
-    [TEMPLATE_VERSION],     
-    [CONCURRENCY_CONTROL_NUMBER], 
-    [DB_CREATE_USERID], 
-    [DB_CREATE_TIMESTAMP], 
-    [DB_LAST_UPDATE_USERID], 
-    [DB_LAST_UPDATE_TIMESTAMP],
-    [IS_ACTIVE],
-    [FILE_NAME]
-) 
-VALUES (
-    N'PERMIT_EPTOP_ADDITIONAL_CONDITIONS',
-    1,    
-    1,
-    N'dops',
-    GETUTCDATE(),
-    N'dops',
-    GETUTCDATE(),
-    N'Y',
-    N'eptop-additional-conditions.pdf'
-)
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Configure EPTOP v1 templates'
 
