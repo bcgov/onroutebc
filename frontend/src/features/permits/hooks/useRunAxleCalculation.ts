@@ -29,6 +29,12 @@ export const useRunAxleCalculation = (policyEngine: Nullable<Policy>) => {
               serializedVehicleConfiguration as VehicleConfiguration,
             );
 
+          console.log(
+            simplifiedVehicleConfiguration,
+            axleConfiguration,
+            licensedGVW,
+          );
+
           const results = policyEngine.runAxleCalculation(
             simplifiedVehicleConfiguration,
             axleConfiguration,
