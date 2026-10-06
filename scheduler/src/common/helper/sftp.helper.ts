@@ -50,6 +50,9 @@ export const getPbiSFTPConnectionInfo = () => {
 export const downloadFromPBI = async (logger: Logger) => {
   const sftp = new Client();
   const connectionInfo = getPbiSFTPConnectionInfo();
+  logger.log(
+    `Connecting to ${process.env.PBI_HOST} via SFTP... {connectionInfo: ${JSON.stringify(connectionInfo)}}`,
+  );
   const remotePath = process.env.PBI_REMOTE_PATH; //Remote PBI Path
 
   try {
