@@ -546,3 +546,7 @@
 ### Version 113:
 
 - Insert a new policy snapshot based on v112, adding the defaultInteraxleSpacings array and multiple defaultWeightDimensions objects to vehicle types in order to more clsely tie the policy engine with the policy config file. see: ORV2-6048 and ORV2-6067 / 6068
+
+### Version 114:
+
+- Configure EPTOP v1 templates.
