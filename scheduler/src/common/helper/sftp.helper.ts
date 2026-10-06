@@ -33,7 +33,7 @@ export const getGarmSFTPConnectionInfo = () => {
 };
 
 export const getPbiSFTPConnectionInfo = () => {
-  const host = process.env.PBI_HOST;
+  const host = process.env.PBI_SFTP_HOST;
   const port = Number(process.env.PBI_SFTP_PORT);
   const username = process.env.PBI_SFTP_USERNAME;
   const privateKey = process.env.PBI_PRIVATE_KEY;
@@ -50,9 +50,6 @@ export const getPbiSFTPConnectionInfo = () => {
 export const downloadFromPBI = async (logger: Logger) => {
   const sftp = new Client();
   const connectionInfo = getPbiSFTPConnectionInfo();
-  logger.log(
-    `Connecting to ${process.env.PBI_HOST} via SFTP... {connectionInfo: ${JSON.stringify(connectionInfo)}}`,
-  );
   const remotePath = process.env.PBI_REMOTE_PATH; //Remote PBI Path
 
   try {
@@ -62,12 +59,14 @@ export const downloadFromPBI = async (logger: Logger) => {
     files.forEach((file) => {
       logger.log(`File found: ${file.name}`);
     });
-    logger.log(`Successfully connected to ${process.env.PBI_HOST} via SFTP.`);
+    logger.log(
+      `Successfully connected to ${process.env.PBI_SFTP_HOST} via SFTP.`,
+    );
   } catch (error) {
-    logger.error('Cannot connect to ${process.env.PBI_HOST} via SFTP.');
+    logger.error('Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.');
     logger.error(error);
     throw new InternalServerErrorException(
-      'Cannot connect to ${process.env.PBI_HOST} via SFTP.',
+      'Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.',
     );
   } finally {
     logger.log('closing connection');
