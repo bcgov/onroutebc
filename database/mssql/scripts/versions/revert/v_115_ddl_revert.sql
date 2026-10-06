@@ -25,7 +25,7 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Revert ORV2-5329: STOS - Booster should not be allowed for certain configurations.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE])
-VALUES (113, @VersionDescription, GETUTCDATE())
+VALUES (114, @VersionDescription, GETUTCDATE())
 GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO

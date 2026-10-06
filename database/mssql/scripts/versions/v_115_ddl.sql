@@ -34,7 +34,7 @@ SET @VersionDescription = 'ORV2-5329: STOS - Booster should not be allowed for c
 
 INSERT [dbo].[ORBC_SYS_VERSION]
     ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE])
-VALUES (114, @VersionDescription,
+VALUES (115, @VersionDescription,
     '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', GETUTCDATE())
 GO
 IF @@ERROR <> 0 SET NOEXEC ON

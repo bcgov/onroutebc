@@ -550,3 +550,7 @@
 ### Version 114:
 
 - Configure EPTOP v1 templates.
+
+### Version 115:
+
+- Insert a new policy snapshot based on v113, removing the ability to add a booster to Concrete Pumper Trucks and Telescopic Conveyor Trucks. See ORV2-5329.
