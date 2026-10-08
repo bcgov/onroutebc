@@ -32,6 +32,65 @@ export const getGarmSFTPConnectionInfo = () => {
   return connectionOptions;
 };
 
+export const getPbiSFTPConnectionInfo = () => {
+  const host = process.env.PBI_SFTP_HOST;
+  const port = Number(process.env.PBI_SFTP_PORT);
+  const username = process.env.PBI_SFTP_USERNAME;
+  const privateKey = process.env.PBI_PRIVATE_KEY;
+  //const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
+  const connectionOptions = {
+    host: host,
+    port: port,
+    username: username,
+    privateKey: privateKey,
+  };
+  return connectionOptions;
+};
+
+export const downloadFromPBI = async (logger: Logger) => {
+  const sftp = new Client();
+  const connectionInfo = getPbiSFTPConnectionInfo();
+  const remotePath = process.env.PBI_REMOTE_PATH; //Remote PBI Path
+
+  try {
+    await sftp.connect(connectionInfo);
+    await sftp.cwd();
+    const files = await sftp.list(remotePath);
+    files.forEach((file) => {
+      logger.log(`File found: ${file.name}`);
+    });
+    logger.log(
+      `Successfully connected to ${process.env.PBI_SFTP_HOST} via SFTP.`,
+    );
+  } catch (error) {
+    logger.error('Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.');
+    logger.error(error);
+    throw new InternalServerErrorException(
+      'Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.',
+    );
+  } finally {
+    logger.log('closing connection');
+    void sftp.end();
+  }
+
+  // try {
+  //   const res = await sftp.put(fileData.buffer, remotePath + fileName);
+  //   logger.log(`Successfully sent file ${fileName} via SFTP.`);
+  //   return res;
+  // } catch (error) {
+  //   logger.error(
+  //     `Failed to send file to ${process.env.CFS_SFTP_HOST} via SFTP.`,
+  //   );
+  //   logger.error(error);
+  //   throw new InternalServerErrorException(
+  //     `Failed to send file to ${process.env.CFS_SFTP_HOST} via SFTP.`,
+  //   );
+  // } finally {
+  //   logger.log('closing connection');
+  //   void sftp.end();
+  // }
+};
+
 export const uploadToCFS = async (
   fileData: Express.Multer.File,
   fileName: string,
