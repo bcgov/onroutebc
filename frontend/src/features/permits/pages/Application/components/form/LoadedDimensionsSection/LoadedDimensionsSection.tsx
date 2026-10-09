@@ -51,6 +51,7 @@ export const LoadedDimensionsSection = ({
               })
             }
             minValue={0}
+            shouldDefaultToMinValue={true}
           />
 
           <LoadedDimensionInput
@@ -68,6 +69,7 @@ export const LoadedDimensionsSection = ({
               })
             }
             minValue={0}
+            shouldDefaultToMinValue={true}
           />
 
           <LoadedDimensionInput
@@ -88,6 +90,7 @@ export const LoadedDimensionsSection = ({
             validationMsgValueDecimalPlaces={
               permitType === PERMIT_TYPES.STWSE ? 1 : 0
             }
+            shouldDefaultToMinValue={permitType !== PERMIT_TYPES.STWSE}
           />
         </div>
 
@@ -107,6 +110,8 @@ export const LoadedDimensionsSection = ({
               })
             }
             minValue={0}
+            canIncludeMinValue={true}
+            shouldDefaultToMinValue={true}
           />
 
           <LoadedDimensionInput
@@ -124,6 +129,8 @@ export const LoadedDimensionsSection = ({
               })
             }
             minValue={0}
+            canIncludeMinValue={true}
+            shouldDefaultToMinValue={true}
           />
         </div>
       </Box>

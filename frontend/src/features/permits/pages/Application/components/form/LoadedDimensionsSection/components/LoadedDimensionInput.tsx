@@ -1,9 +1,11 @@
+import { useCallback } from "react";
 import { Controller } from "react-hook-form";
 
 import { NumberInput } from "../../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../../common/helpers/numeric/convertToNumberIfValid";
 import {
+  isNull,
   Nullable,
   RequiredOrNull,
 } from "../../../../../../../../common/types/common";
@@ -20,6 +22,8 @@ export const LoadedDimensionInput = ({
   value,
   onUpdateValue,
   minValue,
+  canIncludeMinValue = false,
+  shouldDefaultToMinValue = false,
   validationMsgValueDecimalPlaces,
 }: {
   name: string;
@@ -31,8 +35,31 @@ export const LoadedDimensionInput = ({
   value?: Nullable<number>;
   onUpdateValue: (updateValue: RequiredOrNull<number>) => void;
   minValue: number;
+  canIncludeMinValue?: boolean;
+  shouldDefaultToMinValue?: boolean;
   validationMsgValueDecimalPlaces?: number;
 }) => {
+  const handleMask = (numericVal: number) =>
+    shouldDefaultToMinValue
+      ? Math.max(minValue, numericVal).toFixed(2)
+      : numericVal.toFixed(2);
+
+  const handleBlur = useCallback(
+    (numericVal: string) => {
+      const convertedNullableNumber = getDefaultRequiredVal(
+        null,
+        convertToNumberIfValid(numericVal, null),
+      );
+
+      if (isNull(convertedNullableNumber) || !shouldDefaultToMinValue) {
+        onUpdateValue(convertedNullableNumber);
+      } else {
+        onUpdateValue(Math.max(minValue, convertedNullableNumber));
+      }
+    },
+    [onUpdateValue, shouldDefaultToMinValue, minValue, canIncludeMinValue],
+  );
+
   return (
     <Controller
       name={name}
@@ -40,7 +67,9 @@ export const LoadedDimensionInput = ({
         required: { value: true, message: requiredMessage() },
         validate: {
           greaterThan: (v) =>
-            Number(v) > minValue ||
+            (canIncludeMinValue
+              ? Number(v) >= minValue
+              : Number(v) > minValue) ||
             mustBeGreaterThan(minValue, validationMsgValueDecimalPlaces, "m"),
         },
       }}
@@ -52,14 +81,9 @@ export const LoadedDimensionInput = ({
           }}
           inputProps={{
             value: getDefaultRequiredVal(null, value),
-            maskFn: (numericVal) => numericVal.toFixed(2),
+            maskFn: handleMask,
             onBlur: (e) => {
-              onUpdateValue(
-                getDefaultRequiredVal(
-                  null,
-                  convertToNumberIfValid(e.target.value, null),
-                ),
-              );
+              handleBlur(e.target.value);
             },
             slotProps: {
               input: {
