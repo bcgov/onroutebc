@@ -39,10 +39,11 @@ export const LoadedDimensionInput = ({
   shouldDefaultToMinValue?: boolean;
   validationMsgValueDecimalPlaces?: number;
 }) => {
-  const handleMask = (numericVal: number) => shouldDefaultToMinValue
-    ? Math.max(minValue, numericVal).toFixed(2)
-    : numericVal.toFixed(2);
-    
+  const handleMask = (numericVal: number) =>
+    shouldDefaultToMinValue
+      ? Math.max(minValue, numericVal).toFixed(2)
+      : numericVal.toFixed(2);
+
   const handleBlur = useCallback(
     (numericVal: string) => {
       const convertedNullableNumber = getDefaultRequiredVal(
@@ -66,7 +67,9 @@ export const LoadedDimensionInput = ({
         required: { value: true, message: requiredMessage() },
         validate: {
           greaterThan: (v) =>
-            (canIncludeMinValue ? Number(v) >= minValue : Number(v) > minValue) ||
+            (canIncludeMinValue
+              ? Number(v) >= minValue
+              : Number(v) > minValue) ||
             mustBeGreaterThan(minValue, validationMsgValueDecimalPlaces, "m"),
         },
       }}
