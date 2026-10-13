@@ -38,6 +38,7 @@ jobs:
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
+        --set-string global.hostname="onroutebc-${{inputs.tag}}" \
         --set-string global.domain='apps.gold.devops.gov.bc.ca' \
         --set-string global.vault.authPath='auth/k8s-gold' \
         --set-string global.license='c3141c' \
@@ -65,6 +66,7 @@ jobs:
       tag: ${{ inputs.tag }}
       triggers: '' #omit=always;
       params: |
+        --set-string global.hostname="onroutebc-${{inputs.tag}}" \
         --set-string global.domain='apps.golddr.devops.gov.bc.ca' \
         --set-string global.vault.authPath='auth/k8s-golddr' \
         --set-string global.license='c3141c' \
