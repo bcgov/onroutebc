@@ -1,6 +1,6 @@
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
 } from "../../../../common/helpers/formatDate";
 import { PermitData } from "../../types/PermitData";
 import { ReplaceDayjsWithString } from "../../types/utility";
@@ -36,8 +36,8 @@ export const serializePermitData = (
 
   return {
     ...restOfPermitData,
-    startDate: dayjsToLocalStr(startDate, DATE_FORMATS.DATEONLY),
-    expiryDate: dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY),
+    startDate: dayjsToPacificDateTimeStr(startDate, DATE_FORMATS.DATEONLY),
+    expiryDate: dayjsToPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY),
     vehicleDetails: serializePermitVehicleDetails(vehicleDetails),
     vehicleConfiguration:
       serializePermitVehicleConfiguration(vehicleConfiguration),

@@ -3,7 +3,10 @@ import {
   CreditAccountActivity,
   CreditAccountActivityDisplayValues,
 } from "./creditAccount";
-import { toLocal, DATE_FORMATS } from "../../../common/helpers/formatDate";
+import {
+  toPacificDateTimeStr,
+  DATE_FORMATS,
+} from "../../../common/helpers/formatDate";
 
 /**
  * The column definition for credit account activity history table.
@@ -23,7 +26,7 @@ export const CreditAccountActivityColumnsDefinition: MRT_ColumnDef<CreditAccount
       Cell: (props: { row: MRT_Row<CreditAccountActivity> }) => {
         return (
           <>
-            {toLocal(
+            {toPacificDateTimeStr(
               props.row.original.creditAccountActivityDateTime,
               DATE_FORMATS.LONG,
             )}

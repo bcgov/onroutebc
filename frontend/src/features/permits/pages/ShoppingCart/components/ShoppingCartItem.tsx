@@ -4,7 +4,7 @@ import "./ShoppingCartItem.scss";
 import { SelectableCartItem } from "../../../types/CartItem";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../common/helpers/formatDate";
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
@@ -86,7 +86,7 @@ export const ShoppingCartItem = ({
               Permit Start Date:
             </span>
             <span className="shopping-cart-item__info shopping-cart-item__info--start-date">
-              {toLocal(
+              {toPacificDateTimeStr(
                 cartItemData.startDate,
                 DATE_FORMATS.DATEONLY_ABBR_MONTH,
                 true,
@@ -115,7 +115,7 @@ export const ShoppingCartItem = ({
               Permit End Date:
             </span>
             <span className="shopping-cart-item__info shopping-cart-item__info--end-date">
-              {toLocal(
+              {toPacificDateTimeStr(
                 cartItemData.expiryDate,
                 DATE_FORMATS.DATEONLY_ABBR_MONTH,
                 true,

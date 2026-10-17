@@ -10,7 +10,10 @@ import { Banner } from "../../../common/components/dashboard/components/banner/B
 import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUserForm";
 import { PROFILE_TABS } from "../types/manageProfile.d";
-import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../common/helpers/formatDate";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import {
   applyWhenNotNullable,
@@ -52,7 +55,7 @@ export const EditUserDashboard = React.memo(() => {
               &nbsp;
               {applyWhenNotNullable(
                 (dateTimeStr: string) =>
-                  toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                  toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.LONG),
                 userInfo?.createdDateTime,
                 "",
               )}
@@ -62,12 +65,12 @@ export const EditUserDashboard = React.memo(() => {
                 "",
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
-                    toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                    toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.LONG),
                   userInfo?.updatedDateTime,
                 ),
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
-                    toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                    toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.LONG),
                   userInfo?.createdDateTime,
                   "",
                 ),

@@ -15,7 +15,7 @@ import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util"
 import { minDurationForPermitType } from "../../../../../helpers/dateSelection";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
   getStartOfDate,
   now,
 } from "../../../../../../../common/helpers/formatDate";
@@ -138,12 +138,12 @@ export const resetApplicationSource = () => {
 
 export const getDefaultApplication = () => {
   const currentDt = getStartOfDate(now());
-  const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
+  const startDate = dayjsToPacificDateTimeStr(currentDt, DATE_FORMATS.DATEONLY);
   const permitType = DEFAULT_PERMIT_TYPE;
   const minDuration = minDurationForPermitType(permitType);
   const expiryDt = getExpiryDate(currentDt, permitType, minDuration);
 
-  const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
+  const expiryDate = dayjsToPacificDateTimeStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
 
   const contactDetails = {

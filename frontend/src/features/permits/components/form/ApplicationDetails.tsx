@@ -9,7 +9,7 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
 } from "../../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
@@ -80,7 +80,8 @@ export const ApplicationDetails = ({
                   data-testid="application-created-date"
                 >
                   {applyWhenNotNullable(
-                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    (dayjsObj) =>
+                      dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
                     createdDateTime,
                     "",
                   )}
@@ -96,7 +97,8 @@ export const ApplicationDetails = ({
                   data-testid="application-updated-date"
                 >
                   {applyWhenNotNullable(
-                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    (dayjsObj) =>
+                      dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
                     updatedDateTime,
                     "",
                   )}

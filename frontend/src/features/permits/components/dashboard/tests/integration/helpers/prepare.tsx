@@ -33,7 +33,7 @@ import {
 } from "../../../../../types/application";
 
 import {
-  dayjsToUtcStr,
+  dayjsToUtcDateTimeStr,
   now,
 } from "../../../../../../../common/helpers/formatDate";
 
@@ -62,7 +62,7 @@ import {
 export const defaultUserDetails = getDefaultUserDetails();
 export const newApplicationNumber = "A1-00000001-800-R01";
 export const newPermitId = "1";
-export const currDtUtcStr = dayjsToUtcStr(now());
+export const currDtUtcStr = dayjsToUtcDateTimeStr(now());
 export const companyInfo = getDefaultCompanyInfo();
 
 // Mock API endpoints

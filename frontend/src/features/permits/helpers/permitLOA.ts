@@ -5,7 +5,7 @@ import { PermitType } from "../types/PermitType";
 import {
   getEndOfDate,
   getStartOfDate,
-  toLocalDayjs,
+  toPacificDayjs,
 } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
@@ -56,7 +56,7 @@ export const filterNonExpiredLOAs = (loas: LOADetail[], permitStart: Dayjs) => {
   return loas.filter(
     (loa) =>
       !loa.expiryDate ||
-      !permitStart.isAfter(getEndOfDate(toLocalDayjs(loa.expiryDate))),
+      !permitStart.isAfter(getEndOfDate(toPacificDayjs(loa.expiryDate))),
   );
 };
 

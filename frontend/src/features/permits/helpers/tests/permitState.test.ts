@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { getExpiryDate } from "../permitState";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
 } from "../../../../common/helpers/formatDate";
 import { BASE_DAYS_IN_YEAR } from "../../constants/constants";
 import { PERMIT_TYPES } from "../../types/PermitType";
@@ -16,7 +16,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2023-09-30"); // +30 (-1) days
@@ -29,7 +32,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2024-02-27"); // +365 (-1) days
@@ -42,7 +48,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2024-02-29"); // +366 (-1) days
@@ -57,22 +66,22 @@ describe("Permit States", () => {
 
     // Act
     const expiryDateQ1 = getExpiryDate(startDateQ1, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ1 = dayjsToLocalStr(
+    const expiryDateStrQ1 = dayjsToPacificDateTimeStr(
       expiryDateQ1,
       DATE_FORMATS.DATEONLY,
     );
     const expiryDateQ2 = getExpiryDate(startDateQ2, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ2 = dayjsToLocalStr(
+    const expiryDateStrQ2 = dayjsToPacificDateTimeStr(
       expiryDateQ2,
       DATE_FORMATS.DATEONLY,
     );
     const expiryDateQ3 = getExpiryDate(startDateQ3, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ3 = dayjsToLocalStr(
+    const expiryDateStrQ3 = dayjsToPacificDateTimeStr(
       expiryDateQ3,
       DATE_FORMATS.DATEONLY,
     );
     const expiryDateQ4 = getExpiryDate(startDateQ4, PERMIT_TYPES.NRQCV, 0);
-    const expiryDateStrQ4 = dayjsToLocalStr(
+    const expiryDateStrQ4 = dayjsToPacificDateTimeStr(
       expiryDateQ4,
       DATE_FORMATS.DATEONLY,
     );

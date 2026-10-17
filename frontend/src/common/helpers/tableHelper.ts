@@ -1,7 +1,11 @@
 import { Row } from "@tanstack/table-core";
 
 import { BC_COLOURS } from "../../themes/bcGovStyles";
-import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+  utcToPacificDayjs,
+} from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
 import { PermitListItem } from "../../features/permits/types/permit";
 import { Nullable } from "../types/common";
@@ -17,7 +21,12 @@ export const formatCellValuetoDatetime = (
   isDateTimeLocal?: boolean,
 ) => {
   return applyWhenNotNullable(
-    (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH, isDateTimeLocal),
+    (dt) =>
+      toPacificDateTimeStr(
+        dt,
+        DATE_FORMATS.DATEONLY_ABBR_MONTH,
+        isDateTimeLocal,
+      ),
     rawDateTime,
     "NA",
   );
@@ -35,8 +44,8 @@ export const dateTimeStringSortingFn = (
   rowB: Row<PermitListItem>,
   columnId: string,
 ) => {
-  const day1 = utcToLocalDayjs(rowA.getValue(columnId));
-  const day2 = utcToLocalDayjs(rowB.getValue(columnId));
+  const day1 = utcToPacificDayjs(rowA.getValue(columnId));
+  const day2 = utcToPacificDayjs(rowB.getValue(columnId));
   let sortVal = 0;
   if (day1.isBefore(day2)) sortVal = -1;
   if (day1.isAfter(day2)) sortVal = 1;
