@@ -1,7 +1,11 @@
 import { Row } from "@tanstack/table-core";
 
 import { BC_COLOURS } from "../../themes/bcGovStyles";
-import { DATE_FORMATS, toPacificDateTimeStr, utcToPacificDayjs } from "../helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+  utcToPacificDayjs,
+} from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
 import { PermitListItem } from "../../features/permits/types/permit";
 import { Nullable } from "../types/common";
@@ -17,7 +21,12 @@ export const formatCellValuetoDatetime = (
   isDateTimeLocal?: boolean,
 ) => {
   return applyWhenNotNullable(
-    (dt) => toPacificDateTimeStr(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH, isDateTimeLocal),
+    (dt) =>
+      toPacificDateTimeStr(
+        dt,
+        DATE_FORMATS.DATEONLY_ABBR_MONTH,
+        isDateTimeLocal,
+      ),
     rawDateTime,
     "NA",
   );

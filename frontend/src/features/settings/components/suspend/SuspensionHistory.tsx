@@ -14,7 +14,10 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toPacificDateTimeStr } from "../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../../common/helpers/formatDate";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,

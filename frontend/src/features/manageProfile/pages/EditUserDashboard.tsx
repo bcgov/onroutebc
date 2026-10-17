@@ -10,7 +10,10 @@ import { Banner } from "../../../common/components/dashboard/components/banner/B
 import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUserForm";
 import { PROFILE_TABS } from "../types/manageProfile.d";
-import { DATE_FORMATS, toPacificDateTimeStr } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../common/helpers/formatDate";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import {
   applyWhenNotNullable,

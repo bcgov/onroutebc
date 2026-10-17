@@ -106,7 +106,11 @@ export const LOATable = ({
               >
                 {applyWhenNotNullable(
                   (expiryDate) =>
-                    toPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
+                    toPacificDateTimeStr(
+                      expiryDate,
+                      DATE_FORMATS.DATEONLY_SLASH,
+                      true,
+                    ),
                   selectableLOA.loa?.expiryDate,
                   "Never expires",
                 )}

@@ -9,7 +9,10 @@ import { Banner } from "../../../../common/components/dashboard/components/banne
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { DATE_FORMATS, toPacificDateTimeStr } from "../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { useVehicleByIdQuery } from "../../hooks/vehicles";

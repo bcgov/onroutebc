@@ -3,7 +3,10 @@ import { AxiosResponse } from "axios";
 import { PermitHistory } from "../types/PermitHistory";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
-import { DATE_FORMATS, toPacificDateTimeStr } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../common/helpers/formatDate";
 import { EmailNotificationType } from "../types/EmailNotificationType";
 import { APPLICATION_QUEUE_STATUSES } from "../../queue/types/ApplicationQueueStatus";
 import {

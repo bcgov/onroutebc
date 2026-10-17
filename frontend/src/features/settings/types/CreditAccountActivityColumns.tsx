@@ -3,7 +3,10 @@ import {
   CreditAccountActivity,
   CreditAccountActivityDisplayValues,
 } from "./creditAccount";
-import { toPacificDateTimeStr, DATE_FORMATS } from "../../../common/helpers/formatDate";
+import {
+  toPacificDateTimeStr,
+  DATE_FORMATS,
+} from "../../../common/helpers/formatDate";
 
 /**
  * The column definition for credit account activity history table.

@@ -1,6 +1,9 @@
 import { Stack } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
-import { DATE_FORMATS, toPacificDateTimeStr } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toPacificDateTimeStr,
+} from "../../../common/helpers/formatDate";
 import { getLabelForBCeIDUserRole } from "../../../common/helpers/util";
 import { UserManagementChip } from "../components/user-management/UserManagementChip";
 import { ReadUserInformationResponse } from "./manageProfile";
@@ -52,7 +55,10 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadUserInformationR
       Cell: (props: { cell: any }) => {
         return (
           <>
-            {toPacificDateTimeStr(props.cell.getValue(), DATE_FORMATS.DATEONLY_SHORT_NAME)}
+            {toPacificDateTimeStr(
+              props.cell.getValue(),
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            )}
           </>
         );
       },

@@ -119,7 +119,10 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
     .map(([permitType]) => permitType);
 
   const body = {
-    startDate: dayjsToPacificDateTimeStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
+    startDate: dayjsToPacificDateTimeStr(
+      loaFormData.startDate,
+      DATE_FORMATS.DATEONLY,
+    ),
     expiryDate: loaFormData.expiryDate
       ? dayjsToPacificDateTimeStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY)
       : null,

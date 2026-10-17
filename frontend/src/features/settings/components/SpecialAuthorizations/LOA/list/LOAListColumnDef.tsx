@@ -35,7 +35,11 @@ export const LOAListColumnDef = (
   },
   {
     accessorFn: (originalRow) => {
-      return toPacificDateTimeStr(originalRow.startDate, DATE_FORMATS.DATEONLY_SLASH, true);
+      return toPacificDateTimeStr(
+        originalRow.startDate,
+        DATE_FORMATS.DATEONLY_SLASH,
+        true,
+      );
     },
     id: "startDate",
     header: "Start Date",
@@ -51,7 +55,8 @@ export const LOAListColumnDef = (
   {
     accessorFn: (originalRow) =>
       applyWhenNotNullable(
-        (expiryDate) => toPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
+        (expiryDate) =>
+          toPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
         originalRow.expiryDate,
         "Never expires",
       ) as string,

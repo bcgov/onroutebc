@@ -50,13 +50,19 @@ export const ReviewPermitDetails = ({
         startDate:
           applyWhenNotNullable(
             (dayJsObject) =>
-              dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+              dayjsToPacificDateTimeStr(
+                dayJsObject,
+                DATE_FORMATS.DATEONLY_SLASH,
+              ),
             startDate,
             "",
           ) !==
           applyWhenNotNullable(
             (dayJsObject) =>
-              dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+              dayjsToPacificDateTimeStr(
+                dayJsObject,
+                DATE_FORMATS.DATEONLY_SLASH,
+              ),
             oldStartDate,
             "",
           ),
@@ -119,7 +125,10 @@ export const ReviewPermitDetails = ({
             >
               {applyWhenNotNullable(
                 (dayJsObject) =>
-                  dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+                  dayjsToPacificDateTimeStr(
+                    dayJsObject,
+                    DATE_FORMATS.DATEONLY_SLASH,
+                  ),
                 startDate,
                 "",
               )}
@@ -150,7 +159,8 @@ export const ReviewPermitDetails = ({
         <Box className="permit-expiry-banner">
           <PermitExpiryDateBanner
             expiryDate={applyWhenNotNullable(
-              (dayJsObject) => dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.SHORT),
+              (dayJsObject) =>
+                dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.SHORT),
               expiryDate,
               "",
             )}

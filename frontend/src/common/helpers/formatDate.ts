@@ -24,13 +24,13 @@ export const DATE_FORMATS = {
   ISO8601: "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
 } as const;
 
-export type DateFormat = typeof DATE_FORMATS[keyof typeof DATE_FORMATS];
+export type DateFormat = (typeof DATE_FORMATS)[keyof typeof DATE_FORMATS];
 
 export const TIMEZONE_IDS = {
   PACIFIC: "America/Vancouver",
 } as const;
 
-export type TimezoneId = typeof TIMEZONE_IDS[keyof typeof TIMEZONE_IDS];
+export type TimezoneId = (typeof TIMEZONE_IDS)[keyof typeof TIMEZONE_IDS];
 
 /**
  * Get the current local datetime DayJS object
@@ -60,11 +60,17 @@ export const getBrowserTimeZoneId = () => {
  * @param timezoneId Timezone id of dateTimeStr
  * @returns Formatted datetime string that includes PCT when applicable
  */
-const formatDateTimeStrForPCT = (dateTimeStr: string, timezoneId: TimezoneId) => {
+const formatDateTimeStrForPCT = (
+  dateTimeStr: string,
+  timezoneId: TimezoneId,
+) => {
   if (dateTimeStr.includes("PCT")) return dateTimeStr;
-  if (!dateTimeStr.includes("PDT") && !dateTimeStr.includes("MST")) return dateTimeStr;
+  if (!dateTimeStr.includes("PDT") && !dateTimeStr.includes("MST"))
+    return dateTimeStr;
 
-  const effectivePCTStartDateTime = dayjs.tz("2026-11-01", TIMEZONE_IDS.PACIFIC).startOf("day");
+  const effectivePCTStartDateTime = dayjs
+    .tz("2026-11-01", TIMEZONE_IDS.PACIFIC)
+    .startOf("day");
   const browserTimezoneId = getBrowserTimeZoneId();
   const pacificDateTime = convertToTimezone(
     convertToTimezone(dateTimeStr, timezoneId),
@@ -72,8 +78,8 @@ const formatDateTimeStrForPCT = (dateTimeStr: string, timezoneId: TimezoneId) =>
   );
 
   if (
-    browserTimezoneId === TIMEZONE_IDS.PACIFIC
-      && !pacificDateTime.isBefore(effectivePCTStartDateTime)
+    browserTimezoneId === TIMEZONE_IDS.PACIFIC &&
+    !pacificDateTime.isBefore(effectivePCTStartDateTime)
   ) {
     return dateTimeStr.replace("PDT", "PCT").replace("MST", "PCT");
   }
@@ -87,7 +93,10 @@ const formatDateTimeStrForPCT = (dateTimeStr: string, timezoneId: TimezoneId) =>
  * @param format Datetime format for display (default ISO-8601)
  * @returns Datetime string representing Pacific datetime in the format specified
  */
-export const dayjsToPacificDateTimeStr = (datetime: Dayjs, format?: DateFormat) => {
+export const dayjsToPacificDateTimeStr = (
+  datetime: Dayjs,
+  format?: DateFormat,
+) => {
   const formattedDateTimeStr = convertToTimezone(
     datetime,
     TIMEZONE_IDS.PACIFIC,

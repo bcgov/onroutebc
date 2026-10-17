@@ -80,7 +80,8 @@ export const ApplicationDetails = ({
                   data-testid="application-created-date"
                 >
                   {applyWhenNotNullable(
-                    (dayjsObj) => dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
+                    (dayjsObj) =>
+                      dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
                     createdDateTime,
                     "",
                   )}
@@ -96,7 +97,8 @@ export const ApplicationDetails = ({
                   data-testid="application-updated-date"
                 >
                   {applyWhenNotNullable(
-                    (dayjsObj) => dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
+                    (dayjsObj) =>
+                      dayjsToPacificDateTimeStr(dayjsObj, DATE_FORMATS.LONG),
                     updatedDateTime,
                     "",
                   )}

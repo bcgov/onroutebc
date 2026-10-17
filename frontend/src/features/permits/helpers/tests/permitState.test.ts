@@ -16,7 +16,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2023-09-30"); // +30 (-1) days
@@ -29,7 +32,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2024-02-27"); // +365 (-1) days
@@ -42,7 +48,10 @@ describe("Permit States", () => {
 
     // Act
     const expiryDate = getExpiryDate(startDate, PERMIT_TYPES.TROS, duration);
-    const expiryDateStr = dayjsToPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY);
+    const expiryDateStr = dayjsToPacificDateTimeStr(
+      expiryDate,
+      DATE_FORMATS.DATEONLY,
+    );
 
     // Assert
     expect(expiryDateStr).toBe("2024-02-29"); // +366 (-1) days
