@@ -1,7 +1,7 @@
 import "./AmendRevision.scss";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../../common/helpers/formatDate";
 
 export const AmendRevision = ({
@@ -28,7 +28,7 @@ export const AmendRevision = ({
           className="amend-revision__date"
           data-testid={`amend-revision-permit-${revision.permitId}-at`}
         >
-          {toLocal(revision.revisionDateTime, DATE_FORMATS.LONG)}
+          {toPacificDateTimeStr(revision.revisionDateTime, DATE_FORMATS.LONG)}
         </span>
       </div>
       <div className="amend-revision__comment">{revision.comment}</div>

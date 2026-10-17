@@ -1,7 +1,7 @@
 import { getPermitTypeName } from "../../../types/PermitType";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
 } from "../../../../../common/helpers/formatDate";
 
 import {
@@ -62,10 +62,10 @@ describe("Application Details Display", () => {
       defaultApplicationNumber,
     );
     expect(await createdDate()).toHaveTextContent(
-      dayjsToLocalStr(createdAt, DATE_FORMATS.LONG),
+      dayjsToPacificDateTimeStr(createdAt, DATE_FORMATS.LONG),
     );
     expect(await updatedDate()).toHaveTextContent(
-      dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG),
+      dayjsToPacificDateTimeStr(updatedAt, DATE_FORMATS.LONG),
     );
   });
 });

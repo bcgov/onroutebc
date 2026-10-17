@@ -12,7 +12,7 @@ import {
 import {
   getEndOfDate,
   getStartOfDate,
-  toLocalDayjs,
+  toPacificDayjs,
 } from "../../../../../common/helpers/formatDate";
 
 export interface AmendPermitFormData extends ApplicationFormData {}
@@ -77,11 +77,11 @@ export const getDefaultFormDataFromPermit = (
       permitData: {
         ...restOfPermit.permitData,
         startDate: applyWhenNotNullable(
-          (startAt) => getStartOfDate(toLocalDayjs(startAt)),
+          (startAt) => getStartOfDate(toPacificDayjs(startAt)),
           restOfPermit.permitData?.startDate,
         ),
         expiryDate: applyWhenNotNullable(
-          (endAt) => getEndOfDate(toLocalDayjs(endAt)),
+          (endAt) => getEndOfDate(toPacificDayjs(endAt)),
           restOfPermit.permitData?.expiryDate,
         ),
       },

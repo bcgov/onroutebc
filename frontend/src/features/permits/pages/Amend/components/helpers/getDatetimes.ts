@@ -7,7 +7,7 @@ import {
 import { Nullable } from "../../../../../../common/types/common";
 import { Application } from "../../../../types/application";
 import { Permit } from "../../../../types/permit";
-import { utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
+import { utcToPacificDayjs } from "../../../../../../common/helpers/formatDate";
 
 export const getDatetimes = (
   amendmentApplication?: Nullable<Application>,
@@ -24,7 +24,7 @@ export const getDatetimes = (
       amendmentApplication?.createdDateTime,
     ),
     applyWhenNotNullable(
-      (datetimeStr: string) => utcToLocalDayjs(datetimeStr),
+      (datetimeStr: string) => utcToPacificDayjs(datetimeStr),
       permit?.createdDateTime,
     ),
   );
@@ -37,7 +37,7 @@ export const getDatetimes = (
       amendmentApplication?.updatedDateTime,
     ),
     applyWhenNotNullable(
-      (datetimeStr: string) => utcToLocalDayjs(datetimeStr),
+      (datetimeStr: string) => utcToPacificDayjs(datetimeStr),
       permit?.updatedDateTime,
     ),
   );

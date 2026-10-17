@@ -2,7 +2,7 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { Dayjs } from "dayjs";
 
-import { utcToLocalDayjs } from "../../../../../../../common/helpers/formatDate";
+import { utcToPacificDayjs } from "../../../../../../../common/helpers/formatDate";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { ApplicationDetails } from "../../../ApplicationDetails";
@@ -36,8 +36,8 @@ export const defaultCompanyInfo = {
 
 export const country = "Canada";
 export const province = "British Columbia";
-export const createdAt = utcToLocalDayjs("2023-06-14T09:00:00.000Z");
-export const updatedAt = utcToLocalDayjs("2023-06-15T13:00:00.000Z");
+export const createdAt = utcToPacificDayjs("2023-06-14T09:00:00.000Z");
+export const updatedAt = utcToPacificDayjs("2023-06-15T13:00:00.000Z");
 export const defaultApplicationNumber = "ABC-123456";
 export const permitType = PERMIT_TYPES.TROS;
 

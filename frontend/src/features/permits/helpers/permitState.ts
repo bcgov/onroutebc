@@ -17,7 +17,7 @@ import {
   getEndOfYear,
   getStartOfDate,
   now,
-  toLocalDayjs,
+  toPacificDayjs,
 } from "../../../common/helpers/formatDate";
 
 // Enum indicating the state of a permit
@@ -39,7 +39,7 @@ export const daysLeftBeforeExpiry = (permit: Permit) => {
   // Perform datetime calculations in local datetime
   const currDate = now();
   const permitStartDate = getStartOfDate(
-    toLocalDayjs(permit.permitData.startDate),
+    toPacificDayjs(permit.permitData.startDate),
   );
 
   const permitExpiryDate = getExpiryDate(
@@ -65,7 +65,7 @@ export const getPermitState = (permit: Permit): PermitState => {
   // Perform datetime calculations in local datetime
   const currDate = now();
   const permitStartDate = getStartOfDate(
-    toLocalDayjs(permit.permitData.startDate),
+    toPacificDayjs(permit.permitData.startDate),
   );
 
   const permitExpiryDate = getExpiryDate(

@@ -17,7 +17,7 @@ import {
 } from "../../../../../../common/helpers/util";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../../common/helpers/formatDate";
 import { SelectableLOA } from "../../../../types/PermitLOA";
 import { Nullable } from "../../../../../../common/types/common";
@@ -106,7 +106,7 @@ export const LOATable = ({
               >
                 {applyWhenNotNullable(
                   (expiryDate) =>
-                    toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
+                    toPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
                   selectableLOA.loa?.expiryDate,
                   "Never expires",
                 )}

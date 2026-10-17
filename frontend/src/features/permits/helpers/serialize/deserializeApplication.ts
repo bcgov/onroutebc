@@ -9,8 +9,8 @@ import {
   getEndOfDate,
   getStartOfDate,
   now,
-  toLocalDayjs,
-  utcToLocalDayjs,
+  toPacificDayjs,
+  utcToPacificDayjs,
 } from "../../../../common/helpers/formatDate";
 import { deserializePermitVehicleConfiguration } from "./deserializePermitVehicleConfiguration";
 
@@ -23,7 +23,7 @@ export const deserializeApplicationResponse = (
   response: ApplicationResponseData,
 ): Application => {
   const startDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
+    (datetimeStr: string): Dayjs => getStartOfDate(toPacificDayjs(datetimeStr)),
     response.permitData.startDate,
     getStartOfDate(now()),
   );
@@ -35,7 +35,7 @@ export const deserializeApplicationResponse = (
   );
 
   const expiryDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
+    (datetimeStr: string): Dayjs => getEndOfDate(toPacificDayjs(datetimeStr)),
     response.permitData.expiryDate,
     getExpiryDate(startDateOrDefault, response.permitType, durationOrDefault),
   );
@@ -43,11 +43,11 @@ export const deserializeApplicationResponse = (
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
+      (datetimeStr: string): Dayjs => utcToPacificDayjs(datetimeStr),
       response.createdDateTime,
     ),
     updatedDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
+      (datetimeStr: string): Dayjs => utcToPacificDayjs(datetimeStr),
       response.updatedDateTime,
     ),
     permitData: {

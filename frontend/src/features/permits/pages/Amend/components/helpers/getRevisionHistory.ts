@@ -1,6 +1,6 @@
 import { Dayjs } from "dayjs";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { dayjsToUtcStr } from "../../../../../../common/helpers/formatDate";
+import { dayjsToUtcDateTimeStr } from "../../../../../../common/helpers/formatDate";
 import { PermitHistory } from "../../../../types/PermitHistory";
 
 export const getRevisionHistory = (
@@ -14,7 +14,7 @@ export const getRevisionHistory = (
       comment: getDefaultRequiredVal("", history.comment),
       name: history.commentUsername,
       revisionDateTime: getDefaultRequiredVal(
-        dayjsToUtcStr(currentDate),
+        dayjsToUtcDateTimeStr(currentDate),
         history.transactionSubmitDate,
       ),
     }));

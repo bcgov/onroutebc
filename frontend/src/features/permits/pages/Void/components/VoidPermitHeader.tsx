@@ -7,7 +7,7 @@ import { getPermitTypeName } from "../../../types/PermitType";
 import { Nullable } from "../../../../../common/types/common";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../common/helpers/formatDate";
 
 export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
@@ -44,7 +44,7 @@ export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
             className="permit-info__value"
             data-testid="void-permit-start-date"
           >
-            {toLocal(
+            {toPacificDateTimeStr(
               permit.permitData.startDate,
               DATE_FORMATS.DATEONLY_ABBR_MONTH,
               true,
@@ -60,7 +60,7 @@ export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
             className="permit-info__value"
             data-testid="void-permit-end-date"
           >
-            {toLocal(
+            {toPacificDateTimeStr(
               permit.permitData.expiryDate,
               DATE_FORMATS.DATEONLY_ABBR_MONTH,
               true,

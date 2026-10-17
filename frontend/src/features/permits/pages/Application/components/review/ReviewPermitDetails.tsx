@@ -17,9 +17,10 @@ import {
   PERMIT_TYPES,
   PermitType,
 } from "../../../../types/PermitType";
+
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
   getQuarterForDate,
 } from "../../../../../../common/helpers/formatDate";
 
@@ -49,13 +50,13 @@ export const ReviewPermitDetails = ({
         startDate:
           applyWhenNotNullable(
             (dayJsObject) =>
-              dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+              dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
             startDate,
             "",
           ) !==
           applyWhenNotNullable(
             (dayJsObject) =>
-              dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+              dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
             oldStartDate,
             "",
           ),
@@ -118,7 +119,7 @@ export const ReviewPermitDetails = ({
             >
               {applyWhenNotNullable(
                 (dayJsObject) =>
-                  dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+                  dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
                 startDate,
                 "",
               )}
@@ -149,7 +150,7 @@ export const ReviewPermitDetails = ({
         <Box className="permit-expiry-banner">
           <PermitExpiryDateBanner
             expiryDate={applyWhenNotNullable(
-              (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.SHORT),
+              (dayJsObject) => dayjsToPacificDateTimeStr(dayJsObject, DATE_FORMATS.SHORT),
               expiryDate,
               "",
             )}

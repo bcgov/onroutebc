@@ -13,11 +13,11 @@ import {
 
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
   getEndOfDate,
   getStartOfDate,
   now,
-  toLocalDayjs,
+  toPacificDayjs,
 } from "../../../common/helpers/formatDate";
 
 export interface LOAFormData {
@@ -64,13 +64,13 @@ export const loaDetailToFormData = (
   };
 
   const startDate = applyWhenNotNullable(
-    (startDateStr) => getStartOfDate(toLocalDayjs(startDateStr)),
+    (startDateStr) => getStartOfDate(toPacificDayjs(startDateStr)),
     loaDetail?.startDate,
     now(),
   );
 
   const expiryDate = applyWhenNotNullable(
-    (expiryDateStr) => getEndOfDate(toLocalDayjs(expiryDateStr)),
+    (expiryDateStr) => getEndOfDate(toPacificDayjs(expiryDateStr)),
     loaDetail?.expiryDate,
     null,
   );
@@ -119,9 +119,9 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
     .map(([permitType]) => permitType);
 
   const body = {
-    startDate: dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
+    startDate: dayjsToPacificDateTimeStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
     expiryDate: loaFormData.expiryDate
-      ? dayjsToLocalStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY)
+      ? dayjsToPacificDateTimeStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY)
       : null,
     comment: getDefaultRequiredVal("", loaFormData.additionalNotes),
     loaPermitType: permitTypes,

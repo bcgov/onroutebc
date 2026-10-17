@@ -3,7 +3,7 @@ import { ApplicationRejectionHistory } from "../../../../types/ApplicationReject
 import "./ReviewApplicationRejectionHistory.scss";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../../common/helpers/formatDate";
 import { usePermissionMatrix } from "../../../../../../common/authentication/PermissionMatrix";
 
@@ -40,8 +40,8 @@ export const ReviewApplicationRejectionHistory = ({
               <div className="item__row item__row--flex">
                 <Typography>
                   {canViewApplicationQueue
-                    ? `${item.userName}, ${toLocal(item.dateTime, DATE_FORMATS.LONG)}`
-                    : toLocal(item.dateTime, DATE_FORMATS.LONG)}
+                    ? `${item.userName}, ${toPacificDateTimeStr(item.dateTime, DATE_FORMATS.LONG)}`
+                    : toPacificDateTimeStr(item.dateTime, DATE_FORMATS.LONG)}
                 </Typography>
               </div>
               <div className="item__row">

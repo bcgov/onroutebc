@@ -14,7 +14,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { DATE_FORMATS, toPacificDateTimeStr } from "../../../../common/helpers/formatDate";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -45,7 +45,7 @@ export const SuspensionHistory = ({
       {
         accessorFn: (originalRow) => {
           return applyWhenNotNullable(
-            (dateStr) => toLocal(dateStr, DATE_FORMATS.LONG),
+            (dateStr) => toPacificDateTimeStr(dateStr, DATE_FORMATS.LONG),
             originalRow.suspendActivityDateTime,
             "",
           );

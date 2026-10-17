@@ -3,7 +3,7 @@ import { MRT_ColumnDef, MRT_Row } from "material-react-table";
 import { LOADetail } from "../../../../types/LOADetail";
 import {
   DATE_FORMATS,
-  toLocal,
+  toPacificDateTimeStr,
 } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { LOANumberCell } from "./LOANumberCell";
@@ -35,7 +35,7 @@ export const LOAListColumnDef = (
   },
   {
     accessorFn: (originalRow) => {
-      return toLocal(originalRow.startDate, DATE_FORMATS.DATEONLY_SLASH, true);
+      return toPacificDateTimeStr(originalRow.startDate, DATE_FORMATS.DATEONLY_SLASH, true);
     },
     id: "startDate",
     header: "Start Date",
@@ -51,7 +51,7 @@ export const LOAListColumnDef = (
   {
     accessorFn: (originalRow) =>
       applyWhenNotNullable(
-        (expiryDate) => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
+        (expiryDate) => toPacificDateTimeStr(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
         originalRow.expiryDate,
         "Never expires",
       ) as string,

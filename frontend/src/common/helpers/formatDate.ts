@@ -22,7 +22,15 @@ export const DATE_FORMATS = {
   DATETIME_LONG_TZ: "MMM D, YYYY, h:mm A z",
   DATEONLY_SLASH: "MM/DD/YYYY",
   ISO8601: "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
-};
+} as const;
+
+export type DateFormat = typeof DATE_FORMATS[keyof typeof DATE_FORMATS];
+
+export const TIMEZONE_IDS = {
+  PACIFIC: "America/Vancouver",
+} as const;
+
+export type TimezoneId = typeof TIMEZONE_IDS[keyof typeof TIMEZONE_IDS];
 
 /**
  * Get the current local datetime DayJS object
@@ -37,85 +45,130 @@ export const now = () => dayjs();
 export const nowUtc = () => dayjs.utc();
 
 /**
- * Get local datetime string in a specified format for a given local DayJS object.
- * @param localDayjs Local DayJS object
- * @param formatStr datetime format to display the datetime in (default ISO-8601)
- * @returns datetime string representing local datetime in the format specified
+ * Get the browser timezone id.
+ * @returns String representing timezone id of the browser, or undefined if it doesn't exist
  */
-export const dayjsToLocalStr = (localDayjs: Dayjs, formatStr?: string) =>
-  dayjs(localDayjs).format(formatStr);
+export const getBrowserTimeZoneId = () => {
+  return typeof Intl !== "undefined" && Intl.DateTimeFormat
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+    : undefined;
+};
 
 /**
- * Get UTC datetime string in a specified format for a given local DayJS object.
- * @param localDayjs Local DayJS object
- * @param formatStr datetime format to display the datetime in (default ISO-8601)
- * @returns datetime string representing UTC datetime in the format specified
+ * Format datetime string (if PCT is applicable).
+ * @param dateTimeStr Formatted datetime string (of any timezone)
+ * @param timezoneId Timezone id of dateTimeStr
+ * @returns Formatted datetime string that includes PCT when applicable
  */
-export const dayjsToUtcStr = (localDayjs: Dayjs, formatStr?: string) =>
-  dayjs(localDayjs).utc().format(formatStr);
+const formatDateTimeStrForPCT = (dateTimeStr: string, timezoneId: TimezoneId) => {
+  if (dateTimeStr.includes("PCT")) return dateTimeStr;
+  if (!dateTimeStr.includes("PDT") && !dateTimeStr.includes("MST")) return dateTimeStr;
+
+  const effectivePCTStartDateTime = dayjs.tz("2026-11-01", TIMEZONE_IDS.PACIFIC).startOf("day");
+  const browserTimezoneId = getBrowserTimeZoneId();
+  const pacificDateTime = convertToTimezone(
+    convertToTimezone(dateTimeStr, timezoneId),
+    TIMEZONE_IDS.PACIFIC,
+  );
+
+  if (
+    browserTimezoneId === TIMEZONE_IDS.PACIFIC
+      && !pacificDateTime.isBefore(effectivePCTStartDateTime)
+  ) {
+    return dateTimeStr.replace("PDT", "PCT").replace("MST", "PCT");
+  }
+
+  return dateTimeStr;
+};
+
+/**
+ * Get Pacific datetime string in a specified format for any given DayJS object.
+ * @param datetime DayJS object (in any given timezone)
+ * @param format Datetime format for display (default ISO-8601)
+ * @returns Datetime string representing Pacific datetime in the format specified
+ */
+export const dayjsToPacificDateTimeStr = (datetime: Dayjs, format?: DateFormat) => {
+  const formattedDateTimeStr = convertToTimezone(
+    datetime,
+    TIMEZONE_IDS.PACIFIC,
+  ).format(format);
+
+  return formatDateTimeStrForPCT(formattedDateTimeStr, TIMEZONE_IDS.PACIFIC);
+};
+
+/**
+ * Get UTC datetime string in a specified format for a given DayJS object.
+ * @param datetime DayJS object (in any given timezone)
+ * @param format Datetime format for display (default ISO-8601)
+ * @returns Datetime string representing UTC datetime in the format specified
+ */
+export const dayjsToUtcDateTimeStr = (datetime: Dayjs, format?: DateFormat) =>
+  dayjs(datetime).utc().format(format);
 
 /**
  * Get UTC datetime string in a specified format for a given datetime string
- * @param dateTimeStr datetime string that could be in any timezone
- * @param formatStr datetime format to display in (default ISO-8601)
- * @returns datetime string representing UTC datetime in the format specified
+ * @param datetime Datetime string that could be in any timezone
+ * @param format Datetime format for display (default ISO-8601)
+ * @returns Datetime string representing UTC datetime in the format specified
  */
-export const toUtc = (dateTimeStr: string, formatStr?: string) =>
-  dayjs(dateTimeStr).utc().format(formatStr);
+export const toUtc = (datetime: string, format?: DateFormat) =>
+  dayjs(datetime).utc().format(format);
 
 /**
- * Get local datetime string in a specified format for a given datetime string
- * @param dateTimeStr datetime string that could be in any timezone
- * @param formatStr datetime format to display in (default ISO-8601)
- * @param isDateTimeStrLocal Whether or not the provided datetime string is already local
- * @returns datetime string representing local datetime in the format specified
+ * Get the Pacific datetime string in a specified format for a given datetime string.
+ * @param dateTimeStr Datetime string that could be in any timezone
+ * @param formatStr Datetime format for display (default ISO-8601)
+ * @param isDateTimeStrPacific Whether or not the provided datetime string is already Pacific
+ * @returns Pacific datetime string in the specified format
  */
-export const toLocal = (
+export const toPacificDateTimeStr = (
   dateTimeStr: string,
-  formatStr?: string,
-  isDateTimeStrLocal?: boolean,
+  format?: DateFormat,
+  isDateTimeStrPacific?: boolean,
 ) =>
-  isDateTimeStrLocal
-    ? dayjs(dateTimeStr).format(formatStr)
-    : dayjs(dateTimeStr).local().format(formatStr);
+  isDateTimeStrPacific
+    ? dayjsToPacificDateTimeStr(toPacificDayjs(dateTimeStr), format)
+    : dayjsToPacificDateTimeStr(
+        convertToTimezone(dayjs(dateTimeStr), TIMEZONE_IDS.PACIFIC),
+        format,
+      );
 
 /**
- * Get local DayJS object for a given UTC datetime string
+ * Get Pacific DayJS object for a given UTC datetime string
  * @param dateTimeStr UTC datetime string
- * @returns DayJS object representing the local datetime
+ * @returns DayJS object representing the Pacific datetime
  */
-export const utcToLocalDayjs = (dateTimeStr: string) =>
-  dayjs.utc(dateTimeStr).local();
+export const utcToPacificDayjs = (dateTimeStr: string) =>
+  convertToTimezone(getUtcDatetime(dateTimeStr), TIMEZONE_IDS.PACIFIC);
 
 /**
- * Get local DayJS object for a given local datetime string
- * @param dateTimeStr local datetime string
- * @returns DayJS object representing the local datetime
+ * Get Pacific DayJS object for a given Pacific datetime string
+ * @param dateTimeStr Pacific datetime string
+ * @returns DayJS object representing the Pacific datetime
  */
-export const toLocalDayjs = (dateTimeStr: string) => dayjs(dateTimeStr);
+export const toPacificDayjs = (pacificDateTimeStr: string) =>
+  convertToTimezone(pacificDateTimeStr, TIMEZONE_IDS.PACIFIC);
 
 /**
- * Get UTC DayJS object for any given datetime string
- * @param dateTimeStr UTC datetime string
- * @returns DayJS object representing the UTC datetime
+ * Convert a datetime to a specified timezone.
+ * @param datetime Datetime to be converted
+ * @param timezoneId Id of the timezone to convert to (eg. "America/Vancouver")
+ * @returns Dayjs object in the specified timezone
  */
-export const toUtcDayjs = (dateTimeStr: string) => dayjs(dateTimeStr).utc();
+export const convertToTimezone = (
+  datetime: string | Dayjs | Date,
+  timezoneId: string,
+) => {
+  return dayjs.tz(datetime, timezoneId);
+};
 
 /**
- * Get datetime string in a specified format for a given timezone.
- * @param datetimeStr datetime string in some timezone
- * @param formatStr datetime format to display in (default ISO-8601)
- * @param ianaId IANA identifier for the specified timezone to interpret datetimeStr in (default represents local timezone)
- * @returns datetime string in a specified format for a specified timezone
+ * Get UTC datetime.
+ * @returns Dayjs object representing datetime in UTC
  */
-export const toTimeZone = (
-  datetimeStr: string,
-  formatStr?: string,
-  ianaId?: string,
-) =>
-  ianaId
-    ? dayjs(datetimeStr).tz(ianaId).format(formatStr)
-    : toLocal(datetimeStr, formatStr, true);
+export const getUtcDatetime = (datetime?: Dayjs | Date | string) => {
+  return dayjs.utc(datetime);
+};
 
 /**
  * Gets the number of days between two datetimes (should both be in the same timezone).

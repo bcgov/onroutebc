@@ -26,11 +26,11 @@ import {
 } from "../../../../../types/application";
 
 import {
-  dayjsToUtcStr,
+  dayjsToUtcDateTimeStr,
   getEndOfDate,
   getStartOfDate,
   now,
-  toLocalDayjs,
+  toPacificDayjs,
 } from "../../../../../../../common/helpers/formatDate";
 
 import {
@@ -50,8 +50,8 @@ export const defaultApplicationData = {
   updatedDateTime: now(),
   permitData: {
     ...permitData,
-    startDate: getStartOfDate(toLocalDayjs(permitData.startDate)),
-    expiryDate: getEndOfDate(toLocalDayjs(permitData.expiryDate)),
+    startDate: getStartOfDate(toPacificDayjs(permitData.startDate)),
+    expiryDate: getEndOfDate(toPacificDayjs(permitData.expiryDate)),
   },
   permitStatus: PERMIT_STATUSES.IN_PROGRESS,
 } as Application;
@@ -88,8 +88,8 @@ const server = setupServer(
         permitId: newPermitId,
         originalPermitId: newPermitId,
         applicationNumber: newApplicationNumber,
-        createdDateTime: dayjsToUtcStr(now()),
-        updatedDateTime: dayjsToUtcStr(now()),
+        createdDateTime: dayjsToUtcDateTimeStr(now()),
+        updatedDateTime: dayjsToUtcDateTimeStr(now()),
         permitStatus: PERMIT_STATUSES.IN_PROGRESS,
       };
 
@@ -117,8 +117,8 @@ const server = setupServer(
         permitId: newPermitId,
         originalPermitId: newPermitId,
         applicationNumber: String(id),
-        createdDateTime: dayjsToUtcStr(now()),
-        updatedDateTime: dayjsToUtcStr(now()),
+        createdDateTime: dayjsToUtcDateTimeStr(now()),
+        updatedDateTime: dayjsToUtcDateTimeStr(now()),
         permitStatus: PERMIT_STATUSES.IN_PROGRESS,
       };
 

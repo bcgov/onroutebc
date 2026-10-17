@@ -9,7 +9,7 @@ import { Banner } from "../../../../common/components/dashboard/components/banne
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { DATE_FORMATS, toPacificDateTimeStr } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { useVehicleByIdQuery } from "../../hooks/vehicles";
@@ -76,7 +76,7 @@ export const EditVehicleDashboard = React.memo(
                 &nbsp;
                 {applyWhenNotNullable(
                   (dateTimeStr: string) =>
-                    toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                    toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.SHORT),
                   vehicleToEdit?.createdDateTime,
                   "",
                 )}
@@ -86,12 +86,12 @@ export const EditVehicleDashboard = React.memo(
                   "",
                   applyWhenNotNullable(
                     (dateTimeStr: string) =>
-                      toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.SHORT),
                     vehicleToEdit?.updatedDateTime,
                   ),
                   applyWhenNotNullable(
                     (dateTimeStr: string) =>
-                      toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      toPacificDateTimeStr(dateTimeStr, DATE_FORMATS.SHORT),
                     vehicleToEdit?.createdDateTime,
                     "",
                   ),

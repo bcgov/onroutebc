@@ -4,7 +4,7 @@ import "./LOAReview.scss";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  dayjsToPacificDateTimeStr,
 } from "../../../../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
@@ -30,13 +30,13 @@ export const LOAReview = ({
     .filter((permitTypeSelection) => permitTypeSelection[1])
     .map(([permitType]) => permitType);
 
-  const startDate = dayjsToLocalStr(
+  const startDate = dayjsToPacificDateTimeStr(
     formData.startDate,
     DATE_FORMATS.DATEONLY_SLASH,
   );
 
   const expiryDate = applyWhenNotNullable(
-    (expiry) => dayjsToLocalStr(expiry, DATE_FORMATS.DATEONLY_SLASH),
+    (expiry) => dayjsToPacificDateTimeStr(expiry, DATE_FORMATS.DATEONLY_SLASH),
     formData.expiryDate,
     "LOA never expires",
   );

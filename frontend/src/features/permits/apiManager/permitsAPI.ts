@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 import { PermitHistory } from "../types/PermitHistory";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
-import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { DATE_FORMATS, toPacificDateTimeStr } from "../../../common/helpers/formatDate";
 import { EmailNotificationType } from "../types/EmailNotificationType";
 import { APPLICATION_QUEUE_STATUSES } from "../../queue/types/ApplicationQueueStatus";
 import {
@@ -182,15 +182,15 @@ export const getApplications = async (
         paginatedApplications.items.map((application) => {
           return {
             ...application,
-            createdDateTime: toLocal(
+            createdDateTime: toPacificDateTimeStr(
               application?.createdDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            updatedDateTime: toLocal(
+            updatedDateTime: toPacificDateTimeStr(
               application?.updatedDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            startDate: toLocal(
+            startDate: toPacificDateTimeStr(
               application?.startDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
               true,
@@ -483,20 +483,20 @@ export const getPermits = async (
         (permit) => {
           return {
             ...permit,
-            createdDateTime: toLocal(
+            createdDateTime: toPacificDateTimeStr(
               permit.createdDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            updatedDateTime: toLocal(
+            updatedDateTime: toPacificDateTimeStr(
               permit.updatedDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            startDate: toLocal(
+            startDate: toPacificDateTimeStr(
               permit.startDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
               true,
             ),
-            expiryDate: toLocal(
+            expiryDate: toPacificDateTimeStr(
               permit.expiryDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
               true,
