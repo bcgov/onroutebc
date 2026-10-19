@@ -19,7 +19,7 @@ import { PaymentCardType } from '@common/enum/payment-card-type.enum';
 import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
 import { TransactionType } from '@common/enum/transaction-type.enum';
 import { Transaction } from '@modules/common/entities/transaction.entity';
-import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { GarmsExtractType } from '@app/common/enum/garms-extract-type.enum';
 import { DateTransaction } from '@modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from '@modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from '@modules/garms/dto/garms-cash-header.dto';
@@ -29,7 +29,7 @@ import { PermitTransaction } from '@modules/common/entities/permit-transaction.e
 import * as fs from 'fs';
 import { GarmsCreditHeader } from '@modules/garms/dto/garms-credit-header.dto';
 import { GarmsCreditDetails } from '@modules/garms/dto/garms-credit-details.dto';
-import { ApplicationStatus } from '@modules/common/enum/application-status.enum';
+import { ApplicationStatus } from '@app/common/enum/application-status.enum';
 import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 import { Nullable } from '@common/types/common';
 /**

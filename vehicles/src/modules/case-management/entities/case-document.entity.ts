@@ -15,7 +15,7 @@ import { Nullable } from '@common/types/common';
 import { CaseNotes } from './case-notes.entity';
 import { CaseActivityType } from '@common/enum/case-activity-type.enum';
 
-@Entity({ name: 'case.ORBC_CASE_ACTIVITY' })
+@Entity({ name: 'case.ORBC_CASE_DOCUMENT' })
 export class CaseDocument extends Base {
   /**
    * An auto-generated unique identifier for the case document.

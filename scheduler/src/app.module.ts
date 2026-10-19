@@ -13,6 +13,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { PermitModule } from './modules/permit/permit.module';
 import { GarmsModule } from './modules/garms/garms.module';
 import { PbiModule } from './modules/pbi/pbi.module';
+import { CommonModule } from './modules/common/common.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
@@ -41,6 +42,7 @@ const envPath = path.resolve(process.cwd() + '/../');
       ttl: 0, // disable expiration of the cache.
       isGlobal: true, // Allows access to cache manager globally.
     }),
+    CommonModule,
     TpsPermitModule,
     FeatureFlagsModule,
     PermitModule,

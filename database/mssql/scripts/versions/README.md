@@ -558,3 +558,7 @@
 ### Version 116:
 
 - Remove validation for front and rear projection from policy config.
+
+### Version 117:
+
+- Add tables and database objects to support PBI file processing and prepaid account deposit tracking.

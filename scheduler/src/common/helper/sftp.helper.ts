@@ -1,14 +1,15 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import Client from 'ssh2-sftp-client';
 import { GARMS_LOCAL_FILE_PATH } from '@common/constants/garms.constant';
+import { describeError } from './error.helper';
 
-export const getCgiSFTPConnectionInfo = () => {
+export const getCgiSFTPConnectionInfo = (): Client.ConnectOptions => {
   const host = process.env.CFS_SFTP_HOST;
   const port = Number(process.env.CFS_SFTP_PORT);
   const username = process.env.CFS_SFTP_USERNAME;
   const privateKey = process.env.CFS_PRIVATE_KEY;
   const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
-  const connectionOptions = {
+  const connectionOptions: Client.ConnectOptions = {
     host: host,
     port: port,
     username: username,
@@ -18,12 +19,12 @@ export const getCgiSFTPConnectionInfo = () => {
   return connectionOptions;
 };
 
-export const getGarmSFTPConnectionInfo = () => {
+export const getGarmSFTPConnectionInfo = (): Client.ConnectOptions => {
   const host = process.env.GARMS_HOST;
   const port = 22;
   const username = process.env.GARMS_USER;
   const password = process.env.GARMS_PWD;
-  const connectionOptions = {
+  const connectionOptions: Client.ConnectOptions = {
     host: host,
     port: port,
     username: username,
@@ -32,13 +33,13 @@ export const getGarmSFTPConnectionInfo = () => {
   return connectionOptions;
 };
 
-export const getPbiSFTPConnectionInfo = () => {
+export const getPbiSFTPConnectionInfo = (): Client.ConnectOptions => {
   const host = process.env.PBI_SFTP_HOST;
   const port = Number(process.env.PBI_SFTP_PORT);
   const username = process.env.PBI_SFTP_USERNAME;
   const privateKey = process.env.PBI_PRIVATE_KEY;
   //const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
-  const connectionOptions = {
+  const connectionOptions: Client.ConnectOptions = {
     host: host,
     port: port,
     username: username,
@@ -47,48 +48,75 @@ export const getPbiSFTPConnectionInfo = () => {
   return connectionOptions;
 };
 
-export const downloadFromPBI = async (logger: Logger) => {
+export const connectToSftp = async (
+  logger: Logger,
+  connectInfo: Client.ConnectOptions,
+): Promise<Client> => {
   const sftp = new Client();
-  const connectionInfo = getPbiSFTPConnectionInfo();
-  const remotePath = process.env.PBI_REMOTE_PATH; //Remote PBI Path
-
   try {
-    await sftp.connect(connectionInfo);
-    await sftp.cwd();
-    const files = await sftp.list(remotePath);
-    files.forEach((file) => {
-      logger.log(`File found: ${file.name}`);
-    });
-    logger.log(
-      `Successfully connected to ${process.env.PBI_SFTP_HOST} via SFTP.`,
-    );
+    await sftp.connect(connectInfo);
+    return sftp;
   } catch (error) {
-    logger.error('Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.');
-    logger.error(error);
-    throw new InternalServerErrorException(
-      'Cannot connect to ${process.env.PBI_SFTP_HOST} via SFTP.',
+    const { message, stack } = describeError(error);
+    logger.error(
+      `Failed to connect to SFTP ${connectInfo.host}: ${message}`,
+      stack,
     );
-  } finally {
-    logger.log('closing connection');
-    void sftp.end();
+    throw error;
   }
+};
 
-  // try {
-  //   const res = await sftp.put(fileData.buffer, remotePath + fileName);
-  //   logger.log(`Successfully sent file ${fileName} via SFTP.`);
-  //   return res;
-  // } catch (error) {
-  //   logger.error(
-  //     `Failed to send file to ${process.env.CFS_SFTP_HOST} via SFTP.`,
-  //   );
-  //   logger.error(error);
-  //   throw new InternalServerErrorException(
-  //     `Failed to send file to ${process.env.CFS_SFTP_HOST} via SFTP.`,
-  //   );
-  // } finally {
-  //   logger.log('closing connection');
-  //   void sftp.end();
-  // }
+export const listFiles = async (
+  logger: Logger,
+  sftp: Client,
+  remotePath: string,
+): Promise<Client.FileInfo[]> => {
+  try {
+    return await sftp.list(remotePath);
+  } catch (error) {
+    const { message, stack } = describeError(error);
+    logger.error(`Failed to list files from remote: ${message}`, stack);
+    throw error;
+  }
+};
+
+export const downloadFromRemote = async (
+  logger: Logger,
+  sftp: Client,
+  remotePath: string,
+  file: Client.FileInfo,
+): Promise<Buffer<ArrayBufferLike>> => {
+  try {
+    const fileData: Buffer<ArrayBufferLike> = (await sftp.get(
+      remotePath + '/' + file.name,
+    )) as Buffer<ArrayBufferLike>;
+    return fileData;
+  } catch (error) {
+    const { message, stack } = describeError(error);
+    logger.error(
+      `Failed to download file ${file.name} from remote: ${message}`,
+      stack,
+    );
+    throw error;
+  }
+};
+
+export const deleteFromRemote = async (
+  logger: Logger,
+  sftp: Client,
+  remotePath: string,
+  file: Client.FileInfo,
+): Promise<void> => {
+  try {
+    await sftp.delete(remotePath + '/' + file.name, false);
+  } catch (error) {
+    const { message, stack } = describeError(error);
+    logger.error(
+      `Failed to delete file ${file.name} from remote: ${message}`,
+      stack,
+    );
+    throw error;
+  }
 };
 
 export const uploadToCFS = async (

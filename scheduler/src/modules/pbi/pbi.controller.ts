@@ -6,7 +6,7 @@ export class PbiController {
   constructor(private readonly pbiService: PbiService) {}
 
   @Get()
-  async findAll() {
-    return await this.pbiService.findAll();
+  async pbiFilesCronJob() {
+    return await this.pbiService.pbiFilesCronJob();
   }
 }

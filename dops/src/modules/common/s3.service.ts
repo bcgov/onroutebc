@@ -66,7 +66,7 @@ export class S3Service {
   ): Promise<NodeJS.ReadableStream> {
     const params = {
       Bucket: this._s3Bucket,
-      Key: this._s3Key + '/' + filePath,
+      Key: this._s3Key + '/' + filePath,      
     };
 
     try {
