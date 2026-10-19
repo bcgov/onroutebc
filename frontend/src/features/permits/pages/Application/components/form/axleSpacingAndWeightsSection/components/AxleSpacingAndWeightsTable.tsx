@@ -349,14 +349,14 @@ export const AxleSpacingAndWeightsTable = ({
             ? [POLICY_CHECK_ID_TYPES.DRIVE_JEEP_LOAD_EQUALIZATION]
             : [];
 
+        case POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING]
+            : [];
+
         case POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD]
-            : [];
-
-        case POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING:
-          return rowType === ASW_TABLE_ROW_TYPES.AXLE
-            ? [POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING]
             : [];
 
         case POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT:

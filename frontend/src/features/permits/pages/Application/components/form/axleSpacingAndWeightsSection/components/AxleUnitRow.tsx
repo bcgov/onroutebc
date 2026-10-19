@@ -153,10 +153,7 @@ export const AxleUnitRow = ({
         const hasInteraxleSpacingFailure = Boolean(
           axleCalculationFailure[
             POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS
-          ] ||
-            axleCalculationFailure[
-              POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING
-            ],
+          ] || axleCalculationFailure[POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING],
         );
 
         return (
