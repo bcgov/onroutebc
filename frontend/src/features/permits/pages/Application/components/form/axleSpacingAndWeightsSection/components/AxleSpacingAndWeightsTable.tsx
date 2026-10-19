@@ -37,6 +37,7 @@ import {
   ASW_TABLE_ROW_TYPES,
   ASWTableRowType,
 } from "../../../../../../types/ASWTableRowType";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../../common/constants/constants";
 import { DISPLAYABLE_POLICY_CHECK_IDS } from "./displayablePolicyCheckIds";
 
 export type AxleSpacingAndWeightsTableProps = {
@@ -54,6 +55,7 @@ export type AxleSpacingAndWeightsTableProps = {
     vehicleConfiguration: PermitVehicleConfiguration,
     axleConfiguration: AxleConfiguration[],
     licensedGVW: number,
+    commodityId: string,
   ) => AxleCalculationResult;
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
@@ -214,6 +216,8 @@ export const AxleSpacingAndWeightsTable = ({
     });
 
     if (
+      !selectedCommodityType ||
+      selectedCommodityType === DEFAULT_EMPTY_SELECT_VALUE ||
       !validateAxleConfiguration(mergedPowerUnit) ||
       !validateAxleConfiguration(trailerAxleConfigurationData)
     ) {
@@ -247,6 +251,7 @@ export const AxleSpacingAndWeightsTable = ({
       getDefaultRequiredVal({}, vehicleConfiguration),
       serializedAxleConfigurationData,
       getDefaultRequiredVal(0, vehicleFormData.licensedGVW),
+      selectedCommodityType,
     );
 
     if (axleCalculationResults) {

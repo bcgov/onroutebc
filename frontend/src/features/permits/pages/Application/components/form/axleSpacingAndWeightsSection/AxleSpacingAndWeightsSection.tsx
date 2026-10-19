@@ -47,6 +47,7 @@ export const AxleSpacingAndWeightsSection = ({
     vehicleConfiguration: PermitVehicleConfiguration,
     axleConfiguration: AxleConfiguration[],
     licensedGVW: number,
+    commodityId: string,
   ) => AxleCalculationResult;
   canAddAxleUnitsToPowerUnit?: (
     permitType: PermitType,
