@@ -31,6 +31,7 @@ import {
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
+import { convertToTimezone, DATE_FORMATS, dayjsToLocalStr, TIMEZONE_IDS } from "../../../../common/helpers/formatDate";
 
 /**
  * Component for Payment and Refund Detail form
@@ -182,8 +183,14 @@ export const PaymentAndRefundDetail = () => {
     try {
       setIsGeneratingReport(() => true);
       const requestObj: PaymentAndRefundDetailRequest = {
-        fromDateTime: fromDateTime.toISOString(),
-        toDateTime: toDateTime.toISOString(),
+        fromDateTime: dayjsToLocalStr(
+          convertToTimezone(fromDateTime, TIMEZONE_IDS.PACIFIC),
+          DATE_FORMATS.ISO8601,
+        ),
+        toDateTime: dayjsToLocalStr(
+          convertToTimezone(toDateTime, TIMEZONE_IDS.PACIFIC),
+          DATE_FORMATS.ISO8601,
+        ),
         issuedBy: issuedBy,
         paymentCodes: transformSelectedPaymentMethods(),
         permitType: transformSelectedPermitTypes(),

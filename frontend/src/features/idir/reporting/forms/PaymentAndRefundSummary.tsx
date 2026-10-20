@@ -15,6 +15,7 @@ import {
   PaymentAndRefundSummaryRequest,
   REPORT_ISSUED_BY,
 } from "../types/types";
+import { convertToTimezone, DATE_FORMATS, dayjsToLocalStr, TIMEZONE_IDS } from "../../../../common/helpers/formatDate";
 
 /**
  * Component for Payment and Refund Summary form
@@ -49,8 +50,14 @@ export const PaymentAndRefundSummary = () => {
     setIsGeneratingReport(() => true);
     try {
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-        fromDateTime: fromDateTime.toISOString(),
-        toDateTime: toDateTime.toISOString(),
+        fromDateTime: dayjsToLocalStr(
+          convertToTimezone(fromDateTime, TIMEZONE_IDS.PACIFIC),
+          DATE_FORMATS.ISO8601,
+        ),
+        toDateTime: dayjsToLocalStr(
+          convertToTimezone(toDateTime, TIMEZONE_IDS.PACIFIC),
+          DATE_FORMATS.ISO8601,
+        ),
         issuedBy,
       } as PaymentAndRefundSummaryRequest);
       openBlobInNewTab(blobObjWithoutType);
