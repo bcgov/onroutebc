@@ -59,14 +59,8 @@ export const PaymentAndRefundSummary = () => {
     setIsGeneratingReport(() => true);
     try {
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-        fromDateTime: dayjsToUtcStr(
-          fromDateTime,
-          DATE_FORMATS.ISO8601,
-        ),
-        toDateTime: dayjsToUtcStr(
-          toDateTime,
-          DATE_FORMATS.ISO8601,
-        ),
+        fromDateTime: dayjsToUtcStr(fromDateTime, DATE_FORMATS.ISO8601),
+        toDateTime: dayjsToUtcStr(toDateTime, DATE_FORMATS.ISO8601),
         issuedBy,
       } as PaymentAndRefundSummaryRequest);
       openBlobInNewTab(blobObjWithoutType);

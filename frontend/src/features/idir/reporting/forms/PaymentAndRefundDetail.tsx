@@ -192,14 +192,8 @@ export const PaymentAndRefundDetail = () => {
     try {
       setIsGeneratingReport(() => true);
       const requestObj: PaymentAndRefundDetailRequest = {
-        fromDateTime: dayjsToUtcStr(
-          fromDateTime,
-          DATE_FORMATS.ISO8601,
-        ),
-        toDateTime: dayjsToUtcStr(
-          toDateTime,
-          DATE_FORMATS.ISO8601,
-        ),
+        fromDateTime: dayjsToUtcStr(fromDateTime, DATE_FORMATS.ISO8601),
+        toDateTime: dayjsToUtcStr(toDateTime, DATE_FORMATS.ISO8601),
         issuedBy: issuedBy,
         paymentCodes: transformSelectedPaymentMethods(),
         permitType: transformSelectedPermitTypes(),
