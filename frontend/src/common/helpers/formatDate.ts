@@ -74,7 +74,7 @@ const formatDateTimeForPCT = (dateTimeStr: string) => {
   const effectivePCTStartDateTime = dayjs
     .tz("2026-11-01", TIMEZONE_IDS.PACIFIC)
     .startOf("day");
-  
+
   // Since timezone inferred from browser is "America/Vancouver" here,
   // it's safe to assume that the timezone for the datetime string input is "America/Vancouver"
   const dateTimeInPacificTimezone = convertToTimezone(
@@ -95,7 +95,7 @@ const formatDateTimeForPCT = (dateTimeStr: string) => {
  * @param formatStr datetime format to display the datetime in (default ISO-8601)
  * @returns datetime string representing local datetime in the format specified
  */
-export const dayjsToLocalStr = (localDayjs: Dayjs, formatStr?: string) => 
+export const dayjsToLocalStr = (localDayjs: Dayjs, formatStr?: string) =>
   formatDateTimeForPCT(dayjs(localDayjs).format(formatStr));
 
 /**
@@ -131,7 +131,7 @@ export const toLocal = (
   const formattedDateTime = isDateTimeStrLocal
     ? dayjs(dateTimeStr).format(formatStr)
     : dayjs(dateTimeStr).local().format(formatStr);
-  
+
   return formatDateTimeForPCT(formattedDateTime);
 };
 
