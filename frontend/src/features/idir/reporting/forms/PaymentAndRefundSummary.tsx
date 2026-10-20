@@ -15,6 +15,12 @@ import {
   PaymentAndRefundSummaryRequest,
   REPORT_ISSUED_BY,
 } from "../types/types";
+import {
+  convertToTimezone,
+  DATE_FORMATS,
+  dayjsToUtcStr,
+  TIMEZONE_IDS,
+} from "../../../../common/helpers/formatDate";
 
 /**
  * Component for Payment and Refund Summary form
@@ -25,13 +31,17 @@ export const PaymentAndRefundSummary = () => {
   const formMethods = useForm<PaymentAndRefundSummaryFormData>({
     defaultValues: {
       issuedBy: ["SELF_ISSUED", "PPC"],
-      fromDateTime: dayjs()
+      fromDateTime: convertToTimezone(dayjs(), TIMEZONE_IDS.PACIFIC)
         .subtract(1, "day")
         .set("h", 21)
         .set("m", 0)
         .set("s", 0)
         .set("ms", 0),
-      toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
+      toDateTime: convertToTimezone(dayjs(), TIMEZONE_IDS.PACIFIC)
+        .set("h", 20)
+        .set("m", 59)
+        .set("s", 59)
+        .set("ms", 999),
     },
     reValidateMode: "onBlur",
   });
@@ -49,8 +59,8 @@ export const PaymentAndRefundSummary = () => {
     setIsGeneratingReport(() => true);
     try {
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-        fromDateTime: fromDateTime.toISOString(),
-        toDateTime: toDateTime.toISOString(),
+        fromDateTime: dayjsToUtcStr(fromDateTime, DATE_FORMATS.ISO8601),
+        toDateTime: dayjsToUtcStr(toDateTime, DATE_FORMATS.ISO8601),
         issuedBy,
       } as PaymentAndRefundSummaryRequest);
       openBlobInNewTab(blobObjWithoutType);
