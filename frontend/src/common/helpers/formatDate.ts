@@ -57,9 +57,13 @@ export const getBrowserTimeZoneId = () => {
 /**
  * Format datetime string (if PCT is applicable).
  * @param dateTimeStr Formatted datetime string (of any timezone)
+ * @param formatStr datetime format to display in (default ISO-8601)
  * @returns Formatted datetime string that includes PCT when applicable
  */
-const formatDateTimeForPCT = (dateTimeStr: string) => {
+const formatDateTimeForPCT = (dateTimeStr: string, formatStr?: string) => {
+  if (!formatStr?.includes("Z") && !formatStr?.includes("z"))
+    return dateTimeStr;
+
   // If the datetime string already has PCT, or if it doesn't have "PDT" nor "MST"
   // then keep the datetime string as is
   if (dateTimeStr.includes("PCT")) return dateTimeStr;
@@ -96,7 +100,7 @@ const formatDateTimeForPCT = (dateTimeStr: string) => {
  * @returns datetime string representing local datetime in the format specified
  */
 export const dayjsToLocalStr = (localDayjs: Dayjs, formatStr?: string) =>
-  formatDateTimeForPCT(dayjs(localDayjs).format(formatStr));
+  formatDateTimeForPCT(dayjs(localDayjs).format(formatStr), formatStr);
 
 /**
  * Get UTC datetime string in a specified format for a given local DayJS object.
@@ -132,7 +136,7 @@ export const toLocal = (
     ? dayjs(dateTimeStr).format(formatStr)
     : dayjs(dateTimeStr).local().format(formatStr);
 
-  return formatDateTimeForPCT(formattedDateTime);
+  return formatDateTimeForPCT(formattedDateTime, formatStr);
 };
 
 /**
