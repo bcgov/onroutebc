@@ -75,22 +75,7 @@ const formatDateTimeForPCT = (dateTimeStr: string, formatStr?: string) => {
   const browserTimezoneId = getBrowserTimeZoneId();
   if (browserTimezoneId !== TIMEZONE_IDS.PACIFIC) return dateTimeStr;
 
-  const effectivePCTStartDateTime = dayjs
-    .tz("2026-11-01", TIMEZONE_IDS.PACIFIC)
-    .startOf("day");
-
-  // Since timezone inferred from browser is "America/Vancouver" here,
-  // it's safe to assume that the timezone for the datetime string input is "America/Vancouver"
-  const dateTimeInPacificTimezone = convertToTimezone(
-    dateTimeStr,
-    TIMEZONE_IDS.PACIFIC,
-  );
-
-  if (!dateTimeInPacificTimezone.isBefore(effectivePCTStartDateTime)) {
-    return dateTimeStr.replace("PDT", "PCT").replace("MST", "PCT");
-  }
-
-  return dateTimeStr;
+  return dateTimeStr.replace("PDT", "PCT").replace("MST", "PCT");
 };
 
 /**
