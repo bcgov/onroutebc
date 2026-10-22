@@ -332,6 +332,18 @@ export const ApplicationForm = ({
         return navigate(APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId));
       }
 
+      if (!currentFormData.permitId) {
+        // Browser Back must return to the saved application form.
+        navigate(
+          APPLICATIONS_ROUTES.DETAILS(
+            permitId,
+            isInitCopyContext || isCopiedApplication,
+            copyPermitOrigin,
+          ),
+          { replace: true },
+        );
+      }
+
       return navigate(
         APPLICATIONS_ROUTES.REVIEW(
           permitId,
@@ -427,6 +439,7 @@ export const ApplicationForm = ({
           isInitCopyContext || isCopiedApplication,
           copyPermitOrigin,
         ),
+        { replace: !currentFormData.permitId },
       );
     });
   };
