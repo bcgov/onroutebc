@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
-import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { GarmsExtractType } from '@app/common/enum/garms-extract-type.enum';
 import { Transaction } from '@modules/common/entities/transaction.entity';
-import { PERMIT_STATUS } from '@modules/common/enum/application-status.enum';
+import { PERMIT_STATUS } from '@app/common/enum/application-status.enum';
 import {
   GARMS_CASH_FILE_TRANSACTION_TYPE,
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,

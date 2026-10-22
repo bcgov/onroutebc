@@ -6,15 +6,15 @@ import {
 import { TpsPermit } from './entities/tps-permit.entity';
 import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3uploadStatus } from '@modules/common/enum/s3-upload-status.enum';
-import { S3Service } from './s3.service';
-import { Document } from './entities/document.entity';
+import { S3uploadStatus } from '@app/common/enum/s3-upload-status.enum';
+import { S3Service } from '@modules/common/s3.service';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from '@modules/common/entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 import { shouldRunOnCluster } from '@common/helper/cron.helper';
+import { DocumentService } from '@modules/common/document.service';
 
 @Injectable()
 export class TpsPermitService {
@@ -24,8 +24,7 @@ export class TpsPermitService {
     private tpsPermitRepository: Repository<TpsPermit>,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    @InjectRepository(Document)
-    private documentRepository: Repository<Document>,
+    private readonly documentService: DocumentService,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -106,37 +105,6 @@ export class TpsPermitService {
   }
 
   @LogAsyncMethodExecution()
-  async createDocument(
-    s3ObjectId: string,
-    s3Object: CompleteMultipartUploadCommandOutput,
-    tpsPermit: TpsPermit,
-    companyId: number,
-  ): Promise<Document> {
-    const dmsVersionId = 1;
-    const dmsRecord: Document = {
-      documentId: undefined,
-      s3ObjectId: s3ObjectId,
-      s3VersionId: s3Object.VersionId,
-      s3Location: s3Object.Location,
-      objectMimeType: 'pdf',
-      fileName: tpsPermit.newPermitNumber + '.pdf',
-      dmsVersionId: dmsVersionId,
-      companyId: companyId,
-      createdDateTime: new Date(),
-      createdUser: null,
-      createdUserDirectory: null,
-      createdUserGuid: null,
-      updatedUser: null,
-      updatedDateTime: new Date(),
-      updatedUserGuid: null,
-      updatedUserDirectory: null,
-    };
-
-    const result = await this.documentRepository.save(dmsRecord);
-    return result;
-  }
-
-  @LogAsyncMethodExecution()
   async permitExists(permitNumber: string, revision: number) {
     return await this.permitRepository.findOne({
       where: {
@@ -210,6 +178,7 @@ export class TpsPermitService {
       const s3Object = await this.s3Service.uploadFile(
         tpsPermit.pdf,
         tpsPermit.permitNumber + '.pdf',
+        'application/pdf',
         s3ObjectId,
       );
       this.logger.log(
@@ -244,12 +213,13 @@ export class TpsPermitService {
     companyId: number,
   ) {
     try {
-      const document = await this.createDocument(
+      const document = await this.documentService.createDocument({
         s3ObjectId,
         s3Object,
-        tpsPermit,
+        fileName: tpsPermit?.newPermitNumber + '.pdf',
+        objectMimeType: 'application/pdf',
         companyId,
-      );
+      });
       return document;
     } catch (error) {
       this.logger.log(
