@@ -172,7 +172,7 @@ export class BpiService {
       fileData,
       fileName,
       'text/plain',
-      process.env.BPI_S3_PATH + '/' + fileName,
+      process.env.S3_BPI_SUBFOLDER_PATH + '/' + fileName,
     );
 
     const latestDocument = await this.documentService.findLatest(fileName);
@@ -211,7 +211,7 @@ export class BpiService {
       );
 
       const contents = await this.s3Service.getFile(
-        process.env.BPI_S3_PATH + '/' + document?.fileName,
+        process.env.S3_BPI_SUBFOLDER_PATH + '/' + document?.fileName,
         document.s3VersionId,
       );
 
