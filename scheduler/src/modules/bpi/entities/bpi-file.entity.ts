@@ -6,12 +6,12 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@common/types/common';
 import { PrepaidAccountDeposit } from './prepaid-account-deposit.entity';
 
-@Entity({ name: 'permit.ORBC_PBI_FILE' })
-export class PBIFile extends Base {
+@Entity({ name: 'permit.ORBC_BPI_FILE' })
+export class BPIFile extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'Unique identifier for the PBI file.',
+    description: 'Unique identifier for the BPI file.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   id: string;
@@ -19,7 +19,7 @@ export class PBIFile extends Base {
   @AutoMap()
   @ApiProperty({
     example: 'rbc.insp.20260727.151.txt',
-    description: 'PBI File name.',
+    description: 'BPI File name.',
   })
   @Column({ name: 'FILE_NAME', length: 100, nullable: false })
   fileName: string;
@@ -77,7 +77,7 @@ export class PBIFile extends Base {
   @AutoMap()
   @OneToMany(
     () => PrepaidAccountDeposit,
-    (prepaidAccountDeposit) => prepaidAccountDeposit.pbiFile,
+    (prepaidAccountDeposit) => prepaidAccountDeposit.bpiFile,
   )
   prepaidAccountDeposits?: Nullable<PrepaidAccountDeposit[]>;
 }

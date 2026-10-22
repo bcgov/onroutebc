@@ -1,4 +1,4 @@
-export interface PbiPaymentDetailRecord {
+export interface BpiPaymentDetailRecord {
   accountNumber: string;
   depositAmountCents: number;
   effectivePaymentDate: string;

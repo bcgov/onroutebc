@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { PbiPaymentDetailRecord } from '@common/interface/pbi-payment-detail-record.interface';
-import { PBIFile } from '@modules/pbi/entities/pbi-file.entity';
-import { PrepaidAccountDeposit } from '@app/modules/pbi/entities/prepaid-account-deposit.entity';
+import { BpiPaymentDetailRecord } from '@app/common/interface/bpi-payment-detail-record.interface';
+import { BPIFile } from '@app/modules/bpi/entities/bpi-file.entity';
+import { PrepaidAccountDeposit } from '@app/modules/bpi/entities/prepaid-account-deposit.entity';
 
 dayjs.extend(customParseFormat);
 
@@ -24,9 +24,9 @@ export const extractFixedWidthField = (
   return line.slice(startPosition - 1, startPosition - 1 + length).trimEnd();
 };
 
-export const parsePbiPaymentDetailRecord = (
+export const parseBpiPaymentDetailRecord = (
   line: string,
-): PbiPaymentDetailRecord => {
+): BpiPaymentDetailRecord => {
   return {
     accountNumber: extractFixedWidthField(line, 45, 20),
     depositAmountCents: Number(extractFixedWidthField(line, 65, 11)) / 100,
@@ -38,13 +38,13 @@ export const parsePbiPaymentDetailRecord = (
 };
 
 export const mapToPrepaidAccountDetail = (
-  record: PbiPaymentDetailRecord,
-  pbiFileId: string,
+  record: BpiPaymentDetailRecord,
+  bpiFileId: string,
 ): PrepaidAccountDeposit => {
   const detail = new PrepaidAccountDeposit();
 
-  detail.pbiFile = new PBIFile();
-  detail.pbiFile.id = pbiFileId;
+  detail.bpiFile = new BPIFile();
+  detail.bpiFile.id = bpiFileId;
   detail.accountNumber = record.accountNumber;
   detail.depositAmount = record.depositAmountCents;
   detail.effectivePaymentDate = record.effectivePaymentDate;

@@ -561,4 +561,4 @@
 
 ### Version 117:
 
-- Add tables and database objects to support PBI file processing and prepaid account deposit tracking.
+- Add tables and database objects to support BPI file processing and prepaid account deposit tracking.

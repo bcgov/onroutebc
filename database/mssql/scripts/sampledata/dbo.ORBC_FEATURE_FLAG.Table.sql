@@ -609,7 +609,7 @@ INSERT [dbo].[ORBC_FEATURE_FLAG] (
 VALUES
   (
     '27',
-    'PBI-CRON-JOB',
+    'BPI-CRON-JOB',
     'ENABLED',
     NULL,
     N'dbo',

@@ -33,11 +33,11 @@ export const getGarmSFTPConnectionInfo = (): Client.ConnectOptions => {
   return connectionOptions;
 };
 
-export const getPbiSFTPConnectionInfo = (): Client.ConnectOptions => {
-  const host = process.env.PBI_SFTP_HOST;
-  const port = Number(process.env.PBI_SFTP_PORT);
-  const username = process.env.PBI_SFTP_USERNAME;
-  const privateKey = process.env.PBI_PRIVATE_KEY;
+export const getBpiSFTPConnectionInfo = (): Client.ConnectOptions => {
+  const host = process.env.BPI_SFTP_HOST;
+  const port = Number(process.env.BPI_SFTP_PORT);
+  const username = process.env.BPI_SFTP_USERNAME;
+  const privateKey = process.env.BPI_PRIVATE_KEY;
   //const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
   const connectionOptions: Client.ConnectOptions = {
     host: host,

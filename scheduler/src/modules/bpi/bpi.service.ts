@@ -4,7 +4,7 @@ import {
   connectToSftp,
   deleteFromRemote,
   downloadFromRemote,
-  getPbiSFTPConnectionInfo,
+  getBpiSFTPConnectionInfo,
   listFiles,
 } from '@common/helper/sftp.helper';
 import { S3Service } from '@modules/common/s3.service';
@@ -19,55 +19,55 @@ import { Cache } from 'cache-manager';
 import { shouldRunOnCluster } from '@common/helper/cron.helper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
-import { PBIFile } from './entities/pbi-file.entity';
+import { BPIFile } from './entities/bpi-file.entity';
 import { DocumentService } from '@modules/common/document.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Document } from '@modules/common/entities/document.entity';
 import { describeError } from '@common/helper/error.helper';
 import {
   mapToPrepaidAccountDetail,
-  parsePbiPaymentDetailRecord,
-} from '@common/helper/pbi.helper';
+  parseBpiPaymentDetailRecord,
+} from '@common/helper/bpi.helper';
 import { readStreamToString } from '@common/helper/file.helper';
-import { PbiPaymentDetailRecord } from '@common/interface/pbi-payment-detail-record.interface';
+import { BpiPaymentDetailRecord } from '@common/interface/bpi-payment-detail-record.interface';
 import { PrepaidAccountDeposit } from './entities/prepaid-account-deposit.entity';
 import { getQueryRunner } from '@common/helper/database.helper';
 
 @Injectable()
-export class PbiService {
-  private readonly logger = new Logger(PbiService.name);
+export class BpiService {
+  private readonly logger = new Logger(BpiService.name);
   constructor(
     private readonly s3Service: S3Service,
     private readonly dataSource: DataSource,
     private readonly documentService: DocumentService,
-    @InjectRepository(PBIFile)
-    private readonly pbiFileRepository: Repository<PBIFile>,
+    @InjectRepository(BPIFile)
+    private readonly bpiFileRepository: Repository<BPIFile>,
     @InjectRepository(PrepaidAccountDeposit)
     private readonly prepaidAccountDepositRepository: Repository<PrepaidAccountDeposit>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
-  @Cron(`${process.env.PBI_FILE_CRONT_TIME_PCT || '0 */1 * * * *'}`, {
-    name: 'PbiFilesCronJob',
+  @Cron(`${process.env.BPI_FILE_CRONT_TIME_PCT || '0 */1 * * * *'}`, {
+    name: 'BpiFilesCronJob',
     timeZone: TIMEZONE_PACIFIC,
     waitForCompletion: true,
   })
   @LogAsyncMethodExecution()
-  async pbiFilesCronJob() {
-    this.logger.log('PBI Cron Job started at: ', new Date().toISOString());
+  async bpiFilesCronJob() {
+    this.logger.log('BPI Cron Job started at: ', new Date().toISOString());
     // Check if this scheduler should run on the current cluster
-    if (!shouldRunOnCluster(this.logger, 'PBI Cron Job')) {
+    if (!shouldRunOnCluster(this.logger, 'BPI Cron Job')) {
       return false;
     }
 
-    const pbiCronJobFeatureFlag = (await getFromCache(
+    const bpiCronJobFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
-      'PBI-CRON-JOB',
+      'BPI-CRON-JOB',
     )) as FeatureFlagValue;
-    if (pbiCronJobFeatureFlag !== FeatureFlagValue.ENABLED) {
-      this.logger.log('PBI-CRON-JOB is DISABLED');
+    if (bpiCronJobFeatureFlag !== FeatureFlagValue.ENABLED) {
+      this.logger.log('BPI-CRON-JOB is DISABLED');
       return false;
     }
     try {
@@ -76,29 +76,29 @@ export class PbiService {
       await this.processDownloadedFiles();
     } catch (error) {
       const { message, stack } = describeError(error);
-      this.logger.error(`PBI file cron job failure : ${message}`, stack);
+      this.logger.error(`BPI file cron job failure : ${message}`, stack);
     }
   }
 
   private async connectAndDownlodFilesFromSFTP() {
     let sftp: Client;
     try {
-      sftp = await connectToSftp(this.logger, getPbiSFTPConnectionInfo());
+      sftp = await connectToSftp(this.logger, getBpiSFTPConnectionInfo());
       const files = await listFiles(
         this.logger,
         sftp,
-        process.env.PBI_REMOTE_PATH,
+        process.env.BPI_REMOTE_PATH,
       );
 
       // Process files sequentially to avoid overlapping operations on the SFTP connection.
-      await files.reduce(
+      await files?.reduce(
         (previousFile, file) =>
           previousFile.then(() => this.downloadFile(sftp, file)),
         Promise.resolve(),
       );
     } catch (error) {
       const { message, stack } = describeError(error);
-      this.logger.error(`PBI file cron job failed: ${message}`, stack);
+      this.logger.error(`BPI file cron job failed: ${message}`, stack);
     } finally {
       this.logger.log('Closing SFTP connection...');
       await sftp?.end();
@@ -110,23 +110,23 @@ export class PbiService {
     file: Client.FileInfo,
   ): Promise<void> {
     try {
-      const fileRecordExists = await this.pbiFileRepository.existsBy({
+      const fileRecordExists = await this.bpiFileRepository.existsBy({
         fileName: file.name,
         documentId: Not(IsNull()),
       });
       if (fileRecordExists) {
         this.logger.log(
-          `Skipping PBI file "${file.name}" because it already exists in ORBC_PBI_FILE and S3.`,
+          `Skipping BPI file "${file.name}" because it already exists in ORBC_BPI_FILE and S3.`,
         );
         //TODO Uncomment deleteFromRemote after testing
-        //await deleteFromRemote(this.logger, sftp, process.env.PBI_REMOTE_PATH, file);
+        //await deleteFromRemote(this.logger, sftp, process.env.BPI_REMOTE_PATH, file);
         return;
       }
 
       const fileData = await downloadFromRemote(
         this.logger,
         sftp,
-        process.env.PBI_REMOTE_PATH,
+        process.env.BPI_REMOTE_PATH,
         file,
       );
 
@@ -139,7 +139,7 @@ export class PbiService {
 
       this.logger.log(`Successfully uploaded file ${file.name} to S3.`);
 
-      await this.pbiFileRepository.save({
+      await this.bpiFileRepository.save({
         fileName: file.name,
         documentId: document.documentId,
         downloadTimestamp: new Date(),
@@ -151,11 +151,11 @@ export class PbiService {
       );
 
       //TODO Uncomment deleteFromRemote after testing
-      //await deleteFromRemote(this.logger, sftp, process.env.PBI_REMOTE_PATH, file);
+      //await deleteFromRemote(this.logger, sftp, process.env.BPI_REMOTE_PATH, file);
     } catch (error) {
       const { message, stack } = describeError(error);
       this.logger.error(
-        `Failed to download PBI file ${file.name} : ${message}`,
+        `Failed to download BPI file ${file.name} : ${message}`,
         stack,
       );
     }
@@ -172,7 +172,7 @@ export class PbiService {
       fileData,
       fileName,
       'text/plain',
-      process.env.PBI_S3_PATH + '/' + fileName,
+      process.env.BPI_S3_PATH + '/' + fileName,
     );
 
     const latestDocument = await this.documentService.findLatest(fileName);
@@ -192,38 +192,38 @@ export class PbiService {
 
   @LogAsyncMethodExecution()
   async processDownloadedFiles(): Promise<void> {
-    const files = await this.pbiFileRepository.find({
+    const files = await this.bpiFileRepository.find({
       where: { isProcessed: false },
       order: { id: 'ASC' },
     });
 
-    await files.reduce(
+    await files?.reduce(
       (previousFile, file) =>
         previousFile.then(() => this.processDownloadedFile(file)),
       Promise.resolve(),
     );
   }
 
-  private async processDownloadedFile(file: PBIFile): Promise<void> {
+  private async processDownloadedFile(file: BPIFile): Promise<void> {
     try {
       const document = await this.documentService.findByDocumentId(
         file.documentId,
       );
 
       const contents = await this.s3Service.getFile(
-        process.env.PBI_S3_PATH + '/' + document?.fileName,
+        process.env.BPI_S3_PATH + '/' + document?.fileName,
         document.s3VersionId,
       );
 
       const fileContents = await readStreamToString(contents);
       const lines = fileContents.split(/\r?\n/);
-      const paymentDetailRecords: PbiPaymentDetailRecord[] = [];
+      const paymentDetailRecords: BpiPaymentDetailRecord[] = [];
       for (const line of lines) {
         if (!line.startsWith('G')) {
           continue;
         }
 
-        paymentDetailRecords.push(parsePbiPaymentDetailRecord(line));
+        paymentDetailRecords.push(parseBpiPaymentDetailRecord(line));
       }
 
       const prepaidAccountDeposits = paymentDetailRecords.map((record) =>
@@ -238,7 +238,7 @@ export class PbiService {
         );
 
         await queryRunner.manager.update(
-          PBIFile,
+          BPIFile,
           { id: file.id },
           {
             isProcessed: true,
@@ -265,7 +265,7 @@ export class PbiService {
     } catch (error) {
       const { message, stack } = describeError(error);
       this.logger.error(
-        `Failed to process PBI file ${file.fileName} : ${message}`,
+        `Failed to process BPI file ${file.fileName} : ${message}`,
         stack,
       );
     }

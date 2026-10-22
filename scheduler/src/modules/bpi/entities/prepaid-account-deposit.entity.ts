@@ -9,7 +9,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PBIFile } from './pbi-file.entity';
+import { BPIFile } from './bpi-file.entity';
 
 @Entity({ name: 'permit.ORBC_PREPAID_ACCOUNT_DEPOSIT' })
 export class PrepaidAccountDeposit extends Base {
@@ -22,12 +22,12 @@ export class PrepaidAccountDeposit extends Base {
   id: string;
 
   @AutoMap()
-  @ManyToOne(() => PBIFile, (PBIFile) => PBIFile.prepaidAccountDeposits, {
+  @ManyToOne(() => BPIFile, (BPIFile) => BPIFile.prepaidAccountDeposits, {
     eager: true,
     cascade: false,
   })
-  @JoinColumn({ name: 'PBI_FILE_ID' })
-  pbiFile: PBIFile;
+  @JoinColumn({ name: 'BPI_FILE_ID' })
+  bpiFile: BPIFile;
 
   @AutoMap()
   @ApiProperty({

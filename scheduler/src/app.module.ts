@@ -12,7 +12,7 @@ import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PermitModule } from './modules/permit/permit.module';
 import { GarmsModule } from './modules/garms/garms.module';
-import { PbiModule } from './modules/pbi/pbi.module';
+import { BpiModule } from './modules/bpi/bpi.module';
 import { CommonModule } from './modules/common/common.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
@@ -47,7 +47,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     FeatureFlagsModule,
     PermitModule,
     GarmsModule,
-    PbiModule,
+    BpiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
