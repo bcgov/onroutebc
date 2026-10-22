@@ -31,6 +31,12 @@ import {
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
+import {
+  convertToTimezone,
+  DATE_FORMATS,
+  dayjsToUtcStr,
+  TIMEZONE_IDS,
+} from "../../../../common/helpers/formatDate";
 
 /**
  * Component for Payment and Refund Detail form
@@ -82,13 +88,17 @@ export const PaymentAndRefundDetail = () => {
   const formMethods = useForm<PaymentAndRefundDetailFormData>({
     defaultValues: {
       issuedBy: [REPORT_ISSUED_BY.SELF_ISSUED, REPORT_ISSUED_BY.PPC],
-      fromDateTime: dayjs()
+      fromDateTime: convertToTimezone(dayjs(), TIMEZONE_IDS.PACIFIC)
         .subtract(1, "day")
         .set("h", 21)
         .set("m", 0)
         .set("s", 0)
         .set("ms", 0),
-      toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
+      toDateTime: convertToTimezone(dayjs(), TIMEZONE_IDS.PACIFIC)
+        .set("h", 20)
+        .set("m", 59)
+        .set("s", 59)
+        .set("ms", 999),
       paymentMethods: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
       // permitIssuers is a <userName, userGUID> record.
@@ -182,8 +192,8 @@ export const PaymentAndRefundDetail = () => {
     try {
       setIsGeneratingReport(() => true);
       const requestObj: PaymentAndRefundDetailRequest = {
-        fromDateTime: fromDateTime.toISOString(),
-        toDateTime: toDateTime.toISOString(),
+        fromDateTime: dayjsToUtcStr(fromDateTime, DATE_FORMATS.ISO8601),
+        toDateTime: dayjsToUtcStr(toDateTime, DATE_FORMATS.ISO8601),
         issuedBy: issuedBy,
         paymentCodes: transformSelectedPaymentMethods(),
         permitType: transformSelectedPermitTypes(),
