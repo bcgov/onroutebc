@@ -113,6 +113,7 @@ interface ManualRoute {
   exitPoint?: string;
   totalDistance?: number;
   highwaySequence?: string[];
+  entryPoint?: string;
 }
 
 interface MailingAddress {
