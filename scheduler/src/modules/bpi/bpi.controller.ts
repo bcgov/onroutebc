@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { BpiService} from './bpi.service';
+import { BpiService } from './bpi.service';
 
 @Controller('bpi')
 export class BpiController {
