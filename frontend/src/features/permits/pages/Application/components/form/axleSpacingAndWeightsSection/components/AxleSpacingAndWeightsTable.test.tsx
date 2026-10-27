@@ -133,7 +133,7 @@ describe("AxleSpacingAndWeightsSection", () => {
               startAxleUnit: 2,
               endAxleUnit: 2,
               actualWeight: 12000,
-              legalMaxWeight: 11900,
+              maxWeight: 11900,
               overload: 100,
             },
           ],
