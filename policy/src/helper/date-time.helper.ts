@@ -15,8 +15,7 @@ export const convertUtcToPt = (dateTime: Date | string, format: string) => {
     const tzOffset = formattedDate.slice(-6);
     let tzLabel = tzOffset === '-08:00' ? 'PST' : 'PDT';
 
-    const threshold = dayjs.tz('2026-11-01', TIMEZONE_PACIFIC).startOf('day');
-    if (tzLabel === 'PDT' && pacificDateTime.isSameOrAfter(threshold, 'day')) {
+    if (tzLabel === 'PDT') {
       tzLabel = 'PCT';
     }
     return `${formattedDate.slice(0, -6)} ${tzLabel}`;
