@@ -17,7 +17,7 @@ describe("OverloadCalculationDetails", () => {
             startAxleUnit: 1,
             endAxleUnit: 1,
             actualWeight: 7560,
-            legalMaxWeight: 7300,
+            maxWeight: 7300,
             overload: 260,
           },
           {
@@ -25,7 +25,7 @@ describe("OverloadCalculationDetails", () => {
             startAxleUnit: 3,
             endAxleUnit: 4,
             actualWeight: 35100,
-            legalMaxWeight: 31000,
+            maxWeight: 31000,
             overload: 4100,
           },
         ]}
