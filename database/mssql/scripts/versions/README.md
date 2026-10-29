@@ -562,3 +562,9 @@
 ### Version 117:
 
 - Update Policy Engine to 3.0.0, which includes stories ORV2-6030: STOW ASW Evaluation: Booster Interaxle Spacing Exceptions, ORV2-5706 - STOW ASW Evaluation: Determine Axle Unit Legal Weight Allowance Maximums, ORV2-5709 - STOW ASW Evaluation: Determine Axle Unit Permittable Weight Allowance Maximums. This version also addresses the following bugs/tasks: ORV2-6007, ORV2-6009, ORV2-6009, ORV2-6068, ORV2-6067
+
+### Version 118:
+
+- Introduce a new type of document storage to support external url and internal s3
+  - Create table ORBC_DOCUMENT_STORAGE_TYPE and ORBC_PERMIT_CONDITION_DOCUMENT
+  - Configure EPTOP Additional conditions pdf
