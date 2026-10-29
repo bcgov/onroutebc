@@ -41,6 +41,7 @@ import { TransactionType } from '@common/enum/transaction-type.enum';
 import { Nullable } from '@common/types/common';
 import { PolicyService } from '@modules/policy/policy.service';
 import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
+import { PermitType } from '@common/enum/permit-type.enum';
 
 @Injectable()
 export class PermitReceiptDocumentService {
@@ -303,6 +304,18 @@ export class PermitReceiptDocumentService {
             revisionHistory,
           );
 
+          const documentsToMerge =
+            permitDataForTemplate?.permitData?.commodities
+              ?.filter((commodity) => commodity.checked)
+              ?.map((commodity) => commodity.condition) ?? [];
+
+          if (
+            fetchedPermit?.permitType ===
+            PermitType.EXTRA_PROVINCIAL_TEMPORARY_OPERATING
+          ) {
+            documentsToMerge.push('EPTOP-ADDT-CONDT');
+          }
+
           const dopsRequestData = {
             templateName: getPermitTemplateName(
               fetchedPermit?.permitStatus,
@@ -310,13 +323,7 @@ export class PermitReceiptDocumentService {
             ),
             generatedDocumentFileName: permitDataForTemplate.permitNumber,
             templateData: permitDataForTemplate,
-            documentsToMerge: permitDataForTemplate.permitData.commodities.map(
-              (commodity) => {
-                if (commodity.checked) {
-                  return commodity.condition;
-                }
-              },
-            ),
+            documentsToMerge,
           };
 
           const generatedDocument = await this.dopsService.generateDocument(

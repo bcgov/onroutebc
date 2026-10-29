@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AutoMap } from '@automapper/classes';
 import { Allow, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TemplateName } from '@app/enum/template-name.enum';
-import { ExternalDocument } from '@app/enum/external-document.enum';
+import { PermitConditionDocument } from '@app/enum/permit-condition-document.enum';
 
 export class CreateGeneratedDocumentDto {
   @AutoMap()
@@ -113,14 +113,14 @@ export class CreateGeneratedDocumentDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: ExternalDocument,
-    example: [ExternalDocument.CVSE1000],
+    enum: PermitConditionDocument,
+    example: [PermitConditionDocument.CVSE1000],
     description:
       'The documents that need to be merged with the Generated Document.',
   })
   @IsOptional()
-  @IsEnum(ExternalDocument, {
+  @IsEnum(PermitConditionDocument, {
     each: true,
   })
-  documentsToMerge?: ExternalDocument[];
+  documentsToMerge?: PermitConditionDocument[];
 }
