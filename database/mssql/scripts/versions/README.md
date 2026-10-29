@@ -559,6 +559,6 @@
 
 - Remove validation for front and rear projection from policy config.
 
-### Version 117:
+### Version 118:
 
 - Add tables and database objects to support BPI file processing and prepaid account deposit tracking.
