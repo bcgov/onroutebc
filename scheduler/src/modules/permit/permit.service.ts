@@ -20,7 +20,7 @@ import { Repository } from 'typeorm';
 import {
   ApplicationStatus,
   PERMIT_STATUS_FOR_DOC_GENERATION,
-} from '@modules/common/enum/application-status.enum';
+} from '@app/common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
 import dayjs from 'dayjs';
 import {
