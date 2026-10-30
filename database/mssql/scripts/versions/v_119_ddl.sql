@@ -27,6 +27,139 @@ ON dbo.ORBC_COMPANY (COMPUTED_CLIENT_NUMBER);
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
+-- Start date
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_START_DATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [START_DATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [START_DATE] AS
+(
+    CONVERT(date, JSON_VALUE([PERMIT_DATA], '$.startDate'), 126)
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_START_DATE] ON [permit].[ORBC_PERMIT_DATA] ([START_DATE] ASC);
+
+-- Expiry date
+
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_EXPIRY_DATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [EXPIRY_DATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [EXPIRY_DATE] AS
+(
+    CONVERT(date, JSON_VALUE([PERMIT_DATA], '$.expiryDate'), 126)
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_EXPIRY_DATE] ON [permit].[ORBC_PERMIT_DATA] ([EXPIRY_DATE] ASC)
+
+
+--Unit Number
+
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_UNIT_NUMBER];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [UNIT_NUMBER];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [UNIT_NUMBER] AS
+(
+    CAST(
+        JSON_VALUE(
+            [PERMIT_DATA],
+            '$.vehicleDetails.unitNumber'
+        ) AS NVARCHAR(10)
+    )
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_UNIT_NUMBER] ON [permit].[ORBC_PERMIT_DATA] ([UNIT_NUMBER] ASC);
+
+
+--Plate
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_PLATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [PLATE];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [PLATE] AS
+(
+    CAST(
+        JSON_VALUE(
+            [PERMIT_DATA],
+            '$.vehicleDetails.plate'
+        ) AS NVARCHAR(10)
+    )
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_PLATE] ON [permit].[ORBC_PERMIT_DATA] ([PLATE] ASC);
+
+--ComputedPlateNumber
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [COMPUTED_PLATE] AS
+(
+    CAST(
+        REPLACE(
+            REPLACE(
+                JSON_VALUE(
+                    [PERMIT_DATA],
+                    '$.vehicleDetails.plate'
+                ),
+                ' ', ''
+            ),
+            '-', ''
+        ) AS NVARCHAR(10)
+    )
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_COMPUTED_PLATE] ON [permit].[ORBC_PERMIT_DATA] ([COMPUTED_PLATE] ASC);
+
+
+--VIN
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_VIN];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [VIN];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [VIN] AS
+(
+    CAST(
+        JSON_VALUE(
+            [PERMIT_DATA],
+            '$.vehicleDetails.vin'
+        ) AS NVARCHAR(6)
+    )
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_VIN] ON [permit].[ORBC_PERMIT_DATA] ([VIN] ASC);
+
+--EL Approval Number
+DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_ORBC_PERMIT_DATA_EL_APPROVAL_NUMBER];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+DROP COLUMN [EL_APPROVAL_NUMBER];
+
+ALTER TABLE [permit].[ORBC_PERMIT_DATA]
+ADD [EL_APPROVAL_NUMBER] AS
+(
+    CAST(
+        JSON_VALUE(
+            [PERMIT_DATA],
+            '$.extraordinaryLoadRequest.approvalNumber'
+        ) AS NVARCHAR(100)
+    )
+) PERSISTED;
+
+CREATE NONCLUSTERED INDEX [IX_ORBC_PERMIT_DATA_EL_APPROVAL_NUMBER] ON [permit].[ORBC_PERMIT_DATA] ([EL_APPROVAL_NUMBER]);
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Computed columns and corresponding indexes on the dbo.ORBC_COMPANY table with COMPUTED_CLIENT_NUMBER column'
 

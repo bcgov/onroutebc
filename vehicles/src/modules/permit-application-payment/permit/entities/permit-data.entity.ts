@@ -59,6 +59,17 @@ export class PermitData extends Base {
   @Column({ name: 'PLATE', insert: false, update: false })
   plate: string;
 
+  //A computed column without hyphens
+  @AutoMap()
+  @Column({
+    length: '10',
+    name: 'COMPUTED_PLATE',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  plateWithoutHyphenAndSpaces: string;
+
   @AutoMap()
   @Column({ name: 'VIN', insert: false, update: false })
   vin: string;

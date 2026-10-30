@@ -325,7 +325,7 @@ export class PermitService {
       switch (searchColumn) {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
-            'permitData.plate like :searchString',
+            'permitData.plateWithoutHyphenAndSpaces like :searchString',
             { searchString: `%${searchString}%` },
           );
           break;
@@ -359,9 +359,12 @@ export class PermitService {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
-            .where('permitData.plate like :searchString', {
-              searchString: `%${searchString}%`,
-            })
+            .where(
+              'permitData.plateWithoutHyphenAndSpaces like :searchString',
+              {
+                searchString: `%${searchString}%`,
+              },
+            )
             .orWhere('permitData.unitNumber like :searchString', {
               searchString: `%${searchString}%`,
             })
