@@ -326,7 +326,9 @@ export class PermitService {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
             'permitData.plateWithoutHyphenAndSpaces like :searchString',
-            { searchString: `%${searchString}%` },
+            {
+              searchString: `%${searchString?.replaceAll('-', '')?.replaceAll(' ', '')}%`,
+            },
           );
           break;
         case PermitSearch.VIN:
@@ -362,7 +364,7 @@ export class PermitService {
             .where(
               'permitData.plateWithoutHyphenAndSpaces like :searchString',
               {
-                searchString: `%${searchString}%`,
+                searchString: `%${searchString?.replaceAll('-', '')?.replaceAll(' ', '')}%`,
               },
             )
             .orWhere('permitData.unitNumber like :searchString', {
