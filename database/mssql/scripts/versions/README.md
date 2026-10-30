@@ -568,3 +568,10 @@
 - Introduce a new type of document storage to support external url and internal s3
   - Create table ORBC_DOCUMENT_STORAGE_TYPE and ORBC_PERMIT_CONDITION_DOCUMENT
   - Configure EPTOP Additional conditions pdf
+
+### Version 119:
+
+- DDL changes to dbo.ORBC_COMPANY to have clean computed values of CLIENT_NUMBER
+  - Following coulumns are added to dbo.ORBC_COMPANY
+    - COMPUTED_CLIENT_NUMBER NVARCHAR(13) - COMPUTED    
+- Downtime is required for prod deployment  
