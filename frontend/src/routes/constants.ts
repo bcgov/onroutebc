@@ -248,7 +248,7 @@ export const SETTINGS_ROUTES = {
 };
 
 //URL
-export const onRouteBCUrl = "www.onroutebc.gov.bc.ca";
+export const onRouteBCUrl = "onroutebc.gov.bc.ca";
 
 export const CTPM_CHAPTER_5_TITLE = "CTPM 5.3.7.A.";
 
