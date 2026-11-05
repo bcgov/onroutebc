@@ -333,7 +333,7 @@ export class PaymentService {
         isAxleCalculationRequiredForPermitType(
           existingApplication?.permitType,
         ) &&
-        !isVoidOrRevokedRefund
+        !isVoidOrRevokedRefund // if void or revoked refund, we don't want to update the permit data with new axle calculation results
       ) {
         // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
         const permitData = JSON.parse(
