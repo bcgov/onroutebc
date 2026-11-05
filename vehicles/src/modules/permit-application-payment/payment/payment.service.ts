@@ -335,6 +335,7 @@ export class PaymentService {
         ) &&
         !isVoidOrRevokedRefund
       ) {
+        // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
         const permitData = JSON.parse(
           existingApplication.permitData.permitData,
         ) as Record<string, unknown>;
@@ -638,6 +639,7 @@ export class PaymentService {
           });
 
         if (isAxleCalculationRequiredForPermitType(application?.permitType)) {
+          // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
           const permitData = JSON.parse(
             application.permitData.permitData,
           ) as Record<string, unknown>;
