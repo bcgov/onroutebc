@@ -573,5 +573,11 @@
 
 - DDL changes to dbo.ORBC_COMPANY to have clean computed values of CLIENT_NUMBER
   - Following coulumns are added to dbo.ORBC_COMPANY
-    - COMPUTED_CLIENT_NUMBER NVARCHAR(13) - COMPUTED    
-- Downtime is required for prod deployment  
+    - COMPUTED_CLIENT_NUMBER NVARCHAR(13) - COMPUTED
+- Downtime is required for prod deployment
+
+### Version 120:
+
+- Updates to policy config, including:
+  - ORV2-6157 refactor CheckLegalAxleSpread logic to more closely match other evaluations, and rename to CheckAxleSpread.
+  - ORV2-6029 correct pony tridem limits to 21000 kg.
