@@ -343,7 +343,7 @@ export class PaymentService {
           validationResults?.axleCalculationResults;
         if (axleCalculationResults) {
           const { results, ...axleCalculationSummary } = axleCalculationResults;
-          void results; //suppress unused variable warning
+          void results; //suppress unused variable warning. Results must not be added to PermitData as DB column length is limited to 4000 characters and results can be very large.
           permitData.axleCalculationResults = axleCalculationSummary;
         }
         await queryRunner.manager.update(
@@ -649,7 +649,7 @@ export class PaymentService {
           if (axleCalculationResults) {
             const { results, ...axleCalculationSummary } =
               axleCalculationResults;
-            void results; //suppress unused variable warning
+            void results; //suppress unused variable warning. Results must not be added to PermitData as DB column length is limited to 4000 characters and results can be very large.
             permitData.axleCalculationResults = axleCalculationSummary;
             application.permitData.permitData = JSON.stringify(permitData);
             application.permitData.updatedDateTime = new Date();
