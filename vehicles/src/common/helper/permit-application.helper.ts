@@ -17,7 +17,10 @@ import { PPC_FULL_TEXT } from '@common/constants/api.constant';
 import { User } from '@modules/company-user-management/users/entities/user.entity';
 import { ApplicationStatus } from '@common/enum/application-status.enum';
 import { PermitType } from '@common/enum/permit-type.enum';
-import { PERMIT_TYPES_FOR_QUEUE } from '@common/constants/permit.constant';
+import {
+  PERMIT_TYPES_FOR_AXLE_CALC,
+  PERMIT_TYPES_FOR_QUEUE,
+} from '@common/constants/permit.constant';
 import dayjs from 'dayjs';
 import { PermitHistoryDto } from '@modules/permit-application-payment/permit/dto/response/permit-history.dto';
 import {
@@ -302,6 +305,21 @@ export const isPermitTypeEligibleForQueue = (
   permitType: PermitType,
 ): boolean => {
   return PERMIT_TYPES_FOR_QUEUE.includes(permitType);
+};
+
+/**
+ * Checks if the given permit type requires axle calculations.
+ * This method essentially acts as a filter, determining whether the provided permit type
+ * exists in a predefined list of types that require additional axle calculations.
+
+ * @param {PermitType} permitType - The type of the permit being checked.
+ * @returns {boolean} - Returns true if the permit type is in the list of types
+ * that require axle calculations, otherwise returns false.
+ */
+export const isAxleCalculationRequiredForPermitType = (
+  permitType: PermitType,
+): boolean => {
+  return PERMIT_TYPES_FOR_AXLE_CALC.includes(permitType);
 };
 
 export const validApplicationDates = (
