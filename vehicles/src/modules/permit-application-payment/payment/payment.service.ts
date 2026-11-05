@@ -20,6 +20,7 @@ import {
   setBaseEntityProperties,
 } from '@common/helper/database.helper';
 import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
+import { PermitData } from '@modules/permit-application-payment/permit/entities/permit-data.entity';
 import { ApplicationStatus } from '@common/enum/application-status.enum';
 import { PaymentMethodType as PaymentMethodTypeEnum } from '@common/enum/payment-method-type.enum';
 import { TransactionType } from '@common/enum/transaction-type.enum';
@@ -44,6 +45,7 @@ import { CfsFileStatus } from '@common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
   isApplicationInCart,
+  isPermitTypeRequireAxleCalc,
   isVoidorRevoked,
 } from '@common/helper/permit-application.helper';
 import {
@@ -247,11 +249,13 @@ export class PaymentService {
     transactions,
     currentUser,
     nestedQueryRunner,
+    isVoidOrRevokedRefund,
   }: {
     applicationId: string;
     transactions: PaymentTransactionDto[];
     currentUser: IUserJWT;
     nestedQueryRunner?: Nullable<QueryRunner>;
+    isVoidOrRevokedRefund?: Nullable<boolean>;
   }): Promise<ReadTransactionDto[]> {
     for (const transaction of transactions) {
       if (
@@ -324,6 +328,33 @@ export class PaymentService {
           queryRunner,
           companyId,
         });
+
+      if (
+        isPermitTypeRequireAxleCalc(existingApplication?.permitType) &&
+        !isVoidOrRevokedRefund
+      ) {
+        const permitData = JSON.parse(
+          existingApplication.permitData.permitData,
+        ) as Record<string, unknown>;
+        const axleCalculationResults =
+          validationResults?.axleCalculationResults;
+        if (axleCalculationResults) {
+          const { results, ...axleCalculationSummary } = axleCalculationResults;
+          void results; //suppress unused variable warning
+          permitData.axleCalculationResults = axleCalculationSummary;
+        }
+        await queryRunner.manager.update(
+          PermitData,
+          { permitDataId: existingApplication.permitData.permitDataId },
+          {
+            permitData: JSON.stringify(permitData),
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+            updatedUserGuid: currentUser.userGUID,
+          },
+        );
+      }
 
       const totalTransactionAmount = transactions?.reduce(
         (accumulator, item) => accumulator + item.transactionAmount,
@@ -603,6 +634,27 @@ export class PaymentService {
             queryRunner,
             companyId,
           });
+
+        if (isPermitTypeRequireAxleCalc(application?.permitType)) {
+          const permitData = JSON.parse(
+            application.permitData.permitData,
+          ) as Record<string, unknown>;
+
+          const axleCalculationResults =
+            validationResults?.axleCalculationResults;
+          if (axleCalculationResults) {
+            const { results, ...axleCalculationSummary } =
+              axleCalculationResults;
+            void results; //suppress unused variable warning
+            permitData.axleCalculationResults = axleCalculationSummary;
+            application.permitData.permitData = JSON.stringify(permitData);
+            application.permitData.updatedDateTime = new Date();
+            application.permitData.updatedUser = currentUser.userName;
+            application.permitData.updatedUserDirectory =
+              currentUser.orbcUserDirectory;
+            application.permitData.updatedUserGuid = currentUser.userGUID;
+          }
+        }
 
         const paymentValidationResult = validatePaymentReceived(
           validationResults?.cost?.at(0)?.cost,
