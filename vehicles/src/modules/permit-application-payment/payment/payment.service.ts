@@ -45,7 +45,7 @@ import { CfsFileStatus } from '@common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
   isApplicationInCart,
-  isPermitTypeRequireAxleCalc,
+  isAxleCalculationRequiredForPermitType,
   isVoidorRevoked,
 } from '@common/helper/permit-application.helper';
 import {
@@ -330,7 +330,9 @@ export class PaymentService {
         });
 
       if (
-        isPermitTypeRequireAxleCalc(existingApplication?.permitType) &&
+        isAxleCalculationRequiredForPermitType(
+          existingApplication?.permitType,
+        ) &&
         !isVoidOrRevokedRefund
       ) {
         const permitData = JSON.parse(
@@ -635,7 +637,7 @@ export class PaymentService {
             companyId,
           });
 
-        if (isPermitTypeRequireAxleCalc(application?.permitType)) {
+        if (isAxleCalculationRequiredForPermitType(application?.permitType)) {
           const permitData = JSON.parse(
             application.permitData.permitData,
           ) as Record<string, unknown>;

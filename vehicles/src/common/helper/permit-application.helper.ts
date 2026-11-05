@@ -316,7 +316,7 @@ export const isPermitTypeEligibleForQueue = (
  * @returns {boolean} - Returns true if the permit type is in the list of types
  * that require axle calculations, otherwise returns false.
  */
-export const isPermitTypeRequireAxleCalc = (
+export const isAxleCalculationRequiredForPermitType = (
   permitType: PermitType,
 ): boolean => {
   return PERMIT_TYPES_FOR_AXLE_CALC.includes(permitType);
