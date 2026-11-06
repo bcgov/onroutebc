@@ -21,6 +21,7 @@ import { EMPTY_VALUE } from '@common/constants/template.constant';
 import { PermitType } from '@common/enum/permit-type.enum';
 import { formatNumber } from './numeric.helper';
 import { Nullable } from '@common/types/common';
+import { OverloadCalculationDetailKind } from 'onroute-policy-engine/enum';
 
 const getNumberOfAxlesDisplay = (numberOfAxles?: Nullable<number>) => {
   switch (numberOfAxles) {
@@ -266,6 +267,23 @@ export const formatTemplateData = (
         ...trailerAxleConfigurationRows,
       ];
     }
+  }
+
+  if (template.permitData?.vehicleConfiguration?.axleCalculationResults) {
+    template.permitData.vehicleConfiguration.axleCalculationResultSummary = {
+      totalGCVW: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.totalGCVW),
+      overload: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.overload),
+      overloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+        .filter(overloadDetail => overloadDetail.kind === OverloadCalculationDetailKind.AxleWeight)
+        .map(overloadDetail => ({
+          axleUnits: overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+            ? `${overloadDetail.startAxleUnit}`
+            : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+          actualWeight: formatNumber(overloadDetail.actualWeight),
+          legalMaxWeight: formatNumber(overloadDetail.legalMaxWeight),
+          overload: formatNumber(overloadDetail.overload),
+        })),
+    };
   }
 
   if (!template.permitData?.vehicleDetails?.vehicleDescription) {

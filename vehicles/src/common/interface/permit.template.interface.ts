@@ -3,6 +3,7 @@ import { PermitType } from '@common/enum/permit-type.enum';
 import { ThirdPartyLiability } from '@common/enum/third-party-liability.enum';
 import { VehicleType } from '@common/enum/vehicle-type.enum';
 import { Nullable } from '@common/types/common';
+import { AxleCalcResults } from 'onroute-policy-engine/types';
 
 // Data used to populate a .docx template
 export interface PermitTemplateData {
@@ -111,6 +112,7 @@ export interface VehicleConfiguration {
   axleConfiguration?: Nullable<AxleUnit[]>;
   vehicleDisplayCode?: Nullable<string>;
   overloadWeight?: Nullable<number>;
+  axleCalculationResults?: Nullable<Omit<AxleCalcResults, 'results'>>;
 }
 
 interface PermittedRoute {
@@ -192,6 +194,19 @@ interface TemplateVehicleDetails extends Omit<VehicleDetails, 'licensedGVW'> {
   licensedGVW?: string; // field used as formatted number
 }
 
+interface TemplateOverloadDetail {
+  axleUnits: string; // single axle unit (eg. "1"), or range of axle units (eg. displayed as "3 - 4")
+  actualWeight: string; // formatted number
+  legalMaxWeight: string; // formatted number
+  overload: string; // formatted number
+}
+
+interface TemplateAxleCalcResults {
+  overload: string; // formatted number
+  totalGCVW: string; // formatted number
+  overloadDetails: TemplateOverloadDetail[];
+}
+
 interface TemplateVehicleConfiguration {
   overallLength?: Nullable<string>; // formatted number
   overallWidth?: Nullable<string>; // formatted number
@@ -206,6 +221,8 @@ interface TemplateVehicleConfiguration {
   vehicleDisplayCode?: Nullable<string>;
   overloadWeight?: Nullable<string>; // formatted number
   combinedAxleConfigurations?: TemplateAxleUnit[];
+  axleCalculationResults?: Nullable<Omit<AxleCalcResults, 'results'>>;
+  axleCalculationResultSummary?: Nullable<TemplateAxleCalcResults>;
 }
 
 interface TemplateManualRoute extends Omit<ManualRoute, 'totalDistance'> {
