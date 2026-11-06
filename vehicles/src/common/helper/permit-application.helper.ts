@@ -28,6 +28,7 @@ import {
   OTHER_VEHICLE_TYPE_NAME,
 } from '@common/constants/vehicle.constant';
 import { EMPTY_VALUE } from '@common/constants/template.constant';
+import { ValidationResults } from 'onroute-policy-engine';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -320,6 +321,42 @@ export const isAxleCalculationRequiredForPermitType = (
   permitType: PermitType,
 ): boolean => {
   return PERMIT_TYPES_FOR_AXLE_CALC.includes(permitType);
+};
+
+/**
+ * Adds the axle calculation summary to the permit data's vehicle configuration.
+ * Existing vehicle configuration fields are preserved, and the potentially large
+ * per-result list is omitted to keep the serialized permit data within its column limit.
+ *
+ * @param existingApplication - Application whose permit data is being updated.
+ * @param validationResults - Validation output containing the axle calculation results.
+ * @returns The parsed permit data with the axle calculation summary added when available.
+ */
+export const setAxleCalculationResultsInPermitData = (
+  existingApplication: Permit,
+  validationResults: ValidationResults,
+): Record<string, unknown> => {
+  // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
+  const permitData = JSON.parse(
+    existingApplication.permitData.permitData,
+  ) as Record<string, unknown>;
+  const axleCalculationResults = validationResults?.axleCalculationResults;
+  if (axleCalculationResults) {
+    const { results, ...axleCalculationSummary } = axleCalculationResults;
+    void results; //suppress unused variable warning. Results must not be added to PermitData as DB column length is limited to 4000 characters and results can be very large.
+    const vehicleConfiguration = permitData.vehicleConfiguration;
+    const existingVehicleConfiguration =
+      vehicleConfiguration !== null &&
+      typeof vehicleConfiguration === 'object' &&
+      !Array.isArray(vehicleConfiguration)
+        ? vehicleConfiguration
+        : {};
+    permitData.vehicleConfiguration = {
+      ...existingVehicleConfiguration,
+      axleCalculationResults: axleCalculationSummary,
+    };
+  }
+  return permitData;
 };
 
 export const validApplicationDates = (
