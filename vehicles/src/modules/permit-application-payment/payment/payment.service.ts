@@ -47,6 +47,7 @@ import {
   isApplicationInCart,
   isAxleCalculationRequiredForPermitType,
   isVoidorRevoked,
+  setAxleCalculationResultsInPermitData,
 } from '@common/helper/permit-application.helper';
 import {
   isCfsPaymentMethodType,
@@ -335,17 +336,10 @@ export class PaymentService {
         ) &&
         !isVoidOrRevokedRefund // if void or revoked refund, we don't want to update the permit data with new axle calculation results
       ) {
-        // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
-        const permitData = JSON.parse(
-          existingApplication.permitData.permitData,
-        ) as Record<string, unknown>;
-        const axleCalculationResults =
-          validationResults?.axleCalculationResults;
-        if (axleCalculationResults) {
-          const { results, ...axleCalculationSummary } = axleCalculationResults;
-          void results; //suppress unused variable warning. Results must not be added to PermitData as DB column length is limited to 4000 characters and results can be very large.
-          permitData.axleCalculationResults = axleCalculationSummary;
-        }
+        const permitData = setAxleCalculationResultsInPermitData(
+          existingApplication,
+          validationResults,
+        );
         await queryRunner.manager.update(
           PermitData,
           { permitDataId: existingApplication.permitData.permitDataId },
@@ -639,25 +633,16 @@ export class PaymentService {
           });
 
         if (isAxleCalculationRequiredForPermitType(application?.permitType)) {
-          // The backend PermitData interface should not define this JSON payload’s full shape as it is not fully known and may change over time. Instead, we will define it as a Record<string, unknown> to allow for flexibility in the structure of the JSON data.
-          const permitData = JSON.parse(
-            application.permitData.permitData,
-          ) as Record<string, unknown>;
-
-          const axleCalculationResults =
-            validationResults?.axleCalculationResults;
-          if (axleCalculationResults) {
-            const { results, ...axleCalculationSummary } =
-              axleCalculationResults;
-            void results; //suppress unused variable warning. Results must not be added to PermitData as DB column length is limited to 4000 characters and results can be very large.
-            permitData.axleCalculationResults = axleCalculationSummary;
-            application.permitData.permitData = JSON.stringify(permitData);
-            application.permitData.updatedDateTime = new Date();
-            application.permitData.updatedUser = currentUser.userName;
-            application.permitData.updatedUserDirectory =
-              currentUser.orbcUserDirectory;
-            application.permitData.updatedUserGuid = currentUser.userGUID;
-          }
+          const permitData = setAxleCalculationResultsInPermitData(
+            application,
+            validationResults,
+          );
+          application.permitData.permitData = JSON.stringify(permitData);
+          application.permitData.updatedDateTime = new Date();
+          application.permitData.updatedUser = currentUser.userName;
+          application.permitData.updatedUserDirectory =
+            currentUser.orbcUserDirectory;
+          application.permitData.updatedUserGuid = currentUser.userGUID;
         }
 
         const paymentValidationResult = validatePaymentReceived(
