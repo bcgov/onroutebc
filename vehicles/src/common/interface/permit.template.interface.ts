@@ -72,27 +72,43 @@ interface ExtraordinaryLoadRequest {
   isExtraordinaryLoadRequest: boolean;
   approvalNumber?: Nullable<string>;
 }
-interface AxleConfiguration {
-  axleUnit: number;
-  numberOfAxles: number;
+
+export interface AxleUnit {  
+  numberOfAxles?: Nullable<number>;
   axleSpread?: Nullable<number>;
   interaxleSpacing?: Nullable<number>;
-  axleUnitWeight: number;
+  axleUnitWeight?: Nullable<number>;
   numberOfTires?: Nullable<number>;
-  tireSize?: number;
+  tireSize?: Nullable<number>;
+  vehicleIndex?: Nullable<number>;
 }
 
-interface VehicleConfiguration {
+interface TemplateAxleUnit {
+  numberOfAxles?: Nullable<string>;
+  axleSpread: Nullable<string>; // formatted number
+  interaxleSpacing?: Nullable<string>; // formatted number
+  axleUnitWeight?: Nullable<string>; // formatted number
+  numberOfTires?: Nullable<number>;
+  tireSize?: Nullable<string>; // formatted number
+  axleUnitNumber?: Nullable<number>;
+}
+
+export interface VehicleInConfiguration {
+  vehicleSubType: string;
+  axleConfiguration?: Nullable<AxleUnit[]>;
+}
+
+export interface VehicleConfiguration {
   overallLength?: Nullable<number>;
   overallWidth?: Nullable<number>;
   overallHeight?: Nullable<number>;
   frontProjection?: Nullable<number>;
   rearProjection?: Nullable<number>;
-  trailers?: VehicleDetails[];
+  trailers?: VehicleInConfiguration[];
   loadedGVW?: Nullable<number>;
   actualGVW?: Nullable<number>;
   netWeight?: Nullable<number>;
-  axleConfiguration?: Nullable<AxleConfiguration[]>;
+  axleConfiguration?: Nullable<AxleUnit[]>;
   vehicleDisplayCode?: Nullable<string>;
   overloadWeight?: Nullable<number>;
 }
@@ -148,7 +164,6 @@ export interface VehicleDetails {
   vehicleSubType: string;
   licensedGVW?: number;
   saveVehicle?: boolean;
-  axleConfiguration?: AxleConfiguration[];
   vehicleDescription?: Nullable<string>;
 }
 
@@ -183,13 +198,14 @@ interface TemplateVehicleConfiguration {
   overallHeight?: Nullable<string>; // formatted number
   frontProjection?: Nullable<string>; // formatted number
   rearProjection?: Nullable<string>; // formatted number
-  trailers?: VehicleDetails[];
+  trailers?: VehicleInConfiguration[];
   loadedGVW?: Nullable<string>; // formatted number
   actualGVW?: Nullable<string>; // formatted number
   netWeight?: Nullable<string>; // formatted number
-  axleConfiguration?: Nullable<AxleConfiguration[]>;
+  axleConfiguration?: Nullable<AxleUnit[]>;
   vehicleDisplayCode?: Nullable<string>;
   overloadWeight?: Nullable<string>; // formatted number
+  combinedAxleConfigurations?: TemplateAxleUnit[];
 }
 
 interface TemplateManualRoute extends Omit<ManualRoute, 'totalDistance'> {

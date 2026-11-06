@@ -1,4 +1,4 @@
-import { VehicleDetails } from './permit.template.interface';
+import { VehicleInConfiguration } from './permit.template.interface';
 
 export interface FullNamesForDgen {
   vehicleTypeName: string;
@@ -8,6 +8,6 @@ export interface FullNamesForDgen {
   vehicleCountryName: string;
   vehicleProvinceName: string;
   permitName: string;
-  vehicleConfigurationTrailers?: VehicleDetails[];
+  vehicleConfigurationTrailers?: VehicleInConfiguration[];
   commodityTypeName: string;
 }
