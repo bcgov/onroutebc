@@ -44,7 +44,7 @@ export interface PermitData {
   mailingAddress: MailingAddress;
   companyName: string;
   clientNumber: string;
-  vehicleConfiguration?: VehicleConfiguration;
+  vehicleConfiguration?: VehicleConfiguration; //vehicle configuration must not be updated to an array. If updating to an array, please review setAxleCalculationResultsInPermitData() method.
   applicationNotes?: string;
   permittedCommodity?: PermittedCommodity;
   permittedRoute?: PermittedRoute;

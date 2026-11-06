@@ -687,6 +687,7 @@ export class PermitService {
           applicationId: newPermit.permitId,
           transactions: voidPermitDto.transactions,
           nestedQueryRunner: queryRunner,
+          isVoidOrRevokedRefund: true,
         });
       }
 

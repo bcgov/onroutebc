@@ -335,6 +335,10 @@ export const AxleSpacingAndWeightsTable = ({
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD]
             : [];
+        case POLICY_CHECK_ID_TYPES.AXLE_SPREAD:
+          return rowType === ASW_TABLE_ROW_TYPES.AXLE
+            ? [POLICY_CHECK_ID_TYPES.AXLE_SPREAD]
+            : [];
 
         case POLICY_CHECK_ID_TYPES.NUMBER_OF_AXLES:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
@@ -357,11 +361,6 @@ export const AxleSpacingAndWeightsTable = ({
         case POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING:
           return rowType === ASW_TABLE_ROW_TYPES.AXLE
             ? [POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING]
-            : [];
-
-        case POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD:
-          return rowType === ASW_TABLE_ROW_TYPES.AXLE
-            ? [POLICY_CHECK_ID_TYPES.LEGAL_AXLE_SPREAD]
             : [];
 
         case POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT:
