@@ -686,7 +686,7 @@ INSERT [dbo].[ORBC_SYS_VERSION] (
 	,[RELEASE_DATE]
 	)
 VALUES (
-	118
+	120
 	,@VersionDescription
 	,'$(UPDATE_SCRIPT)'
 	,'$(REVERT_SCRIPT)'
