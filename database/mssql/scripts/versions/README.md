@@ -581,3 +581,8 @@
 - Updates to policy config, including:
   - ORV2-6157 refactor CheckLegalAxleSpread logic to more closely match other evaluations, and rename to CheckAxleSpread.
   - ORV2-6029 correct pony tridem limits to 21000 kg.
+
+### Version 121:
+
+- Updates to policy config, including:
+  - ORV2-6149 STOW ASW: Tandem and Tridem Jeep Interaxle Spacing Exceptions
