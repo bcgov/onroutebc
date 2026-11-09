@@ -563,6 +563,25 @@
 
 - Update Policy Engine to 3.0.0, which includes stories ORV2-6030: STOW ASW Evaluation: Booster Interaxle Spacing Exceptions, ORV2-5706 - STOW ASW Evaluation: Determine Axle Unit Legal Weight Allowance Maximums, ORV2-5709 - STOW ASW Evaluation: Determine Axle Unit Permittable Weight Allowance Maximums. This version also addresses the following bugs/tasks: ORV2-6007, ORV2-6009, ORV2-6009, ORV2-6068, ORV2-6067
 
+### Version 118:
+
+- Introduce a new type of document storage to support external url and internal s3
+  - Create table ORBC_DOCUMENT_STORAGE_TYPE and ORBC_PERMIT_CONDITION_DOCUMENT
+  - Configure EPTOP Additional conditions pdf
+
+### Version 119:
+
+- DDL changes to dbo.ORBC_COMPANY to have clean computed values of CLIENT_NUMBER
+  - Following coulumns are added to dbo.ORBC_COMPANY
+    - COMPUTED_CLIENT_NUMBER NVARCHAR(13) - COMPUTED
+- Downtime is required for prod deployment
+
+### Version 120:
+
+- Updates to policy config, including:
+  - ORV2-6157 refactor CheckLegalAxleSpread logic to more closely match other evaluations, and rename to CheckAxleSpread.
+  - ORV2-6029 correct pony tridem limits to 21000 kg.
+
 ### Version 121:
 
 - Add tables and database objects to support BPI file processing and prepaid account deposit tracking.

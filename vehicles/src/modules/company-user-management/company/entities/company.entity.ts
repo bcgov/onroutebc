@@ -38,6 +38,17 @@ export class Company extends Base {
   @Column({ length: 13, name: 'CLIENT_NUMBER', nullable: true })
   clientNumber: string;
 
+  //A computed column without hyphens
+  @AutoMap()
+  @Column({
+    length: '13',
+    name: 'COMPUTED_CLIENT_NUMBER',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  clientNumberWithoutHyphen: string;
+
   /**
    * The migrated client number of the company encoded SHA-256.
    */

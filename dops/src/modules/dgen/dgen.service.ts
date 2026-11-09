@@ -15,7 +15,7 @@ import { CreateGeneratedDocumentDto } from './dto/request/create-generated-docum
 import { Response } from 'express';
 import { Readable } from 'stream';
 import { ExternalDocument } from './entities/external-document.entity';
-import * as ExternalDocumentEnum from '@app/enum/external-document.enum';
+import * as PermitConditionDocumentEnum from '@app/enum/permit-condition-document.enum';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -36,6 +36,8 @@ import { TemplateFile } from '@app/interface/template-file.interface';
 import { FILE_ENCODING_TYPE } from '@app/constants/dops.constant';
 import { S3Service } from '@modules/common/s3.service';
 import { createFile } from '@app/helper/file.helper';
+import { PermitConditionDocument } from './entities/permit-condition-document.entity';
+import { StorageType } from '@app/enum/storage-type.enum';
 
 @Injectable()
 export class DgenService {
@@ -45,6 +47,8 @@ export class DgenService {
     private documentTemplateRepository: Repository<DocumentTemplate>,
     @InjectRepository(ExternalDocument)
     private externalDocumentRepository: Repository<ExternalDocument>,
+    @InjectRepository(PermitConditionDocument)
+    private readonly permitConditionDocumentRepository: Repository<PermitConditionDocument>,
     private readonly cdogsService: CdogsService,
     private readonly dmsService: DmsService,
     private readonly httpService: HttpService,
@@ -249,40 +253,65 @@ export class DgenService {
   }
 
   private async fetchDocumentsToMerge(
-    documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
+    documentsToMerge: PermitConditionDocumentEnum.PermitConditionDocument[],
     documentBufferMap: Map<string, Buffer>,
   ) {
     await Promise.all(
-      documentsToMerge.map(async (externalDocument) => {
+      documentsToMerge.map(async (permitCondition) => {
         const documentFromCache: Buffer =
-          await this.cacheManager.get(externalDocument);
+          await this.cacheManager.get(permitCondition);
         if (!documentFromCache) {
-          const externalDocumentDetails =
-            await this.externalDocumentRepository.findOne({
+          const permitConditionDocument =
+            await this.permitConditionDocumentRepository.findOne({
               where: {
-                documentName: externalDocument,
+                permitCondition,
+              },
+              relations: {
+                externalDocument: true,
+                s3Document: true,
               },
             });
 
-          const resExternalDocs = await lastValueFrom(
-            this.httpService.get(externalDocumentDetails.documentLocation, {
-              responseType: 'arraybuffer',
-            }),
-          );
+          if (!permitConditionDocument) {
+            throw new InternalServerErrorException(
+              `Permit Condition Document not found for ${permitCondition}`,
+            );
+          }
 
-          const externalDocumentBuffer = Buffer.from(
-            resExternalDocs.data as string,
-            'binary',
-          );
+          let documentBuffer: Buffer;
+          if (
+            permitConditionDocument.storageType === StorageType.EXTERNAL_URL
+          ) {
+            const response = await lastValueFrom(
+              this.httpService.get<ArrayBuffer>(
+                permitConditionDocument.externalDocument.documentLocation,
+                {
+                  responseType: 'arraybuffer',
+                },
+              ),
+            );
+            documentBuffer = Buffer.from(response.data);
+          } else if (
+            permitConditionDocument.storageType === StorageType.INTERNAL_S3
+          ) {
+            const documentStream = await this.s3Service.getFile(
+              permitConditionDocument.s3Document.fileName,
+            );
+            documentBuffer = await createFile(documentStream);
+          } else {
+            throw new InternalServerErrorException(
+              `Unsupported storage type for ${permitCondition}`,
+            );
+          }
 
           await this.cacheManager.set(
-            externalDocument,
-            externalDocumentBuffer,
+            permitCondition,
+            documentBuffer,
             +this._dopsCVSEFormsCacheTTLms,
           );
-          documentBufferMap.set(externalDocument, externalDocumentBuffer);
+          documentBufferMap.set(permitCondition, documentBuffer);
         } else {
-          documentBufferMap.set(externalDocument, documentFromCache);
+          documentBufferMap.set(permitCondition, documentFromCache);
         }
       }),
     );

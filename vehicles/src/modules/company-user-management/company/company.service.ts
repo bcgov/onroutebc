@@ -504,13 +504,17 @@ export class CompanyService {
       // Add condition to check either direct match with client number or a hash match for migrated client numbers
       companiesQB.andWhere(
         new Brackets((qb) => {
-          qb.where('company.clientNumber LIKE :clientNumber', {
-            clientNumber: `%${findCompanyPaginatedOptions.clientNumber}%`,
-          }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
+          qb.where(
+            'company.clientNumberWithoutHyphen LIKE :clientNumberWithoutHyphen',
+            {
+              clientNumberWithoutHyphen: `%${findCompanyPaginatedOptions?.clientNumber?.replaceAll('-', '')?.replaceAll(' ', '')}%`,
+            },
+          ).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
             legacyClientNumberHash: convertToHash(
               findCompanyPaginatedOptions.clientNumber
-                ?.replace(/-/g, '')
-                .replace(/^0+/, ''),
+                ?.replaceAll('-', '')
+                ?.replaceAll(' ', '')
+                ?.replace(/^0+/, ''),
               CRYPTO_ALGORITHM_SHA256,
             ),
           });
