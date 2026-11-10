@@ -3,6 +3,15 @@ import { isNull } from "../../../common/types/common";
 import { DEFAULT_TIRE_SIZE_OPTION } from "../constants/constants";
 import { AxleConfiguration, AxleUnit } from "../types/AxleUnit";
 
+/** ORV2-6006: Default to four wheels per drive or trailer axle and two per steer axle. */
+export const getDefaultNumberOfWheels = (
+  numberOfAxles: number,
+  isSteerAxleUnit: boolean,
+): number => {
+  const wheelsPerAxle = isSteerAxleUnit ? 2 : 4;
+  return numberOfAxles * wheelsPerAxle;
+};
+
 export const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
   return {
     ...axleUnit,
