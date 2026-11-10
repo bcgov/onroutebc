@@ -61,10 +61,11 @@ export class PrepaidAccountDeposit extends Base {
     description: 'Represents the effective payment date made by client.',
   })
   @Column({
+    type: 'date',
     name: 'EFFECTIVE_PAYMENT_DATE',
     nullable: false,
   })
-  effectivePaymentDate: string;
+  effectivePaymentDate: Date;
 
   @AutoMap()
   @ApiProperty({
@@ -72,8 +73,9 @@ export class PrepaidAccountDeposit extends Base {
     description: 'Represents the deposit date to ministry account.',
   })
   @Column({
+    type: 'date',
     name: 'DEPOSIT_DATE',
     nullable: false,
   })
-  depositDate: string;
+  depositDate: Date;
 }

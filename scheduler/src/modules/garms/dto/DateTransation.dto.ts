@@ -1,4 +1,4 @@
-export class DateTransaction {
+export class DateTransaction<T = unknown> {
   date: string;
-  transactions: unknown;
+  transactions: T;
 }

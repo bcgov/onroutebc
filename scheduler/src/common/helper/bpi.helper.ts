@@ -47,8 +47,9 @@ export const mapToPrepaidAccountDetail = (
   detail.bpiFile.id = bpiFileId;
   detail.accountNumber = record.accountNumber;
   detail.depositAmount = record.depositAmountCents;
-  detail.effectivePaymentDate = record.effectivePaymentDate;
-  detail.depositDate = record.depositDate;
-
+  detail.effectivePaymentDate = new Date(
+    `${record.effectivePaymentDate}T00:00:00.000Z`,
+  );
+  detail.depositDate = new Date(`${record.depositDate}T00:00:00.000Z`);
   return detail;
 };
