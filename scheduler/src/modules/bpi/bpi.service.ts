@@ -270,4 +270,16 @@ export class BpiService {
       );
     }
   }
+
+  @LogAsyncMethodExecution()
+  async fetchRecordsForGarmsCreditFile(): Promise<BPIFile[]> {
+    return await this.bpiFileRepository.find({
+      where: {
+        isProcessed: true,
+        creditFileTimestamp: IsNull(),
+      },
+      relations: ['prepaidAccountDeposits'],
+      order: { prepaidAccountDeposits: { id: { direction: 'ASC' } } },
+    });
+  }
 }

@@ -9,5 +9,6 @@ import { PrepaidAccountDeposit } from './entities/prepaid-account-deposit.entity
   imports: [TypeOrmModule.forFeature([BPIFile, PrepaidAccountDeposit])],
   controllers: [BpiController],
   providers: [BpiService],
+  exports: [BpiService],
 })
 export class BpiModule {}
