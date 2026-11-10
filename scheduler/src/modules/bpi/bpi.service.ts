@@ -18,7 +18,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { shouldRunOnCluster } from '@common/helper/cron.helper';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, IsNull, Not, Repository } from 'typeorm';
+import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { BPIFile } from './entities/bpi-file.entity';
 import { DocumentService } from '@modules/common/document.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -273,24 +273,13 @@ export class BpiService {
 
   @LogAsyncMethodExecution()
   async fetchRecordsForGarmsCreditFile(): Promise<BPIFile[]> {
-    return await this.bpiFileRepository.find({
-      where: {
-        isProcessed: true,
-        creditFileTimestamp: IsNull(),
-      },
-      relations: ['prepaidAccountDeposits'],
-      order: { prepaidAccountDeposits: { id: { direction: 'ASC' } } },
-    });
-  }
-
-  async markRecordsSentToGarms(bpiFiles: BPIFile[]): Promise<void> {
-    if (bpiFiles.length === 0) {
-      return;
-    }
-
-    await this.bpiFileRepository.update(
-      { id: In(bpiFiles.map((bpiFile) => bpiFile.id)) },
-      { creditFileTimestamp: new Date() },
-    );
+    return this.bpiFileRepository
+      .createQueryBuilder('bpiFile')
+      .leftJoinAndSelect('bpiFile.prepaidAccountDeposits', 'deposit')
+      .leftJoin('bpiFile.garmsFileTransactions', 'garmsFileTransaction')
+      .where('bpiFile.isProcessed = :isProcessed', { isProcessed: 'Y' })
+      .andWhere('garmsFileTransaction.id IS NULL')
+      .orderBy('deposit.id', 'ASC')
+      .getMany();
   }
 }

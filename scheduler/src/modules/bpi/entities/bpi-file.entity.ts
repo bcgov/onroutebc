@@ -5,6 +5,7 @@ import { Base } from '@modules/common/entities/base.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@common/types/common';
 import { PrepaidAccountDeposit } from './prepaid-account-deposit.entity';
+import { GarmsFileTransaction } from '@modules/garms/entities/garms-file-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_BPI_FILE' })
 export class BPIFile extends Base {
@@ -75,21 +76,16 @@ export class BPIFile extends Base {
   processedTimestamp: Date;
 
   @AutoMap()
-  @ApiProperty({
-    example: '2023-07-13T17:31:17.470Z',
-    description:
-      'Timestamp when the credit file was generated and sent to the GARMS',
-    nullable: true,
-  })
-  @Column({
-    name: 'CREDIT_FILE_TIMESTAMP',
-  })
-  creditFileTimestamp: Date;
-
-  @AutoMap()
   @OneToMany(
     () => PrepaidAccountDeposit,
     (prepaidAccountDeposit) => prepaidAccountDeposit.bpiFile,
   )
   prepaidAccountDeposits?: Nullable<PrepaidAccountDeposit[]>;
+
+  @AutoMap()
+  @OneToMany(
+    () => GarmsFileTransaction,
+    (garmsFileTransaction) => garmsFileTransaction.bpiFile,
+  )
+  garmsFileTransactions?: Nullable<GarmsFileTransaction[]>;
 }
