@@ -586,3 +586,8 @@
 
 - Updates to policy config, including:
   - ORV2-6149 STOW ASW: Tandem and Tridem Jeep Interaxle Spacing Exceptions
+
+### Version 121:
+
+- Updates to policy config, including:
+  - ORV2-6124 STOW ASW Wheelbase Legal Limits
