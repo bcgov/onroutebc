@@ -85,7 +85,7 @@ export const OverloadCalculationDetails = ({
                     ) : (
                       <>
                         <td>{formatNumber(detail.actualWeight)}</td>
-                        <td>{formatNumber(detail.legalMaxWeight)}</td>
+                        <td>{formatNumber(detail.maxWeight)}</td>
                       </>
                     )}
                     <td>{formatNumber(detail.overload)}</td>

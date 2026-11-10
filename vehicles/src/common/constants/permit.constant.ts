@@ -7,6 +7,10 @@ export const PERMIT_TYPES_FOR_QUEUE: readonly PermitType[] = [
   PermitType.SINGLE_TRIP_OVERWEIGHT_OVERSIZE,
 ];
 
+export const PERMIT_TYPES_FOR_AXLE_CALC: readonly PermitType[] = [
+  PermitType.SINGLE_TRIP_OVERWEIGHT,
+];
+
 export const STOS_MAX_ALLOWED_DURATION_AMEND = 30;
 export const STOW_MAX_ALLOWED_DURATION_AMEND = 30;
 export const STWSE_MAX_ALLOWED_DURATION_AMEND = 30;

@@ -13,11 +13,11 @@ export type PolicyCheckResultType =
 export const POLICY_CHECK_ID_TYPES = {
   AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD:
     "axle-group-maximum-legal-weight-threshold",
+  AXLE_SPREAD: "axle-spread",
   BOOSTER_AXLE_LIMIT: "booster-axle-limit",
   BRIDGE_FORMULA: "bridge-formula",
   DRIVE_JEEP_LOAD_EQUALIZATION: "drive-jeep-load-equalization",
-  LEGAL_AXLE_SPREAD: "legal-axle-spread",
-  LEGAL_INTERAXLE_SPACING: "legal-interaxle-spacing",
+  INTERAXLE_SPACING: "interaxle-spacing",
   LEGAL_WEIGHT: "legal-weight",
   MAX_TIRE_LOAD: "max-tire-load",
   MINIMUM_DRIVE_AXLE_WEIGHT: "minimum-drive-axle-weight",

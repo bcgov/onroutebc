@@ -89,6 +89,7 @@ export const renderASW = ({
     return (
       <AxleSpacingAndWeightsSection
         permitType={PERMIT_TYPES.STOW}
+        selectedCommodityType="NONREDU"
         powerUnitSubtypeNamesMap={new Map([["TRKTRAC", "Truck Tractor"]])}
         trailerSubtypeNamesMap={new Map()} // No trailers for now! Maybe add in future.
         vehicleFormData={fixture.vehicleFormData}

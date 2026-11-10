@@ -60,14 +60,14 @@ export const emptySuccessfulCalculation = (): AxleCalculationResult => ({
  * test and then make sure it renders, so our tests are not overly coupled with
  * specific Policy Engine eval behaviour.
  */
-export const legalInteraxleSpacingFailure = ({
+export const interaxleSpacingFailure = ({
   axleUnit = 2,
-  message = `Interaxle spacing for Axle Unit ${axleUnit} is outside the legal range.`,
+  message = `Interaxle Spacing between Axle Unit ${axleUnit}and Axle Unit ${axleUnit - 1} must be at least 3.0 m.`,
 }: {
   axleUnit?: number;
   message?: string;
 } = {}): AxleGroupPolicyCheckResult => ({
-  id: POLICY_CHECK_ID_TYPES.LEGAL_INTERAXLE_SPACING,
+  id: POLICY_CHECK_ID_TYPES.INTERAXLE_SPACING,
   result: "fail",
   message,
   axleUnit,

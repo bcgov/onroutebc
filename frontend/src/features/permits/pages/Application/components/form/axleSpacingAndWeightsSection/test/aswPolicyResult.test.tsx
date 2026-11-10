@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import {
   emptySuccessfulCalculation,
-  legalInteraxleSpacingFailure,
+  interaxleSpacingFailure,
 } from "./aswFixtures";
 import { renderASW } from "./renderASW";
 
@@ -18,7 +18,7 @@ describe("ASW policy result → UI contract", () => {
   // Test the ASW actually highlights properly when it's force-fed a failure.
   // This is a UI test, not a PE test, and assumes PE has already given a failure.
   it("highlights only the affected spacing for a legal interaxle spacing failure", async () => {
-    const failure = legalInteraxleSpacingFailure({ axleUnit: 2 });
+    const failure = interaxleSpacingFailure({ axleUnit: 2 });
     const { user, asw } = renderASW({
       calculationResult: {
         ...emptySuccessfulCalculation(),

@@ -325,8 +325,10 @@ export class PermitService {
       switch (searchColumn) {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
-            'permitData.plate like :searchString',
-            { searchString: `%${searchString}%` },
+            'permitData.plateWithoutHyphenAndSpaces like :searchString',
+            {
+              searchString: `%${searchString?.replaceAll('-', '')?.replaceAll(' ', '')}%`,
+            },
           );
           break;
         case PermitSearch.VIN:
@@ -359,9 +361,12 @@ export class PermitService {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
-            .where('permitData.plate like :searchString', {
-              searchString: `%${searchString}%`,
-            })
+            .where(
+              'permitData.plateWithoutHyphenAndSpaces like :searchString',
+              {
+                searchString: `%${searchString?.replaceAll('-', '')?.replaceAll(' ', '')}%`,
+              },
+            )
             .orWhere('permitData.unitNumber like :searchString', {
               searchString: `%${searchString}%`,
             })
@@ -682,6 +687,7 @@ export class PermitService {
           applicationId: newPermit.permitId,
           transactions: voidPermitDto.transactions,
           nestedQueryRunner: queryRunner,
+          isVoidOrRevokedRefund: true,
         });
       }
 
