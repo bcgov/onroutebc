@@ -582,6 +582,7 @@
   - ORV2-6157 refactor CheckLegalAxleSpread logic to more closely match other evaluations, and rename to CheckAxleSpread.
   - ORV2-6029 correct pony tridem limits to 21000 kg.
 
-### Version 121:
+### Version 123:
 
-- Add tables and database objects to support BPI file processing and prepaid account deposit tracking.
+- Add `ORBC_BPI_FILE` and `ORBC_PREPAID_ACCOUNT_DEPOSIT` tables, including foreign keys, indexes, defaults, and audit history tables and triggers.
+- Update `ORBC_GARMS_FILE_TRANSACTION` to associate GARMS submissions with BPI files, allow a nullable transaction ID, and require either a transaction ID or BPI file ID.
