@@ -11,6 +11,7 @@ import {
   PolicyCheckIdType,
 } from "../../../../../../types/AxleCalculationResult";
 import { AxleUnit } from "../../../../../../types/AxleUnit";
+import { getDefaultNumberOfWheels } from "../../../../../../helpers/axleUnitHelper";
 import {
   DEFAULT_AXLE_UNIT,
   DEFAULT_TIRE_SIZE_OPTION,
@@ -99,6 +100,7 @@ export const AxleUnitRow = ({
         const canRemoveLastAxleUnit = axleUnitCount > defaultAxleUnitCount;
 
         const numberOfAxles = axleUnit?.numberOfAxles;
+        const isSteerAxleUnit = !isTrailer && index === 0;
         const disableAxleSpread = getDefaultRequiredVal(0, numberOfAxles) <= 1;
 
         const axleCalculationFailure = getDefaultRequiredVal(
@@ -242,7 +244,10 @@ export const AxleUnitRow = ({
                             ? {
                                 ...currentAxleUnit,
                                 numberOfAxles: selectedOption.numberOfAxles,
-                                numberOfTires: selectedOption.numberOfAxles * 2,
+                                numberOfTires: getDefaultNumberOfWheels(
+                                  selectedOption.numberOfAxles,
+                                  isSteerAxleUnit,
+                                ),
                                 axleSpread:
                                   selectedOption.numberOfAxles === 1
                                     ? null
