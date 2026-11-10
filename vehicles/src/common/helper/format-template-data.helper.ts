@@ -1,3 +1,5 @@
+import { OverloadCalculationDetailKind } from 'onroute-policy-engine/enum';
+
 import * as constants from '@common/constants/api.constant';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { ApplicationStatus } from '@common/enum/application-status.enum';
@@ -21,7 +23,6 @@ import { EMPTY_VALUE } from '@common/constants/template.constant';
 import { PermitType } from '@common/enum/permit-type.enum';
 import { formatNumber } from './numeric.helper';
 import { Nullable } from '@common/types/common';
-import { OverloadCalculationDetailKind } from 'onroute-policy-engine/enum';
 
 const getNumberOfAxlesDisplay = (numberOfAxles?: Nullable<number>) => {
   switch (numberOfAxles) {
@@ -280,7 +281,7 @@ export const formatTemplateData = (
             ? `${overloadDetail.startAxleUnit}`
             : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
           actualWeight: formatNumber(overloadDetail.actualWeight),
-          legalMaxWeight: formatNumber(overloadDetail.legalMaxWeight),
+          legalMaxWeight: formatNumber(overloadDetail.maxWeight),
           overload: formatNumber(overloadDetail.overload),
         })),
     };

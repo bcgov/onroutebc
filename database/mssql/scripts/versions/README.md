@@ -581,3 +581,7 @@
 - Updates to policy config, including:
   - ORV2-6157 refactor CheckLegalAxleSpread logic to more closely match other evaluations, and rename to CheckAxleSpread.
   - ORV2-6029 correct pony tridem limits to 21000 kg.
+
+### Version 122:
+
+- Configure STOW v3 templates.
