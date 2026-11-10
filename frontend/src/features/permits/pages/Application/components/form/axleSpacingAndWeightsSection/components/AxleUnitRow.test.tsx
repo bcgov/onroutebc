@@ -25,18 +25,20 @@ const axleConfiguration: AxleUnit[] = [
 const renderAxleUnitRow = ({
   configuration = axleConfiguration,
   onUpdateAxleConfiguration = vi.fn(),
+  isTrailer = false,
 }: {
   configuration?: AxleUnit[];
   onUpdateAxleConfiguration?: (configuration: AxleUnit[]) => void;
+  isTrailer?: boolean;
 } = {}) => {
-  render(
+  return render(
     <table>
       <tbody>
         <AxleUnitRow
           axleConfiguration={configuration}
           label="Truck Tractor"
           axleUnitNumber={0}
-          isTrailer={false}
+          isTrailer={isTrailer}
           onUpdateAxleConfiguration={onUpdateAxleConfiguration}
           tireSizeOptions={[{ name: '279.4 (11")', size: 279 }]}
           canAddAxleUnits={false}
@@ -48,6 +50,53 @@ const renderAxleUnitRow = ({
 };
 
 describe("AxleUnitRow", () => {
+  it.each([
+    { axleType: "Single", numberOfAxles: 1, numberOfTires: 4 },
+    { axleType: "Tandem", numberOfAxles: 2, numberOfTires: 8 },
+    { axleType: "Tridem", numberOfAxles: 3, numberOfTires: 12 },
+  ])(
+    "defaults $axleType to $numberOfTires wheels for drive and trailer units",
+    async ({ axleType, numberOfAxles, numberOfTires }) => {
+      const user = userEvent.setup();
+      const onUpdateAxleConfiguration = vi.fn();
+      const initialAxleType = axleType === "Tandem" ? "Tridem" : "Tandem";
+      // The last row is a drive unit for a power unit and an axle unit for a trailer.
+      const configuration: AxleUnit[] = [
+        ...axleConfiguration.slice(0, 2),
+        {
+          ...axleConfiguration[2],
+          numberOfAxles: axleType === "Tandem" ? 3 : 2,
+          numberOfTires: 4,
+        },
+      ];
+      const { unmount } = renderAxleUnitRow({
+        configuration,
+        onUpdateAxleConfiguration,
+      });
+
+      await user.click(screen.getByDisplayValue(initialAxleType));
+      await user.click(screen.getByRole("option", { name: axleType }));
+      expect(onUpdateAxleConfiguration).toHaveBeenLastCalledWith([
+        configuration[0],
+        configuration[1],
+        { ...configuration[2], numberOfAxles, numberOfTires },
+      ]);
+      unmount();
+
+      renderAxleUnitRow({
+        configuration: configuration.slice(1),
+        isTrailer: true,
+        onUpdateAxleConfiguration,
+      });
+      await user.click(screen.getByDisplayValue(initialAxleType));
+      await user.click(screen.getByRole("option", { name: axleType }));
+      expect(onUpdateAxleConfiguration).toHaveBeenLastCalledWith([
+        configuration[1],
+        { ...configuration[2], numberOfAxles, numberOfTires },
+      ]);
+    },
+  );
+
   it("selects an axle type by keyboard and updates the numeric axle and wheel values", async () => {
     const user = userEvent.setup();
     const onUpdateAxleConfiguration = vi.fn();
