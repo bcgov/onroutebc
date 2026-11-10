@@ -74,7 +74,7 @@ export class BPIFile extends Base {
   })
   processedTimestamp: Date;
 
-    @AutoMap()
+  @AutoMap()
   @ApiProperty({
     example: '2023-07-13T17:31:17.470Z',
     description:
