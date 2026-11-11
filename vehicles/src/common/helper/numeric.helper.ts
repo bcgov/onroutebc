@@ -11,3 +11,12 @@ export const formatNumber = (
     maximumFractionDigits: decimalPlaces ?? 0,
   });
 };
+
+export const applyToNullableNumber = <T>(
+  fn: (numericValue: number) => T,
+  value?: Nullable<number>,
+) => {
+  if (value === undefined || (!value && value == null)) return undefined;
+
+  return fn(value);
+};

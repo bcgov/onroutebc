@@ -194,7 +194,14 @@ interface TemplateVehicleDetails extends Omit<VehicleDetails, 'licensedGVW'> {
   licensedGVW?: string; // field used as formatted number
 }
 
-interface TemplateOverloadDetail {
+interface TemplateLicensedGvwOverloadDetail {
+  axleUnits: string; // single axle unit (eg. "1"), or range of axle units (eg. displayed as "3 - 4")
+  licensedGVW: string; // formatted number
+  totalGCVW: string; // formatted number
+  overload: string; // formatted number
+}
+
+interface TemplateAxleWeightOverloadDetail {
   axleUnits: string; // single axle unit (eg. "1"), or range of axle units (eg. displayed as "3 - 4")
   actualWeight: string; // formatted number
   legalMaxWeight: string; // formatted number
@@ -204,7 +211,8 @@ interface TemplateOverloadDetail {
 interface TemplateAxleCalcResults {
   overload: string; // formatted number
   totalGCVW: string; // formatted number
-  overloadDetails: TemplateOverloadDetail[];
+  licensedGvwOverloadDetails: TemplateLicensedGvwOverloadDetail[];
+  axleWeightOverloadDetails: TemplateAxleWeightOverloadDetail[];
 }
 
 interface TemplateVehicleConfiguration {

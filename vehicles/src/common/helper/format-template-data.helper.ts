@@ -21,7 +21,7 @@ import {
 import { ConditionalLicensingFee } from '@common/enum/conditional-licensing-fee.enum';
 import { EMPTY_VALUE } from '@common/constants/template.constant';
 import { PermitType } from '@common/enum/permit-type.enum';
-import { formatNumber } from './numeric.helper';
+import { applyToNullableNumber, formatNumber } from './numeric.helper';
 import { Nullable } from '@common/types/common';
 
 const getNumberOfAxlesDisplay = (numberOfAxles?: Nullable<number>) => {
@@ -42,8 +42,14 @@ const getUnmergedAxleConfigurationRows = (axleUnits: AxleUnit[], startAxleUnitNu
     .map((axleConfig, axleIndex) => startAxleUnitNumber === 0 && axleIndex === 0 ? ([
       {
         numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
-        axleSpread: formatNumber(axleConfig.axleSpread, 2),
-        interaxleSpacing: formatNumber(axleConfig.axleSpread, 2),
+        axleSpread: formatNumber(
+          applyToNullableNumber(val => val / 100, axleConfig.axleSpread),
+          2,
+        ),
+        interaxleSpacing: formatNumber(
+          applyToNullableNumber(val => val / 100, axleConfig.interaxleSpacing),
+          2,
+        ),
         axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
         numberOfTires: axleConfig.numberOfTires,
         tireSize: formatNumber(axleConfig.tireSize),
@@ -53,7 +59,10 @@ const getUnmergedAxleConfigurationRows = (axleUnits: AxleUnit[], startAxleUnitNu
       {
         numberOfAxles: null,
         axleSpread: null,
-        interaxleSpacing: formatNumber(axleConfig.axleSpread, 2),
+        interaxleSpacing: formatNumber(
+          applyToNullableNumber(val => val / 100, axleConfig.interaxleSpacing),
+          2,
+        ),
         axleUnitWeight: null,
         numberOfTires: null,
         tireSize: null,
@@ -61,7 +70,10 @@ const getUnmergedAxleConfigurationRows = (axleUnits: AxleUnit[], startAxleUnitNu
       },
       {
         numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
-        axleSpread: formatNumber(axleConfig.axleSpread, 2),
+        axleSpread: formatNumber(
+          applyToNullableNumber(val => val / 100, axleConfig.axleSpread),
+          2,
+        ),
         interaxleSpacing: null,
         axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
         numberOfTires: axleConfig.numberOfTires,
@@ -274,7 +286,17 @@ export const formatTemplateData = (
     template.permitData.vehicleConfiguration.axleCalculationResultSummary = {
       totalGCVW: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.totalGCVW),
       overload: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.overload),
-      overloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+      licensedGvwOverloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+        .filter(overloadDetail => overloadDetail.kind === OverloadCalculationDetailKind.LicensedGvw)
+        .map(overloadDetail => ({
+          axleUnits: overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+            ? `${overloadDetail.startAxleUnit}`
+            : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+          licensedGVW: formatNumber(overloadDetail.licensedGVW),
+          totalGCVW: formatNumber(overloadDetail.totalGCVW),
+          overload: formatNumber(overloadDetail.overload),
+        })),
+      axleWeightOverloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
         .filter(overloadDetail => overloadDetail.kind === OverloadCalculationDetailKind.AxleWeight)
         .map(overloadDetail => ({
           axleUnits: overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
