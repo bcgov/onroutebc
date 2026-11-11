@@ -74,7 +74,7 @@ interface ExtraordinaryLoadRequest {
   approvalNumber?: Nullable<string>;
 }
 
-export interface AxleUnit {  
+export interface AxleUnit {
   numberOfAxles?: Nullable<number>;
   axleSpread?: Nullable<number>;
   interaxleSpacing?: Nullable<number>;

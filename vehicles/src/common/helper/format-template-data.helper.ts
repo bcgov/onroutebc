@@ -37,51 +37,70 @@ const getNumberOfAxlesDisplay = (numberOfAxles?: Nullable<number>) => {
   }
 };
 
-const getUnmergedAxleConfigurationRows = (axleUnits: AxleUnit[], startAxleUnitNumber: number) => {
+const getUnmergedAxleConfigurationRows = (
+  axleUnits: AxleUnit[],
+  startAxleUnitNumber: number,
+) => {
   return axleUnits
-    .map((axleConfig, axleIndex) => startAxleUnitNumber === 0 && axleIndex === 0 ? ([
-      {
-        numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
-        axleSpread: formatNumber(
-          applyToNullableNumber(val => val / 100, axleConfig.axleSpread),
-          2,
-        ),
-        interaxleSpacing: formatNumber(
-          applyToNullableNumber(val => val / 100, axleConfig.interaxleSpacing),
-          2,
-        ),
-        axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
-        numberOfTires: axleConfig.numberOfTires,
-        tireSize: formatNumber(axleConfig.tireSize),
-        axleUnitNumber: startAxleUnitNumber + 1,
-      },
-    ]) : ([
-      {
-        numberOfAxles: null,
-        axleSpread: null,
-        interaxleSpacing: formatNumber(
-          applyToNullableNumber(val => val / 100, axleConfig.interaxleSpacing),
-          2,
-        ),
-        axleUnitWeight: null,
-        numberOfTires: null,
-        tireSize: null,
-        axleUnitNumber: null,
-      },
-      {
-        numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
-        axleSpread: formatNumber(
-          applyToNullableNumber(val => val / 100, axleConfig.axleSpread),
-          2,
-        ),
-        interaxleSpacing: null,
-        axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
-        numberOfTires: axleConfig.numberOfTires,
-        tireSize: formatNumber(axleConfig.tireSize),
-        axleUnitNumber: startAxleUnitNumber + axleIndex + 1,
-      },
-    ]))
-    .reduce((prevRows, currRows) => ([...prevRows, ...currRows]), []);
+    .map((axleConfig, axleIndex) =>
+      startAxleUnitNumber === 0 && axleIndex === 0
+        ? [
+            {
+              numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
+              axleSpread: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.axleSpread,
+                ),
+                2,
+              ),
+              interaxleSpacing: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.interaxleSpacing,
+                ),
+                2,
+              ),
+              axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
+              numberOfTires: axleConfig.numberOfTires,
+              tireSize: formatNumber(axleConfig.tireSize),
+              axleUnitNumber: startAxleUnitNumber + 1,
+            },
+          ]
+        : [
+            {
+              numberOfAxles: null,
+              axleSpread: null,
+              interaxleSpacing: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.interaxleSpacing,
+                ),
+                2,
+              ),
+              axleUnitWeight: null,
+              numberOfTires: null,
+              tireSize: null,
+              axleUnitNumber: null,
+            },
+            {
+              numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
+              axleSpread: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.axleSpread,
+                ),
+                2,
+              ),
+              interaxleSpacing: null,
+              axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
+              numberOfTires: axleConfig.numberOfTires,
+              tireSize: formatNumber(axleConfig.tireSize),
+              axleUnitNumber: startAxleUnitNumber + axleIndex + 1,
+            },
+          ],
+    )
+    .reduce((prevRows, currRows) => [...prevRows, ...currRows], []);
 };
 
 /**
@@ -245,36 +264,39 @@ export const formatTemplateData = (
     );
 
     if (!template.permitData?.vehicleConfiguration?.trailers?.length) {
-      template.permitData.vehicleConfiguration.combinedAxleConfigurations = powerUnitAxleConfigurationRows;
+      template.permitData.vehicleConfiguration.combinedAxleConfigurations =
+        powerUnitAxleConfigurationRows;
     } else {
       const maxPowerUnitAxleUnitNumber = Math.max(
         ...powerUnitAxleConfigurationRows
-          .map(row => row.axleUnitNumber)
-          .filter(unitNumber => typeof unitNumber === 'number'),
+          .map((row) => row.axleUnitNumber)
+          .filter((unitNumber) => typeof unitNumber === 'number'),
       );
 
-      const trailerAxleConfigurations = template.permitData.vehicleConfiguration.trailers
-        .filter(trailer => trailer.axleConfiguration?.length)
-        .map(trailer => trailer.axleConfiguration);
+      const trailerAxleConfigurations =
+        template.permitData.vehicleConfiguration.trailers
+          .filter((trailer) => trailer.axleConfiguration?.length)
+          .map((trailer) => trailer.axleConfiguration);
 
       const startingUnitNumbers: number[] = [];
       trailerAxleConfigurations.forEach((_, trailerIndex) => {
         startingUnitNumbers.push(
           trailerIndex === 0
             ? maxPowerUnitAxleUnitNumber
-            : startingUnitNumbers[trailerIndex - 1] + trailerAxleConfigurations[trailerIndex - 1].length,
+            : startingUnitNumbers[trailerIndex - 1] +
+                trailerAxleConfigurations[trailerIndex - 1].length,
         );
       });
 
       const trailerAxleConfigurationRows = trailerAxleConfigurations
-        .map(
-          (trailerAxleConfig, trailerIndex) => getUnmergedAxleConfigurationRows(
+        .map((trailerAxleConfig, trailerIndex) =>
+          getUnmergedAxleConfigurationRows(
             trailerAxleConfig,
             startingUnitNumbers[trailerIndex],
           ),
         )
-        .reduce((prevRows, currRows) => ([...prevRows, ...currRows]), []);
-      
+        .reduce((prevRows, currRows) => [...prevRows, ...currRows], []);
+
       template.permitData.vehicleConfiguration.combinedAxleConfigurations = [
         ...powerUnitAxleConfigurationRows,
         ...trailerAxleConfigurationRows,
@@ -284,28 +306,44 @@ export const formatTemplateData = (
 
   if (template.permitData?.vehicleConfiguration?.axleCalculationResults) {
     template.permitData.vehicleConfiguration.axleCalculationResultSummary = {
-      totalGCVW: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.totalGCVW),
-      overload: formatNumber(template.permitData.vehicleConfiguration.axleCalculationResults.overload),
-      licensedGvwOverloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
-        .filter(overloadDetail => overloadDetail.kind === OverloadCalculationDetailKind.LicensedGvw)
-        .map(overloadDetail => ({
-          axleUnits: overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
-            ? `${overloadDetail.startAxleUnit}`
-            : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
-          licensedGVW: formatNumber(overloadDetail.licensedGVW),
-          totalGCVW: formatNumber(overloadDetail.totalGCVW),
-          overload: formatNumber(overloadDetail.overload),
-        })),
-      axleWeightOverloadDetails: template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
-        .filter(overloadDetail => overloadDetail.kind === OverloadCalculationDetailKind.AxleWeight)
-        .map(overloadDetail => ({
-          axleUnits: overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
-            ? `${overloadDetail.startAxleUnit}`
-            : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
-          actualWeight: formatNumber(overloadDetail.actualWeight),
-          legalMaxWeight: formatNumber(overloadDetail.maxWeight),
-          overload: formatNumber(overloadDetail.overload),
-        })),
+      totalGCVW: formatNumber(
+        template.permitData.vehicleConfiguration.axleCalculationResults
+          .totalGCVW,
+      ),
+      overload: formatNumber(
+        template.permitData.vehicleConfiguration.axleCalculationResults
+          .overload,
+      ),
+      licensedGvwOverloadDetails:
+        template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+          .filter(
+            (overloadDetail) =>
+              overloadDetail.kind === OverloadCalculationDetailKind.LicensedGvw,
+          )
+          .map((overloadDetail) => ({
+            axleUnits:
+              overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+                ? `${overloadDetail.startAxleUnit}`
+                : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+            licensedGVW: formatNumber(overloadDetail.licensedGVW),
+            totalGCVW: formatNumber(overloadDetail.totalGCVW),
+            overload: formatNumber(overloadDetail.overload),
+          })),
+      axleWeightOverloadDetails:
+        template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+          .filter(
+            (overloadDetail) =>
+              overloadDetail.kind === OverloadCalculationDetailKind.AxleWeight,
+          )
+          .map((overloadDetail) => ({
+            axleUnits:
+              overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+                ? `${overloadDetail.startAxleUnit}`
+                : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+            actualWeight: formatNumber(overloadDetail.actualWeight),
+            legalMaxWeight: formatNumber(overloadDetail.maxWeight),
+            overload: formatNumber(overloadDetail.overload),
+          })),
     };
   }
 
