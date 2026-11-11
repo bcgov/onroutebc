@@ -102,7 +102,7 @@ BEGIN TRY
     )
     VALUES
     (
-        122,
+        123,
         @VersionDescription,
         '$(UPDATE_SCRIPT)',
         '$(REVERT_SCRIPT)',

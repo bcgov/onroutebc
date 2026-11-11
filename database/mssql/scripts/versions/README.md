@@ -587,7 +587,7 @@
 - Updates to policy config, including:
   - ORV2-6149 STOW ASW: Tandem and Tridem Jeep Interaxle Spacing Exceptions
 
-### Version 122:
+### Version 123:
 
 - Configure STOW v3 templates.
 
