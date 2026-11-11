@@ -214,6 +214,7 @@ export const formatTemplateData = (
     template.permitData.startDate,
     'MMM. D, YYYY',
   );
+  
   template.permitData.expiryDate = dateFormat(
     template.permitData.expiryDate,
     'MMM. D, YYYY',
