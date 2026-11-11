@@ -589,5 +589,10 @@
 
 ### Version 122:
 
+- Updates to policy config, including:
+  - ORV2-6124 STOW ASW Wheelbase Legal Limits
+
+### Version 123:
+
 - Configure STOW v3 templates.
 
