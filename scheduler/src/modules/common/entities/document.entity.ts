@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '@modules/common/entities/base.entity';
+import { Base } from './base.entity';
 
 @Entity({ name: 'dops.ORBC_DOCUMENT' })
 export class Document extends Base {
@@ -51,8 +51,16 @@ export class Document extends Base {
     example: 'TROS_TEMPLATE_V1.docx',
     description: 'The file Name.',
   })
-  @Column({ length: '50', name: 'FILE_NAME', nullable: false })
+  @Column({ length: '250', name: 'FILE_NAME', nullable: false })
   fileName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'garms-files/GARMS_CASH_1794448860790',
+    description: 'The S3 document key.',
+  })
+  @Column({ length: '500', name: 'S3_DOCUMENT_KEY', nullable: false })
+  s3DocumentKey: string;
 
   @AutoMap()
   @ApiProperty({

@@ -295,7 +295,7 @@ export class DgenService {
             permitConditionDocument.storageType === StorageType.INTERNAL_S3
           ) {
             const documentStream = await this.s3Service.getFile(
-              permitConditionDocument.s3Document.fileName,
+              permitConditionDocument.s3Document.s3DocumentKey,
             );
             documentBuffer = await createFile(documentStream);
           } else {

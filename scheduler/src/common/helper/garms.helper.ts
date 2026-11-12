@@ -19,7 +19,7 @@ import { PaymentCardType } from '@common/enum/payment-card-type.enum';
 import { PaymentMethodType } from '@common/enum/payment-method-type.enum';
 import { TransactionType } from '@common/enum/transaction-type.enum';
 import { Transaction } from '@modules/common/entities/transaction.entity';
-import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { GarmsExtractType } from '@app/common/enum/garms-extract-type.enum';
 import { DateTransaction } from '@modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from '@modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from '@modules/garms/dto/garms-cash-header.dto';
@@ -29,9 +29,14 @@ import { PermitTransaction } from '@modules/common/entities/permit-transaction.e
 import * as fs from 'fs';
 import { GarmsCreditHeader } from '@modules/garms/dto/garms-credit-header.dto';
 import { GarmsCreditDetails } from '@modules/garms/dto/garms-credit-details.dto';
-import { ApplicationStatus } from '@modules/common/enum/application-status.enum';
+import { ApplicationStatus } from '@app/common/enum/application-status.enum';
 import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 import { Nullable } from '@common/types/common';
+import { GarmsCreditTransaction } from '@modules/garms/interfaces/garms-credit-transaction.interface';
+import { BPIFile } from '@modules/bpi/entities/bpi-file.entity';
+import { CreditFileTransactionType } from '@common/enum/credit-file-transaction-type.enum';
+import { finished } from 'node:stream/promises';
+
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -43,12 +48,12 @@ import { Nullable } from '@common/types/common';
  * @param logger
  * @returns
  */
-export const createGarmsCashFile = (
+export const createGarmsCashFile = async (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
   logger: Logger,
-) => {
+): Promise<string> => {
   const fileName = 'GARMS_CASH_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
@@ -101,8 +106,8 @@ export const createGarmsCashFile = (
           lastHeader,
         );
       }
-      return fileName;
     }
+    return fileName;
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
@@ -110,6 +115,7 @@ export const createGarmsCashFile = (
     );
   } finally {
     logStream.end();
+    await finished(logStream);
   }
 };
 
@@ -214,12 +220,12 @@ export const createGarmsCashFileDetails = (
   }
 };
 
-export const createGarmsCreditFile = (
-  transactions: Transaction[],
+export const createGarmsCreditFile = async (
+  transactions: GarmsCreditTransaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
   logger: Logger,
-) => {
+): Promise<string> => {
   const fileName = 'GARMS_CREDIT_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
@@ -231,31 +237,31 @@ export const createGarmsCreditFile = (
     let serviceCount = 0;
     let totalAmount = 0;
     const date = new Date();
-    const groupedTransactionsByDate: DateTransaction[] =
-      groupTransactionsByDate(transactions);
+    const groupedTransactionsByDate: DateTransaction<
+      GarmsCreditTransaction[]
+    >[] = groupTransactionsByDate(transactions);
     if (groupedTransactionsByDate && groupedTransactionsByDate.length > 0) {
       let details = '';
       for (const transactionByDate of groupedTransactionsByDate) {
-        const transactions = transactionByDate.transactions as Transaction[];
-        transactions.forEach((transaction) => {
-          transaction.permitTransactions.forEach((permitTransaction) => {
-            serviceCount += 1;
-            totalAmount += getPaymentAmount(permitTransaction, transaction);
-            const detail = createGarmsCreditFileDetails(
-              date,
-              transactionByDate.date,
-              permitTransaction,
-              transaction,
-              permitServiceCodes,
-            );
-            details = details + detail;
-          });
+        transactionByDate.transactions.forEach((transaction) => {
+          serviceCount += 1;
+          totalAmount += getPaymentAmount(
+            transaction.transactionAmount,
+            transaction.transactionTypeId,
+          );
+          const detail = createGarmsCreditFileDetails(
+            date,
+            transactionByDate.date,
+            transaction,
+            permitServiceCodes,
+          );
+          details = details + detail;
         });
       }
       createGarmsCreditFileHeader(serviceCount, date, totalAmount, logStream);
       logStream.write(details);
-      return fileName;
     }
+    return fileName;
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
@@ -263,8 +269,60 @@ export const createGarmsCreditFile = (
     );
   } finally {
     logStream.end();
+    await finished(logStream);
   }
 };
+
+export const mapORBCTransactionsToGarmsCreditTransactions = (
+  transactions: Transaction[],
+): GarmsCreditTransaction[] =>
+  transactions.flatMap((transaction) =>
+    transaction.permitTransactions.map((permitTransaction) => ({
+      creditTransactionType: CreditFileTransactionType.ORBC_TRANSACTION,
+      transactionId: transaction?.transactionId,
+      transactionApprovedDate: transaction?.transactionApprovedDate,
+      transactionTypeId: transaction?.transactionTypeId,
+      transactionAmount: permitTransaction?.transactionAmount,
+      permitType: permitTransaction?.permit.permitType,
+      plateNumber: permitTransaction?.permit.permitData?.plate,
+      permitIssuedBy: permitTransaction?.permit.permitIssuedBy,
+      revision: permitTransaction?.permit.revision,
+      permitStatus: permitTransaction?.permit.permitStatus,
+      permitIssueDateTime: permitTransaction?.permit.permitIssueDateTime,
+      permitNumber: permitTransaction?.permit.permitNumber,
+      creditAccountNumber: transaction?.creditAccount?.creditAccountNumber,
+    })),
+  );
+
+export const mapBpiPrepaidAccountDetailsToGarmsCreditTransactions = (
+  bpiFiles: BPIFile[],
+): GarmsCreditTransaction[] =>
+  bpiFiles.flatMap((bpiFile) =>
+    (bpiFile.prepaidAccountDeposits ?? []).map((prepaidAccountDeposit) => ({
+      creditTransactionType:
+        CreditFileTransactionType.BPI_PREPAID_ACCOUNT_TRANSACTION,
+      transactionId: prepaidAccountDeposit.id,
+      creditAccountNumber: prepaidAccountDeposit.accountNumber,
+      transactionAmount: prepaidAccountDeposit.depositAmount,
+      transactionApprovedDate: prepaidAccountDeposit.effectivePaymentDate,
+      paymentDepositDate: prepaidAccountDeposit.depositDate,
+      transactionTypeId: TransactionType.REFUND,
+      serviceCode: process.env.BPI_GARMS_SERVICE_CODE
+        ? Number.parseInt(process.env.BPI_GARMS_SERVICE_CODE)
+        : undefined,
+    })),
+  );
+
+export const isORBCTransaction = (
+  creditTransactionType?: CreditFileTransactionType,
+): boolean =>
+  creditTransactionType === CreditFileTransactionType.ORBC_TRANSACTION;
+
+export const isBPITransaction = (
+  creditTransactionType?: CreditFileTransactionType,
+): boolean =>
+  creditTransactionType ===
+  CreditFileTransactionType.BPI_PREPAID_ACCOUNT_TRANSACTION;
 
 export const createGarmsCreditFileHeader = (
   serviceCount: number,
@@ -290,10 +348,13 @@ export const createGarmsCreditFileHeader = (
 export const createGarmsCreditFileDetails = (
   extractDate: Date,
   date: string,
-  permitTransaction: PermitTransaction,
-  transaction: Transaction,
+  transaction: GarmsCreditTransaction,
   permitServiceCodes: Map<string, number>,
 ) => {
+  const isOrbcTransaction = isORBCTransaction(
+    transaction.creditTransactionType,
+  );
+  const isBpiTransaction = isBPITransaction(transaction.creditTransactionType);
   //Do not change this assignment order.
   const gcd = new GarmsCreditDetails();
   gcd.recType = DETAIL_REC_TYPE;
@@ -301,47 +362,71 @@ export const createGarmsCreditFileDetails = (
   gcd.extractDate = convertUtcToPt(extractDate, GARMS_DATE_FORMAT);
   gcd.subAgentNumer = AGENT_NUMBER;
   gcd.wsDate = dateFormat(date, GARMS_DATE_FORMAT);
-  gcd.serviceCode = formatNumber(
-    permitServiceCodes.get(permitTransaction.permit.permitType),
-    4,
-  );
+  const serviceCode =
+    transaction.serviceCode ?? permitServiceCodes.get(transaction.permitType);
+  if (serviceCode === undefined) {
+    throw new Error(
+      `No GARMS service code configured for permit type ${transaction.permitType}`,
+    );
+  }
+  gcd.serviceCode = formatNumber(serviceCode, 4);
   gcd.serviceQuantity = formatNumber(1, 5);
 
-  const plateNumber = permitTransaction?.permit?.permitData?.plate;
+  gcd.plateNumber = formatString(transaction.plateNumber ?? '', 25);
 
-  gcd.plateNumber = formatString(plateNumber, 25);
-  const approvalSource =
-    permitTransaction.permit.permitIssuedBy === PermitIssuedBy.PPC
-      ? PermitIssuedBy.PPC
-      : 'WEB';
+  if (isOrbcTransaction && transaction.permitIssuedBy) {
+    const approvalSource =
+      transaction.permitIssuedBy === PermitIssuedBy.PPC
+        ? PermitIssuedBy.PPC
+        : 'WEB';
+    const revisionStatus =
+      transaction.revision && transaction.revision > 0
+        ? transaction.permitStatus === ApplicationStatus.VOIDED
+          ? formatString('VOID', 8)
+          : formatString('CHANGE', 8)
+        : 'ORIGINAL';
+    gcd.permitApplicationSource = formatString(
+      `${approvalSource}-${revisionStatus}`,
+      25,
+    );
+  } else if (isBpiTransaction) {
+    gcd.permitApplicationSource = formatString(
+      dateFormat(transaction.paymentDepositDate, 'YYYYMMDD'),
+      25,
+    );
+  } else {
+    gcd.permitApplicationSource = formatString('', 25);
+  }
 
-  const revisionStatus =
-    permitTransaction.permit.revision > 0
-      ? permitTransaction.permit.permitStatus === ApplicationStatus.VOIDED
-        ? formatString('VOID', 8)
-        : formatString('CHANGE', 8)
-      : 'ORIGINAL';
-
-  const permitApplicationSource = `${approvalSource}-${revisionStatus}`;
-
-  gcd.permitApplicationSource = formatString(permitApplicationSource, 25);
-  gcd.permitDate = formatString(
-    convertUtcToPt(permitTransaction.permit.permitIssueDateTime, 'YYMMDD'),
-    35,
-  );
+  if (isOrbcTransaction && transaction.permitIssueDateTime) {
+    gcd.permitDate = transaction.permitIssueDateTime
+      ? formatString(
+          convertUtcToPt(transaction.permitIssueDateTime, 'YYMMDD'),
+          35,
+        )
+      : formatString('', 35);
+  } else if (isBpiTransaction && transaction.transactionApprovedDate) {
+    gcd.permitDate = formatString(
+      dateFormat(transaction.transactionApprovedDate, 'YYMMDD'),
+      35,
+    );
+  } else {
+    gcd.permitDate = formatString('', 35);
+  }
   gcd.invUnits = INV_QTY;
   gcd.revAmount = formatAmount(
-    getPaymentAmount(permitTransaction, transaction),
+    getPaymentAmount(
+      transaction?.transactionAmount,
+      transaction?.transactionTypeId,
+    ),
     9,
   );
 
-  const permitNumber = formatPermitNumber(
-    permitTransaction?.permit?.permitNumber,
-  );
+  const permitNumber = formatPermitNumber(transaction?.permitNumber) ?? '';
 
   gcd.serNoFrom = formatString(permitNumber, 15);
   gcd.serNoTo = SER_NO_TO;
-  gcd.wsAccount = transaction?.creditAccount?.creditAccountNumber;
+  gcd.wsAccount = transaction.creditAccountNumber ?? '';
 
   gcd.voidInd = VOID_IND;
   gcd.permitNumber = formatString(permitNumber, 9);
@@ -371,7 +456,10 @@ export const processPermitTransactions = (
 ) => {
   transaction.permitTransactions.forEach((permitTransaction) => {
     const permitType = permitTransaction.permit.permitType;
-    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
+    const paymentAmount = getPaymentAmount(
+      permitTransaction.transactionAmount,
+      transaction.transactionTypeId,
+    );
 
     updateMapServiceCode(
       permitTypeAmounts,
@@ -405,24 +493,29 @@ export const processPaymentMethod = (
 
   if (paymentMethodTypeCode && paymentCardTypeCode) {
     const paymentType = paymentCardTypeCode;
-    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
+    const paymentAmount = getPaymentAmount(
+      permitTransaction.transactionAmount,
+      transaction.transactionTypeId,
+    );
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   } else if (paymentMethodTypeCode) {
     const paymentType = paymentMethodTypeCode;
-    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
+    const paymentAmount = getPaymentAmount(
+      permitTransaction.transactionAmount,
+      transaction.transactionTypeId,
+    );
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   }
 };
 
 // Determine the paymentType and transaction amount based on the condition
 export const getPaymentAmount = (
-  permitTransaction: PermitTransaction,
-  transaction: Transaction,
+  amount: number,
+  transactionTypeId: TransactionType,
 ) => {
-  const amount = permitTransaction.transactionAmount;
   const isRefundOrVoid =
-    transaction.transactionTypeId === TransactionType.REFUND ||
-    transaction.transactionTypeId === TransactionType.VOID_REFUND;
+    transactionTypeId === TransactionType.REFUND ||
+    transactionTypeId === TransactionType.VOID_REFUND;
   return isRefundOrVoid ? -amount : amount;
 };
 
@@ -435,15 +528,27 @@ export const getPaymentAmount = (
  * @param transactions - The list of transactions to be grouped by date.
  * @returns An array of DateTransaction entities, each containing a date and the corresponding transactions.
  */
-export const groupTransactionsByDate = (transactions: Transaction[]) => {
+export const groupTransactionsByDate = <
+  T extends {
+    transactionApprovedDate?: Date;
+    creditTransactionType?: CreditFileTransactionType;
+  },
+>(
+  transactions: T[],
+): DateTransaction<T[]>[] => {
   // Group transactions by the date (ignoring the time part)
-  const groupedData: Record<string, Transaction[]> = transactions.reduce(
+  const groupedData: Record<string, T[]> = transactions.reduce(
     (acc, transaction) => {
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = convertUtcToPt(
-        transaction.transactionApprovedDate,
-        'YYYY-MM-DD',
-      );
+      if (!transaction.transactionApprovedDate) {
+        throw new Error('Transaction approved date is required for GARMS.');
+      }
+      const approvedDate = transaction.transactionApprovedDate;
+      const transactionDate = isBPITransaction(
+        transaction.creditTransactionType,
+      )
+        ? dateFormat(approvedDate, 'YYYY-MM-DD')
+        : convertUtcToPt(approvedDate, 'YYYY-MM-DD');
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];
@@ -454,7 +559,7 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
 
       return acc;
     },
-    {} as Record<string, Transaction[]>,
+    {} as Record<string, T[]>,
   );
 
   const dates = Object.keys(groupedData);
@@ -478,7 +583,7 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
 
   // Convert grouped data into DateTransaction entities
   return Object.entries(groupedData).map(([date, transactions]) => {
-    const dateTransaction = new DateTransaction();
+    const dateTransaction = new DateTransaction<T[]>();
     dateTransaction.date = date;
     dateTransaction.transactions = transactions;
     return dateTransaction;

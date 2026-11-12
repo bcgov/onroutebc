@@ -50,8 +50,14 @@ GARMS_PWD=
 GARMS_ENV=GARMD
 GARMS_CASH_FILE_INTERVAL='0 0 20 * * *'
 GARMS_CREDIT_FILE_INTERVAL='0 0 20 * * *'
+BPI_SUCCESS_EMAIL_RECIPIENTS='recipient1@example.com;recipient2@example.com'
+BPI_FAILURE_EMAIL_RECIPIENTS='recipient1@example.com;recipient2@example.com'
 
 ```
+
+The BPI cron job sends success and failure emails using the corresponding
+recipient lists. Separate multiple addresses with semicolons. A successful
+enabled run sends its success email even when no new files are found.
 
 
 ### Prerequisites
@@ -106,4 +112,3 @@ Launches the end-to-end tests.
 These tests are provided for reference only and do not represent full coverage.
 
 Unit and end-to-end tests are written using [jest](https://jestjs.io/)
-

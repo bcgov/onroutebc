@@ -10,9 +10,9 @@ import {
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from './base.entity';
-import { ApplicationStatus } from '@modules/common/enum/application-status.enum';
+import { ApplicationStatus } from '@app/common/enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
-import { PermitType } from '@modules/common/enum/permit-type.enum';
+import { PermitType } from '@app/common/enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
 import { PermitApprovalSource } from '@common/enum/permit-approval-source.enum';
 import { Company } from './company.entity';

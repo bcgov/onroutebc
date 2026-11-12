@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
 import { GarmsFileTransaction } from './entities/garms-file-transaction.entity';
-import { GarmsExtractType } from '@modules/common/enum/garms-extract-type.enum';
+import { GarmsExtractType } from '@app/common/enum/garms-extract-type.enum';
 import { Transaction } from '@modules/common/entities/transaction.entity';
-import { PERMIT_STATUS } from '@modules/common/enum/application-status.enum';
+import { PERMIT_STATUS } from '@app/common/enum/application-status.enum';
 import {
   GARMS_CASH_FILE_TRANSACTION_TYPE,
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
@@ -14,6 +14,8 @@ import { PermitType } from '@modules/common/entities/permit-type.entity';
 import {
   createGarmsCashFile,
   createGarmsCreditFile,
+  mapBpiPrepaidAccountDetailsToGarmsCreditTransactions,
+  mapORBCTransactionsToGarmsCreditTransactions,
 } from '@common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
@@ -33,6 +35,11 @@ import { CacheKey } from '@common/enum/cache-key.enum';
 import { execSync } from 'child_process';
 import { uploadToGarms } from '@common/helper/sftp.helper';
 import { shouldRunOnCluster } from '@common/helper/cron.helper';
+import { BpiService } from '@modules/bpi/bpi.service';
+import { BPIFile } from '@modules/bpi/entities/bpi-file.entity';
+import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { CommonService } from '@modules/common/common.service';
+import { readFile } from 'node:fs/promises';
 
 @Injectable()
 export class GarmsService {
@@ -48,8 +55,11 @@ export class GarmsService {
     private readonly permitTypeRepository: Repository<PermitType>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly bpiService: BpiService,
+    private readonly commonService: CommonService,
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
+  @LogAsyncMethodExecution()
   async processCashTransactions() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'GARMS cash file processing')) {
@@ -79,12 +89,19 @@ export class GarmsService {
       );
       if (transactions?.length) {
         const permitServiceCodes = await this.getPermitTypeServiceCodes();
-        const fileName = createGarmsCashFile(
+        const fileName = await createGarmsCashFile(
           transactions,
           garmsExtractType,
           permitServiceCodes,
           this.logger,
         );
+        const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
+        await this.commonService.uploadToS3andCreateDocument({
+          folder: process.env.S3_GARMS_SUBFOLDER_PATH,
+          fileName,
+          fileData,
+          contentType: 'text/plain',
+        });
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
@@ -94,61 +111,91 @@ export class GarmsService {
         this.logger.log('No data to process for GARMS cash file');
       }
       await this.updateFileSubmitTimestamp(oldFile);
-      await this.saveTransactionIds(transactions, fileId);
+      await this.saveGarmsFileTransactions(transactions, fileId);
     } else {
       this.logger.log('No record to process for GARMS cash file');
     }
   }
 
   @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
+  @LogAsyncMethodExecution()
   async processCreditTransactions() {
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'GARMS credit file processing')) {
       return false;
     }
 
-    const garmsCashFeatureFlag = (await getFromCache(
+    const creditCronJobFeatureFlag = (await getFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
       'GARMS_CREDIT_CRON_JOB',
     )) as FeatureFlagValue;
-    if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
+    if (creditCronJobFeatureFlag !== FeatureFlagValue.ENABLED) {
       this.logger.log('GARMS_CREDIT_CRON_JOB is DISABLED');
       return false;
     }
+
+    const bpiCronJobFeatureFlag = (await getFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      'BPI-CRON-JOB',
+    )) as FeatureFlagValue;
     const garmsExtractType = GarmsExtractType.CREDIT;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
-    if (oldFile) {
-      const { fileId, fromTimestamp } = oldFile;
-      oldFile.toTimestamp = toTimestamp;
-      // Fetch transactions based on the provided timestamps
-      const transactions = await this.getTransactionWithPermitDetails(
-        fromTimestamp,
-        toTimestamp,
-        garmsExtractType,
+    if (!oldFile) {
+      this.logger.log(
+        'No record to process for GARMS credit file. Please seed the database with a new record.',
       );
-      if (transactions?.length) {
-        const permitServiceCodes = await this.getPermitTypeServiceCodes();
-        const fileName = createGarmsCreditFile(
-          transactions,
-          garmsExtractType,
-          permitServiceCodes,
-          this.logger,
-        );
+      return;
+    }
 
-        const remoteFilePath =
-          process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
-        const recordLength = GARMS_CREDIT_FILE_LRECL;
-        this.logger.log(`Sending credit file ${fileName}`);
-        await this.uploadFile(fileName, remoteFilePath, recordLength);
-      } else {
-        this.logger.log('No data to process for GARMS credit file');
-      }
+    const bpiFilesPromise =
+      bpiCronJobFeatureFlag === FeatureFlagValue.ENABLED
+        ? this.bpiService.fetchRecordsForGarmsCreditFile()
+        : Promise.resolve([] as BPIFile[]);
+    const bpiFiles = await bpiFilesPromise;
+
+    const transactions = await this.getTransactionWithPermitDetails(
+      oldFile.fromTimestamp,
+      toTimestamp,
+      garmsExtractType,
+    );
+    const allCreditTransactions = [
+      ...mapORBCTransactionsToGarmsCreditTransactions(transactions),
+      ...mapBpiPrepaidAccountDetailsToGarmsCreditTransactions(bpiFiles),
+    ];
+
+    if (allCreditTransactions.length > 0) {
+      const permitServiceCodes = await this.getPermitTypeServiceCodes();
+      const fileName = await createGarmsCreditFile(
+        allCreditTransactions,
+        garmsExtractType,
+        permitServiceCodes,
+        this.logger,
+      );
+
+      const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
+      await this.commonService.uploadToS3andCreateDocument({
+        folder: process.env.S3_GARMS_SUBFOLDER_PATH,
+        fileName,
+        fileData,
+        contentType: 'text/plain',
+      });
+
+      const remoteFilePath = process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
+      this.logger.log(`Sending credit file ${fileName}`);
+      await this.uploadFile(fileName, remoteFilePath, GARMS_CREDIT_FILE_LRECL);
+
       await this.updateFileSubmitTimestamp(oldFile);
-      await this.saveTransactionIds(transactions, fileId);
+      await this.saveGarmsFileTransactions(
+        transactions,
+        oldFile.fileId,
+        bpiFiles,
+      );
     } else {
-      this.logger.log('No record to process for GARMS credit file');
+      this.logger.log('No data to process for GARMS credit file');
+      await this.updateFileSubmitTimestamp(oldFile);
     }
   }
 
@@ -158,21 +205,31 @@ export class GarmsService {
    * @param transactions
    * @param fileId
    */
-  private async saveTransactionIds(
+  private async saveGarmsFileTransactions(
     transactions: Transaction[],
     fileId: string,
+    bpiFiles: BPIFile[] = [],
   ) {
-    const fileTransactions: GarmsFileTransaction[] = transactions.map(
-      (transaction) => {
+    const fileTransactions: GarmsFileTransaction[] = [
+      ...transactions.map((transaction) => {
         const fileTransaction = new GarmsFileTransaction();
         fileTransaction.fileId = fileId;
         fileTransaction.transactionId = transaction.transactionId;
         return fileTransaction;
-      },
-    );
+      }),
+      ...bpiFiles.map((bpiFile) => {
+        const fileTransaction = new GarmsFileTransaction();
+        fileTransaction.fileId = fileId;
+        fileTransaction.bpiFile = new BPIFile();
+        fileTransaction.bpiFile.id = bpiFile.id;
+        return fileTransaction;
+      }),
+    ];
 
     // Save accumulated transaction ids into the garms file transaction table
-    await this.fileTransactionRepository.save(fileTransactions);
+    if (fileTransactions.length > 0) {
+      await this.fileTransactionRepository.save(fileTransactions);
+    }
   }
 
   /**

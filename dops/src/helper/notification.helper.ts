@@ -43,6 +43,10 @@ export const getCacheKeyforEmailTemplate = (
       return CacheKey.EMAIL_TEMPLATE_APPLICATION_APPROVED;
     case NotificationTemplate.APPLICATION_REJECTED:
       return CacheKey.EMAIL_TEMPLATE_APPLICATION_REJECTED;
+    case NotificationTemplate.BPI_SUCCESS:
+      return CacheKey.EMAIL_TEMPLATE_BPI_SUCCESS;
+    case NotificationTemplate.BPI_FAILURE:
+      return CacheKey.EMAIL_TEMPLATE_BPI_FAILURE;
     default:
       throw new Error('Invalid template name');
   }
