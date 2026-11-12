@@ -57,7 +57,7 @@ export class BpiService {
   })
   @LogAsyncMethodExecution()
   async bpiFilesCronJob() {
-    this.logger.log('BPI Cron Job started at: ', new Date().toISOString());
+    this.logger.log(`BPI Cron Job started at: ${new Date().toISOString()}`);
     // Check if this scheduler should run on the current cluster
     if (!shouldRunOnCluster(this.logger, 'BPI Cron Job')) {
       return false;
