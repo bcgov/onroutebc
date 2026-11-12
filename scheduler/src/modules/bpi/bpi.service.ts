@@ -54,6 +54,7 @@ export class BpiService {
     name: 'BpiFilesCronJob',
     timeZone: TIMEZONE_PACIFIC,
     waitForCompletion: true,
+    disabled: process.env.BPI_FILE_CRON_DISABLED === 'true',
   })
   @LogAsyncMethodExecution()
   async bpiFilesCronJob() {
