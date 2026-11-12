@@ -11,7 +11,7 @@ import { Base } from '@modules/common/entities/base.entity';
 import * as PermitConditionDocumentEnum from '@app/enum/permit-condition-document.enum';
 import { StorageType } from '@app/enum/storage-type.enum';
 import { ExternalDocument } from './external-document.entity';
-import { Document } from '@modules/dms/entities/document.entity';
+import { DocumentTemplate } from './document-template.entity';
 
 @Entity({ name: 'dops.ORBC_PERMIT_CONDITION_DOCUMENT' })
 export class PermitConditionDocument extends Base {
@@ -60,7 +60,10 @@ export class PermitConditionDocument extends Base {
   externalDocument: ExternalDocument;
 
   @AutoMap()
-  @OneToOne(() => Document, { cascade: false, eager: true })
-  @JoinColumn({ name: 'S3_DOCUMENT_ID', referencedColumnName: 'documentId' })
-  s3Document: Document;
+  @OneToOne(() => DocumentTemplate, { cascade: false, eager: true })
+  @JoinColumn({
+    name: 'DOCUMENT_TEMPLATE_ID',
+    referencedColumnName: 'templateId',
+  })
+  documentTemplate: DocumentTemplate;
 }
