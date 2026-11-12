@@ -594,5 +594,8 @@
 
 ### Version 123:
 
-- Add `ORBC_BPI_FILE` and `ORBC_PREPAID_ACCOUNT_DEPOSIT` tables, including foreign keys, indexes, defaults, and audit history tables and triggers.
-- Update `ORBC_GARMS_FILE_TRANSACTION` to associate GARMS submissions with BPI files, allow a nullable transaction ID, and require either a transaction ID or BPI file ID.
+- Add `ORBC_BPI_FILE` to track downloaded BPI files, their DMS documents, download and processing timestamps, and processing status. Enforce unique file names and add document and processing-status indexes.
+- Add `ORBC_PREPAID_ACCOUNT_DEPOSIT` to store each file's prepaid account number, deposit amount, effective payment date, and deposit date, with a foreign key and index to its BPI file.
+- Add history tables, sequences, and insert/update/delete audit triggers for BPI files and prepaid account deposits.
+- Update `ORBC_GARMS_FILE_TRANSACTION` to associate GARMS submissions with BPI files, allow a nullable transaction ID, and require either a transaction ID or BPI file ID. Extend its history table and audit trigger to capture the BPI file association.
+- Add `S3_DOCUMENT_KEY` to `ORBC_DOCUMENT` and its history table, update the document audit trigger, backfill existing keys from `S3_OBJECT_ID` (or `FILE_NAME` for `eptop-template-addt-condt-v1.pdf`), and make the key non-null.

@@ -822,7 +822,7 @@ GO
 
 DECLARE @VersionDescription VARCHAR(255)
 
-SET @VersionDescription = 'Tables for BPI integration'
+SET @VersionDescription = 'Changes for BPI integration'
 
 INSERT [dbo].[ORBC_SYS_VERSION] (
 	[VERSION_ID]
