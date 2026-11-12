@@ -152,6 +152,8 @@ export const DEFAULT_TIRE_SIZE_OPTION = {
   size: 279,
 };
 
+export const DEFAULT_DRIVE_AND_TRAILER_WHEELS_PER_AXLE = 4;
+
 export const DEFAULT_AXLE_UNIT: AxleUnit = {
   numberOfAxles: 1,
   numberOfTires: 2,
@@ -168,5 +170,8 @@ export const DEFAULT_POWER_UNIT_AXLE_CONFIG = [
 
 export const DEFAULT_TRAILER_AXLE_CONFIG = [
   { interaxleSpacing: null },
-  DEFAULT_AXLE_UNIT,
+  {
+    ...DEFAULT_AXLE_UNIT,
+    numberOfTires: DEFAULT_DRIVE_AND_TRAILER_WHEELS_PER_AXLE,
+  },
 ];
