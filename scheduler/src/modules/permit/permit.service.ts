@@ -58,7 +58,7 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log(`permit IDS for issuance: ${permitIds.join(', ')}`);
+      this.logger.log(`permit IDS for issuance: ${permitIds?.join(', ')}`);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/applications/issue`;
@@ -91,7 +91,9 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS for document generation: ', permitIds);
+      this.logger.log(
+        `permit IDS for document generation: ${permitIds?.join(', ')}`,
+      );
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/permits/documents`;
@@ -124,7 +126,9 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS for receipt generation: ', permitIds);
+      this.logger.log(
+        `permit IDS for receipt generation: ${permitIds?.join(', ')}`,
+      );
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/permits/receipts`;
