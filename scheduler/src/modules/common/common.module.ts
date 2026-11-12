@@ -12,6 +12,7 @@ import { PermitType } from './entities/permit-type.entity';
 import { Receipt } from './entities/receipt.entity';
 import { Document } from './entities/document.entity';
 import { DocumentService } from './document.service';
+import { CommonService } from './common.service';
 
 @Global()
 @Module({
@@ -29,7 +30,13 @@ import { DocumentService } from './document.service';
       Document,
     ]),
   ],
-  providers: [S3Service, DocumentService],
-  exports: [HttpModule, S3Service, DocumentService, TypeOrmModule],
+  providers: [CommonService, S3Service, DocumentService],
+  exports: [
+    HttpModule,
+    CommonService,
+    S3Service,
+    DocumentService,
+    TypeOrmModule,
+  ],
 })
 export class CommonModule {}

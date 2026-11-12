@@ -38,6 +38,8 @@ import { shouldRunOnCluster } from '@common/helper/cron.helper';
 import { BpiService } from '@modules/bpi/bpi.service';
 import { BPIFile } from '@modules/bpi/entities/bpi-file.entity';
 import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
+import { CommonService } from '@modules/common/common.service';
+import { readFile } from 'node:fs/promises';
 
 @Injectable()
 export class GarmsService {
@@ -54,8 +56,9 @@ export class GarmsService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly bpiService: BpiService,
+    private readonly commonService: CommonService,
   ) {}
-  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
+  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async processCashTransactions() {
     // Check if this scheduler should run on the current cluster
@@ -86,12 +89,19 @@ export class GarmsService {
       );
       if (transactions?.length) {
         const permitServiceCodes = await this.getPermitTypeServiceCodes();
-        const fileName = createGarmsCashFile(
+        const fileName = await createGarmsCashFile(
           transactions,
           garmsExtractType,
           permitServiceCodes,
           this.logger,
         );
+        const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
+        await this.commonService.uploadToS3andCreateDocument({
+          folder: process.env.S3_GARMS_SUBFOLDER_PATH,
+          fileName,
+          fileData,
+          contentType: 'text/plain',
+        });
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
@@ -107,7 +117,7 @@ export class GarmsService {
     }
   }
 
-  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
+  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async processCreditTransactions() {
     // Check if this scheduler should run on the current cluster
@@ -158,12 +168,20 @@ export class GarmsService {
 
     if (allCreditTransactions.length > 0) {
       const permitServiceCodes = await this.getPermitTypeServiceCodes();
-      const fileName = createGarmsCreditFile(
+      const fileName = await createGarmsCreditFile(
         allCreditTransactions,
         garmsExtractType,
         permitServiceCodes,
         this.logger,
       );
+
+      const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
+      await this.commonService.uploadToS3andCreateDocument({
+        folder: process.env.S3_GARMS_SUBFOLDER_PATH,
+        fileName,
+        fileData,
+        contentType: 'text/plain',
+      });
 
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
       this.logger.log(`Sending credit file ${fileName}`);

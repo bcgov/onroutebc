@@ -35,6 +35,7 @@ import { Nullable } from '@common/types/common';
 import { GarmsCreditTransaction } from '@modules/garms/interfaces/garms-credit-transaction.interface';
 import { BPIFile } from '@modules/bpi/entities/bpi-file.entity';
 import { CreditFileTransactionType } from '@common/enum/credit-file-transaction-type.enum';
+import { finished } from 'node:stream/promises';
 
 /**
  * Create GARMS CASH file
@@ -47,12 +48,12 @@ import { CreditFileTransactionType } from '@common/enum/credit-file-transaction-
  * @param logger
  * @returns
  */
-export const createGarmsCashFile = (
+export const createGarmsCashFile = async (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
   logger: Logger,
-) => {
+): Promise<string> => {
   const fileName = 'GARMS_CASH_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
@@ -105,8 +106,8 @@ export const createGarmsCashFile = (
           lastHeader,
         );
       }
-      return fileName;
     }
+    return fileName;
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
@@ -114,6 +115,7 @@ export const createGarmsCashFile = (
     );
   } finally {
     logStream.end();
+    await finished(logStream);
   }
 };
 
@@ -218,12 +220,12 @@ export const createGarmsCashFileDetails = (
   }
 };
 
-export const createGarmsCreditFile = (
+export const createGarmsCreditFile = async (
   transactions: GarmsCreditTransaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
   logger: Logger,
-) => {
+): Promise<string> => {
   const fileName = 'GARMS_CREDIT_' + Date.now();
   const logStream: fs.WriteStream = fs.createWriteStream(
     GARMS_LOCAL_FILE_PATH + fileName,
@@ -258,8 +260,8 @@ export const createGarmsCreditFile = (
       }
       createGarmsCreditFileHeader(serviceCount, date, totalAmount, logStream);
       logStream.write(details);
-      return fileName;
     }
+    return fileName;
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
@@ -267,6 +269,7 @@ export const createGarmsCreditFile = (
     );
   } finally {
     logStream.end();
+    await finished(logStream);
   }
 };
 

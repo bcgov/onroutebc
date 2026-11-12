@@ -21,8 +21,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { BPIFile } from './entities/bpi-file.entity';
 import { DocumentService } from '@modules/common/document.service';
-import { v4 as uuidv4 } from 'uuid';
-import { Document } from '@modules/common/entities/document.entity';
 import { describeError } from '@common/helper/error.helper';
 import {
   mapToPrepaidAccountDetail,
@@ -32,12 +30,14 @@ import { readStreamToString } from '@common/helper/file.helper';
 import { BpiPaymentDetailRecord } from '@common/interface/bpi-payment-detail-record.interface';
 import { PrepaidAccountDeposit } from './entities/prepaid-account-deposit.entity';
 import { getQueryRunner } from '@common/helper/database.helper';
+import { CommonService } from '@modules/common/common.service';
 
 @Injectable()
 export class BpiService {
   private readonly logger = new Logger(BpiService.name);
   constructor(
     private readonly s3Service: S3Service,
+    private readonly commonService: CommonService,
     private readonly dataSource: DataSource,
     private readonly documentService: DocumentService,
     @InjectRepository(BPIFile)
@@ -132,9 +132,11 @@ export class BpiService {
 
       this.logger.log(`Successfully downloaded file ${file.name} via SFTP.`);
 
-      const document = await this.uploadToS3andCreateDocument({
+      const document = await this.commonService.uploadToS3andCreateDocument({
+        folder: process.env.S3_BPI_SUBFOLDER_PATH,
         fileName: file.name,
         fileData: fileData,
+        contentType: 'text/plain',
       });
 
       this.logger.log(`Successfully uploaded file ${file.name} to S3.`);
@@ -159,35 +161,6 @@ export class BpiService {
         stack,
       );
     }
-  }
-
-  private async uploadToS3andCreateDocument({
-    fileName,
-    fileData,
-  }: {
-    fileName: string;
-    fileData: Buffer<ArrayBufferLike>;
-  }): Promise<Document> {
-    const s3Object = await this.s3Service.uploadFile(
-      fileData,
-      fileName,
-      'text/plain',
-      process.env.S3_BPI_SUBFOLDER_PATH + '/' + fileName,
-    );
-
-    const latestDocument = await this.documentService.findLatest(fileName);
-
-    const document = await this.documentService.createDocument({
-      s3ObjectId: latestDocument?.s3ObjectId || uuidv4(),
-      s3Object: s3Object,
-      fileName: fileName,
-      objectMimeType: 'text/plain',
-      dmsVersionId: latestDocument?.dmsVersionId
-        ? latestDocument.dmsVersionId + 1
-        : 1,
-    });
-
-    return document;
   }
 
   @LogAsyncMethodExecution()
