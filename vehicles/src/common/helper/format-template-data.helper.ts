@@ -1,3 +1,5 @@
+import { OverloadCalculationDetailKind } from 'onroute-policy-engine/enum';
+
 import * as constants from '@common/constants/api.constant';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { ApplicationStatus } from '@common/enum/application-status.enum';
@@ -5,6 +7,7 @@ import { PermitIssuedBy } from '@common/enum/permit-issued-by.enum';
 import { Company } from '@modules/company-user-management/company/entities/company.entity';
 import { Permit } from '@modules/permit-application-payment/permit/entities/permit.entity';
 import {
+  AxleUnit,
   PermitData,
   PermitTemplateData,
 } from '@common/interface/permit.template.interface';
@@ -18,7 +21,87 @@ import {
 import { ConditionalLicensingFee } from '@common/enum/conditional-licensing-fee.enum';
 import { EMPTY_VALUE } from '@common/constants/template.constant';
 import { PermitType } from '@common/enum/permit-type.enum';
-import { formatNumber } from './numeric.helper';
+import { applyToNullableNumber, formatNumber } from './numeric.helper';
+import { Nullable } from '@common/types/common';
+
+const getNumberOfAxlesDisplay = (numberOfAxles?: Nullable<number>) => {
+  switch (numberOfAxles) {
+    case 1:
+      return 'Single';
+    case 2:
+      return 'Tandem';
+    case 3:
+      return 'Tridem';
+    default:
+      return '';
+  }
+};
+
+const getUnmergedAxleConfigurationRows = (
+  axleUnits: AxleUnit[],
+  startAxleUnitNumber: number,
+) => {
+  return axleUnits
+    .map((axleConfig, axleIndex) =>
+      startAxleUnitNumber === 0 && axleIndex === 0
+        ? [
+            {
+              numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
+              axleSpread: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.axleSpread,
+                ),
+                2,
+              ),
+              interaxleSpacing: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.interaxleSpacing,
+                ),
+                2,
+              ),
+              axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
+              numberOfTires: axleConfig.numberOfTires,
+              tireSize: formatNumber(axleConfig.tireSize),
+              axleUnitNumber: startAxleUnitNumber + 1,
+            },
+          ]
+        : [
+            {
+              numberOfAxles: null,
+              axleSpread: null,
+              interaxleSpacing: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.interaxleSpacing,
+                ),
+                2,
+              ),
+              axleUnitWeight: null,
+              numberOfTires: null,
+              tireSize: null,
+              axleUnitNumber: null,
+            },
+            {
+              numberOfAxles: getNumberOfAxlesDisplay(axleConfig.numberOfAxles),
+              axleSpread: formatNumber(
+                applyToNullableNumber(
+                  (val) => val / 100,
+                  axleConfig.axleSpread,
+                ),
+                2,
+              ),
+              interaxleSpacing: null,
+              axleUnitWeight: formatNumber(axleConfig.axleUnitWeight),
+              numberOfTires: axleConfig.numberOfTires,
+              tireSize: formatNumber(axleConfig.tireSize),
+              axleUnitNumber: startAxleUnitNumber + axleIndex + 1,
+            },
+          ],
+    )
+    .reduce((prevRows, currRows) => [...prevRows, ...currRows], []);
+};
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -172,6 +255,96 @@ export const formatTemplateData = (
   if (template.permitData?.vehicleConfiguration?.trailers?.length) {
     template.permitData.vehicleConfiguration.trailers =
       fullNames.vehicleConfigurationTrailers;
+  }
+
+  if (template.permitData?.vehicleConfiguration?.axleConfiguration) {
+    const powerUnitAxleConfigurationRows = getUnmergedAxleConfigurationRows(
+      template.permitData.vehicleConfiguration.axleConfiguration,
+      0,
+    );
+
+    if (!template.permitData?.vehicleConfiguration?.trailers?.length) {
+      template.permitData.vehicleConfiguration.combinedAxleConfigurations =
+        powerUnitAxleConfigurationRows;
+    } else {
+      const maxPowerUnitAxleUnitNumber = Math.max(
+        ...powerUnitAxleConfigurationRows
+          .map((row) => row.axleUnitNumber)
+          .filter((unitNumber) => typeof unitNumber === 'number'),
+      );
+
+      const trailerAxleConfigurations =
+        template.permitData.vehicleConfiguration.trailers
+          .filter((trailer) => trailer.axleConfiguration?.length)
+          .map((trailer) => trailer.axleConfiguration);
+
+      const startingUnitNumbers: number[] = [];
+      trailerAxleConfigurations.forEach((_, trailerIndex) => {
+        startingUnitNumbers.push(
+          trailerIndex === 0
+            ? maxPowerUnitAxleUnitNumber
+            : startingUnitNumbers[trailerIndex - 1] +
+                trailerAxleConfigurations[trailerIndex - 1].length,
+        );
+      });
+
+      const trailerAxleConfigurationRows = trailerAxleConfigurations
+        .map((trailerAxleConfig, trailerIndex) =>
+          getUnmergedAxleConfigurationRows(
+            trailerAxleConfig,
+            startingUnitNumbers[trailerIndex],
+          ),
+        )
+        .reduce((prevRows, currRows) => [...prevRows, ...currRows], []);
+
+      template.permitData.vehicleConfiguration.combinedAxleConfigurations = [
+        ...powerUnitAxleConfigurationRows,
+        ...trailerAxleConfigurationRows,
+      ];
+    }
+  }
+
+  if (template.permitData?.vehicleConfiguration?.axleCalculationResults) {
+    template.permitData.vehicleConfiguration.axleCalculationResultSummary = {
+      totalGCVW: formatNumber(
+        template.permitData.vehicleConfiguration.axleCalculationResults
+          .totalGCVW,
+      ),
+      overload: formatNumber(
+        template.permitData.vehicleConfiguration.axleCalculationResults
+          .overload,
+      ),
+      licensedGvwOverloadDetails:
+        template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+          .filter(
+            (overloadDetail) =>
+              overloadDetail.kind === OverloadCalculationDetailKind.LicensedGvw,
+          )
+          .map((overloadDetail) => ({
+            axleUnits:
+              overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+                ? `${overloadDetail.startAxleUnit}`
+                : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+            licensedGVW: formatNumber(overloadDetail.licensedGVW),
+            totalGCVW: formatNumber(overloadDetail.totalGCVW),
+            overload: formatNumber(overloadDetail.overload),
+          })),
+      axleWeightOverloadDetails:
+        template.permitData.vehicleConfiguration.axleCalculationResults.overloadDetails
+          .filter(
+            (overloadDetail) =>
+              overloadDetail.kind === OverloadCalculationDetailKind.AxleWeight,
+          )
+          .map((overloadDetail) => ({
+            axleUnits:
+              overloadDetail.startAxleUnit === overloadDetail.endAxleUnit
+                ? `${overloadDetail.startAxleUnit}`
+                : `${overloadDetail.startAxleUnit} - ${overloadDetail.endAxleUnit}`,
+            actualWeight: formatNumber(overloadDetail.actualWeight),
+            legalMaxWeight: formatNumber(overloadDetail.maxWeight),
+            overload: formatNumber(overloadDetail.overload),
+          })),
+    };
   }
 
   if (!template.permitData?.vehicleDetails?.vehicleDescription) {

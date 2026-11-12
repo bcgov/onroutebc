@@ -599,3 +599,10 @@
 - Add history tables, sequences, and insert/update/delete audit triggers for BPI files and prepaid account deposits.
 - Update `ORBC_GARMS_FILE_TRANSACTION` to associate GARMS submissions with BPI files, allow a nullable transaction ID, and require either a transaction ID or BPI file ID. Extend its history table and audit trigger to capture the BPI file association.
 - Add `S3_DOCUMENT_KEY` to `ORBC_DOCUMENT` and its history table, update the document audit trigger, backfill existing keys from `S3_OBJECT_ID` (or `FILE_NAME` for `eptop-template-addt-condt-v1.pdf`), and make the key non-null.
+
+### Version 124:
+
+- Configure STOW v3 templates.
+
+=======
+
