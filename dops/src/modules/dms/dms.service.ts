@@ -41,6 +41,7 @@ export class DmsService {
     const dmsRecord: Partial<Document> = {
       documentId: undefined,
       s3ObjectId: s3ObjectId,
+      s3DocumentKey: s3ObjectId,
       s3VersionId: s3Object.VersionId,
       s3Location: s3Object.Location,
       objectMimeType: file.mimetype,
@@ -88,6 +89,7 @@ export class DmsService {
     const dmsRecord: Partial<Document> = {
       documentId: undefined,
       s3ObjectId: dmsObject.s3ObjectId,
+      s3DocumentKey: dmsObject.s3DocumentKey,
       s3VersionId: s3Object.VersionId,
       s3Location: s3Object.Location,
       objectMimeType: file.mimetype,
@@ -139,9 +141,9 @@ export class DmsService {
     }
 
     if (downloadMode === FileDownloadModes.PROXY) {
-      s3Object = await this.s3Service.getFile(file.s3ObjectId, res);
+      s3Object = await this.s3Service.getFile(file.s3DocumentKey, res);
     } else {
-      file.preSignedS3Url = await this.s3Service.presignUrl(file.s3ObjectId);
+      file.preSignedS3Url = await this.s3Service.presignUrl(file.s3DocumentKey);
     }
 
     return { file, s3Object };

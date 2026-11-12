@@ -1,6 +1,13 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { BPIFile } from '@modules/bpi/entities/bpi-file.entity';
 
 @Entity({ name: 'permit.ORBC_GARMS_FILE_TRANSACTION' })
 export class GarmsFileTransaction {
@@ -25,6 +32,14 @@ export class GarmsFileTransaction {
     example: '1',
     description: 'Transaction Id.',
   })
-  @Column({ type: 'bigint', name: 'TRANSACTION_ID' })
-  transactionId: string;
+  @Column({ type: 'bigint', name: 'TRANSACTION_ID', nullable: true })
+  transactionId?: string;
+
+  @AutoMap()
+  @ManyToOne(() => BPIFile, (BPIFile) => BPIFile.garmsFileTransactions, {
+    eager: false,
+    cascade: false,
+  })
+  @JoinColumn({ name: 'BPI_FILE_ID' })
+  bpiFile: BPIFile;
 }

@@ -138,6 +138,7 @@ export class NotificationController {
     description:
       'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
+  @UseGuards(JwtOneOfAuthGuard)
   @Post()
   @Permissions({
     allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,

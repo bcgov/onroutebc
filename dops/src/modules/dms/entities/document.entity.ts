@@ -56,6 +56,14 @@ export class Document extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: 'garms-files/GARMS_CASH_1794448860790',
+    description: 'The S3 document key.',
+  })
+  @Column({ length: '500', name: 'S3_DOCUMENT_KEY', nullable: false })
+  s3DocumentKey: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: '1',
     description: 'The DMS Version ID.',
   })

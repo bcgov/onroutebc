@@ -53,7 +53,7 @@ export const getToDateForGarms = () => {
   return lastRunTimestampInTargetTimezone.utc().toDate();
 };
 
-export const dateFormat = (dateTime: string, format: string) => {
+export const dateFormat = (dateTime: string | Date, format: string) => {
   const formattedDate = dayjs(dateTime).format(format);
   return formattedDate;
 };

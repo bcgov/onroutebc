@@ -1,32 +1,24 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '@common/decorator/log-async-method-execution.decorator';
 import { shouldRunOnCluster } from '@common/helper/cron.helper';
-import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { lastValueFrom, map } from 'rxjs';
-import { getAccessToken } from '@common/helper/gov-common-services.helper';
-import { GovCommonServices } from '@common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permit } from '@modules/common/entities/permit.entity';
 import { Repository } from 'typeorm';
 import {
   ApplicationStatus,
   PERMIT_STATUS_FOR_DOC_GENERATION,
-} from '@modules/common/enum/application-status.enum';
+} from '@app/common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
 import dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
 } from '@common/constants/permit.constant';
+import { CommonService } from '@modules/common/common.service';
 
 @Injectable()
 export class PermitService {
@@ -41,6 +33,7 @@ export class PermitService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private schedulerRegistry: SchedulerRegistry,
+    private readonly commonService: CommonService,
   ) {}
 
   /**
@@ -65,11 +58,11 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS for issuance: ', permitIds);
+      this.logger.log(`permit IDS for issuance: ${permitIds?.join(', ')}`);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/applications/issue`;
-        await this.accessApi(url, permitDto);
+        await this.commonService.orbcPostApi(url, permitDto);
       }
     } catch (error) {
       this.logger.error(`Error in Permit Issuance Job ${String(error)}`);
@@ -98,11 +91,13 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS for document generation: ', permitIds);
+      this.logger.log(
+        `permit IDS for document generation: ${permitIds?.join(', ')}`,
+      );
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/permits/documents`;
-        await this.accessApi(url, permitDto);
+        await this.commonService.orbcPostApi(url, permitDto);
       }
     } catch (error) {
       this.logger.error(`Error in GeneratePermitDocument Job ${String(error)}`);
@@ -131,41 +126,17 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS for receipt generation: ', permitIds);
+      this.logger.log(
+        `permit IDS for receipt generation: ${permitIds?.join(', ')}`,
+      );
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/permits/receipts`;
-        await this.accessApi(url, permitDto);
+        await this.commonService.orbcPostApi(url, permitDto);
       }
     } catch (error) {
       this.logger.error(`Error in GenerateReceipt Job ${String(error)}`);
       throw new Error('Error in GenerateReceipt cron job');
-    }
-  }
-
-  async accessApi(url: string, body: PermitIdDto) {
-    try {
-      const token = await getAccessToken(
-        GovCommonServices.ORBC_SERVICE_ACCOUNT,
-        this.httpService,
-        this.cacheManager,
-      );
-
-      const reqConfig: AxiosRequestConfig = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      };
-
-      await lastValueFrom(
-        this.httpService
-          .post(url, body, reqConfig)
-          .pipe(map((response) => response.data as JSON)),
-      );
-    } catch (error) {
-      this.logger.error(`Error in calling ${url}: ${String(error)}`);
-      throw new InternalServerErrorException('Unable to call Access API.');
     }
   }
 

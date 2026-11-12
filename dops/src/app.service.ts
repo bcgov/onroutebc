@@ -52,6 +52,17 @@ export class AppService {
 
     await addToCache(
       this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_BPI_SUCCESS,
+      this.convertFileToString(assetsPath + 'templates/bpi-success.email.hbs'),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_BPI_FAILURE,
+      this.convertFileToString(assetsPath + 'templates/bpi-failure.email.hbs'),
+    );
+
+    await addToCache(
+      this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION,
       this.convertFileToString(
         assetsPath + 'templates/profile-registration.email.hbs',
