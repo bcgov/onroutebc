@@ -58,7 +58,7 @@ export class GarmsService {
     private readonly bpiService: BpiService,
     private readonly commonService: CommonService,
   ) {}
-  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */1 * * * *'}`)
+  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   @LogAsyncMethodExecution()
   async processCashTransactions() {
     // Check if this scheduler should run on the current cluster
@@ -117,7 +117,7 @@ export class GarmsService {
     }
   }
 
-  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */1 * * * *'}`)
+  @Cron(`${process.env.GARMS_CREDIT_FILE_INTERVAL || '0 */30 * * * *'}`)
   @LogAsyncMethodExecution()
   async processCreditTransactions() {
     // Check if this scheduler should run on the current cluster

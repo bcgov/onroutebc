@@ -50,7 +50,7 @@ export class BpiService {
     private readonly cacheManager: Cache,
   ) {}
 
-  @Cron(`${process.env.BPI_FILE_CRONT_TIME_PCT || '0 */1 * * * *'}`, {
+  @Cron(`${process.env.BPI_FILE_CRONT_TIME_PCT || '0 */30 * * * *'}`, {
     name: 'BpiFilesCronJob',
     timeZone: TIMEZONE_PACIFIC,
     waitForCompletion: true,
