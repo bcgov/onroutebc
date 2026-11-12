@@ -215,6 +215,7 @@ export class TpsPermitService {
     try {
       const document = await this.documentService.createDocument({
         s3ObjectId,
+        s3DocumentKey: s3ObjectId,
         s3Object,
         fileName: tpsPermit?.newPermitNumber + '.pdf',
         objectMimeType: 'application/pdf',

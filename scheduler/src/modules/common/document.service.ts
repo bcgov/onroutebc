@@ -41,6 +41,7 @@ export class DocumentService {
   @LogAsyncMethodExecution()
   async createDocument({
     s3ObjectId,
+    s3DocumentKey,
     s3Object,
     fileName,
     objectMimeType,
@@ -48,6 +49,7 @@ export class DocumentService {
     companyId,
   }: {
     s3ObjectId: string;
+    s3DocumentKey: string;
     s3Object: CompleteMultipartUploadCommandOutput;
     fileName: string;
     objectMimeType: string;
@@ -58,6 +60,7 @@ export class DocumentService {
       const dmsRecord: Document = {
         documentId: undefined,
         s3ObjectId: s3ObjectId,
+        s3DocumentKey: s3DocumentKey,
         s3VersionId: s3Object.VersionId,
         s3Location: s3Object.Location,
         objectMimeType: objectMimeType,

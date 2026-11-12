@@ -51,6 +51,7 @@ export class CommonService {
 
     const document = await this.documentService.createDocument({
       s3ObjectId: latestDocument?.s3ObjectId || uuidv4(),
+      s3DocumentKey: (folder ? folder + '/' : '') + fileName,
       s3Object: s3Object,
       fileName: fileName,
       objectMimeType: contentType,

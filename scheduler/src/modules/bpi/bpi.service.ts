@@ -178,8 +178,12 @@ export class BpiService {
         this.logger.log(
           `Skipping BPI file "${file.name}" because it already exists in ORBC_BPI_FILE and S3.`,
         );
-        //TODO Uncomment deleteFromRemote after testing
-        //await deleteFromRemote(this.logger, sftp, process.env.BPI_REMOTE_PATH, file);
+        await deleteFromRemote(
+          this.logger,
+          sftp,
+          process.env.BPI_REMOTE_PATH,
+          file,
+        );
         return;
       }
 
@@ -212,8 +216,12 @@ export class BpiService {
         `Successfully saved the ${file.name} in ORBC and is ready for processing.`,
       );
 
-      //TODO Uncomment deleteFromRemote after testing
-      //await deleteFromRemote(this.logger, sftp, process.env.BPI_REMOTE_PATH, file);
+      await deleteFromRemote(
+        this.logger,
+        sftp,
+        process.env.BPI_REMOTE_PATH,
+        file,
+      );
     } catch (error) {
       const { message, stack } = describeError(error);
       this.logger.error(
@@ -245,7 +253,7 @@ export class BpiService {
       );
 
       const contents = await this.s3Service.getFile(
-        process.env.S3_BPI_SUBFOLDER_PATH + '/' + document?.fileName,
+        document.s3DocumentKey,
         document.s3VersionId,
       );
 
