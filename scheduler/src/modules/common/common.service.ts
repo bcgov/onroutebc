@@ -16,6 +16,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom, map } from 'rxjs';
 import { AxiosRequestConfig } from 'axios';
+import { describeError } from '@common/helper/error.helper';
 
 @Injectable()
 export class CommonService {
@@ -85,7 +86,8 @@ export class CommonService {
           .pipe(map((response) => response.data as JSON)),
       );
     } catch (error) {
-      this.logger.error(`Error in calling ${url}: ${String(error)}`);
+      const { message, stack } = describeError(error);
+      this.logger.error(`Error in calling ${url}: ${message}`, stack);
       throw new InternalServerErrorException(`Unable to call API ${url}.`);
     }
   }
