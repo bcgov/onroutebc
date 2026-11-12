@@ -631,6 +631,7 @@ scheduler:
     enabled: true
     data:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}"
+      DOPS_URL: "https://{{.Release.Name}}-dops.{{.Values.global.domain}}"
       DEPLOY_CLUSTER: "{{.Values.global.env.cluster}}"
   containers:
     - name: scheduler
@@ -646,6 +647,8 @@ scheduler:
         fromLocalConfigmap:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+          - name: DOPS_URL
+            key: DOPS_URL
           - name: DEPLOY_CLUSTER
             key: DEPLOY_CLUSTER            
         fromValues:

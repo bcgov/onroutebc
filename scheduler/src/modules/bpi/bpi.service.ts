@@ -30,6 +30,8 @@ import { readStreamToString } from '@common/helper/file.helper';
 import { BpiPaymentDetailRecord } from '@common/interface/bpi-payment-detail-record.interface';
 import { PrepaidAccountDeposit } from './entities/prepaid-account-deposit.entity';
 import { getQueryRunner } from '@common/helper/database.helper';
+import { NotificationTemplate } from '@common/enum/notification-template.enum';
+import { NotificationDto } from '@modules/common/dto/request/notification.dto';
 import { CommonService } from '@modules/common/common.service';
 
 @Injectable()
@@ -70,13 +72,70 @@ export class BpiService {
       this.logger.log('BPI-CRON-JOB is DISABLED');
       return false;
     }
+
     try {
       await this.connectAndDownlodFilesFromSFTP();
-
       await this.processDownloadedFiles();
+      //Fire and forget
+      void this.sendBpiCronNotification(
+        NotificationTemplate.BPI_SUCCESS,
+        'BPI Cron Job Success',
+      );
+      return true;
     } catch (error) {
       const { message, stack } = describeError(error);
       this.logger.error(`BPI file cron job failure : ${message}`, stack);
+      //Fire and forget
+      void this.sendBpiCronNotification(
+        NotificationTemplate.BPI_FAILURE,
+        'BPI Cron Job Failure',
+      );
+      return false;
+    }
+  }
+
+  private async sendBpiCronNotification(
+    templateName: NotificationTemplate,
+    subject: string,
+  ): Promise<void> {
+    try {
+      const notificationList =
+        templateName === NotificationTemplate.BPI_SUCCESS
+          ? process.env.BPI_SUCCESS_EMAIL_RECIPIENTS
+          : process.env.BPI_FAILURE_EMAIL_RECIPIENTS;
+
+      const recipients = notificationList
+        ?.split(';')
+        .map((recipient) => recipient.trim())
+        .filter(Boolean);
+      if (!recipients?.length) {
+        throw new Error(
+          `BPI notification list must contain at least one address.`,
+        );
+      }
+
+      const dopsUrl = process.env.DOPS_URL;
+      if (!dopsUrl) {
+        throw new Error('DOPS_URL must be configured.');
+      }
+
+      const notification: NotificationDto = {
+        subject,
+        to: recipients,
+        templateName,
+        data: {},
+      };
+      await this.commonService.orbcPostApi(
+        `${dopsUrl}/notification`,
+        notification,
+      );
+    } catch (error) {
+      //swallow the error and log it, we don't want to fail the cron job because of notification failure
+      const { message, stack } = describeError(error);
+      this.logger.error(
+        `Failed to send BPI cron job notification : ${message}`,
+        stack,
+      );
     }
   }
 
@@ -99,6 +158,7 @@ export class BpiService {
     } catch (error) {
       const { message, stack } = describeError(error);
       this.logger.error(`BPI file cron job failed: ${message}`, stack);
+      throw error;
     } finally {
       this.logger.log('Closing SFTP connection...');
       await sftp?.end();
@@ -160,6 +220,7 @@ export class BpiService {
         `Failed to download BPI file ${file.name} : ${message}`,
         stack,
       );
+      throw error;
     }
   }
 
@@ -241,6 +302,7 @@ export class BpiService {
         `Failed to process BPI file ${file.fileName} : ${message}`,
         stack,
       );
+      throw error;
     }
   }
 
