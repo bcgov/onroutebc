@@ -13,11 +13,15 @@ GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
+PRINT N'Adding computed client number to ORBC_COMPANY'
+GO
 -- Create computed column for clean client numbers
 ALTER TABLE dbo.ORBC_COMPANY
 ADD COMPUTED_CLIENT_NUMBER AS CAST(REPLACE(CLIENT_NUMBER, '-', '') AS VARCHAR(13)) PERSISTED;
 
 IF @@ERROR <> 0 SET NOEXEC ON
+GO
+PRINT N'Adding computed client number index'
 GO
 -- Create index on computed column
 CREATE NONCLUSTERED INDEX IX_ORBC_COMPANY_COMPUTED_CLIENT_NUMBER
@@ -27,6 +31,8 @@ ON dbo.ORBC_COMPANY (COMPUTED_CLIENT_NUMBER);
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
+PRINT N'Rebuilding permit start date computed column and index'
+GO
 -- Start date
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_START_DATE];
 
@@ -41,6 +47,8 @@ ADD [START_DATE] AS
 
 CREATE NONCLUSTERED INDEX [IX_START_DATE] ON [permit].[ORBC_PERMIT_DATA] ([START_DATE] ASC);
 
+PRINT N'Rebuilding permit expiry date computed column and index'
+GO
 -- Expiry date
 
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_EXPIRY_DATE];
@@ -57,6 +65,8 @@ ADD [EXPIRY_DATE] AS
 CREATE NONCLUSTERED INDEX [IX_EXPIRY_DATE] ON [permit].[ORBC_PERMIT_DATA] ([EXPIRY_DATE] ASC)
 
 
+PRINT N'Rebuilding permit unit number computed column and index'
+GO
 --Unit Number
 
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_UNIT_NUMBER];
@@ -78,6 +88,8 @@ ADD [UNIT_NUMBER] AS
 CREATE NONCLUSTERED INDEX [IX_UNIT_NUMBER] ON [permit].[ORBC_PERMIT_DATA] ([UNIT_NUMBER] ASC);
 
 
+PRINT N'Rebuilding permit plate computed column and index'
+GO
 --Plate
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_PLATE];
 
@@ -97,6 +109,8 @@ ADD [PLATE] AS
 
 CREATE NONCLUSTERED INDEX [IX_PLATE] ON [permit].[ORBC_PERMIT_DATA] ([PLATE] ASC);
 
+PRINT N'Adding computed permit plate number and index'
+GO
 --ComputedPlateNumber
 ALTER TABLE [permit].[ORBC_PERMIT_DATA]
 ADD [COMPUTED_PLATE] AS
@@ -118,6 +132,8 @@ ADD [COMPUTED_PLATE] AS
 CREATE NONCLUSTERED INDEX [IX_COMPUTED_PLATE] ON [permit].[ORBC_PERMIT_DATA] ([COMPUTED_PLATE] ASC);
 
 
+PRINT N'Rebuilding permit VIN computed column and index'
+GO
 --VIN
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_VIN];
 
@@ -137,6 +153,8 @@ ADD [VIN] AS
 
 CREATE NONCLUSTERED INDEX [IX_VIN] ON [permit].[ORBC_PERMIT_DATA] ([VIN] ASC);
 
+PRINT N'Rebuilding extraordinary load approval number computed column and index'
+GO
 --EL Approval Number
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_ORBC_PERMIT_DATA_EL_APPROVAL_NUMBER];
 
@@ -159,7 +177,8 @@ CREATE NONCLUSTERED INDEX [IX_ORBC_PERMIT_DATA_EL_APPROVAL_NUMBER] ON [permit].[
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
-
+PRINT N'Adding version 119 to ORBC_SYS_VERSION'
+GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Computed columns and corresponding indexes on the dbo.ORBC_COMPANY table with COMPUTED_CLIENT_NUMBER column'
 

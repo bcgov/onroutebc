@@ -19,10 +19,14 @@ GO
 IF @@ERROR <> 0
 	SET NOEXEC ON
 GO
+PRINT N'Removing computed client number index'
+GO
 DROP INDEX IX_ORBC_COMPANY_COMPUTED_CLIENT_NUMBER on dbo.ORBC_COMPANY;
 
 IF @@ERROR <> 0
 	SET NOEXEC ON
+GO
+PRINT N'Removing computed client number column'
 GO
 ALTER TABLE dbo.ORBC_COMPANY DROP COLUMN COMPUTED_CLIENT_NUMBER;
 
@@ -30,6 +34,8 @@ IF @@ERROR <> 0
 	SET NOEXEC ON
 GO
 
+PRINT N'Reverting permit start date computed column and index'
+GO
 -- Start date
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_START_DATE];
 
@@ -41,6 +47,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD [START_DATE] AS (JSON_VALUE([PERMIT_
 
 CREATE NONCLUSTERED INDEX [IX_START_DATE] ON [permit].[ORBC_PERMIT_DATA] ([START_DATE] ASC);
 
+PRINT N'Reverting permit expiry date computed column and index'
+GO
 -- Expiry date
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_EXPIRY_DATE];
 
@@ -52,6 +60,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD [EXPIRY_DATE] AS (JSON_VALUE([PERMIT
 
 CREATE NONCLUSTERED INDEX [IX_EXPIRY_DATE] ON [permit].[ORBC_PERMIT_DATA] ([EXPIRY_DATE] ASC)
 
+PRINT N'Reverting permit unit number computed column and index'
+GO
 --Unit Number
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_UNIT_NUMBER];
 
@@ -63,6 +73,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD [UNIT_NUMBER] AS (JSON_VALUE([PERMIT
 
 CREATE NONCLUSTERED INDEX [IX_UNIT_NUMBER] ON [permit].[ORBC_PERMIT_DATA] ([UNIT_NUMBER] ASC);
 
+PRINT N'Reverting permit plate computed column and index'
+GO
 --Plate
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_PLATE];
 
@@ -74,6 +86,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD [PLATE] AS (JSON_VALUE([PERMIT_DATA]
 
 CREATE NONCLUSTERED INDEX [IX_PLATE] ON [permit].[ORBC_PERMIT_DATA] ([PLATE] ASC);
 
+PRINT N'Removing computed permit plate number and index'
+GO
 --CleanPlateNumber
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_COMPUTED_PLATE];
 
@@ -81,6 +95,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA]
 
 DROP COLUMN [COMPUTED_PLATE];
 
+PRINT N'Reverting permit VIN computed column and index'
+GO
 --VIN
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_VIN];
 
@@ -92,6 +108,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD [VIN] AS (JSON_VALUE([PERMIT_DATA], 
 
 CREATE NONCLUSTERED INDEX [IX_VIN] ON [permit].[ORBC_PERMIT_DATA] ([VIN] ASC);
 
+PRINT N'Reverting extraordinary load approval number computed column and index'
+GO
 --EL Approval Number
 DROP INDEX [permit].[ORBC_PERMIT_DATA].[IX_ORBC_PERMIT_DATA_EL_APPROVAL_NUMBER];
 
@@ -107,6 +125,8 @@ IF @@ERROR <> 0
 	SET NOEXEC ON
 GO
 
+PRINT N'Adding revert version record'
+GO
 DECLARE @VersionDescription VARCHAR(255)
 
 SET @VersionDescription = 'Revert computed columns and corresponding indexes on the permit.ORBC_PERMIT table with PERMIT_NUMBER and TPS_PERMIT_NUMBER columns'
