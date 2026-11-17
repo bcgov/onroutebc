@@ -833,7 +833,7 @@ GO
 
 PRINT N'Populating ORBC_DOCUMENT.S3_DOCUMENT_KEY values'
 GO
-UPDATE [dops].[ORBC_DOCUMENT] SET S3_DOCUMENT_KEY =S3_OBJECT_ID where file_name <>'eptop-template-addt-condt-v1.pdf';
+UPDATE [dops].[ORBC_DOCUMENT] SET S3_DOCUMENT_KEY =LOWER(S3_OBJECT_ID) where file_name <>'eptop-template-addt-condt-v1.pdf';
 
 UPDATE [dops].[ORBC_DOCUMENT] SET S3_DOCUMENT_KEY =FILE_NAME where file_name = 'eptop-template-addt-condt-v1.pdf';
 
