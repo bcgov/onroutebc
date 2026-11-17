@@ -149,7 +149,6 @@ export class BpiService {
         sftp,
         process.env.BPI_REMOTE_PATH,
       );
-
       // Process files sequentially to avoid overlapping operations on the SFTP connection.
       await files?.reduce(
         (previousFile, file) =>
@@ -286,7 +285,6 @@ export class BpiService {
           {
             isProcessed: true,
             processedTimestamp: new Date(),
-            createdDateTime: new Date(),
             updatedDateTime: new Date(),
           },
         );
