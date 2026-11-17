@@ -104,6 +104,7 @@ export class GarmsService {
         });
 
         oldFile.documentId = document.documentId;
+        await this.updateGarmsExtractFileDocumentId(oldFile);
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
