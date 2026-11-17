@@ -96,12 +96,15 @@ export class GarmsService {
           this.logger,
         );
         const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
-        await this.commonService.uploadToS3andCreateDocument({
+        const document = await this.commonService.uploadToS3andCreateDocument({
           folder: process.env.S3_GARMS_SUBFOLDER_PATH,
           fileName,
           fileData,
           contentType: 'text/plain',
         });
+
+        oldFile.documentId = document.documentId;
+        await this.updateGarmsExtractFileDocumentId(oldFile);
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
@@ -176,12 +179,15 @@ export class GarmsService {
       );
 
       const fileData = await readFile(`${GARMS_LOCAL_FILE_PATH}${fileName}`);
-      await this.commonService.uploadToS3andCreateDocument({
+      const document = await this.commonService.uploadToS3andCreateDocument({
         folder: process.env.S3_GARMS_SUBFOLDER_PATH,
         fileName,
         fileData,
         contentType: 'text/plain',
       });
+
+      oldFile.documentId = document.documentId;
+      await this.updateGarmsExtractFileDocumentId(oldFile);
 
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
       this.logger.log(`Sending credit file ${fileName}`);
@@ -243,7 +249,24 @@ export class GarmsService {
     await this.garmsExtractFileRepository.update(
       { fileId: oldFile.fileId },
       {
+        documentId: oldFile?.documentId,
         fileSubmitTimestamp: new Date(),
+        updatedDateTime: new Date(),
+        updatedUser: 'dbo',
+      },
+    );
+  }
+
+  /**
+   * Update file id with the generated document id
+   * @param oldFile
+   */
+  private async updateGarmsExtractFileDocumentId(oldFile: GarmsExtractFile) {
+    // Update document id in garms file extract table
+    await this.garmsExtractFileRepository.update(
+      { fileId: oldFile.fileId },
+      {
+        documentId: oldFile?.documentId,
         updatedDateTime: new Date(),
         updatedUser: 'dbo',
       },
