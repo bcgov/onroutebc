@@ -112,7 +112,7 @@ export class GarmsService {
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
-      await this.updateFileSubmitTimestampAndDocumentId(oldFile);
+      await this.updateFileSubmitTimestamp(oldFile);
       await this.saveGarmsFileTransactions(transactions, fileId);
     } else {
       this.logger.log('No record to process for GARMS cash file');
@@ -186,12 +186,13 @@ export class GarmsService {
       });
 
       oldFile.documentId = document.documentId;
+      await this.updateGarmsExtractFileDocumentId(oldFile);
 
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CREDIT_FILE_LOCATION;
       this.logger.log(`Sending credit file ${fileName}`);
       await this.uploadFile(fileName, remoteFilePath, GARMS_CREDIT_FILE_LRECL);
 
-      await this.updateFileSubmitTimestampAndDocumentId(oldFile);
+      await this.updateFileSubmitTimestamp(oldFile);
       await this.saveGarmsFileTransactions(
         transactions,
         oldFile.fileId,
@@ -199,7 +200,7 @@ export class GarmsService {
       );
     } else {
       this.logger.log('No data to process for GARMS credit file');
-      await this.updateFileSubmitTimestampAndDocumentId(oldFile);
+      await this.updateFileSubmitTimestamp(oldFile);
     }
   }
 
@@ -239,18 +240,32 @@ export class GarmsService {
   /**
    * After file is sent to GARMS successfuly.
    * And transactions of files are saved in databse.
-   * Update file id with the submit timestamp and generated document id
+   * Update file id with the submit timestamp
    * @param oldFile
    */
-  private async updateFileSubmitTimestampAndDocumentId(
-    oldFile: GarmsExtractFile,
-  ) {
+  private async updateFileSubmitTimestamp(oldFile: GarmsExtractFile) {
     // Update submit timestamp in garms file extract table
     await this.garmsExtractFileRepository.update(
       { fileId: oldFile.fileId },
       {
         documentId: oldFile?.documentId,
         fileSubmitTimestamp: new Date(),
+        updatedDateTime: new Date(),
+        updatedUser: 'dbo',
+      },
+    );
+  }
+
+  /**
+   * Update file id with the generated document id
+   * @param oldFile
+   */
+  private async updateGarmsExtractFileDocumentId(oldFile: GarmsExtractFile) {
+    // Update document id in garms file extract table
+    await this.garmsExtractFileRepository.update(
+      { fileId: oldFile.fileId },
+      {
+        documentId: oldFile?.documentId,
         updatedDateTime: new Date(),
         updatedUser: 'dbo',
       },
