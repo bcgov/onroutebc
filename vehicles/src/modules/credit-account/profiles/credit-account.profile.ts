@@ -172,9 +172,7 @@ export class CreditAccountProfile extends AutomapperProfile {
                 return undefined;
               }
               return (
-                Math.abs(
-                  egarmsCreditAccountDetails?.PPABalance?.account_balance,
-                ) +
+                -1 * egarmsCreditAccountDetails?.PPABalance?.account_balance +
                 (source?.externalAdjustmentAmount ?? 0) +
                 (orbcAmountToAdjust ?? 0)
               );
