@@ -289,7 +289,7 @@ export const AccountDetails = ({
             )}
             {creditAccountLimitData?.creditBalance !== undefined && (
               <Box className="account-details__row">
-                <dt className="account-details__text">Credit Balance</dt>
+                <dt className="account-details__text">Current Balance</dt>
                 <dd className="account-details__text">
                   {renderValue(creditAccountLimitData.creditBalance)}
                 </dd>
