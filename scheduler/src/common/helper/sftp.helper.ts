@@ -101,6 +101,22 @@ export const downloadFromRemote = async (
   }
 };
 
+// Added for testing only.
+export const uploadToRemote = async (
+  logger: Logger,
+  sftp: Client,
+  remotePath: string,
+  file: string,
+): Promise<void> => {
+  try {
+    await sftp.put(`${GARMS_LOCAL_FILE_PATH}${file}`, remotePath + '/' + file);
+  } catch (error) {
+    const { message, stack } = describeError(error);
+    logger.error(`Failed to upload file ${file} to remote: ${message}`, stack);
+    throw error;
+  }
+};
+
 export const deleteFromRemote = async (
   logger: Logger,
   sftp: Client,
