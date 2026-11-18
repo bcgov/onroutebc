@@ -54,4 +54,14 @@ export class GarmsExtractFile extends Base {
     name: 'TRANSACTION_DATE_TO',
   })
   toTimestamp: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'DMS Document ID used to retrieve the generated garms file',
+  })
+  @Column({
+    name: 'DOCUMENT_ID',
+    nullable: false,
+  })
+  documentId: string;
 }
