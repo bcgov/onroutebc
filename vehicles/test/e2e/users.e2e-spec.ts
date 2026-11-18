@@ -81,7 +81,7 @@ describe('Users (e2e)', () => {
       providers: [
         UsersService,
         { provide: CACHE_MANAGER, useValue: cacheManager },
-        { provide: APP_GUARD, useValue: ThrottlerGuard },
+        { provide: APP_GUARD, useClass: ThrottlerGuard },
         {
           provide: getRepositoryToken(User),
           useValue: repo,
