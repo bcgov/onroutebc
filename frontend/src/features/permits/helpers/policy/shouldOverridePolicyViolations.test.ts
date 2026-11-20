@@ -26,10 +26,13 @@ const canProceed = (result: AxleCalculationResult["results"][number]) =>
   );
 
 describe("shouldOverridePolicyViolations", () => {
-  it("allows a non-staff STOW applicant to proceed with a legal-weight warning", () => {
+  it.each([
+    POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT,
+    POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
+  ])("allows a non-staff STOW applicant to proceed with a %s warning", (id) => {
     expect(
       canProceed({
-        id: POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT,
+        id,
         result: POLICY_CHECK_RESULT_TYPES.WARNING,
         message: "Above legal weight",
         startAxleUnit: 1,
