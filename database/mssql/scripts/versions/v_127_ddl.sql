@@ -1,0 +1,446 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+
+BEGIN TRANSACTION
+GO
+
+IF @@ERROR <> 0
+  SET NOEXEC ON
+GO
+
+CREATE TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE] [nvarchar](15) NOT NULL,
+   [DESCRIPTION] [nvarchar](100) NULL,
+   [CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+   [DB_CREATE_USERID] [varchar](63) NULL,
+   [DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
+   [DB_LAST_UPDATE_USERID] [varchar](63) NULL,
+   [DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+   CONSTRAINT [PK_ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] PRIMARY KEY CLUSTERED ([USER_MANAGEMENT_ACTIVITY_TYPE] ASC) WITH (
+      PAD_INDEX = OFF,
+      STATISTICS_NORECOMPUTE = OFF,
+      IGNORE_DUP_KEY = OFF,
+      ALLOW_ROW_LOCKS = ON,
+      ALLOW_PAGE_LOCKS = ON
+      ) ON [PRIMARY]
+   ) ON [PRIMARY]
+GO
+
+
+-- Descriptions for all ORBC_USER_MANAGEMENT_ACTIVITY_TYPE columns
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'The activity performed on the user.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', 
+   @level2type=N'COLUMN',
+   @level2name=N'USER_MANAGEMENT_ACTIVITY_TYPE'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Description of the user activity type.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', 
+   @level2type=N'COLUMN',
+   @level2name=N'DESCRIPTION'
+-- Audit column descriptions (boilerplate)
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+-- Default values for audit columns (boilerplate)
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_TYPE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_TYPE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+
+-- Insert current known user activity types
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'ADDED',
+   N'User Added'
+   )
+
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'REMOVED',
+   N'User Removed'
+   )
+
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'STATUSUPDATED',
+   N'User Status Updated'
+   )
+
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'FIRSTLOGIN',
+   N'First Login'
+   )
+
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'GROUPUPDATED',
+   N'User Group Updated'
+   )
+
+INSERT [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE] (
+   [USER_MANAGEMENT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'USERNAMEUPDATED',
+   N'User Name Updated'
+   )
+
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+
+CREATE TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] (
+   [ACTIVITY_ID] [int] IDENTITY(1, 1) NOT NULL,   
+   [USER_GUID] [char](32) NULL,
+   [PENDING_USERNAME] [nvarchar] (50) NULL,
+   [UPDATED_BY_IDIR_USER_GUID] [char](32) NULL,
+   [ASSIGNED_USER_AUTH_GROUP_TYPE] [varchar](10) NULL,
+   [DATE] [datetime2](7) NOT NULL,
+   [USER_MANAGEMENT_ACTIVITY_TYPE] [nvarchar](15) NOT NULL,
+   [COMMENTS] [nvarchar](4000) NULL,
+   [CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+   [APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
+   [APP_CREATE_USERID] [nvarchar](30) NULL,
+   [APP_CREATE_USER_GUID] [char](32) NULL,
+   [APP_CREATE_USER_DIRECTORY] [nvarchar](30) NULL,
+   [APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+   [APP_LAST_UPDATE_USERID] [nvarchar](30) NULL,
+   [APP_LAST_UPDATE_USER_GUID] [char](32) NULL,
+   [APP_LAST_UPDATE_USER_DIRECTORY] [nvarchar](30) NULL,
+   [DB_CREATE_USERID] [varchar](63) NULL,
+   [DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
+   [DB_LAST_UPDATE_USERID] [varchar](63) NULL,
+   [DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+   CONSTRAINT [PK_ORBC_USER_MANAGEMENT_ACTIVITY] PRIMARY KEY CLUSTERED ([ACTIVITY_ID] ASC) WITH (
+      PAD_INDEX = OFF,
+      STATISTICS_NORECOMPUTE = OFF,
+      IGNORE_DUP_KEY = OFF,
+      ALLOW_ROW_LOCKS = ON,
+      ALLOW_PAGE_LOCKS = ON
+      ) ON [PRIMARY]
+   ) ON [PRIMARY]
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+-- Descriptions for all ORBC_USER_MANAGEMENT_ACTIVITY columns
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Surrogate auto-generated primary key.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'ACTIVITY_ID'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'GUID of user this activity belongs to.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'USER_GUID'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Username of the pending user.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'PENDING_USERNAME'   
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'GUID of user who made the update.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'UPDATED_BY_IDIR_USER_GUID'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'The assigned group of the user.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'ASSIGNED_USER_AUTH_GROUP_TYPE'         
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Date the activity was actioned.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'DATE'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description',
+   @value=N'Type of activity (e.g. ADDED, REMOVED, STATUSUPDATED, FIRSTLOGIN, GROUPUPDATED, USERNAMEUPDATED).' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'USER_MANAGEMENT_ACTIVITY_TYPE'
+EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Freeform comments, typically to indicate the reason for the activity on the user.' , 
+   @level0type=N'SCHEMA',
+   @level0name=N'dbo', 
+   @level1type=N'TABLE',
+   @level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', 
+   @level2type=N'COLUMN',
+   @level2name=N'COMMENTS'
+-- Audit column descriptions (boilerplate)
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1Name=N'ORBC_USER_MANAGEMENT_ACTIVITY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+
+-- Default values
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] 
+   ADD CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_DATE] 
+   DEFAULT(getutcdate())
+   FOR [DATE]
+GO
+-- Default values for audit columns (boilerplate)
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ADD  CONSTRAINT [DF_ORBC_USER_MANAGEMENT_ACTIVITY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+-- FK constraints
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]  
+   WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_GUID] 
+   FOREIGN KEY([USER_GUID])
+   REFERENCES [dbo].[ORBC_USER] ([USER_GUID])
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] CHECK CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_GUID]
+GO
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]  
+   WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_ASSIGNED_USER_AUTH_GROUP_TYPE] 
+   FOREIGN KEY([ASSIGNED_USER_AUTH_GROUP_TYPE])
+   REFERENCES [access].[ORBC_USER_AUTH_GROUP_TYPE]([USER_AUTH_GROUP_TYPE])
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] CHECK CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_ASSIGNED_USER_AUTH_GROUP_TYPE]
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]  
+   WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_UPDATED_BY_IDIR_USER_GUID] 
+   FOREIGN KEY([UPDATED_BY_IDIR_USER_GUID])
+   REFERENCES [dbo].[ORBC_USER] ([USER_GUID])
+GO
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] CHECK CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_UPDATED_BY_IDIR_USER_GUID]
+GO
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]
+   WITH CHECK ADD CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_MANAGEMENT_ACTIVITY_TYPE] 
+   FOREIGN KEY ([USER_MANAGEMENT_ACTIVITY_TYPE]) 
+   REFERENCES [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_TYPE]([USER_MANAGEMENT_ACTIVITY_TYPE])
+GO
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] 
+   CHECK CONSTRAINT [FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_MANAGEMENT_ACTIVITY_TYPE]
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+CREATE NONCLUSTERED INDEX IX_FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_MANAGEMENT_ACTIVITY_TYPE ON [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ([USER_MANAGEMENT_ACTIVITY_TYPE]);
+
+CREATE NONCLUSTERED INDEX IX_FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_GUID ON [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ([USER_GUID]);
+
+CREATE NONCLUSTERED INDEX IX_FK_ORBC_USER_MANAGEMENT_ACTIVITY_USER_MANAGEMENT_UPDATED_BY_IDIR_USER_GUID ON [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] ([UPDATED_BY_IDIR_USER_GUID]);
+
+PRINT 'Create index IX_ORBC_USER_USER_NAME'
+CREATE NONCLUSTERED INDEX IX_ORBC_USER_USER_NAME ON [dbo].[ORBC_USER] ([username]);
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]
+ADD CONSTRAINT [ORBC_USER_MANAGEMENT_ACTIVITY_USER_GUID_PENDING_USER_NAME_CK]
+CHECK (
+    [USER_GUID] IS NOT NULL
+    OR [PENDING_USERNAME] IS NOT NULL
+);
+GO
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY]
+ADD CONSTRAINT [ORBC_USER_MANAGEMENT_ACTIVITY_ASSIGNED_GROUP_CK]
+CHECK (
+    USER_MANAGEMENT_ACTIVITY_TYPE NOT IN ('ADDED', 'GROUPUPDATED')
+    OR ASSIGNED_USER_AUTH_GROUP_TYPE IS NOT NULL
+);
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+CREATE SEQUENCE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_H_ID_SEQ] AS [bigint] START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 50;
+
+CREATE TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_HIST](
+  _USER_MANAGEMENT_ACTIVITY_HIST_ID [bigint] DEFAULT (NEXT VALUE FOR [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_H_ID_SEQ]) NOT NULL
+  ,EFFECTIVE_DATE_HIST [datetime] NOT NULL default getutcdate()
+  ,END_DATE_HIST [datetime]
+  , [ACTIVITY_ID] int NOT NULL, [USER_GUID] char(32) NULL, [PENDING_USERNAME] nvarchar(50) NULL, [UPDATED_BY_IDIR_USER_GUID] char(32) NULL, [ASSIGNED_USER_AUTH_GROUP_TYPE] varchar(10) NULL, [DATE] datetime2 NOT NULL, [USER_MANAGEMENT_ACTIVITY_TYPE] nvarchar(15) NOT NULL, [COMMENTS] nvarchar(4000) NULL, [CONCURRENCY_CONTROL_NUMBER] int NULL, [APP_CREATE_TIMESTAMP] datetime2 NULL, [APP_CREATE_USERID] nvarchar(30) NULL, [APP_CREATE_USER_GUID] char(32) NULL, [APP_CREATE_USER_DIRECTORY] nvarchar(30) NULL, [APP_LAST_UPDATE_TIMESTAMP] datetime2 NULL, [APP_LAST_UPDATE_USERID] nvarchar(30) NULL, [APP_LAST_UPDATE_USER_GUID] char(32) NULL, [APP_LAST_UPDATE_USER_DIRECTORY] nvarchar(30) NULL, [DB_CREATE_USERID] varchar(63) NULL, [DB_CREATE_TIMESTAMP] datetime2 NULL, [DB_LAST_UPDATE_USERID] varchar(63) NULL, [DB_LAST_UPDATE_TIMESTAMP] datetime2 NULL
+  )
+
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_HIST] ADD CONSTRAINT ORBC_USER_MANAGEMENT_ACTIVITY_HIST_PK PRIMARY KEY CLUSTERED (_USER_MANAGEMENT_ACTIVITY_HIST_ID);  
+ALTER TABLE [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_HIST] ADD CONSTRAINT ORBC_USER_MANAGEMENT_ACTIVITY_HIST_UK UNIQUE (_USER_MANAGEMENT_ACTIVITY_HIST_ID,END_DATE_HIST)
+go
+
+PRINT N'Create trigger dbo.ORBC_USERMGMNT_A_S_IUD_TR'
+GO
+CREATE TRIGGER dbo.[ORBC_USERMGMNT_A_S_IUD_TR] ON [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY] FOR INSERT, UPDATE, DELETE AS
+SET NOCOUNT ON
+BEGIN TRY
+DECLARE @curr_date datetime;
+SET @curr_date = getutcdate();
+  IF NOT EXISTS(SELECT * FROM inserted) AND NOT EXISTS(SELECT * FROM deleted) 
+    RETURN;
+
+  -- historical
+  IF EXISTS(SELECT * FROM deleted)
+    update [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_HIST] set END_DATE_HIST = @curr_date where ACTIVITY_ID in (select ACTIVITY_ID from deleted) and END_DATE_HIST is null;
+  
+  IF EXISTS(SELECT * FROM inserted)
+    insert into [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_HIST] ([ACTIVITY_ID], [USER_GUID], [PENDING_USERNAME], [UPDATED_BY_IDIR_USER_GUID], [ASSIGNED_USER_AUTH_GROUP_TYPE], [DATE], [USER_MANAGEMENT_ACTIVITY_TYPE], [COMMENTS], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], _USER_MANAGEMENT_ACTIVITY_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
+      select [ACTIVITY_ID], [USER_GUID], [PENDING_USERNAME], [UPDATED_BY_IDIR_USER_GUID], [ASSIGNED_USER_AUTH_GROUP_TYPE], [DATE], [USER_MANAGEMENT_ACTIVITY_TYPE], [COMMENTS], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], (next value for [dbo].[ORBC_USER_MANAGEMENT_ACTIVITY_H_ID_SEQ]) as [_USER_MANAGEMENT_ACTIVITY_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
+
+END TRY
+BEGIN CATCH
+   IF @@trancount > 0 ROLLBACK TRANSACTION
+   EXEC orbc_error_handling
+END CATCH;
+go
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+GO
+DECLARE @VersionDescription VARCHAR(255)
+
+SET @VersionDescription = 'Database objects for user management'
+
+INSERT [dbo].[ORBC_SYS_VERSION] (
+	[VERSION_ID]
+	,[DESCRIPTION]
+	,[UPDATE_SCRIPT]
+	,[REVERT_SCRIPT]
+	,[RELEASE_DATE]
+	)
+VALUES (
+	127
+	,@VersionDescription
+	,'$(UPDATE_SCRIPT)'
+	,'$(REVERT_SCRIPT)'
+	,getutcdate()
+	)
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DECLARE @Success AS BIT
+
+SET @Success = 1
+SET NOEXEC OFF
+
+IF (@Success = 1)
+	PRINT 'The database update succeeded'
+ELSE
+BEGIN
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION
+
+	PRINT 'The database update failed'
+END
+GO

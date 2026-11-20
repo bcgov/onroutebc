@@ -6,6 +6,7 @@ import { sysAdminStaffUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersController } from '@modules/company-user-management/pending-idir-users/pending-idir-users.controller';
+import { PendingIdirUserByUserNamePathParamsDto } from '@modules/company-user-management/pending-idir-users/dto/request/pathParam/pendingIdirUserByUserName.path-params.dto';
 
 import { IUserJWT } from '@common/interface/user-jwt.interface';
 import {
@@ -67,8 +68,22 @@ describe('PendingIdirUsersController', () => {
       pendingIdirUserService.findAll.mockResolvedValue(
         Array(readPendingIdirUserMock),
       );
-      const retPendingUser = await controller.findPendingIdirUser();
+      const retPendingUser = await controller.findPendingIdirUsers();
       expect(typeof retPendingUser).toBe('object');
+    });
+  });
+
+  describe('Pending users controller find by username function', () => {
+    it('should find a pending IDIR user by username', async () => {
+      pendingIdirUserService.find.mockResolvedValue(readPendingIdirUserMock);
+      const params: PendingIdirUserByUserNamePathParamsDto = {
+        userName: constants.SYS_ADMIN_STAFF_USER_NAME,
+      };
+
+      const result = await controller.findPendingIdirUser(params);
+
+      expect(result).toEqual(readPendingIdirUserMock);
+      expect(pendingIdirUserService.find).toHaveBeenCalledWith(params.userName);
     });
   });
 });

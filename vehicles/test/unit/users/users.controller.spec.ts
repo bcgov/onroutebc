@@ -143,10 +143,10 @@ describe('UsersController', () => {
       );
       expect(typeof retUsers).toBe('object');
 
-      expect(userService.findUsersDto).toHaveBeenCalledWith(
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-        [constants.RED_COMPANY_ID],
-      );
+      expect(userService.findUsersDto).toHaveBeenCalledWith({
+        userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+        companyId: [constants.RED_COMPANY_ID],
+      });
     });
 
     it('should throw BadRequestException when user guid mismatch', async () => {

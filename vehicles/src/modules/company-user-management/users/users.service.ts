@@ -3,7 +3,9 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   BadRequestException,
   HttpStatus,
+  Inject,
   Injectable,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -43,7 +45,15 @@ import { ReadCompanyMetadataDto } from '@modules/company-user-management/company
 import { DeleteDto } from '@modules/common/dto/response/delete.dto';
 import { Directory } from '@common/enum/directory.enum';
 import { Login } from './entities/login.entity';
-import { setBaseEntityProperties } from '@common/helper/database.helper';
+import {
+  getQueryRunner,
+  setBaseEntityProperties,
+} from '@common/helper/database.helper';
+import { UpdateStaffUserDto } from './dto/request/update-staff-user.dto';
+import { UserManagmentActivityService } from '@modules/company-user-management/user-management-activity/user-management-activity.service';
+import { isFeatureEnabled } from '@common/helper/common.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
@@ -62,6 +72,9 @@ export class UsersService {
     private readonly pendingUsersService: PendingUsersService,
     private readonly pendingUsersIdirService: PendingIdirUsersService,
     private readonly companyService: CompanyService,
+    private readonly userManagmentActivityService: UserManagmentActivityService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -229,7 +242,10 @@ export class UsersService {
 
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findUsersEntity(userGUID, [companyId]);
+    const userDetails = await this.findUsersEntity({
+      userGUID,
+      companyId: [companyId],
+    });
 
     if (!userDetails?.length) {
       throw new DataNotFoundException();
@@ -244,7 +260,7 @@ export class UsersService {
       companyUser.userRole !== updateUserDto.userRole
     ) {
       //Find all employees of the company
-      const employees = await this.findUsersEntity(undefined, [companyId]);
+      const employees = await this.findUsersEntity({ companyId: [companyId] });
 
       //Verify if there are more than one CVAdmin
       const secondCVAdmin = employees.filter(
@@ -331,28 +347,35 @@ export class UsersService {
       await queryRunner.release();
     }
 
-    const userListDto = await this.findUsersDto(userGUID);
+    const userListDto = await this.findUsersDto({ userGUID });
     return userListDto[0];
   }
 
   /**
-   * Finds user entities based on optional filtering criteria of userGUID,
-   * companyId, and statusCode. Retrieves associated data for userContact,
-   * province, country, companyUser, and company. It filters users by status
-   * code with a default of 'ACTIVE' if no status code is provided.
+   * Finds user entities matching the supplied filters and loads their contact,
+   * address, company-user, and company relations. The status filter defaults to
+   * active users when it is omitted.
    *
-   * @param userGUID (Optional) The user GUID for filtering.
-   * @param companyId (Optional) The company ID for filtering.
-   * @param statusCode (Optional) The status code(s) for filtering. Defaults to ['ACTIVE'].
-   *
-   * @returns A Promise that resolves to an array of {@link User} entities.
+   * Supported filters are user GUID, username, company IDs, user role,
+   * directory, and status codes.
+   * @param filters The optional user search criteria.
+   * @returns The matching user entities.
    */
-  async findUsersEntity(
-    userGUID?: string,
-    companyId?: number[],
-    userRole?: UserRole | IDIRUserRole | ClientUserRole,
+  async findUsersEntity({
+    userGUID,
+    companyId,
+    userRole,
     statusCode = [UserStatus.ACTIVE],
-  ) {
+    userName,
+    userDirectory,
+  }: {
+    userGUID?: string;
+    companyId?: number[];
+    userRole?: UserRole | IDIRUserRole | ClientUserRole;
+    statusCode?: UserStatus[];
+    userName?: string;
+    userDirectory?: Directory;
+  }) {
     // Construct the query builder to retrieve user entities and associated data
     const userQB = this.userRepository
       .createQueryBuilder('user')
@@ -394,6 +417,18 @@ export class UsersService {
       });
     }
 
+    if (userName) {
+      userQB.andWhere('user.userName = :userName', {
+        userName: userName,
+      });
+    }
+
+    if (userDirectory) {
+      userQB.andWhere('user.directory = :directory', {
+        directory: userDirectory,
+      });
+    }
+
     if (companyId?.length) {
       userQB.andWhere('company.companyId IN (:...companyId)', {
         companyId: companyId || [],
@@ -409,27 +444,38 @@ export class UsersService {
     return await userQB.getMany();
   }
   /**
-   * Finds and returns an array of ReadUserDto objects for all users with a
-   * specific companyId or UserGUID.
+   * Finds users matching the supplied criteria and maps them to response DTOs.
+   * When pending users are requested with a company ID, their details are
+   * included alongside the registered users.
    *
-   * @param userGUID (Optional) The user GUID for filtering.
-   * @param companyId (Optional) The company ID for filtering.
-   *
-   * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
+   * @param filters The optional user GUID, company IDs, pending-user flag,
+   * role, directory, and status codes to filter by.
+   * @returns The matching users as response DTOs.
    */
   @LogAsyncMethodExecution()
-  async findUsersDto(
-    userGUID?: string,
-    companyId?: number[],
-    pendingUser?: boolean,
-    userRole?: UserRole | IDIRUserRole | ClientUserRole,
-  ): Promise<ReadUserDto[]> {
+  async findUsersDto({
+    userGUID,
+    companyId,
+    pendingUser,
+    userRole,
+    userDirectory,
+    statusCode,
+  }: {
+    userGUID?: string;
+    companyId?: number[];
+    pendingUser?: boolean;
+    userRole?: UserRole | IDIRUserRole | ClientUserRole;
+    userDirectory?: Directory;
+    statusCode?: UserStatus[];
+  }): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.findUsersEntity(
+    const userDetails = await this.findUsersEntity({
       userGUID,
       companyId,
       userRole,
-    );
+      userDirectory,
+      statusCode,
+    });
     let pendingUsersList: ReadUserDto[] = [];
     if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
@@ -632,13 +678,13 @@ export class UsersService {
   }
 
   /**
-   * Checks if the current IDIR user exists or is pending, handles their data accordingly, and
-   * returns a DTO containing the user's ORBC status, including any mapping or transactional operations
-   * required to integrate the user into the system based on their current state (e.g., newly created
-   * from IDIR pending state, or updated if existing).
+   * Ensures the current IDIR user has an ORBC account. If the user has a
+   * pending invitation, creates the account, records the first-login activity,
+   * and removes the invitation. If an existing account's username has changed,
+   * updates it and records the username-change activity.
    *
-   * @param {IUserJWT} currentUser The current user's information extracted from JWT token.
-   * @returns {Promise<ReadUserOrbcStatusDto>} A Promise containing a DTO with the user's ORBC status.
+   * @param currentUser The current user's identity and ORBC context from the JWT.
+   * @returns The user's ORBC status and account details.
    */
   @LogAsyncMethodExecution()
   async validateAndCreateIdirUser(
@@ -665,19 +711,31 @@ export class UsersService {
         );
       if (pendingUser) {
         // If user is found, initiate transaction to create user and delete the pending record
-        const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
+        const { localQueryRunner, queryRunner } = await getQueryRunner({
+          dataSource: this.dataSource,
+        });
         try {
           let newUser: User = this.mapIdirToUserEntity(
             currentUser,
             pendingUser.userRole,
           );
           newUser = await queryRunner.manager.save(newUser);
+          if (
+            await isFeatureEnabled(this.cacheManager, 'STAFF-USER-MANAGEMENT')
+          ) {
+            await this.userManagmentActivityService.firstLogin({
+              currentUser,
+              queryRunner,
+              user: newUser,
+            });
+          }
           await queryRunner.manager.delete(PendingIdirUser, {
             userName: currentUser.idir_username,
           });
-          await queryRunner.commitTransaction();
+          if (localQueryRunner) {
+            await queryRunner.commitTransaction();
+          }
+
           // Map the newly created user entity to ReadUserDto
           userContextDto.user = await this.classMapper.mapAsync(
             newUser,
@@ -685,26 +743,56 @@ export class UsersService {
             ReadUserDto,
           );
         } catch (error) {
-          await queryRunner.rollbackTransaction();
+          if (localQueryRunner) {
+            await queryRunner.rollbackTransaction();
+          }
           this.logger.error(error);
           throw error;
         } finally {
-          await queryRunner.release();
+          if (localQueryRunner) {
+            await queryRunner.release();
+          }
         }
       }
     } else {
       // Update the user information if the username from JWT token differs
       if (user.userName.toUpperCase() !== currentUser.userName.toUpperCase()) {
-        await this.userRepository.update(
-          { userGUID: currentUser.userGUID },
-          {
-            userName: currentUser.userName,
-            updatedUserGuid: currentUser.userGUID,
-            updatedDateTime: new Date(),
-            updatedUser: currentUser.userName,
-            updatedUserDirectory: currentUser.orbcUserDirectory,
-          },
-        );
+        const { localQueryRunner, queryRunner } = await getQueryRunner({
+          dataSource: this.dataSource,
+        });
+        try {
+          await queryRunner.manager.update(
+            User,
+            { userGUID: currentUser.userGUID },
+            {
+              userName: currentUser.userName,
+              updatedUser: currentUser.userName,
+              updatedDateTime: new Date(),
+              updatedUserDirectory: currentUser.orbcUserDirectory,
+              updatedUserGuid: currentUser.userGUID,
+            },
+          );
+          if (await isFeatureEnabled(this.cacheManager, 'CREDIT-ACCOUNT')) {
+            await this.userManagmentActivityService.userNameUpdate({
+              currentUser,
+              queryRunner,
+              user,
+            });
+          }
+          if (localQueryRunner) {
+            await queryRunner.commitTransaction();
+          }
+        } catch (error) {
+          if (localQueryRunner) {
+            await queryRunner.rollbackTransaction();
+          }
+          this.logger.error(error);
+          throw error;
+        } finally {
+          if (localQueryRunner) {
+            await queryRunner.release();
+          }
+        }
         user.userName = currentUser.userName;
       }
 
@@ -862,5 +950,116 @@ export class UsersService {
       success,
       failure,
     };
+  }
+
+  /**
+   * Updates a staff user's role, status, or both, and records an activity for
+   * each value that changes.
+   *
+   * @param userGUID The GUID of the staff user to update.
+   * @param updateStaffUserDto Contains the new role, status, or both. At least
+   * one value must be provided.
+   * @param currentUser The authorized user performing the update; used for audit metadata.
+   * @returns The updated staff user's details.
+   * @throws {BadRequestException} If neither a role nor a status is provided.
+   * @throws {DataNotFoundException} If no staff user matches the GUID.
+   * @throws {InternalServerErrorException} If multiple users match the GUID.
+   */
+  @LogAsyncMethodExecution()
+  async staffUserUpdate(
+    userGUID: string,
+    updateStaffUserDto: UpdateStaffUserDto,
+    currentUser?: IUserJWT,
+  ): Promise<ReadUserDto> {
+    const isUserRoleUpdate = updateStaffUserDto?.userRole !== undefined;
+    const isUserStatusCodeUpdate = updateStaffUserDto?.userStatus !== undefined;
+    if (!isUserRoleUpdate && !isUserStatusCodeUpdate) {
+      throw new BadRequestException('At lease one of the fields is required');
+    }
+    const userDetails = await this.findUsersEntity({
+      userGUID,
+      statusCode: [UserStatus.ACTIVE, UserStatus.DISABLED, UserStatus.DELETED],
+    });
+
+    if (!userDetails?.length) {
+      throw new DataNotFoundException();
+    }
+
+    if (userDetails?.length > 1) {
+      throw new InternalServerErrorException(
+        'More than one record identified for the given user name',
+      );
+    }
+
+    const user = userDetails?.at(0);
+
+    if (
+      user.userRole === updateStaffUserDto?.userRole &&
+      user.statusCode === updateStaffUserDto?.userStatus
+    ) {
+      return await this.classMapper.mapAsync(user, User, ReadUserDto);
+    }
+
+    const { localQueryRunner, queryRunner } = await getQueryRunner({
+      dataSource: this.dataSource,
+    });
+    try {
+      const currentDateTime: Date = new Date();
+      const { affected } = await queryRunner.manager.update(
+        User,
+        { userGUID: userGUID },
+        {
+          ...(isUserRoleUpdate && {
+            userRole: updateStaffUserDto.userRole,
+          }),
+          ...(isUserStatusCodeUpdate && {
+            statusCode: updateStaffUserDto.userStatus,
+          }),
+          updatedUser: currentUser.userName,
+          updatedDateTime: currentDateTime,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        },
+      );
+      if (affected) {
+        if (
+          isUserRoleUpdate &&
+          user.userRole !== updateStaffUserDto?.userRole
+        ) {
+          await this.userManagmentActivityService.userRoleUpdate({
+            currentUser,
+            queryRunner,
+            user,
+            assignedUserRole: updateStaffUserDto?.userRole,
+          });
+        }
+        if (
+          isUserStatusCodeUpdate &&
+          user.statusCode !== updateStaffUserDto?.userStatus
+        ) {
+          await this.userManagmentActivityService.userStatusUpdate({
+            currentUser,
+            queryRunner,
+            user,
+            userStatus: updateStaffUserDto?.userStatus,
+          });
+        }
+      }
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
+    } catch (error) {
+      if (localQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
+      this.logger.error(error);
+      throw error;
+    } finally {
+      if (localQueryRunner) {
+        await queryRunner.release();
+      }
+    }
+    const userListDto = await this.findUsersDto({ userGUID });
+    return userListDto?.at(0);
   }
 }

@@ -611,3 +611,7 @@
 ### Version 126:
 
 - Modify [tps].[CopyMigratedCreditAccounts] stored procedure to set DB user id and DB Date Time
+
+### Version 127:
+
+- Database objects for user management

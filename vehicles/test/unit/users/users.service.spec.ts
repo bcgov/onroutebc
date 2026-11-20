@@ -49,6 +49,9 @@ import { Request } from 'express';
 import { IUserJWT } from '@common/interface/user-jwt.interface';
 import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '@modules/company-user-management/users/entities/login.entity';
+import { UserManagmentActivityService } from '@modules/company-user-management/user-management-activity/user-management-activity.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -62,6 +65,8 @@ let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+let userManagmentActivityServiceMock: DeepMocked<UserManagmentActivityService>;
+let cacheManagerMock: DeepMocked<Cache>;
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -80,6 +85,9 @@ describe('UsersService', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    userManagmentActivityServiceMock =
+      createMock<UserManagmentActivityService>();
+    cacheManagerMock = createMock<Cache>();
     repo = createMock<Repository<User>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     repoLogin = createMock<Repository<Login>>();
@@ -116,6 +124,14 @@ describe('UsersService', () => {
         {
           provide: CompanyService,
           useValue: companyServiceMock,
+        },
+        {
+          provide: UserManagmentActivityService,
+          useValue: userManagmentActivityServiceMock,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: cacheManagerMock,
         },
         {
           provide: getMapperToken(),

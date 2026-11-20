@@ -93,11 +93,10 @@ export class CompanyUsersController {
     @Param('companyId') companyId: number,
     @Query() getCompanyUserQueryParamsDto: GetCompanyUserQueryParamsDto,
   ) {
-    return await this.userService.findUsersDto(
-      undefined,
-      [companyId],
-      getCompanyUserQueryParamsDto.includePendingUser,
-    );
+    return await this.userService.findUsersDto({
+      companyId: [companyId],
+      pendingUser: getCompanyUserQueryParamsDto.includePendingUser,
+    });
   }
 
   /**
@@ -156,7 +155,10 @@ export class CompanyUsersController {
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
   ): Promise<ReadUserDto> {
     const { companyId, userGUID } = params;
-    const users = await this.userService.findUsersDto(userGUID, [companyId]);
+    const users = await this.userService.findUsersDto({
+      userGUID,
+      companyId: [companyId],
+    });
     if (!users?.length) {
       throw new DataNotFoundException();
     }

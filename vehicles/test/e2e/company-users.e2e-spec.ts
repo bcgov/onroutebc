@@ -36,6 +36,9 @@ import { redCompanyEntityMock } from '../util/mocks/data/company.mock';
 import * as constants from '../util/mocks/data/test-data.constants';
 import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '@modules/company-user-management/users/entities/login.entity';
+import { UserManagmentActivityService } from '@modules/company-user-management/user-management-activity/user-management-activity.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { readRedCompanyPendingUserDtoMock } from '../util/mocks/data/pending-user.mock';
 
 let repo: DeepMocked<Repository<User>>;
@@ -45,6 +48,8 @@ let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+let userManagmentActivityServiceMock: DeepMocked<UserManagmentActivityService>;
+let cacheManagerMock: DeepMocked<Cache>;
 
 describe('Company Users (e2e)', () => {
   let app: INestApplication;
@@ -58,6 +63,9 @@ describe('Company Users (e2e)', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    userManagmentActivityServiceMock =
+      createMock<UserManagmentActivityService>();
+    cacheManagerMock = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
@@ -90,6 +98,14 @@ describe('Company Users (e2e)', () => {
         {
           provide: CompanyService,
           useValue: companyServiceMock,
+        },
+        {
+          provide: UserManagmentActivityService,
+          useValue: userManagmentActivityServiceMock,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: cacheManagerMock,
         },
         {
           provide: getMapperToken(),
