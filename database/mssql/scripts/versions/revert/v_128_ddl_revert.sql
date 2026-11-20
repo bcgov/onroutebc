@@ -1,0 +1,75 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+
+BEGIN TRANSACTION
+GO
+
+IF @@ERROR <> 0
+  SET NOEXEC ON
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+ALTER TABLE [permit].[ORBC_BPI_FILE] DROP CONSTRAINT ORBC_BPI_FILE_FILE_NAME_UK;
+
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+
+DECLARE @VersionDescription VARCHAR(255)
+
+SET @VersionDescription = 'Remove unique key constraint to FILE_NAME in permit.ORBC_BPI_FILE'
+
+INSERT [dbo].[ORBC_SYS_VERSION] (
+	[VERSION_ID]
+	,[DESCRIPTION]
+	,[RELEASE_DATE]
+	)
+VALUES (
+	127
+	,@VersionDescription
+	,getutcdate()
+	)
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+
+IF @@ERROR <> 0
+	SET NOEXEC ON
+GO
+
+DECLARE @Success AS BIT
+
+SET @Success = 1
+SET NOEXEC OFF
+
+IF (@Success = 1)
+	PRINT 'The database revert succeeded'
+ELSE
+BEGIN
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION
+
+	PRINT 'The database revert failed'
+END
+GO
