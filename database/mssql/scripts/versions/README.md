@@ -619,3 +619,9 @@
 ### Version 128:
 
 - Add unique key constraint to FILE_NAME in permit.ORBC_BPI_FILE
+
+### Version 129:
+
+- Updates to policy config including:
+  - ORV2-6213 - update interaxle spacing requirements for cranes and dollies.
+  - ORV2-6167 - STOW ASW: Wheeler Interaxle Spacing Exceptions.
