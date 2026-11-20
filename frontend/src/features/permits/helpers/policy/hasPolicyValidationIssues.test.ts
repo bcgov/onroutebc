@@ -15,16 +15,14 @@ const axleResult = (id: PolicyCheckId, result: PolicyCheckResultType) => ({
 });
 
 describe("hasPolicyValidationIssues", () => {
-  it("ignores a silent legal-weight warning", () => {
+  it.each([
+    PolicyCheckId.LegalWeight,
+    PolicyCheckId.AxleGroupMaximumLegalWeightThreshold,
+  ])("ignores a silent warning for %s", (id) => {
     expect(
       hasPolicyValidationIssues({
         axleCalculationResults: {
-          results: [
-            axleResult(
-              PolicyCheckId.LegalWeight,
-              PolicyCheckResultType.Warning,
-            ),
-          ],
+          results: [axleResult(id, PolicyCheckResultType.Warning)],
           overload: 1,
           overloadDetails: [],
           totalGCVW: 6001,

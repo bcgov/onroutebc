@@ -23,11 +23,11 @@ export const hasPolicyValidationIssues = ({
     axleCalculationResults?.results.some(
       ({ id, result }) =>
         result !== POLICY_CHECK_RESULT_TYPES.PASS &&
-        // Explicitly ignore warnings for LEGAL_WEIGHT, which are not violation errors.
-        // In future if we have to handle more warnings, refactor this based on warning
-        // behaviour.
+        // Legal weight warnings are shown through the overload calculation.
         !(
-          id === POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT &&
+          (id === POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT ||
+            id ===
+              POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD) &&
           result === POLICY_CHECK_RESULT_TYPES.WARNING
         ),
     ),

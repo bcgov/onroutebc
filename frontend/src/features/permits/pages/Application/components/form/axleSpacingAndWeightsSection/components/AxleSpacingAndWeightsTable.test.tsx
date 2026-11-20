@@ -259,13 +259,13 @@ describe("AxleSpacingAndWeightsSection", () => {
     ).toHaveClass("table__input--fail");
   });
 
-  it("displays an axle group maximum legal weight failure and highlights only the group weights", async () => {
+  it("shows group overload details without a warning or field errors", async () => {
     const user = userEvent.setup();
     const runAxleCalculation = vi.fn().mockReturnValue({
       results: [
         {
           id: POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
-          result: "fail",
+          result: "warning",
           message: axleGroupMaximumLegalWeightMessage,
           actualWeight: 22999,
           thresholdWeight: 21000,
@@ -275,6 +275,16 @@ describe("AxleSpacingAndWeightsSection", () => {
       ],
       totalGCVW: 29699,
       overload: 1999,
+      overloadDetails: [
+        {
+          kind: OverloadCalculationDetailKind.AxleWeight,
+          startAxleUnit: 2,
+          endAxleUnit: 3,
+          actualWeight: 22999,
+          maxWeight: 21000,
+          overload: 1999,
+        },
+      ],
     });
 
     render(
@@ -318,18 +328,20 @@ describe("AxleSpacingAndWeightsSection", () => {
 
     await user.click(screen.getByRole("button", { name: "Calculate" }));
 
+    expect(screen.getByText("None")).toBeVisible();
+    expect(screen.getByText(/Total \(kg\): 1,999/)).toBeVisible();
     expect(
-      await screen.findByText(axleGroupMaximumLegalWeightMessage),
-    ).toHaveClass("axle-spacing-and-weights-results__text--fail");
+      screen.queryByText(axleGroupMaximumLegalWeightMessage),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByDisplayValue("6700").closest(".table__input"),
     ).not.toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("12000").closest(".table__input"),
-    ).toHaveClass("table__input--fail");
+    ).not.toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("10999").closest(".table__input"),
-    ).toHaveClass("table__input--fail");
+    ).not.toHaveClass("table__input--fail");
     expect(
       screen.getByDisplayValue("3.50").closest(".table__input"),
     ).not.toHaveClass("table__input--fail");

@@ -5,8 +5,8 @@ import {
 
 // Results remain filtered until every policy-engine evaluation has a defined
 // frontend presentation.
+// Legal weight results are shown through the overload calculation.
 export const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
-  POLICY_CHECK_ID_TYPES.AXLE_GROUP_MAXIMUM_LEGAL_WEIGHT_THRESHOLD,
   POLICY_CHECK_ID_TYPES.AXLE_SPREAD,
   POLICY_CHECK_ID_TYPES.BOOSTER_AXLE_LIMIT,
   POLICY_CHECK_ID_TYPES.BRIDGE_FORMULA,
@@ -21,5 +21,4 @@ export const DISPLAYABLE_POLICY_CHECK_IDS = new Set<PolicyCheckIdType>([
   POLICY_CHECK_ID_TYPES.PERMITTABLE_WEIGHT,
   POLICY_CHECK_ID_TYPES.PICKER_TRUCK_TRACTOR_WEIGHT_RESTRICTIONS,
   POLICY_CHECK_ID_TYPES.WHEELBASE_LEGAL_LIMITS,
-  // Note: We intentionally do NOT want `POLICY_CHECK_ID_TYPES.LEGAL_WEIGHT`, as being above legal should show no warnings.
 ]);
