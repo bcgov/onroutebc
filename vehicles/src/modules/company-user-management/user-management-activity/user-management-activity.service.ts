@@ -51,7 +51,7 @@ export class UserManagmentActivityService {
   }: {
     currentUser: IUserJWT;
     queryRunner?: Nullable<QueryRunner>;
-    user: User | PendingIdirUser;
+    user: User;
     assignedUserRole: IDIRUserRole;
   }): Promise<UserManagementActivity> {
     let userManagementActivity = new UserManagementActivity();
@@ -68,12 +68,11 @@ export class UserManagmentActivityService {
       userManagementActivity.comment = `User Group changed from ${user?.userRole} to ${assignedUserRole}`;
       userManagementActivity.updatedByStaffUser = new User();
       userManagementActivity.updatedByStaffUser.userGUID = currentUser.userGUID;
-      if (user instanceof User) {
-        userManagementActivity.user = new User();
-        userManagementActivity.user.userGUID = user.userGUID;
-      } else {
-        userManagementActivity.pendingStaffUser = user;
-      }
+
+      userManagementActivity.user = new User();
+      userManagementActivity.user.userGUID = user.userGUID;
+      userManagementActivity.pendingStaffUser = new PendingIdirUser();
+      userManagementActivity.pendingStaffUser.userName = user?.userName;
 
       setBaseEntityProperties({
         entity: userManagementActivity,
@@ -342,6 +341,7 @@ export class UserManagmentActivityService {
       userManagementActivity.updatedByStaffUser = new User();
       userManagementActivity.updatedByStaffUser.userGUID = currentUser.userGUID;
       userManagementActivity.pendingStaffUser = user;
+      userManagementActivity.assignedUserRole = user.userRole;
       setBaseEntityProperties({
         entity: userManagementActivity,
         currentUser,
@@ -464,7 +464,13 @@ export class UserManagmentActivityService {
       });
     }
 
+    userManagementActivityQB.orderBy(
+      'userManagementActivity.activityId',
+      'DESC',
+    );
+
     const userManagementActivityList = await userManagementActivityQB.getMany();
+
     const readUserManagementActivityDto = await this.classMapper.mapArrayAsync(
       userManagementActivityList,
       UserManagementActivity,
