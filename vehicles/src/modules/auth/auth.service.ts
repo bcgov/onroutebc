@@ -22,9 +22,12 @@ export class AuthService {
   ): Promise<ReadUserDto[]> {
     let user: ReadUserDto[];
     if (!companyId || identity_provider === IDP.IDIR) {
-      user = await this.usersService.findUsersDto(userGuid);
+      user = await this.usersService.findUsersDto({ userGUID: userGuid });
     } else {
-      user = await this.usersService.findUsersDto(userGuid, [companyId]);
+      user = await this.usersService.findUsersDto({
+        userGUID: userGuid,
+        companyId: [companyId],
+      });
     }
 
     return user;

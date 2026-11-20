@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { Base } from '@modules/common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { IDIRUserRole } from '@common/enum/user-role.enum';
+import { UserManagementActivity } from '@modules/company-user-management/user-management-activity/entities/user-management-activity.entity';
 
 @Entity({ name: 'ORBC_PENDING_IDIR_USER' })
 export class PendingIdirUser extends Base {
@@ -25,4 +26,11 @@ export class PendingIdirUser extends Base {
     nullable: false,
   })
   userRole: IDIRUserRole;
+
+  @AutoMap(() => [UserManagementActivity])
+  @OneToMany(
+    () => UserManagementActivity,
+    (activity) => activity.pendingStaffUser,
+  )
+  userManagementActivities?: UserManagementActivity[];
 }

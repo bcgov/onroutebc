@@ -10,6 +10,7 @@ import { ReadPendingIdirUserDto } from '@modules/company-user-management/pending
 import { CreatePendingIdirUserDto } from '@modules/company-user-management/pending-idir-users/dto/request/create-pending-idir-user.dto';
 import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { UpdatePendingIdirUserDto } from '@modules/company-user-management/pending-idir-users/dto/request/update-pending-idir-user.dto';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 
 @Injectable()
 export class PendingIdirUsersProfile extends AutomapperProfile {
@@ -86,12 +87,24 @@ export class PendingIdirUsersProfile extends AutomapperProfile {
        * mappings for the userName properties using forMember
        * and mapWithArguments.
        */
-      createMap(mapper, UpdatePendingIdirUserDto, PendingIdirUser);
+      createMap(
+        mapper,
+        UpdatePendingIdirUserDto,
+        PendingIdirUser,
+        forMember(
+          (d) => d.userName,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+      );
 
       /**
        * Mapping from PendingIdirUser entity to ReadPendingIdirUserDto response DTO.
        */
       createMap(mapper, PendingIdirUser, ReadPendingIdirUserDto);
+
+      createMap(mapper, PendingIdirUser, User);
     };
   }
 }

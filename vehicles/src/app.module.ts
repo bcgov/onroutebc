@@ -42,6 +42,7 @@ import { CaseManagementModule } from './modules/case-management/case-management.
 import { PolicyModule } from './modules/policy/policy.module';
 import { VersionMatchMiddleware } from './common/middleware/version.middleware';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { UserManagmentActivityModule } from './modules/company-user-management/user-management-activity/user-management-activity.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -103,6 +104,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     TrailerTypesModule,
     CompanyModule,
     CompanySuspendModule,
+    UserManagmentActivityModule, //! UserManagmentActivity Module should be imported before UsersModule to avoid URI conflict
     UsersModule,
     CommonModule,
     PendingUsersModule,
