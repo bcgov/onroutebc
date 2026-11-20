@@ -80,10 +80,10 @@ describe('CompanyUsersController', () => {
 
       expect(typeof retUser).toBe('object');
       expect(retUser).toEqual(readRedCompanyCvClientUserDtoMock);
-      expect(userService.findUsersDto).toHaveBeenCalledWith(
-        constants.RED_COMPANY_CVCLIENT_USER_GUID,
-        [constants.RED_COMPANY_ID],
-      );
+      expect(userService.findUsersDto).toHaveBeenCalledWith({
+        userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        companyId: [constants.RED_COMPANY_ID],
+      });
     });
 
     it('should throw DataNotFoundException when user not found', async () => {

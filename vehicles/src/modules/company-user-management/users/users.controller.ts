@@ -1,11 +1,13 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   ForbiddenException,
   Get,
   Inject,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -13,11 +15,14 @@ import {
 
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -37,12 +42,17 @@ import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserCla
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
 } from '@common/enum/user-role.enum';
 import { doesUserHaveRole } from '@common/helper/auth.helper';
 import { isFeatureEnabled } from '@common/helper/common.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { IsFeatureFlagEnabled } from '@common/decorator/is-feature-flag-enabled.decorator';
+import { UpdateStaffUserDto } from './dto/request/update-staff-user.dto';
+import { UserByUserGUIDPathParamsDto } from './dto/request/pathParam/userByUserGUID.path-params.dto';
+import { UserStatus } from '@common/enum/user-status.enum';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -175,12 +185,17 @@ export class UsersController {
       return await this.userService.findPermitIssuerPPCUser();
     }
 
-    return await this.userService.findUsersDto(
-      null,
-      null,
-      false,
-      getStaffUserQueryParamsDto.userRole,
-    );
+    const userStatusCode = [UserStatus.ACTIVE];
+    if (getStaffUserQueryParamsDto.includeInactiveUsers) {
+      userStatusCode.push(...[UserStatus.DISABLED, UserStatus.DELETED]);
+    }
+
+    return await this.userService.findUsersDto({
+      pendingUser: false,
+      userRole: getStaffUserQueryParamsDto.userRole,
+      userDirectory: getStaffUserQueryParamsDto.userDirectory,
+      statusCode: userStatusCode,
+    });
   }
 
   /**
@@ -232,16 +247,76 @@ export class UsersController {
           'The userGuid does not match userGuid in access token',
         );
       }
-      users = await this.userService.findUsersDto(
+      users = await this.userService.findUsersDto({
         userGUID,
-        currentUser.associatedCompanies,
-      );
+        companyId: currentUser.associatedCompanies,
+      });
     } else {
-      users = await this.userService.findUsersDto(userGUID);
+      users = await this.userService.findUsersDto({ userGUID });
     }
     if (!users?.length) {
       throw new DataNotFoundException();
     }
     return users?.at(0);
+  }
+
+  /**
+   * Updates a staff user's role, status, or both, and returns the updated details.
+   *
+   * @param request The request containing the authenticated user.
+   * @param userGUID The GUID of the staff user to update.
+   * @param updateStaffUserDto Contains the staff user's new role, status, or both.
+   * @returns The updated staff user's details.
+   * @throws {DataNotFoundException} If the update returns no user.
+   */
+  @ApiOkResponse({
+    description: 'The updated staff user resource.',
+    type: ReadUserDto,
+  })
+  @ApiOperation({
+    summary: 'Update a staff user role and/or status',
+    description:
+      'Updates the role, status, or both for a staff user. Provide at least one of userRole or userStatus in the request body. ' +
+      'This endpoint is available to IDIR system administrators when the STAFF-USER-MANAGEMENT feature is enabled.',
+  })
+  @ApiParam({
+    name: 'userGUID',
+    description: 'The GUID of the staff user to update.',
+    example: '6F9619FF8B86D011B42D00C04FC964FF',
+    required: true,
+  })
+  @ApiBody({
+    type: UpdateStaffUserDto,
+    description: "Provide the staff user's new role, status, or both.",
+  })
+  @ApiBadRequestResponse({
+    description:
+      'The request body must include at least one of userRole or userStatus.',
+    type: ExceptionDto,
+  })
+  @ApiForbiddenResponse({
+    description: 'The caller is not an IDIR system administrator.',
+    type: ExceptionDto,
+  })
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
+  @IsFeatureFlagEnabled('STAFF-USER-MANAGEMENT')
+  @Put(':userGUID')
+  async update(
+    @Req() request: Request,
+    @Param() { userGUID }: UserByUserGUIDPathParamsDto,
+    @Body() updateStaffUserDto: UpdateStaffUserDto,
+  ): Promise<ReadUserDto> {
+    const currentUser = request.user as IUserJWT;
+    const user = await this.userService.staffUserUpdate(
+      userGUID,
+      updateStaffUserDto,
+      currentUser,
+    );
+    if (!user) {
+      throw new DataNotFoundException();
+    }
+    return user;
   }
 }

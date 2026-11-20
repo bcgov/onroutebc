@@ -1,39 +1,34 @@
 import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { classes } from '@automapper/classes';
-import { AutomapperModule } from '@automapper/nestjs';
-import { createMock } from '@golevelup/ts-jest';
-import { Repository } from 'typeorm';
-import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
   createPendingIdirUserMock,
-  pendingIdirUserEntityMock,
   readPendingIdirUserMock,
 } from '../util/mocks/data/pending-idir-user.mock';
-import { PendingIdirUsersModule } from '@modules/company-user-management/pending-idir-users/pending-idir-users.module';
 import { TestUserMiddleware } from './test-user.middleware';
 import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
+import { PendingIdirUsersController } from '@modules/company-user-management/pending-idir-users/pending-idir-users.controller';
+import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
 
-const repo = createMock<Repository<PendingIdirUser>>();
+let pendingIdirUsersService: DeepMocked<PendingIdirUsersService>;
 
 describe('PendingUsers (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     jest.clearAllMocks();
+    pendingIdirUsersService = createMock<PendingIdirUsersService>();
+    pendingIdirUsersService.create.mockResolvedValue(readPendingIdirUserMock);
     const moduleFixture = await Test.createTestingModule({
-      imports: [
-        PendingIdirUsersModule,
-        AutomapperModule.forRoot({
-          strategyInitializer: classes(),
-        }),
+      controllers: [PendingIdirUsersController],
+      providers: [
+        {
+          provide: PendingIdirUsersService,
+          useValue: pendingIdirUsersService,
+        },
       ],
-    })
-      .overrideProvider(getRepositoryToken(PendingIdirUser))
-      .useValue(repo)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
@@ -47,7 +42,6 @@ describe('PendingUsers (e2e)', () => {
 
   describe('pending-idir-users CREATE', () => {
     it('should create a new pending idir User.', async () => {
-      repo.save.mockResolvedValue(pendingIdirUserEntityMock);
       const response = await request(
         app.getHttpServer() as Parameters<typeof request>[0],
       )

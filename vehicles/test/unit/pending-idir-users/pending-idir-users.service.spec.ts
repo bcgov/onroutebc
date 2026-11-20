@@ -4,7 +4,7 @@ import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from '@modules/company-user-management/pending-idir-users/pending-idir-users.service';
@@ -14,8 +14,13 @@ import {
 } from '../../util/mocks/data/pending-idir-user.mock';
 import { PendingIdirUsersProfile } from '@modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { sysAdminStaffUserJWTMock } from '../../util/mocks/data/jwt.mock';
+import { UserManagmentActivityService } from '@modules/company-user-management/user-management-activity/user-management-activity.service';
+import { User } from '@modules/company-user-management/users/entities/user.entity';
 
 let repo: DeepMocked<Repository<PendingIdirUser>>;
+let dataSource: DeepMocked<DataSource>;
+let queryRunner: DeepMocked<QueryRunner>;
+let userManagmentActivityService: DeepMocked<UserManagmentActivityService>;
 
 describe('PendingUsersService', () => {
   let service: PendingIdirUsersService;
@@ -23,6 +28,13 @@ describe('PendingUsersService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<PendingIdirUser>>();
+    dataSource = createMock<DataSource>();
+    queryRunner = createMock<QueryRunner>();
+    userManagmentActivityService = createMock<UserManagmentActivityService>();
+    dataSource.createQueryRunner.mockReturnValue(queryRunner);
+    repo.manager.findOne.mockResolvedValue(null);
+    repo.findOne.mockResolvedValue(null);
+    queryRunner.manager.save.mockResolvedValue(pendingIdirUserEntityMock);
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -30,6 +42,14 @@ describe('PendingUsersService', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repo,
+        },
+        {
+          provide: UserManagmentActivityService,
+          useValue: userManagmentActivityService,
+        },
+        {
+          provide: DataSource,
+          useValue: dataSource,
         },
         {
           provide: getMapperToken(),
@@ -54,12 +74,21 @@ describe('PendingUsersService', () => {
 
   describe('Pending idir user service create function', () => {
     it('should create a Pending idir user.', async () => {
-      repo.save.mockResolvedValue(pendingIdirUserEntityMock);
       const retPendingUser = await service.create(
         createPendingIdirUserMock,
         sysAdminStaffUserJWTMock,
       );
       expect(typeof retPendingUser).toBe('object');
+    });
+
+    it('should reject a user that already exists in ORBC_USER.', async () => {
+      const existingUser = new User();
+      existingUser.userName = createPendingIdirUserMock.userName;
+      repo.manager.findOne.mockResolvedValue(existingUser);
+
+      await expect(
+        service.create(createPendingIdirUserMock, sysAdminStaffUserJWTMock),
+      ).rejects.toThrow('User already exists');
     });
   });
 

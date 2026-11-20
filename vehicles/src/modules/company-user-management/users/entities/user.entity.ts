@@ -13,6 +13,7 @@ import { CompanyUser } from './company-user.entity';
 import { Directory } from '@common/enum/directory.enum';
 import { GenericUserRole, IDIRUserRole } from '@common/enum/user-role.enum';
 import { UserStatus } from '@common/enum/user-status.enum';
+import { UserManagementActivity } from '@modules/company-user-management/user-management-activity/entities/user-management-activity.entity';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
@@ -81,6 +82,12 @@ export class User extends Base {
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'CONTACT_ID' })
   userContact: Contact;
+
+  @AutoMap(() => [UserManagementActivity])
+  @OneToMany(() => UserManagementActivity, (activity) => activity.user, {
+    eager: false,
+  })
+  userManagementActivities?: UserManagementActivity[];
 
   /**
    * A one-to-many relationship with the CompanyUser entity, representing the

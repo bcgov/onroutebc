@@ -4,14 +4,13 @@ import { IDIRUserRole } from '@common/enum/user-role.enum';
 import { IsEnum } from 'class-validator';
 
 /**
- * JSON representation of the request object for updating the new user added to
- * the company.
+ * Request body for updating a pending IDIR user's role.
  */
 export class UpdatePendingIdirUserDto {
   @AutoMap()
   @ApiProperty({
     enum: IDIRUserRole,
-    description: 'The user role.',
+    description: 'The role to assign to the pending IDIR user.',
     example: IDIRUserRole.SYSTEM_ADMINISTRATOR,
   })
   @IsEnum(IDIRUserRole)

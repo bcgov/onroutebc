@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { PendingIdirUser } from '@modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersModule } from '@modules/company-user-management/pending-idir-users/pending-idir-users.module';
 import { Login } from './entities/login.entity';
+import { UserManagmentActivityModule } from '@modules/company-user-management/user-management-activity/user-management-activity.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Login } from './entities/login.entity';
     PendingUsersModule,
     PendingIdirUsersModule,
     CompanyModule,
+    UserManagmentActivityModule,
   ],
   controllers: [UsersController, CompanyUsersController],
   providers: [UsersService, UsersProfile],

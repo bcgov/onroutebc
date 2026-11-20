@@ -38,6 +38,7 @@ import { PendingIdirUsersProfile } from '@modules/company-user-management/pendin
 import { readRedCompanyMetadataDtoMock } from '../util/mocks/data/company.mock';
 import { CompanyUser } from '@modules/company-user-management/users/entities/company-user.entity';
 import { Login } from '@modules/company-user-management/users/entities/login.entity';
+import { UserManagmentActivityService } from '@modules/company-user-management/user-management-activity/user-management-activity.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -49,6 +50,7 @@ let repoLogin: DeepMocked<Repository<Login>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
+let userManagmentActivityServiceMock: DeepMocked<UserManagmentActivityService>;
 
 let cacheManager: DeepMocked<Cache>;
 
@@ -64,6 +66,8 @@ describe('Users (e2e)', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
+    userManagmentActivityServiceMock =
+      createMock<UserManagmentActivityService>();
     cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -109,6 +113,10 @@ describe('Users (e2e)', () => {
         {
           provide: CompanyService,
           useValue: companyServiceMock,
+        },
+        {
+          provide: UserManagmentActivityService,
+          useValue: userManagmentActivityServiceMock,
         },
         {
           provide: getMapperToken(),
