@@ -615,3 +615,7 @@
 ### Version 127:
 
 - Database objects for user management
+
+### Version 128:
+
+- Add unique key constraint to FILE_NAME in permit.ORBC_BPI_FILE
