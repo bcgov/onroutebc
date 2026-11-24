@@ -9,7 +9,7 @@ import {
   getDefaultRequiredVal,
 } from "../helpers/util";
 
-// Request interceptor to add a correlationId to the header.
+// Add a correlationId to the header of requests (through an interceptor)
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
