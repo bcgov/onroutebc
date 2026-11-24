@@ -1,27 +1,27 @@
 # Default codeowners:
-* @praju-aot @zgong-gov @acoard-aot
+* @zgong-gov
 
 # Frontend:
-/frontend/** @zgong-gov @acoard-aot
+/frontend/** @zgong-gov
 
 # Vehicles:
-/vehicles/**  @praju-aot @zgong-gov @acoard-aot
+/vehicles/**  @zgong-gov
 
 # Public:
-/public/**  @praju-aot @zgong-gov @acoard-aot
+/public/**  @zgong-gov
 # Scheduler:
-/scheduler/**  @praju-aot @zgong-gov @acoard-aot
+/scheduler/**  @zgong-gov
 
 # Dops:
-/dops/**  @praju-aot @zgong-gov @acoard-aot
+/dops/**  @zgong-gov
 
 # Policy:
-/policy/**  @praju-aot @zgong-gov @acoard-aot
+/policy/**  @zgong-gov
 
 # Database:
-/database/** @praju-aot @zgong-gov @acoard-aot
+/database/** @zgong-gov
 
 # Devops:
-Dockerfile @cberg-aot @zgong-gov
-docker-compose.yml @cberg-aot @zgong-gov
-/.github/** @cberg-aot @zgong-gov
+Dockerfile @zgong-gov
+docker-compose.yml @zgong-gov
+/.github/** @zgong-gov
