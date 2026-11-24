@@ -22,6 +22,6 @@
 /database/** @zgong-gov
 
 # Devops:
-Dockerfile @cberg-aot @zgong-gov
-docker-compose.yml @cberg-aot @zgong-gov
-/.github/** @cberg-aot @zgong-gov
+Dockerfile @zgong-gov
+docker-compose.yml @zgong-gov
+/.github/** @zgong-gov
